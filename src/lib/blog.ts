@@ -72,8 +72,8 @@ export async function getAllPosts(): Promise<BlogPostMeta[]> {
 
   // Filter out failed reads (malformed frontmatter, IO errors, etc.)
   const posts = results
-    .filter((r): r is PromiseFulfilledResult<BlogPostMeta> => r.status === "fulfilled")
-    .map((r) => r.value);
+    .filter((r) => r.status === "fulfilled")
+    .map((r) => (r as PromiseFulfilledResult<BlogPostMeta>).value);
 
   // Sort by date descending (newest first)
   posts.sort(

@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
         hostname: "thehudsonfam.com",
         pathname: "/api/images/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
     ],
     // Use sharp for WebP/AVIF optimization
     formats: ["image/avif", "image/webp"],
