@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model BlogPost {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  title       String
+  excerpt     String?
+  coverImage  String?
+  authorId    String
+  publishedAt DateTime?
+  tags        String[]
+  status      PostStatus @default(DRAFT)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([authorId])
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Album {
+  id           String    @id @default(cuid())
+  title        String
+  slug         String    @unique
+  description  String?
+  coverPhotoId String?
+  date         DateTime?
+  createdAt    DateTime  @default(now())
+  photos       Photo[]
+}
+
+model Photo {
+  id            String    @id @default(cuid())
+  title         String?
+  caption       String?
+  albumId       String?
+  album         Album?    @relation(fields: [albumId], references: [id])
+  originalPath  String
+  thumbnailPath String
+  width         Int
+  height        Int
+  takenAt       DateTime?
+  uploadedById  String
+  createdAt     DateTime  @default(now())
+
+  @@index([albumId])
+  @@index([uploadedById])
+}
+
+model Event {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  allDay      Boolean    @default(false)
+  createdById String
+  visibility  Visibility @default(PUBLIC)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([startDate])
+  @@index([visibility])
+}
+
+enum Visibility {
+  PUBLIC
+  FAMILY
+}
+
+model FamilyUpdate {
+  id         String     @id @default(cuid())
+  content    String
+  images     String[]
+  postedById String
+  visibility Visibility @default(PUBLIC)
+  createdAt  DateTime   @default(now())
+
+  @@index([createdAt])
+}
