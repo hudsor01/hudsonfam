@@ -7,6 +7,19 @@ export default async function DashboardLayout({
 }) {
   const session = await requireRole(["owner", "admin", "member"]);
   const userName = session.user.name || session.user.email;
+  const userRole = (session.user as { role?: string }).role || "member";
+
+  const navLinks = [
+    { href: "/dashboard", label: "Overview" },
+    { href: "/dashboard/posts", label: "Posts" },
+    { href: "/dashboard/photos", label: "Photos" },
+    { href: "/dashboard/events", label: "Events" },
+    { href: "/dashboard/updates", label: "Updates" },
+  ];
+
+  if (userRole === "owner") {
+    navLinks.push({ href: "/dashboard/members", label: "Members" });
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -17,23 +30,20 @@ export default async function DashboardLayout({
           </div>
           <span className="text-text text-sm font-medium">Dashboard</span>
         </div>
-        <a href="/dashboard" className="text-sm text-text-muted hover:text-text px-3 py-2 rounded-md hover:bg-bg">
-          Overview
-        </a>
-        <a href="/dashboard/posts" className="text-sm text-text-muted hover:text-text px-3 py-2 rounded-md hover:bg-bg">
-          Posts
-        </a>
-        <a href="/dashboard/photos" className="text-sm text-text-muted hover:text-text px-3 py-2 rounded-md hover:bg-bg">
-          Photos
-        </a>
-        <a href="/dashboard/events" className="text-sm text-text-muted hover:text-text px-3 py-2 rounded-md hover:bg-bg">
-          Events
-        </a>
-        <a href="/dashboard/updates" className="text-sm text-text-muted hover:text-text px-3 py-2 rounded-md hover:bg-bg">
-          Updates
-        </a>
-        <div className="mt-auto pt-4 border-t border-border">
+        {navLinks.map((link) => (
+          <a
+            key={link.href}
+            href={link.href}
+            className="text-sm text-text-muted hover:text-text px-3 py-2 rounded-md hover:bg-bg"
+          >
+            {link.label}
+          </a>
+        ))}
+        <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
           <p className="text-xs text-text-dim truncate">{userName}</p>
+          <a href="/" className="text-xs text-text-dim hover:text-text-muted transition-colors">
+            Home
+          </a>
         </div>
       </aside>
       <main className="flex-1 p-6">{children}</main>
