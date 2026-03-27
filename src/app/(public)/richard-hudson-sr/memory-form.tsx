@@ -3,6 +3,13 @@
 import { submitMemory } from "@/lib/memorial-actions";
 import { useState, useRef } from "react";
 
+const RELATIONSHIP_OPTIONS = [
+  { group: "Immediate Family", options: ["Son", "Daughter", "Wife", "Husband", "Father", "Mother", "Brother", "Sister"] },
+  { group: "Extended Family", options: ["Grandson", "Granddaughter", "Nephew", "Niece", "Uncle", "Aunt", "Cousin", "Father-in-Law", "Mother-in-Law", "Brother-in-Law", "Sister-in-Law", "Son-in-Law", "Daughter-in-Law"] },
+  { group: "Step Relations", options: ["Stepson", "Stepdaughter", "Stepfather", "Stepmother", "Stepbrother", "Stepsister"] },
+  { group: "Other", options: ["Friend", "Colleague", "Neighbor", "Mentor", "Other"] },
+];
+
 export function MemoryForm() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -50,7 +57,7 @@ export function MemoryForm() {
           Thank you for sharing
         </p>
         <p className="text-text-muted text-sm mb-6">
-          Your memory has been added to this page.
+          Thank you for sharing your memory. It will be visible once reviewed by the family.
         </p>
         <button
           onClick={() => setSubmitted(false)}
@@ -67,32 +74,68 @@ export function MemoryForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label
-            htmlFor="name"
+            htmlFor="firstName"
             className="block text-xs text-text-muted mb-1.5"
           >
-            Your Name <span className="text-accent">*</span>
+            First Name <span className="text-accent">*</span>
           </label>
           <input
-            id="name"
-            name="name"
+            id="firstName"
+            name="firstName"
             type="text"
             required
-            placeholder="Your name"
+            placeholder="First name"
             className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
           />
         </div>
         <div>
           <label
-            htmlFor="relationship"
+            htmlFor="lastName"
             className="block text-xs text-text-muted mb-1.5"
           >
-            Relationship
+            Last Name <span className="text-accent">*</span>
           </label>
           <input
-            id="relationship"
-            name="relationship"
+            id="lastName"
+            name="lastName"
             type="text"
-            placeholder="e.g., Son, Friend, Colleague"
+            required
+            placeholder="Last name"
+            className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-xs text-text-muted mb-1.5"
+          >
+            Email <span className="text-accent">*</span>{" "}
+            <span className="text-text-dim">(not displayed publicly)</span>
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            placeholder="your@email.com"
+            className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="phone"
+            className="block text-xs text-text-muted mb-1.5"
+          >
+            Phone <span className="text-text-dim">(optional)</span>
+          </label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder="(555) 555-5555"
             className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
           />
         </div>
@@ -100,18 +143,31 @@ export function MemoryForm() {
 
       <div>
         <label
-          htmlFor="email"
+          htmlFor="relationship"
           className="block text-xs text-text-muted mb-1.5"
         >
-          Email <span className="text-text-dim">(optional, not displayed)</span>
+          Relationship <span className="text-accent">*</span>
         </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="your@email.com"
-          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
-        />
+        <select
+          id="relationship"
+          name="relationship"
+          required
+          defaultValue=""
+          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text focus:outline-none focus:border-accent/50 transition-colors"
+        >
+          <option value="" disabled className="text-text-dim">
+            Select your relationship...
+          </option>
+          {RELATIONSHIP_OPTIONS.map((group) => (
+            <optgroup key={group.group} label={group.group}>
+              {group.options.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
       </div>
 
       <div>

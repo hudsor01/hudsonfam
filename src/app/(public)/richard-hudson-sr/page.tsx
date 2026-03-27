@@ -418,21 +418,21 @@ export default async function RichardHudsonSrMemorialPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center">
                     <span className="text-accent text-xs font-semibold">
-                      {memory.name.charAt(0).toUpperCase()}
+                      {memory.firstName.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div>
-                    <p
-                      className="text-sm text-text font-medium"
-                      itemProp="author"
-                    >
-                      {memory.name}
-                    </p>
-                    {memory.relationship && (
-                      <p className="text-xs text-text-dim">
-                        {memory.relationship}
+                    <div className="flex items-center gap-2">
+                      <p
+                        className="text-sm text-text font-medium"
+                        itemProp="author"
+                      >
+                        {memory.firstName} {memory.lastName}
                       </p>
-                    )}
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-accent/10 text-accent border border-accent/20">
+                        {memory.relationship}
+                      </span>
+                    </div>
                   </div>
                   <time
                     className="text-xs text-text-dim ml-auto"

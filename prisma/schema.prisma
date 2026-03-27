@@ -94,15 +94,35 @@ model FamilyUpdate {
 
 model Memory {
   id           String   @id @default(cuid())
-  name         String
-  email        String?
-  relationship String?
+  firstName    String
+  lastName     String
+  email        String
+  phone        String?
+  relationship String
   content      String
-  approved     Boolean  @default(true)
+  approved     Boolean  @default(false)
   createdAt    DateTime @default(now())
 
   @@index([createdAt])
   @@index([approved])
+}
+
+model MemorialMedia {
+  id        String   @id @default(cuid())
+  type      String   // "photo" or "video"
+  url       String
+  caption   String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([sortOrder])
+}
+
+model MemorialContent {
+  id        String   @id @default(cuid())
+  section   String   @unique // "hero_subtitle", "about_text", "closing_quote"
+  content   String
+  updatedAt DateTime @updatedAt
 }
 
 model InviteToken {
