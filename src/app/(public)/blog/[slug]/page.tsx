@@ -21,8 +21,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!post) return { title: "Post Not Found" };
 
   return {
-    title: `${post.frontmatter.title} | The Hudson Family`,
+    title: post.frontmatter.title,
     description: post.frontmatter.excerpt,
+    openGraph: {
+      title: post.frontmatter.title,
+      description: post.frontmatter.excerpt,
+      type: "article",
+      publishedTime: new Date(post.frontmatter.date).toISOString(),
+      authors: [post.frontmatter.author],
+      ...(post.frontmatter.coverImage
+        ? { images: [post.frontmatter.coverImage] }
+        : {}),
+    },
+    twitter: {
+      card: post.frontmatter.coverImage ? "summary_large_image" : "summary",
+      title: post.frontmatter.title,
+      description: post.frontmatter.excerpt,
+      ...(post.frontmatter.coverImage
+        ? { images: [post.frontmatter.coverImage] }
+        : {}),
+    },
   };
 }
 
