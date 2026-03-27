@@ -63,8 +63,19 @@ export default function NotFound() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-border px-5 sm:px-7 py-3 text-xs text-text-dim text-center">
-        &copy; {new Date().getFullYear()} The Hudson Family
+      <footer className="border-t border-border px-5 sm:px-7 py-3 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-text-dim">
+        <span>&copy; {new Date().getFullYear()} The Hudson Family</span>
+        <span>
+          Built by{" "}
+          <a
+            href="https://hudsondigitalsolutions.com"
+            target="_blank"
+            rel="noopener"
+            className="text-accent/70 hover:text-accent transition-colors"
+          >
+            Hudson Digital Solutions
+          </a>
+        </span>
       </footer>
     </div>
   );

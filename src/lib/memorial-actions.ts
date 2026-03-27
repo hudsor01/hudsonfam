@@ -34,5 +34,5 @@ export async function submitMemory(formData: FormData) {
     },
   });
 
-  revalidatePath("/remembering-richard-hudson-sr");
+  revalidatePath("/richard-hudson-sr");
 }

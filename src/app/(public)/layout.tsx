@@ -7,7 +7,7 @@ const navLinks = [
   { href: "/photos", label: "Photos" },
   { href: "/events", label: "Events" },
   { href: "/family", label: "Family" },
-  { href: "/remembering-richard-hudson-sr", label: "In Memory" },
+  { href: "/richard-hudson-sr", label: "In Memory" },
 ];
 
 export default function PublicLayout({
@@ -71,8 +71,19 @@ export default function PublicLayout({
             </Link>
           </div>
         </div>
-        <div className="border-t border-border px-5 sm:px-7 py-3 text-xs text-text-dim text-center">
-          &copy; {new Date().getFullYear()} The Hudson Family. All rights reserved.
+        <div className="border-t border-border px-5 sm:px-7 py-3 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-text-dim">
+          <span>&copy; {new Date().getFullYear()} The Hudson Family. All rights reserved.</span>
+          <span>
+            Built by{" "}
+            <a
+              href="https://hudsondigitalsolutions.com"
+              target="_blank"
+              rel="noopener"
+              className="text-accent/70 hover:text-accent transition-colors"
+            >
+              Hudson Digital Solutions
+            </a>
+          </span>
         </div>
       </footer>
     </div>

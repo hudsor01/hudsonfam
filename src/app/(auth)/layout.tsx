@@ -19,6 +19,17 @@ export default function AuthLayout({
         <div className="bg-surface border border-border rounded-xl p-6">
           {children}
         </div>
+        <p className="text-center text-xs text-text-dim mt-6">
+          Built by{" "}
+          <a
+            href="https://hudsondigitalsolutions.com"
+            target="_blank"
+            rel="noopener"
+            className="text-accent/70 hover:text-accent transition-colors"
+          >
+            Hudson Digital Solutions
+          </a>
+        </p>
       </div>
     </div>
   );
