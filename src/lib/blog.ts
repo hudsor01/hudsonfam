@@ -40,12 +40,20 @@ export async function getAllPosts(): Promise<BlogPostMeta[]> {
 
   const mdxFiles = files.filter((f) => f.endsWith(".mdx"));
 
-  const posts = await Promise.all(
+  const results = await Promise.allSettled(
     mdxFiles.map(async (filename) => {
       const filePath = path.join(BLOG_DIR, filename);
       const raw = await fs.readFile(filePath, "utf-8");
       const { data, content } = matter(raw);
       const slug = filename.replace(/\.mdx$/, "");
+
+      // Ensure tags is always an array (handles YAML string tags)
+      let tags: string[] = [];
+      if (Array.isArray(data.tags)) {
+        tags = data.tags;
+      } else if (typeof data.tags === "string" && data.tags) {
+        tags = data.tags.split(",").map((t: string) => t.trim()).filter(Boolean);
+      }
 
       return {
         slug,
@@ -53,7 +61,7 @@ export async function getAllPosts(): Promise<BlogPostMeta[]> {
           title: data.title || slug,
           date: data.date || new Date().toISOString().split("T")[0],
           excerpt: data.excerpt || "",
-          tags: data.tags || [],
+          tags,
           coverImage: data.coverImage || null,
           author: data.author || "Hudson Family",
         },
@@ -61,6 +69,11 @@ export async function getAllPosts(): Promise<BlogPostMeta[]> {
       };
     })
   );
+
+  // Filter out failed reads (malformed frontmatter, IO errors, etc.)
+  const posts = results
+    .filter((r): r is PromiseFulfilledResult<BlogPostMeta> => r.status === "fulfilled")
+    .map((r) => r.value);
 
   // Sort by date descending (newest first)
   posts.sort(
@@ -73,11 +86,30 @@ export async function getAllPosts(): Promise<BlogPostMeta[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+  // Prevent path traversal: reject slugs with path separators or dot sequences
+  if (!slug || slug.includes("/") || slug.includes("\\") || slug.includes("..")) {
+    return null;
+  }
+
   const filePath = path.join(BLOG_DIR, `${slug}.mdx`);
+
+  // Double-check resolved path stays within BLOG_DIR
+  const resolvedPath = path.resolve(filePath);
+  if (!resolvedPath.startsWith(path.resolve(BLOG_DIR) + path.sep)) {
+    return null;
+  }
 
   try {
     const raw = await fs.readFile(filePath, "utf-8");
     const { data, content } = matter(raw);
+
+    // Ensure tags is always an array
+    let tags: string[] = [];
+    if (Array.isArray(data.tags)) {
+      tags = data.tags;
+    } else if (typeof data.tags === "string" && data.tags) {
+      tags = data.tags.split(",").map((t: string) => t.trim()).filter(Boolean);
+    }
 
     return {
       slug,
@@ -85,7 +117,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
         title: data.title || slug,
         date: data.date || new Date().toISOString().split("T")[0],
         excerpt: data.excerpt || "",
-        tags: data.tags || [],
+        tags,
         coverImage: data.coverImage || null,
         author: data.author || "Hudson Family",
       },
