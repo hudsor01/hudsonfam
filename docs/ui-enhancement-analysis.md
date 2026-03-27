@@ -1,4 +1,4 @@
-# UI Enhancement Analysis: Tailwind CSS v4 + shadcn/ui v4
+# UI Enhancement Analysis: Tailwind CSS v4 + shadcn/ui
 
 **Project**: thehudsonfam.com (Next.js 16 family website)
 **Date**: 2026-03-27
@@ -8,30 +8,57 @@
 
 ## Current Project Inventory
 
-### UI Components (src/components/ui/)
-- **Button** -- primary/accent/ghost variants, sm/md/lg sizes, loading state
-- **Card** -- hover prop, padding variants, CardHeader/CardContent subcomponents
-- **Badge** -- default/primary/accent/outline variants
-- **Input** -- label/error support, auto-generated ID
-- **SectionHeader** -- dual-mode: page title (serif h1) or section label (uppercase tracking)
+### UI Components (src/components/ui/) -- 5 components
 
-### Public Components (src/components/public/)
-- Hero, FeaturedPost, PostCard, EventCard, UpdateCard
-- Sidebar (events + photos + weather), PhotoGridPreview
-- Lightbox (keyboard + touch swipe), MobileNav (hamburger dropdown)
-- WeatherWidget (Open-Meteo API), MDX components
+| Component | Features | Patterns |
+|-----------|----------|----------|
+| **Button** | primary/accent/ghost variants, sm/md/lg sizes, loading spinner, disabled state | forwardRef, template literal className concatenation |
+| **Card** | hover prop, padding variants (none/sm/md/lg), CardHeader/CardContent subcomponents | forwardRef, conditional hover styles |
+| **Badge** | default/primary/accent/outline variants | forwardRef, Record-based variant map |
+| **Input** | label/error support, auto-generated ID from label text | forwardRef, conditional error border |
+| **SectionHeader** | dual-mode: page title (serif h1 + subtitle) or section label (uppercase tracking), optional action link | forwardRef, conditional rendering by title presence |
 
-### Dashboard Components (src/components/dashboard/)
-- WidgetCard, MetricCard, ServerStatsWidget, ClusterMetrics
-- UpsStatusWidget, MediaStatsWidget, WeatherWidget, ServiceMonitor, Bookmarks
+### Public Components (src/components/public/) -- 11 components
 
-### Pages
-- **Public**: Home, Blog (with pagination + tag filter), Photos (albums), Events (upcoming/past), Family (updates feed with load-more), Memorial (Richard Hudson Sr.)
-- **Auth**: Login, Signup, Forgot Password, Reset, Verify
-- **Dashboard**: Overview (stats + quick actions), Posts CRUD, Photos Upload, Albums CRUD, Events CRUD, Updates CRUD, Members (owner), Memorial admin
-- **Admin**: Server dashboard (Prometheus/k8s metrics, UPS, weather, bookmarks)
+| Component | Type | Key Features |
+|-----------|------|-------------|
+| **Hero** | Server | Centered heading with accent tagline, serif title, italic subtitle |
+| **FeaturedPost** | Server | Cover image with zoom hover, full-card link via absolute overlay, tag badges, reading time |
+| **PostCard** | Server | Compact blog card, 16:9 aspect ratio, line-clamped excerpt, 2 tag limit |
+| **EventCard** | Server | Calendar/location icons, relative time label badge, date range formatting |
+| **UpdateCard** | Server | Social-post style with avatar initial, relative timestamps, responsive image grid |
+| **Sidebar** | Server | Composed of events list, PhotoGridPreview, WeatherWidget in stacked cards |
+| **PhotoGridPreview** | Server | 3-column grid of 6 thumbnails with placeholder slots |
+| **Lightbox** | Client | Full-screen overlay, keyboard nav (Esc/arrows), touch swipe, counter |
+| **MobileNav** | Client | Hamburger toggle, absolute dropdown, pathname-based active state |
+| **WeatherWidget** | Server (async) | Open-Meteo API, 30-min ISR cache, weather code to emoji mapping |
+| **MDX Components** | Server | Full typography system: h1-h4, p, a, lists, blockquote, code/pre, table, img with figcaption |
+
+### Dashboard Components (src/components/dashboard/) -- 9 components
+
+| Component | Key Features |
+|-----------|-------------|
+| **WidgetCard** | Header bar with icon + title, content area, card wrapper |
+| **MetricCard** | Centered value + label, 5 color options (green/gold/red/blue/default) |
+| **ServerStatsWidget** | CPU/Memory/NVMe progress bars with color thresholds (green/yellow/red) |
+| **ClusterMetrics** | Pods/Namespaces/CPU Req/Memory in horizontal divided layout |
+| **UpsStatusWidget** | Battery/Load/Runtime metrics, status badge (Online/On Battery/Low Battery) |
+| **MediaStatsWidget** | 3-column grid: Sonarr/Radarr/Jellyfin with series/queue/missing counts |
+| **WeatherWidget** | SVG weather icons, temperature/feels-like/humidity/wind display |
+| **ServiceMonitor** | Status dots (up/down/unknown), overall health badge, response time, clickable links |
+| **Bookmarks** | 3-column grouped links with external link icons |
+
+### Pages (26 routes across 4 route groups)
+
+| Group | Pages |
+|-------|-------|
+| **Public** (9) | Home, Blog (pagination + tag filter), Blog [slug], Photos, Photos [album], Events, Family (updates + load-more), Memorial, Not Found |
+| **Auth** (5) | Login, Signup, Forgot Password, Reset Password, Verify Email |
+| **Dashboard** (12) | Overview, Posts list, Post new, Post edit [id], Photos list, Upload, Albums list, Album new, Album edit [id], Events list, Event new, Event edit [id], Updates list, Update new, Members, Memorial admin (overview + memories + media + content sub-pages) |
+| **Admin** (1) | Server dashboard (Prometheus/K8s metrics, UPS, weather, service health, bookmarks) |
 
 ### Current Theme (globals.css)
+
 ```css
 @theme {
   --color-bg: #171d2a;
@@ -48,566 +75,893 @@
 }
 ```
 
-Dark-only design (html has `class="dark"` hardcoded). No light mode. Navy + gold color system.
+Dark-only design (html has `class="dark"` hardcoded). No light mode. Navy + gold color system. No radius tokens, no shadow tokens, no easing tokens, no animation tokens, no chart colors, no sidebar-specific colors.
 
 ---
 
-## Part 1: Tailwind CSS v4 -- What We Are Missing
+## Section 1: shadcn/ui Complete Ecosystem
 
-### 1.1 Theme System Improvements
+### 1.1 Philosophy and Architecture
 
-**Current state**: We use `@theme` correctly with custom colors and fonts. However, we are underutilizing the theme system.
+shadcn/ui is fundamentally different from component libraries like Material UI, Chakra, or Mantine. It is a **code distribution platform**, not an npm package. The philosophy rests on five pillars:
 
-**Missing opportunities**:
+1. **Open Code**: You receive the actual component source code. You own it, modify it, and maintain it. No version lock-in, no `!important` overrides, no wrapping components to customize them.
 
-1. **No custom radius tokens** -- We hardcode `rounded-xl`, `rounded-lg`, `rounded-md` etc. throughout the codebase. Defining `--radius-*` tokens in `@theme` would create a consistent design language and make global radius changes trivial.
+2. **Composition**: Every component shares a common interface. Subcomponents compose together predictably (Dialog + Form, Popover + Calendar = DatePicker, etc.). No special APIs to learn per component.
 
-2. **No custom shadow tokens** -- Cards and surfaces use default Tailwind shadows or none. Custom shadows matching the navy/gold palette (e.g., subtle blue-tinted shadows) would add depth.
+3. **Distribution**: A flat-file schema and CLI tool (`shadcn`) distribute components across projects. The `add` command copies source files into your project. The `build` command generates registry JSON for sharing your own components.
 
-3. **No custom spacing overrides** -- Default 0.25rem base is fine, but specific layout spacing constants (like sidebar width at `w-56`) could be theme tokens.
+4. **Beautiful Defaults**: Components arrive styled with OKLCH colors, Tailwind v4 theme tokens, and sensible defaults. The theming system uses CSS variables with a `background`/`foreground` pairing convention.
 
-4. **No easing/transition tokens** -- We use `transition-colors duration-200` everywhere manually. Defining `--ease-*` tokens like `--ease-smooth: cubic-bezier(0.4, 0, 0.2, 1)` would standardize animations.
+5. **AI-Ready**: Open code and consistent APIs make components fully readable and modifiable by AI tools. The `shadcn docs` CLI command provides component documentation for agent workflows.
 
-5. **No custom animation tokens** -- We only use `animate-spin` and `animate-pulse`. We should define project-specific animations like fade-in, slide-up, and scale-in for page transitions and element reveals.
+### 1.2 Theming System Deep-Dive
 
-6. **Colors not in OKLCh** -- Our colors are hex values. Converting to OKLCh would give us access to the wider P3 color gamut on modern displays, making the gold accent richer on supported screens.
+shadcn/ui's theme system is built on two layers:
 
-7. **No `@theme inline` usage** -- shadcn/ui v4 recommends `@theme inline` when referencing other CSS variables to avoid resolution issues in nested contexts. If we adopt shadcn/ui's CSS variable pattern, this is critical.
+**Layer 1: CSS Custom Properties** (defined in `:root` and `.dark`)
+```css
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  /* ... */
+}
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  /* ... */
+}
+```
 
-### 1.2 Container Queries (First-Class in v4)
+**Layer 2: @theme inline bridge** (connects CSS vars to Tailwind utilities)
+```css
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  /* ... */
+}
+```
 
-Container queries are now built into Tailwind v4 with no plugin needed. These are high-impact for our layout.
+The `@theme inline` directive is critical: it tells Tailwind to resolve the variable *value* at build time rather than outputting a `var()` reference. This prevents resolution issues when CSS variables are overridden at different cascade levels (e.g., inside `.dark`).
 
-**Where container queries would help**:
+**Complete token list** (30 tokens):
 
-1. **Dashboard widget cards** -- The admin dashboard grid (`grid-cols-1 md:grid-cols-3`) uses viewport breakpoints. With `@container`, MetricCard and WidgetCard could adapt based on their container width, not the viewport. This means widgets look correct whether they are in a 1-column or 4-column layout.
+| Token | Foreground Pair | Purpose |
+|-------|----------------|---------|
+| `background` | `foreground` | Page background and default text |
+| `card` | `card-foreground` | Elevated card surfaces |
+| `popover` | `popover-foreground` | Floating overlays (popover, dropdown, dialog) |
+| `primary` | `primary-foreground` | Primary actions (buttons, badges, active states) |
+| `secondary` | `secondary-foreground` | Lower-emphasis filled actions |
+| `muted` | `muted-foreground` | Subtle surfaces, descriptions, placeholders |
+| `accent` | `accent-foreground` | Interactive hover/focus highlights |
+| `destructive` | -- | Error/danger states |
+| `border` | -- | Default borders |
+| `input` | -- | Form control borders |
+| `ring` | -- | Focus rings |
+| `chart-1` through `chart-5` | -- | Chart color palette |
+| `sidebar` | `sidebar-foreground` | Sidebar surface |
+| `sidebar-primary` | `sidebar-primary-foreground` | Active sidebar items |
+| `sidebar-accent` | `sidebar-accent-foreground` | Sidebar hover states |
+| `sidebar-border` | -- | Sidebar dividers |
+| `sidebar-ring` | -- | Sidebar focus rings |
+| `radius` | -- | Base radius (derived scale via calc()) |
 
-2. **Sidebar components** -- The public Sidebar renders at `320px` fixed width. Its internal components (events list, photo grid, weather) could use `@container` to adjust layout when the sidebar is resized or used in different contexts.
+**Radius scale** (derived from a single `--radius` value):
+- `radius-sm` = `--radius * 0.6`
+- `radius-md` = `--radius * 0.8`
+- `radius-lg` = `--radius` (base)
+- `radius-xl` = `--radius * 1.4`
+- `radius-2xl` = `--radius * 1.8`
+- `radius-3xl` = `--radius * 2.2`
+- `radius-4xl` = `--radius * 2.6`
 
-3. **PostCard / FeaturedPost** -- These cards appear in 1-column, 2-column, and 3-column grids. Container queries would let the card internally decide whether to show/hide metadata, adjust image aspect ratios, or switch text sizes based on available width rather than viewport width.
+**How this maps to our project**: Our current `@theme` uses direct hex colors (`--color-bg`, `--color-surface`, etc.) without the `background`/`foreground` pairing convention. To adopt shadcn/ui components without conflict, we need to either:
+- (A) Map our existing tokens to shadcn's token names, or
+- (B) Maintain our tokens alongside shadcn's, using `@theme inline` for the shadcn bridge
 
-4. **MediaStatsWidget** -- The nested `grid grid-cols-1 md:grid-cols-3` for Sonarr/Radarr/Jellyfin would benefit from container queries since it is already inside a responsive parent grid.
+Option A is recommended. Our `--color-bg` maps to `background`, `--color-surface` maps to `card`, `--color-primary` maps to `primary`, `--color-accent` maps to our gold accent (not shadcn's generic `accent`), etc.
 
-5. **UpdateCard image grid** -- Images switch between `grid-cols-1`, `grid-cols-2`, and `grid-cols-2 sm:grid-cols-3` using viewport breakpoints. Container queries would make this work correctly regardless of where the card is rendered.
+### 1.3 CLI and Tooling
 
-### 1.3 New Animation & Transition Utilities
+The `shadcn` CLI provides:
 
-**What we should adopt**:
+| Command | Purpose |
+|---------|---------|
+| `shadcn init` | Initialize project with `components.json`, globals.css, and theme |
+| `shadcn add <component>` | Copy component source files into project |
+| `shadcn add --all` | Add every component at once |
+| `shadcn build` | Generate registry JSON from `registry.json` |
+| `shadcn docs [component]` | Fetch component documentation from terminal |
+| `shadcn info` | Display project framework, installed components, docs links |
+| `shadcn search` | Search registries for components |
+| `shadcn view <items>` | Preview registry items before installing |
+| `shadcn migrate rtl` | Convert physical CSS to logical properties |
+| `shadcn migrate radix` | Update `@radix-ui/react-*` to unified `radix-ui` package |
 
-1. **Custom `@keyframes` in `@theme`** -- Define entrance animations for page content:
-   - `fade-in`: opacity 0 to 1 (for lazy-loaded content)
-   - `fade-in-up`: opacity + translateY for card reveals
-   - `scale-in`: for lightbox image entrance
-   - `slide-in-right`: for mobile nav panel
+**Key flags**: `--dry-run` (preview changes), `--diff` (show file diff), `--overwrite` (force replace), `--cwd` (working directory), `--base` (radix or base primitives).
 
-2. **`@starting-style` support via `starting:` variant** -- This lets us animate elements as they appear without JavaScript. Key use cases:
-   - Lightbox overlay entrance (currently instant, no animation)
-   - Mobile nav dropdown appearance (currently instant show/hide)
-   - Toast/notification appearance (if we add Sonner)
-   - Popover entrances for tooltips
+**Our approach**: Run `shadcn init` to generate `components.json`, then selectively `shadcn add` only the components we need. This gives us the source code to customize while maintaining the ability to diff against upstream changes.
 
-3. **`transition-discrete`** -- For animating `display: none` to `display: block` transitions. Useful for the mobile nav and lightbox which toggle visibility.
+### 1.4 Blocks (Pre-Built Page Layouts)
 
-4. **`motion-safe` / `motion-reduce` variants** -- We use `animate-spin` and `animate-pulse` without reduced-motion guards. All animations should be wrapped with `motion-safe:` for accessibility.
+shadcn/ui provides complete page-level compositions called "blocks" that combine multiple components:
 
-### 1.4 Gradient Enhancements
+**Dashboard blocks** (Dashboard-01):
+- Full application shell with AppSidebar, breadcrumbs, charts (ChartAreaInteractive), data tables, section cards
+- Uses SidebarProvider + SidebarInset pattern for responsive layout
+- Includes site header with SidebarTrigger
 
-1. **`bg-linear-*` with angle values** -- The memorial page hero uses `bg-gradient-to-b` and `bg-[radial-gradient(...)]`. The new `bg-linear-45`, `bg-conic-*`, and `bg-radial-*` utilities would simplify these.
+**Sidebar blocks** (7+ variants):
+- Sidebar-03: Submenus with collapsible groups
+- Sidebar-07: Icon-only collapse mode
+- All include breadcrumb navigation and responsive mobile behavior
 
-2. **Gradient interpolation modifiers** -- `bg-linear-to-r/oklch` produces more vivid gradients. The navy-to-gold gradients on the site would benefit from OKLCh interpolation.
+**Authentication blocks** (Login-03, Login-04, etc.):
+- Login forms with muted backgrounds, split layouts with images
+- Signup, forgot password, and verification flows
 
-### 1.5 Other v4 Features We Should Use
+**Relevance to our project**: The Dashboard-01 block is a near-perfect starting point for our dashboard layout. It demonstrates the exact SidebarProvider + collapsible sidebar + breadcrumb + content area pattern we need. The Login blocks could replace our auth pages for a more polished experience.
 
-1. **`field-sizing-content`** -- Auto-resize textareas without JavaScript. We have textareas in PostForm, EventForm, and MemoryForm that would benefit.
+### 1.5 Charts (Recharts Integration)
 
-2. **`color-scheme-dark`** -- Removes ugly light scrollbars in our dark theme. Should be applied to `<html>` or `<body>`.
+shadcn/ui's chart system wraps Recharts with three helper components:
 
-3. **`not-*` variant** -- Useful for `not-last:border-b` patterns in our list components (dashboard recent posts, events, service monitor).
+| Component | Purpose |
+|-----------|---------|
+| `ChartContainer` | Responsive wrapper with `min-h-*` requirement |
+| `ChartTooltip` + `ChartTooltipContent` | Themed tooltips with dot/line/dashed indicators |
+| `ChartLegend` + `ChartLegendContent` | Styled legend with custom name keys |
 
-4. **`nth-*` variants** -- Could replace our manual grid span logic in the memorial photo gallery.
+Chart types available: Area, Bar, Line, Pie, Radar, Radial -- each with 10+ variants.
 
-5. **`inset-shadow-*` and `inset-ring-*`** -- Could add depth to our Card component for a more refined surface treatment.
+`ChartConfig` separates data concerns from display concerns:
+```typescript
+const chartConfig = {
+  cpu: { label: "CPU Usage", color: "var(--chart-1)" },
+  memory: { label: "Memory", color: "var(--chart-2)" },
+}
+```
 
-6. **3D Transform utilities** -- `perspective-*`, `rotate-x-*`, `rotate-y-*` could enhance the photo grid hover effects and card interactions.
+**Relevance to our project**: The admin dashboard currently shows raw numbers in MetricCard components. Adding Recharts via shadcn's chart system would let us display CPU/Memory/Disk as area/line charts over time, service health as bar charts, and NAS storage as radial gauges. The `accessibilityLayer` prop adds keyboard and screen reader support to charts automatically.
 
-7. **`size-*` utility** -- Replace all `w-X h-X` pairs (e.g., `w-8 h-8` on avatars) with `size-8`. This is a quick cleanup.
+### 1.6 Component-by-Component Analysis (All 50 Components)
 
-8. **`data-*` variants** -- `data-current:opacity-100` for nav active states instead of conditional className logic.
+#### Category A: High Relevance -- We need these
 
-### 1.6 @theme inline vs @theme
+| Component | Description | Our Current Approach | Enhancement |
+|-----------|-------------|---------------------|-------------|
+| **Dialog** | Modal overlay with header/title/description/footer | No dialogs; forms are on dedicated pages | Quick-create modals for events/updates without navigation |
+| **Alert Dialog** | Interrupting confirmation modal (AlertDialogAction/Cancel) | No confirmation for destructive actions | Confirm delete post/photo/album, ban user, reject memory |
+| **Sheet** | Slide-in panel from any edge (left/right/top/bottom) | MobileNav is a custom absolute dropdown | Polished mobile nav with focus trapping, backdrop, swipe |
+| **Sonner** | Toast notification system (success/error/info/warning/promise) | No toast system; feedback via redirect or inline | Every CRUD action gets visible feedback |
+| **Sidebar** | Full app sidebar with SidebarProvider, collapsible modes (offcanvas/icon/none), mobile Sheet, SidebarMenu hierarchy, SidebarRail, Cmd+B toggle, cookie persistence | Static `<aside>` with hardcoded `w-56`, no mobile support | Collapsible sidebar, mobile-responsive, organized menu groups |
+| **Avatar** | Image with fallback (AvatarImage/AvatarFallback), sizes (sm/default/lg), AvatarBadge, AvatarGroup, AvatarGroupCount | Manual first-letter-in-circle (`w-8 h-8 rounded-full bg-primary/20`) | Proper image loading with fallback, consistent sizing, group display |
+| **Tooltip** | Contextual info on hover/focus, side positioning (top/right/bottom/left), TooltipProvider required | No tooltips anywhere | Dashboard metrics get explanations, icon buttons get labels |
+| **Skeleton** | Loading placeholder with shimmer animation | Manual `animate-pulse` divs in loading.tsx files | Composable SkeletonCard, SkeletonAvatar, SkeletonText |
+| **Breadcrumb** | Hierarchical nav (BreadcrumbList/Item/Link/Page/Separator/Ellipsis), dropdown integration | Manual breadcrumb on memorial page only | All nested pages get consistent breadcrumbs |
+| **Select** | Styled dropdown (SelectTrigger/Value/Content/Item/Group/Label), popper positioning, form integration | Native `<select>` elements unstyled | Consistent design across all form selects |
+| **Tabs** | Layered panels (TabsList/Trigger/Content), line variant, vertical orientation | No tabs; `<details>` for past events collapse | Events Upcoming/Past, memorial admin sections, blog tag filters |
+| **Pagination** | Page nav (PaginationContent/Item/Link/Previous/Next/Ellipsis) | Custom pagination with manual Link styling | Consistent blog pagination with ellipsis support |
+| **Progress** | Progress bar with value prop | Custom ProgressBar in ServerStatsWidget | Consistent accessible progress for CPU/Memory/Disk |
+| **Calendar** | Date picker with single/range/multiple modes, month/year dropdowns, timezone support | Native `datetime-local` input | Visual calendar picker for EventForm |
+| **Popover** | Rich floating content (PopoverTrigger/Content/Header/Title/Description) | No popovers | User profile dropdown, date picker, photo EXIF display |
+| **Drawer** | Mobile bottom sheet from Vaul library, direction prop (top/right/bottom/left) | No drawer; same layout on mobile and desktop | Responsive Dialog+Drawer pattern: Dialog on desktop, Drawer on mobile |
+| **Dropdown Menu** | Full menu system with groups, checkboxes, radio items, sub-menus, shortcuts, destructive variant | No dropdown menus | Post actions menu (edit/delete/publish), album actions, member role change |
+| **Form/Field** | Field/FieldControl/FieldLabel/FieldDescription/FieldMessage, React Hook Form + TanStack Form integration | Custom label/error pattern in Input component | Consistent form layout with validation messaging |
+| **Switch** | Toggle on/off control, sizes (sm/default), field integration | Native checkbox for "All day event" toggle | Visual toggle for all boolean controls |
+| **Item** | Versatile list item with ItemMedia/Content/Title/Description/Actions/Group | Manual list items with custom flex layouts | Consistent list patterns across dashboard |
 
-**Recommendation for our use case**: Use `@theme` (not inline) for our current setup since we define terminal values (hex colors, font stacks) rather than referencing other CSS variables. If we adopt shadcn/ui's dual light/dark CSS variable pattern, switch to `@theme inline` for the color mappings to avoid variable resolution issues in nested contexts.
+#### Category B: Medium Relevance -- Would improve specific areas
+
+| Component | Description | Where It Helps |
+|-----------|-------------|---------------|
+| **Accordion** | Collapsible sections (single/multiple mode) | Events page past events, FAQ, dashboard service groups |
+| **Command** | Command palette (CommandDialog/Input/List/Group/Item/Shortcut) | Cmd+K global search/navigation for admins |
+| **Carousel** | Content slider on Embla (CarouselContent/Item/Previous/Next, autoplay) | Featured photos on home page, memorial gallery, featured posts rotation |
+| **Scroll Area** | Cross-browser custom scrollbar | Dashboard sidebar overflow, MDX code blocks, command palette results |
+| **Navigation Menu** | Desktop nav with dropdowns (NavigationMenuTrigger/Content/Link) | Public site top navigation with dropdown sections |
+| **Data Table** | TanStack Table with sorting/filtering/pagination/row selection | Dashboard posts list, photos list, members table |
+| **Hover Card** | Preview content on hover (openDelay/closeDelay, side positioning) | Blog post previews in dashboard, member profile previews |
+| **Resizable** | Draggable panel groups (ResizablePanelGroup/Panel/Handle) | Dashboard layout customization, split-view editors |
+| **Table** | Styled table (TableHeader/Body/Row/Head/Cell/Caption/Footer) | Dashboard data tables, MDX table styling |
+| **Alert** | Callout with variants (default/destructive), AlertTitle/Description/Action | Success/error messages on form pages, system notifications |
+| **Toggle Group** | Multi-button selection (single/multiple, outline variant, spacing) | View mode toggles (grid/list), text formatting toolbar |
+| **Input OTP** | One-time password input with copy-paste, pattern validation | Email verification code entry |
+
+#### Category C: Low Relevance -- Nice-to-have or edge cases
+
+| Component | Description | Potential Use |
+|-----------|-------------|--------------|
+| **Collapsible** | Simple expand/collapse panel | Sidebar sections, settings panels |
+| **Separator** | Semantic `<hr>` with horizontal/vertical orientation | Replace manual `border-t border-border` dividers |
+| **Toggle** | Two-state button (on/off) | View mode preferences, formatting controls |
+| **Aspect Ratio** | Container maintaining aspect ratio | Already using `aspect-square`, `aspect-[16/9]` utilities |
+| **Context Menu** | Right-click menu with checkboxes, radio items, sub-menus | Photo right-click actions in gallery |
+| **Menubar** | Desktop application menu bar | Not typical for family website |
+| **Label** | Accessible label element | Already handled by Input component |
+| **Radio Group** | Radio button selection with choice card pattern | Form selections (post visibility, event type) |
+| **Checkbox** | Checkbox with indeterminate state | Bulk select in photo management, task lists |
+| **Textarea** | Styled textarea | Already have textarea styling in forms |
+| **Slider** | Range input with single/range/multi-thumb modes | Photo filters, settings controls |
+| **Badge** | Variants: default/secondary/destructive/outline/ghost/link | Already have Badge; shadcn version has more variants |
+| **Button** | Variants: default/outline/secondary/ghost/destructive/link, sizes: xs/sm/default/lg/icon-* | Already have Button; shadcn version has more variants and sizes |
+| **Card** | Card/CardHeader/CardTitle/CardDescription/CardAction/CardContent/CardFooter, size="sm" | Already have Card; shadcn version has more subcomponents |
 
 ---
 
-## Part 2: shadcn/ui -- Component-by-Component Analysis
+## Section 2: Tailwind CSS v4 Complete Feature Audit
 
-### Dialog
+### 2.1 Theme System (@theme)
 
-**What**: Modal overlay for forms, confirmations, and focused content. Composed of DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose.
+**What v4 provides**: The `@theme` directive replaces `tailwind.config.js`. Every `--namespace-name` variable registered in `@theme` automatically creates corresponding utility classes. The namespace determines which utilities are generated.
 
-**Our current approach**: No dialog component. Forms are inline on dedicated pages (PostForm, EventForm). The lightbox is a custom full-screen overlay, not a dialog.
+**Complete namespace reference**:
 
-**Enhancement**: Replace inline forms with Dialog-based modals for quick actions. "New Event" and "New Update" could be created in dialogs without page navigation. The MemberActions component (role changes, banning) would benefit from confirmation dialogs. Memorial memory moderation (approve/reject) needs a preview dialog.
+| Namespace | Utilities Generated | Our Usage |
+|-----------|-------------------|-----------|
+| `--color-*` | `bg-*`, `text-*`, `border-*`, `ring-*`, `fill-*`, `stroke-*`, `shadow-*`, etc. | **Used**: 7 colors defined. Missing: chart colors, sidebar colors, destructive, secondary, muted foregrounds |
+| `--font-*` | `font-*` | **Used**: serif, sans, mono |
+| `--text-*` | `text-*` (font-size) | Not customized (using defaults) |
+| `--font-weight-*` | `font-*` (weight) | Not customized |
+| `--tracking-*` | `tracking-*` | Not customized |
+| `--leading-*` | `leading-*` | Not customized |
+| `--breakpoint-*` | `sm:`, `md:`, `lg:`, `xl:`, `2xl:` | Not customized |
+| `--container-*` | `@sm:`, `@md:`, `@lg:`, etc. | **Not used at all** |
+| `--spacing` | `px-*`, `py-*`, `m-*`, `w-*`, `h-*`, `gap-*`, etc. | Not customized (0.25rem default) |
+| `--radius-*` | `rounded-*` | **Not defined** -- hardcoding `rounded-xl`, `rounded-lg`, `rounded-md` throughout |
+| `--shadow-*` | `shadow-*` | **Not defined** -- not using shadows on cards/surfaces |
+| `--inset-shadow-*` | `inset-shadow-*` | Not used |
+| `--drop-shadow-*` | `drop-shadow-*` | Not used |
+| `--blur-*` | `blur-*` | Not used |
+| `--perspective-*` | `perspective-*` | Not used |
+| `--aspect-*` | `aspect-*` | Not customized (using built-in video/square) |
+| `--ease-*` | `ease-*` | **Not defined** -- using `transition-colors duration-200` manually |
+| `--animate-*` | `animate-*` | **Not defined** -- only using default `animate-spin`, `animate-pulse` |
 
-**Where**: Dashboard quick actions, member management, memorial moderation, photo delete confirmations.
+**What we are missing**:
 
-**Priority**: High
+1. **No radius tokens**: We hardcode `rounded-xl` on cards, `rounded-lg` on inputs/buttons, `rounded-md` on small elements, `rounded-full` on badges/avatars. A single `--radius` base with derived scale would let us adjust the entire design's roundness from one value.
+
+2. **No shadow tokens**: Cards and surfaces use no shadows. Custom navy-tinted shadows (e.g., `--shadow-card: 0 4px 12px -2px oklch(0.12 0.02 250 / 0.3)`) would add depth appropriate to the dark theme.
+
+3. **No easing tokens**: We use Tailwind's default `cubic-bezier(0.4, 0, 0.2, 1)` everywhere. Defining `--ease-smooth`, `--ease-snappy`, `--ease-bounce` would standardize animation feel.
+
+4. **No animation tokens**: Only `animate-spin` and `animate-pulse` from defaults. We need `fade-in`, `fade-in-up`, `scale-in`, `slide-in-right` for UI transitions.
+
+5. **Colors not in OKLCH**: Our colors are hex. OKLCH provides wider P3 gamut (richer gold accent on modern displays) and perceptually uniform lightness manipulation.
+
+6. **No chart colors**: shadcn/ui expects `chart-1` through `chart-5` tokens. We have none, which matters for the Recharts integration.
+
+7. **No sidebar-specific colors**: shadcn's Sidebar component expects `sidebar`, `sidebar-foreground`, `sidebar-primary`, etc. tokens.
+
+### 2.2 Container Queries (Built-in, No Plugin)
+
+Container queries are first-class in v4. Mark a parent with `@container`, then use `@sm:`, `@md:`, `@lg:`, etc. on children.
+
+**Default container breakpoints**:
+
+| Variant | Width |
+|---------|-------|
+| `@3xs` | 16rem (256px) |
+| `@2xs` | 18rem (288px) |
+| `@xs` | 20rem (320px) |
+| `@sm` | 24rem (384px) |
+| `@md` | 28rem (448px) |
+| `@lg` | 32rem (512px) |
+| `@xl` | 36rem (576px) |
+| `@2xl` | 42rem (672px) |
+| `@3xl` | 48rem (768px) |
+| `@4xl` | 56rem (896px) |
+| `@5xl` | 64rem (1024px) |
+
+Also supports: `@max-*` variants, range queries (`@sm:@max-md:`), named containers (`@container/main` + `@sm/main:`), and container query length units (`w-[50cqw]`).
+
+**Where container queries would help in our project**:
+
+1. **Dashboard widget grid**: `MetricCard`, `WidgetCard`, `ClusterMetrics`, `UpsStatusWidget` all use viewport breakpoints (`md:grid-cols-3`). With `@container` on the grid parent, widgets would adapt to their container width, working correctly whether placed in a 1-column, 2-column, or 4-column layout.
+
+2. **MediaStatsWidget**: The nested `grid grid-cols-1 md:grid-cols-3` for Sonarr/Radarr/Jellyfin is already inside a responsive parent grid. Container queries would prevent layout breakage when the parent shrinks.
+
+3. **PostCard / FeaturedPost**: These cards appear in varying column counts. Container queries would let the card adjust image aspect ratios, text sizes, and metadata visibility based on available width.
+
+4. **UpdateCard image grid**: Currently switches between `grid-cols-1`, `grid-cols-2`, `grid-cols-3` using viewport breakpoints. Should use container queries.
+
+5. **Public Sidebar**: At a fixed width, its internal components could use `@container` for consistent behavior if the sidebar width ever changes.
+
+### 2.3 New Variants (v4 + v4.1)
+
+**v4 variants not yet used in our project**:
+
+| Variant | CSS | Where to use |
+|---------|-----|-------------|
+| `starting:` | `@starting-style` | Lightbox entrance, mobile nav appearance, toast entrance |
+| `not-*` | `:not(...)` | `not-last:border-b` in list items, `not-hover:opacity-75` |
+| `nth-*` | `:nth-child(...)` | Memorial photo gallery span logic, alternating card styles |
+| `in-*` | Parent state without `group` class | Nested hover effects without `group` markers |
+| `open:` | `:popover-open, [open]` | Popover/dialog/details open states |
+| `inert:` | `[inert]` | Dim content behind modals |
+| `data-*` | `[data-...]` | `data-current:opacity-100` for nav active states |
+| `motion-safe:` | `prefers-reduced-motion: no-preference` | Guard all animations |
+| `motion-reduce:` | `prefers-reduced-motion: reduce` | Reduced motion alternatives |
+| `contrast-more:` | `prefers-contrast: more` | High contrast mode support |
+| `pointer-fine:` | `pointer: fine` | Mouse-specific interactions |
+| `pointer-coarse:` | `pointer: coarse` | Touch-specific hit targets |
+| `user-valid:` | `:user-valid` (v4.1) | Show valid state only after user interaction |
+| `user-invalid:` | `:user-invalid` (v4.1) | Show invalid state only after user interaction |
+| `details-content:` | `::details-content` (v4.1) | Style `<details>` content section |
+| `noscript:` | `scripting: none` (v4.1) | Fallback for no-JS users |
+| `forced-colors:` | `forced-colors: active` | Windows high-contrast mode support |
+| `*` (children) | `& > *` | Style all direct children |
+| `**` (descendants) | `& *` | Style all descendants |
+
+### 2.4 New Utilities (v4 + v4.1)
+
+**v4 utilities we should adopt**:
+
+| Utility | CSS | Impact |
+|---------|-----|--------|
+| `size-*` | `width` + `height` | Replace all `w-X h-X` pairs (15+ instances: avatars, icons, status dots) |
+| `color-scheme-dark` | `color-scheme: dark` | Fix light scrollbars in dark theme |
+| `field-sizing-content` | `field-sizing: content` | Auto-resize textareas without JS |
+| `bg-linear-*` | `linear-gradient(angle, ...)` | Replace `bg-gradient-to-*` with angle-based gradients |
+| `bg-radial-*` | `radial-gradient(...)` | Simplified radial gradients for hero/memorial |
+| `bg-conic-*` | `conic-gradient(...)` | New gradient type for decorative elements |
+| `inset-shadow-*` | `box-shadow: inset ...` | Depth treatment for card surfaces |
+| `inset-ring-*` | Inset ring utilities | Refined focus states on inputs |
+| `perspective-*` | `perspective: ...` | 3D photo hover effects |
+| `rotate-x-*` / `rotate-y-*` | 3D rotation | Card flip animations, photo tilt effects |
+| `translate-z-*` | 3D translation | Depth effects in grids |
+| `transform-3d` | `transform-style: preserve-3d` | Enable 3D child transforms |
+
+**v4.1 utilities we should adopt**:
+
+| Utility | CSS | Impact |
+|---------|-----|--------|
+| `text-shadow-*` | `text-shadow: ...` | Hero title depth, heading visual weight |
+| `text-shadow-<color>` | Colored text shadows | Gold text shadow on accent text |
+| `mask-*` | CSS mask image | Photo fade effects, gradient overlays on images |
+| `wrap-break-word` / `wrap-anywhere` | `overflow-wrap` | Long URLs in blog posts, email addresses |
+| `drop-shadow-<color>` | Colored drop shadows | Colored drop shadows on SVG icons |
+| `pointer-fine:` / `pointer-coarse:` | Device pointer type | Touch-optimized targets |
+| `items-baseline-last` | `align-items: last baseline` | Grid alignment for mixed-height content |
+| `justify-center-safe` | Safe center alignment | Prevent content clipping when overflowing |
+
+### 2.5 Gradient System
+
+v4 expanded gradients significantly:
+
+**Linear gradients**: `bg-linear-to-r` (directional) and `bg-linear-45` (angle-based) with OKLCH as default interpolation space.
+
+**Radial gradients**: `bg-radial` with position support (`bg-radial-[at_25%_25%]`).
+
+**Conic gradients**: `bg-conic-180` with hue rotation.
+
+**Interpolation modifiers**: Append `/oklch`, `/srgb`, `/hsl` or `/longer`, `/shorter`, `/increasing`, `/decreasing` to control color blending.
+
+**Impact on our project**: The memorial page uses `bg-gradient-to-b` and `bg-[radial-gradient(...)]`. The FeaturedPost and PostCard use `bg-gradient-to-br from-primary/10 to-accent/10` for placeholder backgrounds. Switching to `bg-linear-to-br/oklch from-primary/10 to-accent/10` would produce more vivid navy-to-gold gradients. Conic gradients could create decorative elements on the hero section.
+
+### 2.6 Filter and Backdrop Filter System
+
+All filters are available as utilities with customizable theme values:
+
+**Standard filters**: `blur-*`, `brightness-*`, `contrast-*`, `drop-shadow-*`, `grayscale-*`, `hue-rotate-*`, `saturate-*`, `sepia-*`
+
+**Backdrop filters**: `backdrop-blur-*`, `backdrop-brightness-*`, `backdrop-contrast-*`, `backdrop-grayscale-*`, etc.
+
+**Impact on our project**:
+- Photo grid: `hover:brightness-110` or `hover:saturate-125` for interactive photo effects
+- Lightbox backdrop: `backdrop-blur-sm` on the overlay for a frosted glass effect
+- Memorial page: `sepia` or `grayscale` filters on historical photos
+- Dashboard: `backdrop-blur-md` on overlay dialogs for depth
+
+### 2.7 Animation System
+
+v4 allows defining `@keyframes` directly inside `@theme`:
+
+```css
+@theme {
+  --animate-fade-in: fade-in 0.3s ease-out;
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+```
+
+Then use with `animate-fade-in`, `motion-safe:animate-fade-in`, `md:animate-fade-in`, etc.
+
+Combined with the `starting:` variant (for `@starting-style`), we can create pure CSS entrance animations without JavaScript:
+```html
+<div popover class="transition-opacity starting:open:opacity-0 open:opacity-100">
+```
+
+And `transition-discrete` enables animating `display: none` <-> `display: block` transitions, useful for the lightbox and mobile nav.
+
+### 2.8 Text Shadow (v4.1)
+
+New text-shadow utilities with 5 sizes and color support:
+
+```html
+<h1 class="text-shadow-lg text-shadow-accent/20">The Hudson Family</h1>
+```
+
+Adds visual depth to the Hero title and section headings.
+
+### 2.9 Mask Utilities (v4.1)
+
+Composable CSS masking for gradient fades on images:
+
+```html
+<img class="mask-b-from-50%" /> <!-- Fade to transparent at bottom from 50% -->
+<img class="mask-radial-from-transparent mask-radial-to-black" /> <!-- Radial fade -->
+```
+
+Perfect for photo grid hover effects, hero background images, and memorial section transitions.
+
+### 2.10 @theme inline vs @theme
+
+| Directive | When to Use |
+|-----------|------------|
+| `@theme` | Terminal values: hex colors, font stacks, spacing values. Creates CSS custom properties on `:root`. |
+| `@theme inline` | Values referencing other CSS variables: `var(--background)`, `var(--radius)`. Resolves at build time to avoid cascade issues. |
+| `@theme static` | Force CSS variable output even if unused (for JavaScript consumption). |
+
+**For our project**: Use `@theme` for our direct color/font values, and `@theme inline` for the shadcn bridge variables that reference `:root`/`.dark` CSS properties.
+
+### 2.11 Color-Scheme Utility
+
+```html
+<html class="dark color-scheme-dark">
+```
+
+This single class tells the browser to render native UI elements (scrollbars, form controls, text selection) in dark mode. Without it, our dark theme gets jarring light-colored scrollbars.
+
+### 2.12 Field-Sizing Utility
+
+```html
+<textarea class="field-sizing-content">
+```
+
+Auto-resizes the textarea to fit its content without JavaScript. Applies to our PostForm content textarea, EventForm description, MemoryForm text, and UpdateForm content.
+
+### 2.13 Scroll Snap
+
+Built-in scroll snap utilities for smooth carousel-like scrolling:
+
+```html
+<div class="snap-x snap-mandatory overflow-x-auto flex gap-4">
+  <div class="snap-center shrink-0 w-80">...</div>
+  <div class="snap-center shrink-0 w-80">...</div>
+</div>
+```
+
+Types: `snap-x`, `snap-y`, `snap-both`. Strictness: `snap-mandatory`, `snap-proximity`. Alignment: `snap-start`, `snap-center`, `snap-end`, `snap-align-none`.
+
+**Impact**: Photo album horizontal scroll, memorial photo gallery, featured posts carousel -- all without a JS carousel library.
 
 ---
 
-### Sheet
+## Section 3: Complete Enhancement Plan
 
-**What**: Side panel that slides in from any edge (left/right/top/bottom). Extends Dialog for supplementary content.
+### Phase 1: Foundation (Theme + Quick Wins)
 
-**Our current approach**: Mobile nav is a custom absolute-positioned dropdown that appears on click. The dashboard sidebar is a static `<aside>`.
+These are non-breaking changes that establish the design token foundation and fix immediate issues.
 
-**Enhancement**: Replace MobileNav with a Sheet sliding from the right (or left) for a polished mobile experience with proper focus trapping, backdrop, and swipe-to-close. The dashboard sidebar could become a Sheet on mobile for responsive behavior.
+**Task 1: Add `color-scheme-dark` to html element**
+- File: `src/app/layout.tsx`
+- Change: Add `color-scheme-dark` class to `<html>` tag
+- Effort: Trivial (1 line)
+- Impact: Fixes light scrollbars across entire app
 
-**Where**: Mobile navigation, dashboard sidebar on mobile, photo details panel, event details.
+**Task 2: Convert hex colors to OKLCH in globals.css**
+- File: `src/styles/globals.css`
+- Change: Convert all 7 hex color values to OKLCH notation
+- Values:
+  - `#171d2a` -> `oklch(0.17 0.02 256)` (bg)
+  - `#1a2232` -> `oklch(0.19 0.02 254)` (surface)
+  - `#2a3345` -> `oklch(0.27 0.03 252)` (border)
+  - `#5b8dd9` -> `oklch(0.63 0.13 255)` (primary)
+  - `#d4ad6a` -> `oklch(0.78 0.11 80)` (accent)
+  - `#f0e8d8` -> `oklch(0.94 0.02 85)` (text)
+  - `#7a88a0` -> `oklch(0.61 0.04 250)` (text-muted)
+  - `#5a6680` -> `oklch(0.48 0.04 252)` (text-dim)
+- Effort: Low (15 min)
+- Impact: Richer colors on P3 displays
 
-**Priority**: High
+**Task 3: Add radius tokens to @theme**
+- File: `src/styles/globals.css`
+- Change: Add `--radius` base and derived scale matching shadcn/ui convention
+- New tokens: `--radius: 0.625rem` with derived `--radius-sm` through `--radius-4xl` via `@theme inline`
+- Effort: Low (15 min)
+- Impact: Single-value radius control for entire design
 
----
+**Task 4: Add shadow tokens to @theme**
+- File: `src/styles/globals.css`
+- Change: Define navy-tinted custom shadows
+- New tokens: `--shadow-card`, `--shadow-elevated`, `--shadow-subtle`
+- Effort: Low (15 min)
+- Impact: Depth treatment for cards and surfaces
 
-### Sonner (Toast)
+**Task 5: Add easing tokens to @theme**
+- File: `src/styles/globals.css`
+- Change: Define transition timing functions
+- New tokens: `--ease-smooth: cubic-bezier(0.4, 0, 0.2, 1)`, `--ease-snappy: cubic-bezier(0.2, 0, 0, 1)`, `--ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1)`
+- Effort: Low (10 min)
+- Impact: Standardized animation feel
 
-**What**: Opinionated toast notification system with success/error/info/warning/promise variants.
+**Task 6: Add animation keyframes to @theme**
+- File: `src/styles/globals.css`
+- Change: Define entrance animations
+- New animations:
+  - `--animate-fade-in`: opacity 0 -> 1 (0.3s ease-out)
+  - `--animate-fade-in-up`: opacity + translateY(8px) -> 0 (0.4s ease-out)
+  - `--animate-scale-in`: opacity + scale(0.95) -> 1 (0.2s ease-out)
+  - `--animate-slide-in-right`: translateX(100%) -> 0 (0.3s ease-smooth)
+  - `--animate-slide-in-left`: translateX(-100%) -> 0 (0.3s ease-smooth)
+- Effort: Low (20 min)
+- Impact: CSS-only entrance animations for UI elements
 
-**Our current approach**: No toast system. Form errors display inline. Success feedback is typically a redirect. Upload results show inline success/error counts.
+**Task 7: Add chart and sidebar color tokens**
+- File: `src/styles/globals.css`
+- Change: Define `chart-1` through `chart-5` and all `sidebar-*` tokens in `:root`/`.dark` with `@theme inline` bridge
+- Effort: Low (20 min)
+- Impact: Enables shadcn chart and sidebar components
 
-**Enhancement**: Add toast notifications for all user actions: post created/updated, photo uploaded, event saved, memory submitted, member role changed, invite sent. Especially valuable for the photo upload flow (per-file success/error toasts). Promise toasts for async operations like photo processing.
+**Task 8: Set up shadcn/ui theme bridge with @theme inline**
+- File: `src/styles/globals.css`
+- Change: Add `@theme inline` block mapping our tokens to shadcn token names (background, foreground, card, primary, etc.) and the `@layer base` defaults
+- Effort: Low (30 min)
+- Impact: All shadcn components work with our navy-gold theme
 
-**Where**: All CRUD operations across dashboard, photo uploads, memory submissions, auth actions.
+**Task 9: Replace all `w-X h-X` pairs with `size-X`**
+- Files: Multiple (15+ instances across components)
+- Locations: avatar circles (`w-8 h-8` -> `size-8`), icon SVGs (`w-4 h-4` -> `size-4`, `w-5 h-5` -> `size-5`), status dots (`w-2 h-2` -> `size-2`), weather icon (`w-10 h-10` -> `size-10`), etc.
+- Effort: Low (20 min)
+- Impact: Cleaner code
 
-**Priority**: High
+**Task 10: Add `motion-safe:` guards to animations**
+- Files: `src/components/ui/button.tsx` (spinner), all loading.tsx files (pulse skeletons)
+- Change: `animate-spin` -> `motion-safe:animate-spin`, `animate-pulse` -> `motion-safe:animate-pulse`
+- Effort: Trivial (10 min)
+- Impact: Accessibility compliance
 
----
+**Task 11: Add `field-sizing-content` to textareas**
+- Files: `src/app/(dashboard)/dashboard/posts/post-form.tsx`, `src/app/(dashboard)/dashboard/events/event-form.tsx`, `src/app/(dashboard)/dashboard/updates/new/update-form.tsx`, `src/app/(public)/richard-hudson-sr/memory-form.tsx`
+- Change: Add `field-sizing-content` class to all `<textarea>` elements
+- Effort: Trivial (10 min)
+- Impact: Auto-resizing textareas without JS
 
-### Tabs
-
-**What**: Layered content panels shown one at a time. TabsList, TabsTrigger, TabsContent.
-
-**Our current approach**: No tabs component. The memorial admin page has separate links for memories/media/content. The dashboard overview shows all stats in a single scroll.
-
-**Enhancement**: The memorial admin could use tabs for Memories/Media/Content instead of separate pages. The events page could use tabs for Upcoming/Past instead of the `<details>` collapse. Blog page tag filters could be presented as a scrollable tab bar. The dashboard could tab between Overview/Services/Bookmarks.
-
-**Where**: Memorial admin, events page, blog tag filters, dashboard sections, user settings.
-
-**Priority**: Medium
-
----
-
-### Accordion
-
-**What**: Collapsible content sections. AccordionItem, AccordionTrigger, AccordionContent. Single or multiple open modes.
-
-**Our current approach**: Past events use a native `<details>` element for collapse. No other collapsible content.
-
-**Enhancement**: Replace `<details>` on events page with a styled Accordion. FAQ sections could use Accordion. Blog post sidebar (if added) could collapse sections. Dashboard service groups could be collapsible.
-
-**Where**: Events page (past events), potential FAQ page, dashboard service groups.
-
-**Priority**: Low
-
----
-
-### Avatar
-
-**What**: User image with fallback. Avatar, AvatarImage, AvatarFallback. Supports badges, groups, and sizes.
-
-**Our current approach**: Manual avatar placeholder using first-letter-in-circle pattern (UpdateCard, memorial memories). No actual image support. Hardcoded `w-8 h-8 rounded-full bg-primary/20` styling.
-
-**Enhancement**: Replace all manual avatar implementations with proper Avatar component. Adds image loading with graceful fallback, consistent sizing (sm/md/lg), AvatarGroup for showing multiple family members, and status badges. The members page user list would benefit from avatars.
-
-**Where**: UpdateCard, memorial memories, members list, dashboard user info, nav bar user avatar.
-
-**Priority**: High
-
----
-
-### Tooltip
-
-**What**: Contextual info on hover/focus. TooltipProvider, Tooltip, TooltipTrigger, TooltipContent.
-
-**Our current approach**: No tooltips anywhere. Dashboard metric labels, icons, and abbreviated text have no hover explanations.
-
-**Enhancement**: Add tooltips to dashboard metric cards (explain what CPU Req%, Memory% mean), service monitor status dots (explain up/down/unknown), icon-only buttons, truncated text, and nav icons. The admin dashboard especially needs tooltips for the dense data displays.
-
-**Where**: Admin dashboard (all metrics), service monitor, icon buttons, truncated post/event titles.
-
-**Priority**: Medium
-
----
-
-### Skeleton
-
-**What**: Placeholder loading animation component. Single utility component.
-
-**Our current approach**: Custom skeleton loading in `loading.tsx` files using manual `animate-pulse` divs with hardcoded heights and widths.
-
-**Enhancement**: Replace manual skeleton markup with composable Skeleton components. More consistent loading states. Can create reusable skeleton variants (SkeletonCard, SkeletonAvatar, SkeletonText) that match the actual content shape.
-
-**Where**: All loading.tsx files (public + dashboard), any Suspense boundary.
-
-**Priority**: Medium
+**Phase 1 total: 11 tasks, ~3 hours**
 
 ---
 
-### Sidebar (shadcn)
+### Phase 2: Core Components (shadcn/ui Installation)
 
-**What**: Full-featured application sidebar with SidebarProvider, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, collapsible support, rail, and responsive mobile behavior.
+Install and integrate the highest-impact shadcn/ui components.
 
-**Our current approach**: Static `<aside>` in dashboard layout with hardcoded `w-56` width, simple `<a>` links, and no mobile responsiveness. The sidebar does not collapse and is not accessible on mobile.
+**Task 12: Initialize shadcn/ui**
+- Run: `bunx shadcn@latest init`
+- Creates: `components.json`, updates `globals.css` (merge with existing), installs `radix-ui` dependency
+- Effort: Low (15 min)
+- Impact: Enables all subsequent component additions
 
-**Enhancement**: Replace the dashboard sidebar with shadcn's Sidebar component. Gains: collapsible to icon-only mode, mobile-responsive (auto-hides with Sheet on mobile), SidebarRail for resize, organized menu groups with icons, active state management, user profile footer.
+**Task 13: Install Sonner toast notifications**
+- Run: `bunx shadcn@latest add sonner`
+- File changes: `src/app/layout.tsx` (add `<Toaster />`), all Server Actions and form handlers (add `toast()` calls)
+- Coverage: Post create/update/delete, photo upload success/failure, album create/update/delete, event create/update/delete, update create/delete, memory submit/approve/reject, member invite/role-change/ban, invite validation
+- Effort: Medium (2-3 hours -- many touch points)
+- Impact: Every user action gets visible feedback
 
-**Where**: Dashboard layout (primary use), potentially admin layout.
+**Task 14: Install and integrate Avatar component**
+- Run: `bunx shadcn@latest add avatar`
+- Files: `src/components/public/update-card.tsx`, `src/app/(dashboard)/dashboard/members/page.tsx`, `src/app/(public)/richard-hudson-sr/page.tsx` (memories section), dashboard nav user display
+- Change: Replace manual `<div className="w-8 h-8 rounded-full bg-primary/20 ...">R</div>` with `<Avatar><AvatarFallback>R</AvatarFallback></Avatar>`
+- Effort: Low (1-2 hours)
+- Impact: Consistent avatars with future image support
 
-**Priority**: High
+**Task 15: Install and integrate Alert Dialog for destructive actions**
+- Run: `bunx shadcn@latest add alert-dialog`
+- Files: Dashboard delete actions for posts, photos, albums, events, updates; `src/app/(dashboard)/dashboard/members/member-actions.tsx` (ban), `src/app/(dashboard)/dashboard/memorial/memories/memory-actions.tsx` (reject)
+- Change: Wrap every delete/ban/reject action in `<AlertDialog><AlertDialogTrigger>...</AlertDialogTrigger><AlertDialogContent>...</AlertDialogContent></AlertDialog>`
+- Effort: Medium (2-3 hours)
+- Impact: Prevents accidental data loss
 
----
+**Task 16: Install and integrate Sheet for mobile navigation**
+- Run: `bunx shadcn@latest add sheet`
+- File: `src/components/public/mobile-nav.tsx`
+- Change: Replace the entire custom hamburger dropdown with Sheet component sliding from left
+- Gains: Proper focus trapping, backdrop overlay, animation, swipe-to-close, body scroll lock
+- Effort: Low (1-2 hours)
+- Impact: Polished mobile navigation
 
-### Breadcrumb
+**Task 17: Install and integrate Tooltip for dashboard metrics**
+- Run: `bunx shadcn@latest add tooltip`
+- File: `src/app/layout.tsx` (add `<TooltipProvider>`), `src/components/dashboard/metric-card.tsx`, `src/components/dashboard/service-monitor.tsx`, `src/components/dashboard/cluster-metrics.tsx`
+- Change: Wrap metric labels and status dots with tooltips explaining what the values mean
+- Effort: Low (1-2 hours)
+- Impact: Dashboard becomes self-documenting
 
-**What**: Hierarchical navigation path. BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator, BreadcrumbEllipsis.
+**Task 18: Install and replace loading skeletons with Skeleton component**
+- Run: `bunx shadcn@latest add skeleton`
+- Files: `src/app/(public)/loading.tsx`, `src/app/(dashboard)/loading.tsx`
+- Change: Replace manual `animate-pulse` placeholder divs with composable `<Skeleton>` components
+- Effort: Low (1-2 hours)
+- Impact: Consistent loading states
 
-**Our current approach**: Manual breadcrumb on the memorial page only, built with plain HTML `<ol>` and schema.org markup.
+**Task 19: Install and integrate Select component**
+- Run: `bunx shadcn@latest add select`
+- Files: `src/app/(dashboard)/dashboard/posts/post-form.tsx` (status), `src/app/(dashboard)/dashboard/events/event-form.tsx` (visibility), `src/app/(dashboard)/dashboard/photos/upload/upload-form.tsx` (album)
+- Change: Replace native `<select>` elements with `<Select><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>...</SelectContent></Select>`
+- Effort: Medium (2 hours)
+- Impact: Visual consistency across forms
 
-**Enhancement**: Replace the custom breadcrumb with shadcn Breadcrumb component. Extend to all nested pages: blog post detail, album detail, dashboard CRUD pages (Dashboard > Posts > Edit "Title"), event detail. Consistent styling and accessibility.
+**Task 20: Install and integrate Switch component**
+- Run: `bunx shadcn@latest add switch`
+- File: `src/app/(dashboard)/dashboard/events/event-form.tsx`
+- Change: Replace native checkbox for "All day event" with Switch toggle
+- Effort: Low (30 min)
+- Impact: Better boolean toggle UX
 
-**Where**: Memorial page (replace existing), blog post pages, album detail, all dashboard sub-pages.
-
-**Priority**: Medium
-
----
-
-### Command
-
-**What**: Command palette with search, grouping, and keyboard shortcuts. Built on cmdk library.
-
-**Our current approach**: No command palette or global search.
-
-**Enhancement**: Add a Cmd+K command palette for power-user navigation across the site. Commands: navigate to any page, search posts/events/photos, quick actions (new post, upload photo, new event), dashboard shortcuts. This would be a premium UX feature for family admins.
-
-**Where**: Global (available from any page), especially valuable in the dashboard.
-
-**Priority**: Low (polish feature)
-
----
-
-### Select
-
-**What**: Styled dropdown select with grouping, search, and custom rendering. Replaces native `<select>`.
-
-**Our current approach**: Native `<select>` elements for post status, event visibility, album picker (upload form). Unstyled beyond border/bg matching.
-
-**Enhancement**: Replace all native `<select>` elements with shadcn Select. Consistent styling with the design system. Supports grouping (e.g., group albums by year), custom item rendering, and keyboard navigation.
-
-**Where**: PostForm (status select), EventForm (visibility select), UploadForm (album select), members page (role change).
-
-**Priority**: Medium
-
----
-
-### Switch
-
-**What**: Toggle between on/off states. Replaces checkbox for boolean toggles.
-
-**Our current approach**: Native checkbox for "All day event" toggle in EventForm. Manual styling.
-
-**Enhancement**: Replace the "All day event" checkbox with a Switch component. Better visual clarity for boolean toggles. Could also use for: event visibility toggle, post publish/draft toggle, member ban/unban toggle.
-
-**Where**: EventForm (all-day toggle), post publish toggle, notification preferences.
-
-**Priority**: Low
-
----
-
-### Carousel
-
-**What**: Content slider with swipe gestures and navigation. Built on Embla Carousel.
-
-**Our current approach**: Photo grid is a static grid layout. No carousel or slider anywhere.
-
-**Enhancement**: Add carousel for featured photos on the home page sidebar. Album pages could offer a carousel view mode alongside the grid. The memorial page photo gallery could offer a horizontal scroll carousel. FeaturedPost could cycle through multiple featured posts.
-
-**Where**: Home page (featured content), album alternate view, memorial photos.
-
-**Priority**: Low
+**Phase 2 total: 9 tasks, ~12-16 hours**
 
 ---
 
-### Progress
+### Phase 3: Dashboard Overhaul
 
-**What**: Progress bar showing completion percentage.
+**Task 21: Install and integrate shadcn Sidebar for dashboard**
+- Run: `bunx shadcn@latest add sidebar`
+- Files: `src/app/(dashboard)/layout.tsx` (complete rewrite), new `src/components/dashboard/app-sidebar.tsx`
+- Change: Replace static `<aside className="w-56">` with full SidebarProvider + Sidebar + SidebarContent + SidebarMenu hierarchy
+- Features gained: Collapsible to icon-only mode, mobile-responsive (auto Sheet on mobile), SidebarRail for resize, organized menu groups with icons, active state via `isActive`, user profile in SidebarFooter, Cmd+B keyboard shortcut
+- Effort: High (4-6 hours)
+- Impact: Dashboard becomes mobile-usable, sidebar is collapsible
 
-**Our current approach**: Custom ProgressBar component in ServerStatsWidget using manual div-width styling.
+**Task 22: Install and integrate Breadcrumb for dashboard navigation**
+- Run: `bunx shadcn@latest add breadcrumb`
+- Files: All dashboard sub-pages (posts/[id], photos/upload, albums/[id], events/[id], memorial/*)
+- Change: Add `<Breadcrumb><BreadcrumbList>...</BreadcrumbList></Breadcrumb>` to all nested dashboard pages showing path (Dashboard > Posts > Edit "Title")
+- Also replace custom breadcrumb on memorial page
+- Effort: Medium (2-3 hours)
+- Impact: Clear navigation context everywhere
 
-**Enhancement**: Replace the custom ProgressBar with shadcn Progress component. More consistent, accessible, and supports labels. Could also use for photo upload progress (show per-file progress), blog writing progress, or photo processing status.
+**Task 23: Install and integrate Dialog for dashboard quick actions**
+- Run: `bunx shadcn@latest add dialog`
+- File: `src/app/(dashboard)/dashboard/page.tsx`
+- Change: Add "New Event" and "New Update" buttons that open DialogContent with inline forms, avoiding page navigation for quick content creation
+- Effort: Medium (3-4 hours)
+- Impact: Faster dashboard workflow
 
-**Where**: Admin dashboard (CPU/Memory/Disk bars), photo upload progress.
+**Task 24: Install and integrate Dropdown Menu for resource actions**
+- Run: `bunx shadcn@latest add dropdown-menu`
+- Files: Dashboard posts list, photos list, albums list, events list, updates list, members list
+- Change: Add three-dot menu on each row with actions (Edit, Delete, Publish/Unpublish for posts; Download, Delete for photos; etc.)
+- Effort: Medium (3-4 hours)
+- Impact: Consistent action patterns across dashboard
 
-**Priority**: Low
+**Task 25: Install and integrate Tabs for dashboard sections**
+- Run: `bunx shadcn@latest add tabs`
+- Files: `src/app/(dashboard)/dashboard/memorial/page.tsx`, `src/app/(public)/events/page.tsx`
+- Change: Memorial admin uses Tabs for Memories/Media/Content instead of separate pages; Events page uses Tabs for Upcoming/Past instead of `<details>` collapse
+- Effort: Low (2 hours)
+- Impact: Cleaner section navigation
 
----
+**Task 26: Install Progress and replace custom ProgressBar**
+- Run: `bunx shadcn@latest add progress`
+- File: `src/components/dashboard/server-stats.tsx`
+- Change: Replace custom `ProgressBar` component with shadcn `<Progress value={percent} />`
+- Effort: Low (30 min)
+- Impact: Accessible progress bars with consistent styling
 
-### Alert Dialog
+**Task 27: Adopt container queries for dashboard widgets**
+- Files: `src/components/dashboard/cluster-metrics.tsx`, `src/components/dashboard/media-stats.tsx`, `src/components/dashboard/server-stats.tsx`, `src/app/(admin)/admin/admin-client.tsx`
+- Change: Add `@container` to widget grid parents, replace `md:grid-cols-3` with `@md:grid-cols-3` (or appropriate container breakpoint) on child layouts
+- Effort: Medium (2-3 hours)
+- Impact: Widgets adapt to container width, not viewport
 
-**What**: Modal for critical confirmations that interrupts workflow. AlertDialogAction, AlertDialogCancel.
+**Task 28: Install and integrate charts for dashboard metrics**
+- Run: `bunx shadcn@latest add chart`
+- Files: New components in `src/components/dashboard/`, admin dashboard page
+- Change: Add area/line charts for CPU/Memory over time (from Prometheus), radial chart for disk usage, bar chart for media library growth
+- Requires: API endpoint returning time-series data from Prometheus
+- Effort: High (6-8 hours including API work)
+- Impact: Visual data representation instead of raw numbers
 
-**Our current approach**: No confirmation dialogs. Destructive actions (delete post, ban user, reject memory) happen immediately or redirect.
-
-**Enhancement**: Add AlertDialog for all destructive actions: delete post, delete photo, delete album, delete event, ban member, reject memory. The destructive variant provides clear visual weight for irreversible actions.
-
-**Where**: All delete/destructive actions in dashboard, member management, memorial moderation.
-
-**Priority**: High
-
----
-
-### Drawer
-
-**What**: Mobile-friendly bottom sheet. Alternative to Dialog on mobile.
-
-**Our current approach**: No drawer component. Mobile interactions use the same desktop layouts.
-
-**Enhancement**: Use Drawer as the mobile equivalent of Dialog/Sheet. When creating events, posts, or updates on mobile, a Drawer sliding up from the bottom is more natural than a centered modal. Could also use responsive Dialog+Drawer pattern: Dialog on desktop, Drawer on mobile.
-
-**Where**: All mobile form interactions, photo detail view on mobile, event quick-view.
-
-**Priority**: Medium
-
----
-
-### Calendar
-
-**What**: Date picker with range selection, month/year navigation, timezone support.
-
-**Our current approach**: Native `datetime-local` input for event dates. No visual calendar picker.
-
-**Enhancement**: Replace the datetime-local inputs in EventForm with a proper Calendar + Popover date picker. Better UX, visual consistency, and support for date range selection (multi-day events). The events page sidebar could show a mini calendar highlighting dates with events.
-
-**Where**: EventForm date inputs, events page sidebar calendar view.
-
-**Priority**: Medium
-
----
-
-### Pagination
-
-**What**: Page navigation with Previous/Next, numbered pages, and ellipsis.
-
-**Our current approach**: Custom pagination in blog page using manually styled Link elements with conditional active states.
-
-**Enhancement**: Replace the custom blog pagination with shadcn Pagination component. Consistent styling, proper ellipsis for large page counts, accessible markup. Could extend to photo albums, family updates (replace load-more), and dashboard lists.
-
-**Where**: Blog page (replace existing), photo albums, family updates.
-
-**Priority**: Medium
+**Phase 3 total: 8 tasks, ~24-32 hours**
 
 ---
 
-### Scroll Area
+### Phase 4: Public Site Polish
 
-**What**: Cross-browser custom scrollbar with consistent styling.
+**Task 29: Install and integrate Calendar + Popover for EventForm date picker**
+- Run: `bunx shadcn@latest add calendar popover`
+- File: `src/app/(dashboard)/dashboard/events/event-form.tsx`
+- Change: Replace `<input type="datetime-local">` with Calendar inside Popover trigger
+- Also: Add optional events sidebar mini-calendar on events page
+- Effort: Medium (2-3 hours)
+- Impact: Visual date selection UX
 
-**Our current approach**: Default browser scrollbars everywhere. MDX content overflows with native scroll.
+**Task 30: Install and integrate Pagination for blog**
+- Run: `bunx shadcn@latest add pagination`
+- File: `src/app/(public)/blog/page.tsx`
+- Change: Replace custom pagination links with `<Pagination><PaginationContent>...</PaginationContent></Pagination>`
+- Effort: Low (1-2 hours)
+- Impact: Consistent pagination with ellipsis
 
-**Enhancement**: Use ScrollArea for: dashboard sidebar (if content overflows), lightbox image lists, command palette results, long event descriptions, MDX code blocks. Removes the jarring light scrollbar appearance in our dark theme.
+**Task 31: Install and integrate Drawer for mobile forms**
+- Run: `bunx shadcn@latest add drawer`
+- Files: Dialog-based forms from Task 23
+- Change: Implement responsive Dialog+Drawer pattern: render Dialog on desktop (`min-width: 768px`), Drawer on mobile
+- Effort: Medium (2-3 hours per form)
+- Impact: Native-feeling mobile form experience
 
-**Where**: Dashboard sidebar, code blocks in blog posts, any fixed-height scrollable container.
+**Task 32: Install and integrate Popover for user profile menu**
+- File: `src/app/(public)/layout.tsx` nav section, `src/app/(dashboard)/layout.tsx` sidebar footer
+- Change: Add user avatar button that opens Popover with user name, email, settings link, sign out button
+- Effort: Low (1-2 hours)
+- Impact: Proper user account access
 
-**Priority**: Low
+**Task 33: Add entrance animations to page content**
+- Files: Hero, FeaturedPost, PostCard, EventCard, UpdateCard, Sidebar sections
+- Change: Add `animate-fade-in-up` to page-level content, `animate-fade-in` to card reveals, `animate-scale-in` to lightbox image entrance
+- Use `motion-safe:` prefix on all animations
+- Effort: Low (1-2 hours)
+- Impact: Subtle polish on page transitions
+
+**Task 34: Add `@starting-style` animations to overlays**
+- Files: `src/components/public/lightbox.tsx`, mobile nav Sheet, toast Toaster
+- Change: Use `starting:opacity-0 transition-opacity` for CSS-only entrance animations
+- Note: Requires browser support check; falls back gracefully
+- Effort: Low (1 hour)
+- Impact: Smooth overlay transitions without JS
+
+**Task 35: Apply gradient interpolation upgrades**
+- Files: `src/components/public/featured-post.tsx`, `src/components/public/post-card.tsx`, memorial page
+- Change: Replace `bg-gradient-to-br` with `bg-linear-to-br/oklch` for more vivid navy-to-gold gradients
+- Effort: Trivial (15 min)
+- Impact: Richer gradient colors on P3 displays
+
+**Task 36: Add text shadows to headings**
+- Files: `src/components/public/hero.tsx`, section headers
+- Change: Add `text-shadow-sm text-shadow-accent/10` to Hero h1 for subtle depth
+- Effort: Trivial (10 min)
+- Impact: Visual depth on headings
+
+**Task 37: Add photo filter effects**
+- Files: `src/components/public/photo-grid-preview.tsx`, album photo grid
+- Change: Add `hover:brightness-110 hover:saturate-110 transition-all` on photo thumbnails; `backdrop-blur-sm` on lightbox overlay
+- Effort: Low (30 min)
+- Impact: Interactive photo hover effects
+
+**Task 38: Implement scroll snap for photo albums**
+- Files: `src/app/(public)/photos/[album]/album-photo-grid.tsx`
+- Change: Add horizontal scroll snap gallery as alternate view: `snap-x snap-mandatory overflow-x-auto flex gap-4` with `snap-center` on items
+- Effort: Low (1 hour)
+- Impact: Swipeable photo gallery without carousel library
+
+**Phase 4 total: 10 tasks, ~14-20 hours**
 
 ---
 
-### Separator
+### Phase 5: Advanced Enhancements
 
-**What**: Semantic horizontal/vertical divider.
+**Task 39: Install and integrate Command palette (Cmd+K)**
+- Run: `bunx shadcn@latest add command`
+- Files: New `src/components/command-palette.tsx`, `src/app/layout.tsx`
+- Change: Global Cmd+K search with groups: Navigate (pages), Search (posts, events, photos), Quick Actions (new post, upload photo, new event), Dashboard (server status)
+- Requires: Search API endpoint
+- Effort: High (4-6 hours)
+- Impact: Power-user navigation feature
 
-**Our current approach**: Manual `<div className="border-t border-border" />` dividers throughout the site (home page, memorial page uses many).
+**Task 40: Install and integrate Carousel for featured content**
+- Run: `bunx shadcn@latest add carousel`
+- Files: Home page sidebar or hero area, memorial page gallery
+- Change: Auto-playing carousel for featured photos with navigation dots
+- Effort: Medium (2-3 hours)
+- Impact: More engaging content presentation
 
-**Enhancement**: Replace all manual border dividers with Separator component. Semantic HTML (`<hr>` or role="separator"), consistent styling, supports both horizontal and vertical orientation. The memorial page alone has 5 manual dividers.
+**Task 41: Install and integrate Scroll Area for custom scrollbars**
+- Run: `bunx shadcn@latest add scroll-area`
+- Files: Dashboard sidebar, MDX code blocks, command palette results
+- Change: Wrap scrollable containers in `<ScrollArea>` for consistent dark-themed scrollbars
+- Effort: Low (1-2 hours)
+- Impact: Visual consistency in scrollable areas
 
-**Where**: Home page section dividers, memorial page dividers, dashboard sections, sidebar sections.
+**Task 42: Install and integrate Separator for semantic dividers**
+- Run: `bunx shadcn@latest add separator`
+- Files: Memorial page (5 manual dividers), home page section dividers, sidebar between sections
+- Change: Replace `<div className="border-t border-border" />` with `<Separator />`
+- Effort: Low (1 hour)
+- Impact: Semantic HTML, consistent styling
 
-**Priority**: Low
+**Task 43: Install and integrate Data Table for dashboard lists**
+- Run: `bunx shadcn@latest add table` (already a dep of data-table pattern)
+- Files: Dashboard posts list, photos list, members list
+- Change: Implement TanStack Table with sorting, filtering, pagination, row selection
+- Effort: High (6-8 hours)
+- Impact: Professional data management in dashboard
 
----
+**Task 44: Install and integrate Alert component for system messages**
+- Run: `bunx shadcn@latest add alert`
+- Files: Auth pages (login errors), dashboard (system status), memorial (submission confirmation)
+- Change: Replace inline error/success text with `<Alert variant="destructive">` or `<Alert>`
+- Effort: Low (1-2 hours)
+- Impact: Consistent alert styling
 
-### Toggle
+**Task 45: Add 3D transform effects to photo interactions**
+- Files: Photo grid, featured post cards
+- Change: Add `perspective-distant` on grid parent, `hover:rotate-y-2 hover:scale-105 transition-transform transform-3d` on photo cards for subtle 3D tilt on hover
+- Effort: Low (1 hour)
+- Impact: Premium interactive feel
 
-**What**: Two-state button (on/off).
+**Task 46: Install and integrate Input OTP for email verification**
+- Run: `bunx shadcn@latest add input-otp`
+- File: `src/app/(auth)/verify/page.tsx`
+- Change: Replace text input with `<InputOTP maxLength={6}>` for verification code entry
+- Effort: Low (1 hour)
+- Impact: Better verification flow UX
 
-**Our current approach**: No toggle buttons.
+**Task 47: Add mask utilities for photo effects**
+- Files: Photo grid, hero section, memorial gallery
+- Change: `mask-b-from-70%` on hero background image for bottom fade; `mask-radial-from-transparent mask-radial-to-black` on memorial gallery for vignette effect
+- Effort: Low (30 min)
+- Impact: Subtle photo presentation polish
 
-**Enhancement**: Could use for view mode toggles (grid/list view for photos/blog), text formatting controls (if rich text editor is added), filter toggles on blog page.
+**Task 48: Add `not-*` and `nth-*` variants to list components**
+- Files: ServiceMonitor, event lists, dashboard post lists
+- Change: Replace manual `last:border-b-0` patterns with `not-last:border-b`; use `nth-*` for alternating styles
+- Effort: Low (30 min)
+- Impact: Cleaner variant logic
 
-**Where**: Photo view mode toggle, blog layout preferences.
+**Task 49: Add `user-valid` / `user-invalid` to form inputs**
+- Files: All form pages (login, signup, post-form, event-form, etc.)
+- Change: Replace `invalid:border-red-400` with `user-invalid:border-red-400` so validation only shows after user interaction
+- Effort: Low (30 min)
+- Impact: Better form validation UX
 
-**Priority**: Low
+**Task 50: Add `pointer-coarse` touch target adjustments**
+- Files: Mobile nav links, sidebar menu items, small buttons
+- Change: Add `pointer-coarse:p-4` or `pointer-coarse:min-h-12` for larger touch targets on mobile devices
+- Effort: Low (30 min)
+- Impact: Accessibility on touch devices
 
----
+**Task 51: Install and integrate Navigation Menu for public site**
+- Run: `bunx shadcn@latest add navigation-menu`
+- File: `src/app/(public)/layout.tsx` desktop nav
+- Change: Replace simple nav links with NavigationMenu supporting dropdown content for Blog (recent posts), Photos (featured albums), About (family members)
+- Effort: Medium (2-3 hours)
+- Impact: Rich desktop navigation
 
-### Popover
+**Task 52: Install and integrate Hover Card for preview content**
+- Run: `bunx shadcn@latest add hover-card`
+- Files: Dashboard post/event links, blog tag links
+- Change: Preview blog posts and events on hover without navigation
+- Effort: Low (1-2 hours)
+- Impact: Quick content preview
 
-**What**: Rich content overlay triggered by a button. Portal-rendered.
+**Task 53: Install and integrate Form/Field components for consistent form layout**
+- Run: `bunx shadcn@latest add field` (or form integration via React Hook Form guide)
+- Files: All dashboard forms (post-form, event-form, album-form, upload-form, invite-form, memory-form, content-form, media-form, update-form)
+- Change: Wrap all form inputs in Field/FieldLabel/FieldDescription/FieldMessage pattern for consistent spacing, labels, and error display
+- Effort: High (4-6 hours -- many forms)
+- Impact: Consistent, accessible form layout across entire app
 
-**Our current approach**: No popovers. Additional information requires page navigation.
+**Task 54: Add `wrap-anywhere` to long text content**
+- Files: Blog post content, event descriptions, user-submitted memories
+- Change: Add `wrap-anywhere` or `wrap-break-word` to content containers to prevent long URLs or words from breaking layout
+- Effort: Trivial (15 min)
+- Impact: Prevents layout overflow from user content
 
-**Enhancement**: Use Popover for: user profile dropdown in nav, event quick-peek from sidebar, photo metadata display, date picker (Calendar inside Popover). More contextual than full-page navigation for quick information.
-
-**Where**: Nav user menu, date picker, photo EXIF data, event quick-view.
-
-**Priority**: Medium
-
----
-
-## Part 3: Recommended Enhancement Plan
-
-### Tier 1: High Impact, Low-Medium Effort
-
-These changes deliver the most user-visible improvements and should be done first.
-
-1. **Add Sonner toast notifications** -- Install `sonner`, add `<Toaster />` to root layout, add toast calls to all CRUD operations. Immediate feedback improvement across the entire app.
-   - Effort: Low (1-2 hours)
-   - Impact: Every user action gets visible feedback
-
-2. **Replace MobileNav with Sheet** -- Swap the custom hamburger dropdown for a Sheet sliding from the left. Gains proper focus trapping, backdrop, animation, and swipe-to-close.
-   - Effort: Low (1-2 hours)
-   - Impact: Better mobile navigation experience
-
-3. **Add AlertDialog for destructive actions** -- Wrap delete/ban/reject actions in AlertDialog confirmations. Prevents accidental data loss.
-   - Effort: Low (2-3 hours)
-   - Impact: Safety for all destructive operations
-
-4. **Replace dashboard sidebar with shadcn Sidebar** -- Full sidebar component with collapsible support, mobile responsiveness, and organized menu groups. Biggest single UX improvement for the dashboard.
-   - Effort: Medium (3-4 hours)
-   - Impact: Dashboard becomes mobile-usable, sidebar is collapsible
-
-5. **Add Avatar component** -- Replace all manual first-letter circles with proper Avatar. Add user profile images.
-   - Effort: Low (1-2 hours)
-   - Impact: Visual polish across UpdateCard, members, memorial
-
-6. **Add `color-scheme-dark` to html** -- One-line fix to remove light scrollbars throughout the dark theme.
-   - Effort: Trivial
-   - Impact: Fixes jarring scrollbar mismatch
-
-7. **Replace `w-X h-X` with `size-X`** -- Quick find-and-replace cleanup. At least 15 instances in the codebase.
-   - Effort: Trivial
-   - Impact: Cleaner code
-
-### Tier 2: Medium Impact, Medium Effort
-
-These add polish and improve specific workflows.
-
-8. **Add Dialog for dashboard quick actions** -- "New Event", "New Update" as dialogs instead of page navigation. Faster content creation.
-   - Effort: Medium (3-4 hours)
-   - Impact: Faster dashboard workflow
-
-9. **Replace native `<select>` with shadcn Select** -- PostForm status, EventForm visibility, UploadForm album. Consistent design.
-   - Effort: Low (2 hours)
-   - Impact: Visual consistency across all forms
-
-10. **Add Breadcrumb navigation** -- Extend breadcrumbs from memorial page to all nested pages (blog posts, album detail, dashboard sub-pages).
-    - Effort: Medium (2-3 hours)
-    - Impact: Better navigation context
-
-11. **Replace custom pagination with shadcn Pagination** -- Blog page gets proper pagination component with ellipsis support.
-    - Effort: Low (1-2 hours)
-    - Impact: Better blog navigation
-
-12. **Replace loading skeletons with Skeleton component** -- Consistent loading states with composable Skeleton elements.
-    - Effort: Low (1-2 hours)
-    - Impact: Polished loading experience
-
-13. **Add Tooltip to dashboard metrics** -- Explain CPU Req%, Memory%, UPS stats, service status dots.
-    - Effort: Low (1-2 hours)
-    - Impact: Dashboard is more understandable
-
-14. **Add Calendar date picker to EventForm** -- Replace datetime-local with Calendar + Popover. Better date selection UX.
-    - Effort: Medium (2-3 hours)
-    - Impact: Improved event creation experience
-
-15. **Add Tabs to events page** -- Replace `<details>` collapse with Upcoming/Past tabs.
-    - Effort: Low (1 hour)
-    - Impact: Cleaner events page navigation
-
-16. **Add Drawer for mobile form interactions** -- Responsive Dialog+Drawer pattern: Dialog on desktop, Drawer on mobile.
-    - Effort: Medium (2-3 hours)
-    - Impact: Native-feeling mobile forms
-
-### Tier 3: Low Impact or High Effort
-
-These are polish features or require more architectural changes.
-
-17. **Define custom animations in @theme** -- fade-in, slide-up, scale-in keyframes for page transitions.
-    - Effort: Low (1 hour)
-    - Impact: Subtle animation polish
-
-18. **Add `motion-safe`/`motion-reduce` guards** -- Wrap animate-spin, animate-pulse with reduced-motion support.
-    - Effort: Trivial
-    - Impact: Accessibility compliance
-
-19. **Adopt container queries for dashboard widgets** -- `@container` on widget parent grids so cards adapt to container width.
-    - Effort: Medium (2-3 hours)
-    - Impact: Widgets work correctly at any grid size
-
-20. **Convert hex colors to OKLCh** -- Richer colors on P3 displays. Non-breaking change.
-    - Effort: Low (30 min)
-    - Impact: Subtle visual improvement on modern displays
-
-21. **Add custom radius/shadow theme tokens** -- `--radius-card`, `--shadow-card` for consistent surface treatment.
-    - Effort: Low (30 min)
-    - Impact: Easier global design changes
-
-22. **Add Popover for nav user menu** -- Dropdown showing user info, settings, logout.
-    - Effort: Medium (1-2 hours)
-    - Impact: Better auth UX
-
-23. **Add ScrollArea for custom scrollbars** -- Replace default scrollbars in sidebar, code blocks, and fixed containers.
-    - Effort: Low (1 hour)
-    - Impact: Visual consistency in dark theme
-
-24. **Replace manual dividers with Separator** -- Semantic separator component across all pages.
-    - Effort: Low (1 hour)
-    - Impact: Semantic HTML, consistency
-
-25. **Add Command palette (Cmd+K)** -- Global search and navigation for power users.
-    - Effort: High (4-6 hours)
-    - Impact: Premium admin UX feature
-
-26. **Add Carousel for photo highlights** -- Home page and memorial page photo carousels.
-    - Effort: Medium (2-3 hours)
-    - Impact: More engaging photo presentation
-
-27. **Replace Progress bar with shadcn Progress** -- Dashboard stats progress bars.
-    - Effort: Low (30 min)
-    - Impact: Consistency
-
-28. **Add `field-sizing-content` to textareas** -- Auto-resize without JS.
-    - Effort: Trivial
-    - Impact: Better textarea UX
-
-29. **Use `@starting-style` for animations** -- CSS-only entrance animations for lightbox, mobile nav, toasts.
-    - Effort: Medium (2 hours)
-    - Impact: Smooth transitions without JS
-
-30. **Add Toggle for photo view modes** -- Grid/list toggle on photos page.
-    - Effort: Low (1 hour)
-    - Impact: User preference in photo viewing
-
-### Quick Wins (Under 30 Minutes Each)
-
-These can be done immediately with minimal effort:
-
-- Add `color-scheme-dark` class to `<html>` element
-- Replace all `w-X h-X` pairs with `size-X` utility
-- Add `motion-safe:` prefix to `animate-spin` and `animate-pulse` usage
-- Add `field-sizing-content` class to all `<textarea>` elements
-- Convert hex colors to OKLCh in globals.css
-- Add custom `--radius-*` and `--ease-*` tokens to `@theme`
+**Phase 5 total: 16 tasks, ~26-38 hours**
 
 ---
 
@@ -616,18 +970,33 @@ These can be done immediately with minimal effort:
 | Category | Count |
 |----------|-------|
 | Current custom UI components | 5 |
-| Current custom page components | 12 |
-| shadcn/ui components analyzed | 23 |
-| High priority enhancements | 7 |
-| Medium priority enhancements | 9 |
-| Low priority enhancements | 14 |
-| Quick wins (under 30 min) | 6 |
-| Tailwind v4 features to adopt | 12+ |
+| Current custom page components (public) | 11 |
+| Current custom page components (dashboard) | 9 |
+| Total pages/routes | 26 |
+| shadcn/ui components analyzed | 50 |
+| shadcn/ui components recommended to install | 28 |
+| Tailwind v4 features to adopt | 22 |
+| Total enhancement tasks | 54 |
 
-### Top 5 Highest-ROI Changes
+### Phase Breakdown
 
-1. **Sonner toasts** -- Trivial to add, every user action benefits
-2. **Sheet for mobile nav** -- Small effort, transforms mobile experience
-3. **AlertDialog for destructive actions** -- Safety net for all delete/ban operations
-4. **shadcn Sidebar for dashboard** -- Makes dashboard mobile-responsive
-5. **Avatar component** -- Visual polish across 4+ pages with minimal effort
+| Phase | Tasks | Effort | Focus |
+|-------|-------|--------|-------|
+| **Phase 1: Foundation** | 11 | ~3 hours | Theme tokens, quick wins, OKLCH, accessibility |
+| **Phase 2: Core Components** | 9 | ~12-16 hours | Essential shadcn/ui components (toast, avatar, alerts, sheet, tooltip, skeleton, select, switch) |
+| **Phase 3: Dashboard Overhaul** | 8 | ~24-32 hours | Sidebar, breadcrumbs, dialogs, menus, tabs, charts, container queries |
+| **Phase 4: Public Site Polish** | 10 | ~14-20 hours | Calendar, pagination, drawer, animations, gradients, filters, scroll snap |
+| **Phase 5: Advanced** | 16 | ~26-38 hours | Command palette, data tables, 3D transforms, forms, navigation, hover cards |
+
+### Top 10 Highest-ROI Changes
+
+1. **Task 1: `color-scheme-dark`** -- 1 line, fixes every scrollbar in the app
+2. **Task 13: Sonner toasts** -- Every CRUD action gets instant feedback
+3. **Task 16: Sheet for mobile nav** -- Replaces broken dropdown with polished slide-in
+4. **Task 15: AlertDialog for destructive actions** -- Safety net for all delete/ban operations
+5. **Task 21: shadcn Sidebar for dashboard** -- Makes entire dashboard mobile-responsive
+6. **Task 14: Avatar component** -- Visual polish across 4+ pages, future image support
+7. **Task 8: shadcn theme bridge** -- Unlocks all shadcn components in our navy-gold theme
+8. **Task 9: `size-*` cleanup** -- Immediate code quality improvement, 15+ files
+9. **Task 11: `field-sizing-content`** -- Auto-resize textareas, zero JS, 4 forms benefit
+10. **Task 17: Tooltip on dashboard** -- Dashboard becomes self-documenting for non-technical users
