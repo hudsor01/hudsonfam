@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { Hero } from "@/components/public/hero";
 import { FeaturedPost } from "@/components/public/featured-post";

@@ -1,7 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function SignupForm() {
@@ -13,12 +13,43 @@ function SignupForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [validating, setValidating] = useState(true);
+  const [tokenValid, setTokenValid] = useState(false);
 
-  if (!token) {
+  useEffect(() => {
+    if (!token) {
+      setValidating(false);
+      return;
+    }
+    fetch(`/api/invite/validate?token=${encodeURIComponent(token)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setTokenValid(data.valid);
+        if (data.email) setEmail(data.email);
+        if (!data.valid) setError(data.error || "Invalid invite");
+        setValidating(false);
+      })
+      .catch(() => {
+        setError("Could not validate invite");
+        setValidating(false);
+      });
+  }, [token]);
+
+  if (validating) {
+    return (
+      <div className="text-center py-4">
+        <p className="text-sm text-text-muted">Validating invite...</p>
+      </div>
+    );
+  }
+
+  if (!token || !tokenValid) {
     return (
       <div>
         <h1 className="text-xl font-serif text-text mb-2">Invite Required</h1>
-        <p className="text-sm text-text-muted">Registration is invite-only. Ask a family member for an invite link.</p>
+        <p className="text-sm text-text-muted">
+          {error || "Registration is invite-only. Ask a family member for an invite link."}
+        </p>
       </div>
     );
   }
@@ -36,6 +67,10 @@ function SignupForm() {
     if (result.error) {
       setError(result.error.message || "Sign up failed");
     } else {
+      // Mark invite as used
+      fetch(`/api/invite/validate?token=${encodeURIComponent(token!)}`, {
+        method: "POST",
+      }).catch(() => {});
       router.push("/dashboard");
     }
   }

@@ -252,3 +252,34 @@ export async function deletePhoto(id: string) {
   revalidatePath("/dashboard/photos");
   revalidatePath("/photos");
 }
+
+// --------------- Invites ---------------
+
+export async function createInvite(formData: FormData) {
+  const session = await requireRole(["owner"]);
+  const email = formData.get("email") as string | null;
+  const role = (formData.get("role") as string) || "member";
+
+  const token = crypto.randomUUID();
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7); // 7 day expiry
+
+  await prisma.inviteToken.create({
+    data: {
+      token,
+      email: email || null,
+      role,
+      expiresAt,
+      createdBy: session.user.id,
+    },
+  });
+
+  revalidatePath("/dashboard/members");
+  return token;
+}
+
+export async function deleteInvite(id: string) {
+  await requireRole(["owner"]);
+  await prisma.inviteToken.delete({ where: { id } });
+  revalidatePath("/dashboard/members");
+}

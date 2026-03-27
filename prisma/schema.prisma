@@ -92,6 +92,20 @@ model FamilyUpdate {
   @@index([createdAt])
 }
 
+model InviteToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  email     String?
+  role      String    @default("member")
+  usedAt    DateTime?
+  usedById  String?
+  expiresAt DateTime
+  createdBy String
+  createdAt DateTime  @default(now())
+
+  @@index([token])
+}
+
 model User {
   id            String    @id
   name          String
