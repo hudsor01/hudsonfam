@@ -19,6 +19,7 @@ export default async function DashboardLayout({
 
   if (userRole === "owner") {
     navLinks.push({ href: "/dashboard/members", label: "Members" });
+    navLinks.push({ href: "/dashboard/memorial", label: "Memorial" });
   }
 
   return (
