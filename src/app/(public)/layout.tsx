@@ -19,7 +19,7 @@ export default function PublicLayout({
     <div className="min-h-screen flex flex-col">
       <nav className="border-b border-border px-5 sm:px-7 py-5 flex items-center justify-between relative">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white text-sm font-bold">
+          <div className="size-8 rounded-md bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white text-sm font-bold">
             H
           </div>
           <span className="text-text text-[15px] font-medium tracking-wide">

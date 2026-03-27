@@ -94,8 +94,8 @@ export default async function MemorialMediaPage() {
                 className="relative bg-surface border border-border rounded-lg overflow-hidden px-4 py-3"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-                    <svg className="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                  <div className="size-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                    <svg className="size-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
                   </div>

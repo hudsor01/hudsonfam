@@ -51,7 +51,7 @@ describe('Button', () => {
     const btn = screen.getByRole('button');
     const svg = btn.querySelector('svg');
     expect(svg).toBeInTheDocument();
-    expect(svg!.className).toContain('animate-spin');
+    expect(svg!.className).toContain('motion-safe:animate-spin');
   });
 
   it('merges custom className', () => {

@@ -12,7 +12,7 @@ export function ClusterMetrics({ metrics }: ClusterMetricsProps) {
       title="K8s Cluster"
       icon={
         <svg
-          className="w-4 h-4"
+          className="size-4"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"

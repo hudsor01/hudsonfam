@@ -54,7 +54,7 @@ export function EventForm({ action, initial }: EventFormProps) {
           name="description"
           rows={3}
           defaultValue={initial?.description || ""}
-          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 resize-y"
+          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 resize-y field-sizing-content"
           placeholder="Event details..."
         />
       </div>

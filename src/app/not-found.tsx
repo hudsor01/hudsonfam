@@ -6,7 +6,7 @@ export default function NotFound() {
       {/* Nav */}
       <nav className="border-b border-border px-5 sm:px-7 py-5 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white text-sm font-bold">
+          <div className="size-8 rounded-md bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white text-sm font-bold">
             H
           </div>
           <span className="text-text text-[15px] font-medium tracking-wide">
@@ -28,7 +28,7 @@ export default function NotFound() {
               404
             </span>
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 border border-border flex items-center justify-center">
+              <div className="size-20 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 border border-border flex items-center justify-center">
                 <span className="text-3xl font-serif text-accent">H</span>
               </div>
             </div>

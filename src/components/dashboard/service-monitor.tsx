@@ -13,7 +13,7 @@ function StatusDot({ status }: { status: ServiceHealth["status"] }) {
   };
 
   return (
-    <span className={`inline-block w-2 h-2 rounded-full ${colors[status]}`} />
+    <span className={`inline-block size-2 rounded-full ${colors[status]}`} />
   );
 }
 

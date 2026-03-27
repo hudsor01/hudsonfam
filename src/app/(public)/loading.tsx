@@ -1,6 +1,6 @@
 export default function PublicLoading() {
   return (
-    <div className="max-w-3xl mx-auto px-5 sm:px-7 py-10 sm:py-14 animate-pulse">
+    <div className="max-w-3xl mx-auto px-5 sm:px-7 py-10 sm:py-14 motion-safe:animate-pulse">
       {/* Title skeleton */}
       <div className="h-8 bg-surface rounded-lg w-2/3 mb-4" />
       {/* Subtitle skeleton */}

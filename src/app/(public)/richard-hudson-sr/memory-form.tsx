@@ -38,9 +38,9 @@ export function MemoryForm() {
   if (submitted) {
     return (
       <div className="text-center py-8">
-        <div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4">
+        <div className="size-12 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4">
           <svg
-            className="w-5 h-5 text-accent"
+            className="size-5 text-accent"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -184,7 +184,7 @@ export function MemoryForm() {
           rows={5}
           maxLength={5000}
           placeholder="Share a memory, a story, or a few words about what Richard meant to you..."
-          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors resize-y min-h-[120px]"
+          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors resize-y field-sizing-content min-h-[120px]"
         />
       </div>
 

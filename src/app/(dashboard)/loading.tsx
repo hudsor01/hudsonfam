@@ -1,6 +1,6 @@
 export default function DashboardLoading() {
   return (
-    <div className="animate-pulse">
+    <div className="motion-safe:animate-pulse">
       {/* Header skeleton */}
       <div className="h-7 bg-surface rounded-lg w-48 mb-2" />
       <div className="h-4 bg-surface rounded w-64 mb-8" />

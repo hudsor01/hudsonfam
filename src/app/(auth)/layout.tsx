@@ -8,7 +8,7 @@ export default function AuthLayout({
       <div className="w-full max-w-sm">
         <div className="flex justify-center mb-8">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white text-lg font-bold">
+            <div className="size-10 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white text-lg font-bold">
               H
             </div>
             <span className="text-text text-lg font-medium tracking-wide">

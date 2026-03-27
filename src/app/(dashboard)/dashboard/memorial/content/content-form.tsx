@@ -52,7 +52,7 @@ export function ContentSectionForm({
         value={content}
         onChange={(e) => setContent(e.target.value)}
         rows={rows}
-        className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors resize-y"
+        className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors resize-y field-sizing-content"
       />
 
       {error && (

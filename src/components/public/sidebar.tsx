@@ -30,7 +30,7 @@ export function Sidebar({ events, photos }: SidebarProps) {
           <ul className="space-y-3">
             {events.map((event) => (
               <li key={event.id} className="flex gap-3">
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-accent/15 flex items-center justify-center">
+                <div className="flex-shrink-0 size-10 rounded-lg bg-accent/15 flex items-center justify-center">
                   <span className="text-accent text-xs font-bold font-sans">
                     {new Date(event.date).toLocaleDateString("en-US", {
                       day: "numeric",

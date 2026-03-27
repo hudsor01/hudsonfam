@@ -26,7 +26,7 @@ export default async function DashboardLayout({
     <div className="min-h-screen flex">
       <aside className="w-56 bg-surface border-r border-border p-5 flex flex-col gap-1">
         <div className="flex items-center gap-2.5 mb-6">
-          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white text-sm font-bold">
+          <div className="size-8 rounded-md bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white text-sm font-bold">
             H
           </div>
           <span className="text-text text-sm font-medium">Dashboard</span>

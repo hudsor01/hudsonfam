@@ -40,7 +40,7 @@ export default function UpdateCard({
       {/* Author and timestamp */}
       <div className="flex items-center gap-3 mb-3">
         {/* Avatar placeholder -- first letter of name */}
-        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-medium flex-shrink-0">
+        <div className="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-medium flex-shrink-0">
           {postedByName.charAt(0).toUpperCase()}
         </div>
         <div>

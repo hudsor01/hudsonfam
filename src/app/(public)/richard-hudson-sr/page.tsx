@@ -250,7 +250,7 @@ export default async function RichardHudsonSrMemorialPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg/95 to-bg" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--color-accent)_0%,_transparent_70%)] opacity-[0.04]" />
         <div className="relative max-w-3xl mx-auto text-center px-5 py-16 sm:py-24">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/20 flex items-center justify-center mx-auto mb-8">
+          <div className="size-20 rounded-full bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/20 flex items-center justify-center mx-auto mb-8">
             <span className="text-3xl font-serif text-accent">R</span>
           </div>
           <p className="text-xs tracking-[5px] text-accent/80 uppercase mb-4 font-sans">
@@ -354,9 +354,9 @@ export default async function RichardHudsonSrMemorialPage() {
         <div className="bg-surface border border-border rounded-xl overflow-hidden">
           <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-surface to-bg">
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4">
+              <div className="size-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4">
                 <svg
-                  className="w-6 h-6 text-accent ml-1"
+                  className="size-6 text-accent ml-1"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                   aria-hidden="true"
@@ -416,7 +416,7 @@ export default async function RichardHudsonSrMemorialPage() {
                   &ldquo;{memory.content}&rdquo;
                 </blockquote>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center">
+                  <div className="size-8 rounded-full bg-accent/10 flex items-center justify-center">
                     <span className="text-accent text-xs font-semibold">
                       {memory.firstName.charAt(0).toUpperCase()}
                     </span>

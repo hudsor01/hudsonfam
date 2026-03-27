@@ -121,10 +121,10 @@ export function MediaDeleteButton({ mediaId }: MediaDeleteButtonProps) {
     <button
       onClick={handleDelete}
       disabled={loading}
-      className="absolute top-2 right-2 w-7 h-7 rounded-full bg-bg/80 border border-border text-red-400 hover:bg-red-400/20 hover:border-red-400/30 transition-colors flex items-center justify-center disabled:opacity-50"
+      className="absolute top-2 right-2 size-7 rounded-full bg-bg/80 border border-border text-red-400 hover:bg-red-400/20 hover:border-red-400/30 transition-colors flex items-center justify-center disabled:opacity-50"
       title="Remove"
     >
-      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
