@@ -40,11 +40,13 @@ export async function GET(
   }
 
   const photoId = pathSegments[0];
-  const size =
-    (request.nextUrl.searchParams.get("size") as
-      | "thumbnail"
-      | "medium"
-      | "original") || "medium";
+
+  // Validate size parameter against allowed values
+  const rawSize = request.nextUrl.searchParams.get("size");
+  const allowedSizes = ["thumbnail", "medium", "original"] as const;
+  const size = rawSize && allowedSizes.includes(rawSize as typeof allowedSizes[number])
+    ? (rawSize as "thumbnail" | "medium" | "original")
+    : "medium";
 
   // Look up photo in database
   const photo = await prisma.photo.findUnique({
@@ -75,9 +77,21 @@ export async function GET(
     photo.originalPath
   );
 
+  // Path traversal protection: normalize and verify the resolved path
+  // stays within allowed directories
+  const ORIGINALS_DIR = process.env.ORIGINALS_DIR || "/data/hudsonfam/originals";
+  const THUMBNAILS_DIR = process.env.THUMBNAILS_DIR || "/data/thumbnails";
+  const normalizedPath = path.resolve(filePath);
+  const isWithinOriginals = normalizedPath.startsWith(path.resolve(ORIGINALS_DIR) + path.sep);
+  const isWithinThumbnails = normalizedPath.startsWith(path.resolve(THUMBNAILS_DIR) + path.sep);
+
+  if (!isWithinOriginals && !isWithinThumbnails) {
+    return NextResponse.json({ error: "Invalid image path" }, { status: 400 });
+  }
+
   // Verify file exists
   try {
-    await fs.access(filePath);
+    await fs.access(normalizedPath);
   } catch {
     return NextResponse.json(
       { error: "Image file not found" },
@@ -86,8 +100,8 @@ export async function GET(
   }
 
   // Read file
-  const fileBuffer = await fs.readFile(filePath);
-  const ext = path.extname(filePath).toLowerCase();
+  const fileBuffer = await fs.readFile(normalizedPath);
+  const ext = path.extname(normalizedPath).toLowerCase();
   const contentType = CONTENT_TYPES[ext] || "application/octet-stream";
 
   // Cache headers for Cloudflare edge caching
