@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
 import { processImage } from "@/lib/images";
-import { createId } from "@paralleldrive/cuid2";
+import { randomUUID } from "crypto";
 
 // Max file size: 20MB
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Generate photo ID
-  const photoId = createId();
+  const photoId = randomUUID();
 
   // Read file buffer
   const buffer = Buffer.from(await file.arrayBuffer());
