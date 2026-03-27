@@ -1,16 +1,29 @@
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { checkAllServices, groupServices } from "@/lib/dashboard/health";
 import { getClusterMetrics } from "@/lib/dashboard/prometheus";
 import { getServerStats } from "@/lib/dashboard/server";
 import { getUpsStatus } from "@/lib/dashboard/ups";
 import { getMediaStats } from "@/lib/dashboard/media";
 import { getWeather } from "@/lib/dashboard/weather";
-import { DashboardClient } from "./dashboard-client";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export async function GET() {
+  // Auth check — owner only
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-export default async function DashboardPage() {
-  // Fetch all data server-side in parallel
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const userRole = (session.user as { role?: string }).role || "member";
+  if (userRole !== "owner") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Fetch all data in parallel
   const [services, clusterMetrics, serverStats, upsStatus, mediaStats, weather] =
     await Promise.all([
       checkAllServices(),
@@ -23,7 +36,7 @@ export default async function DashboardPage() {
 
   const groupedServices = groupServices(services);
 
-  const initialData = {
+  return NextResponse.json({
     services: groupedServices,
     clusterMetrics,
     serverStats,
@@ -31,7 +44,5 @@ export default async function DashboardPage() {
     mediaStats,
     weather,
     timestamp: new Date().toISOString(),
-  };
-
-  return <DashboardClient initialData={initialData} />;
+  });
 }
