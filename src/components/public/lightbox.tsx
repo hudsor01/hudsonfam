@@ -6,6 +6,8 @@ interface LightboxPhoto {
   id: string;
   title: string | null;
   caption: string | null;
+  thumbnailPath: string;
+  originalPath: string;
   width: number;
   height: number;
 }
@@ -177,7 +179,7 @@ export default function Lightbox({
         onClick={(e) => e.stopPropagation()}
       >
         <img
-          src={`/api/images/${photo.id}?size=medium`}
+          src={photo.originalPath}
           alt={photo.title || photo.caption || "Photo"}
           className="max-w-full max-h-[75vh] object-contain rounded"
           draggable={false}

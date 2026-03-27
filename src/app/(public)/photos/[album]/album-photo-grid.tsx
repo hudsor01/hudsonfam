@@ -7,6 +7,8 @@ interface Photo {
   id: string;
   title: string | null;
   caption: string | null;
+  thumbnailPath: string;
+  originalPath: string;
   width: number;
   height: number;
   takenAt: Date | null;
@@ -29,7 +31,7 @@ export default function AlbumPhotoGrid({ photos }: AlbumPhotoGridProps) {
             className="group relative aspect-square overflow-hidden rounded-lg bg-bg border border-border hover:border-primary/40 transition-colors cursor-pointer"
           >
             <img
-              src={`/api/images/${photo.id}?size=thumbnail`}
+              src={photo.thumbnailPath}
               alt={photo.title || photo.caption || "Photo"}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"

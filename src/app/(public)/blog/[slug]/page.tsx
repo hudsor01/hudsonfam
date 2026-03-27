@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import { getPostBySlug, getAllPosts } from "@/lib/blog";
 import { mdxComponents } from "@/components/public/mdx-components";
 import { Badge } from "@/components/ui/badge";
@@ -124,7 +125,11 @@ export default async function BlogPostPage({ params }: PageProps) {
 
       {/* MDX content */}
       <div className="prose-navy">
-        <MDXRemote source={post.content} components={mdxComponents} />
+        <MDXRemote
+          source={post.content}
+          components={mdxComponents}
+          options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
+        />
       </div>
 
       {/* Post footer */}

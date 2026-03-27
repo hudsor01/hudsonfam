@@ -35,6 +35,8 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
           id: true,
           title: true,
           caption: true,
+          thumbnailPath: true,
+          originalPath: true,
           width: true,
           height: true,
           takenAt: true,

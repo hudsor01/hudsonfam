@@ -17,7 +17,7 @@ export default async function PhotosPage() {
       photos: {
         take: 1,
         orderBy: { createdAt: "asc" },
-        select: { id: true },
+        select: { id: true, thumbnailPath: true },
       },
     },
   });
@@ -33,8 +33,7 @@ export default async function PhotosPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
           {albums.map((album) => {
-            const coverPhotoId =
-              album.coverPhotoId || album.photos[0]?.id || null;
+            const coverPhoto = album.photos[0] || null;
             const photoCount = album._count.photos;
 
             return (
@@ -46,9 +45,9 @@ export default async function PhotosPage() {
                 <div className="bg-surface border border-border rounded-xl overflow-hidden hover:border-primary/40 transition-colors">
                   {/* Cover image */}
                   <div className="aspect-[4/3] bg-bg overflow-hidden">
-                    {coverPhotoId ? (
+                    {coverPhoto ? (
                       <img
-                        src={`/api/images/${coverPhotoId}?size=medium`}
+                        src={coverPhoto.thumbnailPath}
                         alt={album.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />

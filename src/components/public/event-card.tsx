@@ -79,6 +79,7 @@ function formatEventDate(
 
 /**
  * Get relative time label (e.g., "In 3 days", "Tomorrow", "Today").
+ * Returns null for past events or events more than 2 months away.
  */
 function getRelativeLabel(startDate: Date): string | null {
   const now = new Date();
@@ -86,10 +87,19 @@ function getRelativeLabel(startDate: Date): string | null {
   const diffMs = start.getTime() - now.getTime();
   const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
+  if (diffDays < 0) return null;
   if (diffDays === 0) return "Today";
   if (diffDays === 1) return "Tomorrow";
-  if (diffDays > 1 && diffDays <= 7) return `In ${diffDays} days`;
-  if (diffDays > 7 && diffDays <= 14) return "Next week";
+  if (diffDays <= 7) return `In ${diffDays} days`;
+  if (diffDays <= 14) return "Next week";
+  if (diffDays <= 30) {
+    const weeks = Math.round(diffDays / 7);
+    return `In ${weeks} week${weeks === 1 ? "" : "s"}`;
+  }
+  if (diffDays <= 60) {
+    const months = Math.round(diffDays / 30);
+    return `In ${months} month${months === 1 ? "" : "s"}`;
+  }
   return null;
 }
 
