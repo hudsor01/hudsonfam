@@ -31,24 +31,35 @@ async function queryPrometheus(query: string): Promise<string | null> {
   }
 }
 
-export async function getClusterMetrics(): Promise<ClusterMetrics> {
-  const [pods, namespaces, cpuReq, memUsage] = await Promise.all([
-    queryPrometheus('count(kube_pod_status_phase{phase="Running"})'),
-    queryPrometheus('count(kube_namespace_status_phase{phase="Active"})'),
-    queryPrometheus(
-      'round(sum(kube_pod_container_resource_requests{resource="cpu"}) / sum(kube_node_status_allocatable{resource="cpu"}) * 100)'
-    ),
-    queryPrometheus(
-      'round((1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100)'
-    ),
-  ]);
+const DEFAULT_CLUSTER_METRICS: ClusterMetrics = {
+  pods: 0,
+  namespaces: 0,
+  cpuRequestPercent: 0,
+  memoryUsagePercent: 0,
+};
 
-  return {
-    pods: pods ? parseInt(pods, 10) : 0,
-    namespaces: namespaces ? parseInt(namespaces, 10) : 0,
-    cpuRequestPercent: cpuReq ? parseInt(cpuReq, 10) : 0,
-    memoryUsagePercent: memUsage ? parseInt(memUsage, 10) : 0,
-  };
+export async function getClusterMetrics(): Promise<ClusterMetrics> {
+  try {
+    const [pods, namespaces, cpuReq, memUsage] = await Promise.all([
+      queryPrometheus('count(kube_pod_status_phase{phase="Running"})'),
+      queryPrometheus('count(kube_namespace_status_phase{phase="Active"})'),
+      queryPrometheus(
+        'round(sum(kube_pod_container_resource_requests{resource="cpu"}) / sum(kube_node_status_allocatable{resource="cpu"}) * 100)'
+      ),
+      queryPrometheus(
+        'round((1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100)'
+      ),
+    ]);
+
+    return {
+      pods: pods ? parseInt(pods, 10) : 0,
+      namespaces: namespaces ? parseInt(namespaces, 10) : 0,
+      cpuRequestPercent: cpuReq ? parseInt(cpuReq, 10) : 0,
+      memoryUsagePercent: memUsage ? parseInt(memUsage, 10) : 0,
+    };
+  } catch {
+    return DEFAULT_CLUSTER_METRICS;
+  }
 }
 
 export { queryPrometheus };

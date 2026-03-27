@@ -120,11 +120,15 @@ async function getJellyfinStats(): Promise<MediaStats["jellyfin"]> {
   };
 }
 
+const DEFAULT_SONARR = { series: 0, queue: 0, missing: 0 };
+const DEFAULT_RADARR = { movies: 0, queue: 0, missing: 0 };
+const DEFAULT_JELLYFIN = { movies: 0, shows: 0, episodes: 0, activeSessions: 0 };
+
 export async function getMediaStats(): Promise<MediaStats> {
   const [sonarr, radarr, jellyfin] = await Promise.all([
-    getSonarrStats(),
-    getRadarrStats(),
-    getJellyfinStats(),
+    getSonarrStats().catch(() => DEFAULT_SONARR),
+    getRadarrStats().catch(() => DEFAULT_RADARR),
+    getJellyfinStats().catch(() => DEFAULT_JELLYFIN),
   ]);
 
   return { sonarr, radarr, jellyfin };
