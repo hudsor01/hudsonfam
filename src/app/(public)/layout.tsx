@@ -7,6 +7,7 @@ const navLinks = [
   { href: "/photos", label: "Photos" },
   { href: "/events", label: "Events" },
   { href: "/family", label: "Family" },
+  { href: "/remembering-richard-hudson-sr", label: "In Memory" },
 ];
 
 export default function PublicLayout({

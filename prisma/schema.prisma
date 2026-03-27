@@ -92,6 +92,19 @@ model FamilyUpdate {
   @@index([createdAt])
 }
 
+model Memory {
+  id           String   @id @default(cuid())
+  name         String
+  email        String?
+  relationship String?
+  content      String
+  approved     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([approved])
+}
+
 model InviteToken {
   id        String    @id @default(cuid())
   token     String    @unique
