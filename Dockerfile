@@ -53,9 +53,9 @@ RUN apk add --no-cache libc6-compat \
     && npm install --os=linux --cpu=x64 sharp@0.34 \
     && rm -rf /root/.npm
 
-# Create non-root user
-RUN addgroup --system --gid 1000 nodejs \
-    && adduser --system --uid 1000 nextjs
+# Create non-root user (GID 1000 may already exist in alpine)
+RUN addgroup --system nodejs 2>/dev/null || true \
+    && adduser --system --ingroup nodejs nextjs
 
 # Copy public assets
 COPY --from=builder /app/public ./public
