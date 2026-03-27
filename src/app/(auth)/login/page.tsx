@@ -27,7 +27,7 @@ export default function LoginPage() {
     if (result.error) {
       setError(result.error.message || "Sign in failed");
     } else {
-      router.push("/admin");
+      router.push("/dashboard");
     }
   }
 

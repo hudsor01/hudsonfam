@@ -36,7 +36,7 @@ function SignupForm() {
     if (result.error) {
       setError(result.error.message || "Sign up failed");
     } else {
-      router.push("/admin");
+      router.push("/dashboard");
     }
   }
 
