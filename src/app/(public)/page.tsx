@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import prisma from "@/lib/prisma";
 import { Hero } from "@/components/public/hero";
 import { FeaturedPost } from "@/components/public/featured-post";
@@ -5,8 +7,6 @@ import { PostCard } from "@/components/public/post-card";
 import { Sidebar } from "@/components/public/sidebar";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getAllPosts } from "@/lib/blog";
-
-export const revalidate = 300; // ISR: revalidate every 5 minutes
 
 function formatDate(date: Date | string): string {
   return new Date(date).toLocaleDateString("en-US", {
