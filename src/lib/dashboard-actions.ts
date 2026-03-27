@@ -9,23 +9,26 @@ import { redirect } from "next/navigation";
 
 export async function createPost(formData: FormData) {
   const session = await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title") as string;
-  const slug = formData.get("slug") as string;
+  const title = formData.get("title");
+  const slug = formData.get("slug");
+  if (!title || !slug) throw new Error("Title and slug are required");
+
   const excerpt = formData.get("excerpt") as string | null;
   const tags = (formData.get("tags") as string || "")
     .split(",")
     .map((t) => t.trim())
     .filter(Boolean);
-  const status = formData.get("status") as "DRAFT" | "PUBLISHED";
+  const rawStatus = formData.get("status") as string | null;
+  const status = rawStatus === "PUBLISHED" ? "PUBLISHED" : "DRAFT";
   const coverImage = formData.get("coverImage") as string | null;
 
   await prisma.blogPost.create({
     data: {
-      title,
-      slug,
+      title: title as string,
+      slug: slug as string,
       excerpt: excerpt || null,
       tags,
-      status: status || "DRAFT",
+      status,
       coverImage: coverImage || null,
       authorId: session.user.id,
       publishedAt: status === "PUBLISHED" ? new Date() : null,
@@ -39,14 +42,17 @@ export async function createPost(formData: FormData) {
 
 export async function updatePost(id: string, formData: FormData) {
   await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title") as string;
-  const slug = formData.get("slug") as string;
+  const title = formData.get("title");
+  const slug = formData.get("slug");
+  if (!title || !slug) throw new Error("Title and slug are required");
+
   const excerpt = formData.get("excerpt") as string | null;
   const tags = (formData.get("tags") as string || "")
     .split(",")
     .map((t) => t.trim())
     .filter(Boolean);
-  const status = formData.get("status") as "DRAFT" | "PUBLISHED";
+  const rawStatus = formData.get("status") as string | null;
+  const status = rawStatus === "PUBLISHED" ? "PUBLISHED" : "DRAFT";
   const coverImage = formData.get("coverImage") as string | null;
 
   const existing = await prisma.blogPost.findUnique({ where: { id } });
@@ -56,8 +62,8 @@ export async function updatePost(id: string, formData: FormData) {
   await prisma.blogPost.update({
     where: { id },
     data: {
-      title,
-      slug,
+      title: title as string,
+      slug: slug as string,
       excerpt: excerpt || null,
       tags,
       status,
@@ -82,15 +88,17 @@ export async function deletePost(id: string) {
 
 export async function createAlbum(formData: FormData) {
   await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title") as string;
-  const slug = formData.get("slug") as string;
+  const title = formData.get("title");
+  const slug = formData.get("slug");
+  if (!title || !slug) throw new Error("Title and slug are required");
+
   const description = formData.get("description") as string | null;
   const dateStr = formData.get("date") as string | null;
 
   await prisma.album.create({
     data: {
-      title,
-      slug,
+      title: title as string,
+      slug: slug as string,
       description: description || null,
       date: dateStr ? new Date(dateStr) : null,
     },
@@ -103,8 +111,10 @@ export async function createAlbum(formData: FormData) {
 
 export async function updateAlbum(id: string, formData: FormData) {
   await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title") as string;
-  const slug = formData.get("slug") as string;
+  const title = formData.get("title");
+  const slug = formData.get("slug");
+  if (!title || !slug) throw new Error("Title and slug are required");
+
   const description = formData.get("description") as string | null;
   const dateStr = formData.get("date") as string | null;
   const coverPhotoId = formData.get("coverPhotoId") as string | null;
@@ -112,8 +122,8 @@ export async function updateAlbum(id: string, formData: FormData) {
   await prisma.album.update({
     where: { id },
     data: {
-      title,
-      slug,
+      title: title as string,
+      slug: slug as string,
       description: description || null,
       date: dateStr ? new Date(dateStr) : null,
       coverPhotoId: coverPhotoId || null,
@@ -129,21 +139,31 @@ export async function updateAlbum(id: string, formData: FormData) {
 
 export async function createEvent(formData: FormData) {
   const session = await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title") as string;
+  const title = formData.get("title");
+  if (!title) throw new Error("Title is required");
+
   const description = formData.get("description") as string | null;
   const location = formData.get("location") as string | null;
-  const startDate = formData.get("startDate") as string;
+  const startDate = formData.get("startDate");
+  if (!startDate) throw new Error("Start date is required");
+  const parsedStartDate = new Date(startDate as string);
+  if (isNaN(parsedStartDate.getTime())) throw new Error("Invalid start date");
+
   const endDate = formData.get("endDate") as string | null;
+  const parsedEndDate = endDate ? new Date(endDate) : null;
+  if (parsedEndDate && isNaN(parsedEndDate.getTime())) throw new Error("Invalid end date");
+
   const allDay = formData.get("allDay") === "on";
-  const visibility = (formData.get("visibility") as "PUBLIC" | "FAMILY") || "PUBLIC";
+  const rawVisibility = formData.get("visibility") as string | null;
+  const visibility = rawVisibility === "FAMILY" ? "FAMILY" : "PUBLIC";
 
   await prisma.event.create({
     data: {
-      title,
+      title: title as string,
       description: description || null,
       location: location || null,
-      startDate: new Date(startDate),
-      endDate: endDate ? new Date(endDate) : null,
+      startDate: parsedStartDate,
+      endDate: parsedEndDate,
       allDay,
       visibility,
       createdById: session.user.id,
@@ -157,22 +177,32 @@ export async function createEvent(formData: FormData) {
 
 export async function updateEvent(id: string, formData: FormData) {
   await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title") as string;
+  const title = formData.get("title");
+  if (!title) throw new Error("Title is required");
+
   const description = formData.get("description") as string | null;
   const location = formData.get("location") as string | null;
-  const startDate = formData.get("startDate") as string;
+  const startDate = formData.get("startDate");
+  if (!startDate) throw new Error("Start date is required");
+  const parsedStartDate = new Date(startDate as string);
+  if (isNaN(parsedStartDate.getTime())) throw new Error("Invalid start date");
+
   const endDate = formData.get("endDate") as string | null;
+  const parsedEndDate = endDate ? new Date(endDate) : null;
+  if (parsedEndDate && isNaN(parsedEndDate.getTime())) throw new Error("Invalid end date");
+
   const allDay = formData.get("allDay") === "on";
-  const visibility = (formData.get("visibility") as "PUBLIC" | "FAMILY") || "PUBLIC";
+  const rawVisibility = formData.get("visibility") as string | null;
+  const visibility = rawVisibility === "FAMILY" ? "FAMILY" : "PUBLIC";
 
   await prisma.event.update({
     where: { id },
     data: {
-      title,
+      title: title as string,
       description: description || null,
       location: location || null,
-      startDate: new Date(startDate),
-      endDate: endDate ? new Date(endDate) : null,
+      startDate: parsedStartDate,
+      endDate: parsedEndDate,
       allDay,
       visibility,
     },
@@ -194,12 +224,15 @@ export async function deleteEvent(id: string) {
 
 export async function createUpdate(formData: FormData) {
   const session = await requireRole(["owner", "admin", "member"]);
-  const content = formData.get("content") as string;
-  const visibility = (formData.get("visibility") as "PUBLIC" | "FAMILY") || "PUBLIC";
+  const content = formData.get("content");
+  if (!content) throw new Error("Content is required");
+
+  const rawVisibility = formData.get("visibility") as string | null;
+  const visibility = rawVisibility === "FAMILY" ? "FAMILY" : "PUBLIC";
 
   await prisma.familyUpdate.create({
     data: {
-      content,
+      content: content as string,
       visibility,
       postedById: session.user.id,
     },
@@ -258,7 +291,9 @@ export async function deletePhoto(id: string) {
 export async function createInvite(formData: FormData) {
   const session = await requireRole(["owner"]);
   const email = formData.get("email") as string | null;
-  const role = (formData.get("role") as string) || "member";
+  const rawRole = formData.get("role") as string | null;
+  const allowedRoles = ["member", "admin"];
+  const role = rawRole && allowedRoles.includes(rawRole) ? rawRole : "member";
 
   const token = crypto.randomUUID();
   const expiresAt = new Date();

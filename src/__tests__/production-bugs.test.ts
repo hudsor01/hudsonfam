@@ -121,7 +121,7 @@ function createInviteRequest(params: Record<string, string> = {}): NextRequest {
 // 1. FormData Validation — catches the `as string` on null bug
 // ============================================================
 
-describe('FormData null coercion bugs', () => {
+describe('FormData validation (formerly null coercion bugs)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireRole.mockResolvedValue(fakeOwnerSession);
@@ -131,78 +131,55 @@ describe('FormData null coercion bugs', () => {
     prismaMock.familyUpdate.create.mockResolvedValue({ id: 'update-1' });
   });
 
-  it('BUG: createPost passes null title to Prisma when field is missing from FormData', async () => {
-    // formData.get("title") returns null when the field doesn't exist,
-    // but `as string` just silently casts it — null flows to Prisma.create()
+  it('FIXED: createPost throws when title is missing from FormData', async () => {
     const formData = new FormData();
-    // title is deliberately missing
     formData.set('slug', 'test-slug');
     formData.set('status', 'DRAFT');
     formData.set('tags', '');
 
-    await createPost(formData);
-
-    // The real bug: null is passed as the title, which violates the
-    // Prisma schema (title is a required String, not String?)
-    const callArgs = prismaMock.blogPost.create.mock.calls[0][0].data;
-    // This assertion documents the bug: title is null, not a string
-    // In production, Prisma would throw a database error instead of
-    // returning a user-friendly validation message
-    expect(callArgs.title).toBeNull();
+    await expect(createPost(formData)).rejects.toThrow('Title and slug are required');
+    expect(prismaMock.blogPost.create).not.toHaveBeenCalled();
   });
 
-  it('BUG: createPost passes null slug to Prisma when field is missing', async () => {
+  it('FIXED: createPost throws when slug is missing from FormData', async () => {
     const formData = new FormData();
     formData.set('title', 'A Title');
-    // slug is deliberately missing
     formData.set('status', 'DRAFT');
     formData.set('tags', '');
 
-    await createPost(formData);
-
-    const callArgs = prismaMock.blogPost.create.mock.calls[0][0].data;
-    // slug is required + unique in schema, but null flows through
-    expect(callArgs.slug).toBeNull();
+    await expect(createPost(formData)).rejects.toThrow('Title and slug are required');
+    expect(prismaMock.blogPost.create).not.toHaveBeenCalled();
   });
 
-  it('BUG: createEvent creates epoch date when startDate is missing', async () => {
+  it('FIXED: createEvent throws when startDate is missing', async () => {
     const formData = new FormData();
     formData.set('title', 'Test Event');
-    // startDate is deliberately missing — formData.get("startDate") returns null
-    // new Date(null as any) coerces null to 0 => epoch date (1970-01-01)
 
-    await createEvent(formData);
-
-    const callArgs = prismaMock.event.create.mock.calls[0][0].data;
-    // The bug: instead of validation error, the event silently gets
-    // a startDate of January 1, 1970 — clearly wrong for any real event.
-    // In production this would save to the database without error,
-    // creating a ghost event from 1970.
-    expect(callArgs.startDate).toBeInstanceOf(Date);
-    expect(callArgs.startDate.getFullYear()).toBe(1970);
-    expect(callArgs.startDate.getTime()).toBe(0);
+    await expect(createEvent(formData)).rejects.toThrow('Start date is required');
+    expect(prismaMock.event.create).not.toHaveBeenCalled();
   });
 
-  it('BUG: createAlbum passes null title/slug when fields are missing', async () => {
+  it('FIXED: createEvent throws on invalid startDate', async () => {
     const formData = new FormData();
-    // Both required fields missing
+    formData.set('title', 'Test Event');
+    formData.set('startDate', 'not-a-date');
 
-    await createAlbum(formData);
-
-    const callArgs = prismaMock.album.create.mock.calls[0][0].data;
-    expect(callArgs.title).toBeNull();
-    expect(callArgs.slug).toBeNull();
+    await expect(createEvent(formData)).rejects.toThrow('Invalid start date');
+    expect(prismaMock.event.create).not.toHaveBeenCalled();
   });
 
-  it('BUG: createUpdate passes null content when field is missing', async () => {
+  it('FIXED: createAlbum throws when title/slug are missing', async () => {
     const formData = new FormData();
-    // content is deliberately missing
 
-    await createUpdate(formData);
+    await expect(createAlbum(formData)).rejects.toThrow('Title and slug are required');
+    expect(prismaMock.album.create).not.toHaveBeenCalled();
+  });
 
-    const callArgs = prismaMock.familyUpdate.create.mock.calls[0][0].data;
-    // content is required in schema but null flows through
-    expect(callArgs.content).toBeNull();
+  it('FIXED: createUpdate throws when content is missing', async () => {
+    const formData = new FormData();
+
+    await expect(createUpdate(formData)).rejects.toThrow('Content is required');
+    expect(prismaMock.familyUpdate.create).not.toHaveBeenCalled();
   });
 });
 
@@ -750,7 +727,7 @@ describe('Database schema field alignment', () => {
     expect(['PUBLIC', 'FAMILY']).toContain(callArgs.visibility);
   });
 
-  it('BUG: createEvent does not validate invalid visibility values', async () => {
+  it('FIXED: createEvent normalizes invalid visibility to PUBLIC', async () => {
     const formData = makeFormData({
       title: 'Event',
       startDate: '2026-07-15',
@@ -760,9 +737,8 @@ describe('Database schema field alignment', () => {
     await createEvent(formData);
 
     const callArgs = prismaMock.event.create.mock.calls[0][0].data;
-    // The code casts with `as "PUBLIC" | "FAMILY"` but doesn't validate
-    // In production, Prisma would throw an enum validation error
-    expect(callArgs.visibility).toBe('INVALID_VALUE');
+    // Invalid visibility values are now normalized to PUBLIC
+    expect(callArgs.visibility).toBe('PUBLIC');
   });
 
   it('createInvite data includes all required InviteToken fields', async () => {
