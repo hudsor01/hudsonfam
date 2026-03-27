@@ -1,0 +1,77 @@
+---
+title: "Building a Family Website from Scratch"
+date: "2026-03-25"
+excerpt: "A technical deep-dive into how we built thehudsonfam.com — from the design system to the Kubernetes deployment."
+tags: ["tech", "homelab", "webdev"]
+coverImage: null
+author: "Richard Hudson"
+---
+
+## The Stack
+
+Every good project starts with an over-thought tech stack. Here's ours:
+
+- **Next.js 16** with App Router and Server Components
+- **Tailwind CSS v4** with a custom navy-gold theme
+- **MDX** for blog posts (you're reading one right now)
+- **Prisma** talking to PostgreSQL
+- **Better Auth** for authentication
+- **K3s** for container orchestration
+
+Is this overkill for a family blog? Absolutely. But it's *our* overkill.
+
+## The Design System
+
+We went with a dark editorial aesthetic — think magazine layout meets late-night coding session. The color palette:
+
+| Token | Color | Usage |
+|-------|-------|-------|
+| Background | `#171d2a` | Page background |
+| Surface | `#1a2232` | Cards and elevated surfaces |
+| Primary | `#5b8dd9` | Links and UI controls |
+| Accent | `#d4ad6a` | Highlights and CTAs |
+| Text | `#f0e8d8` | Body text (warm cream) |
+
+Georgia for headlines gives it that editorial warmth. System fonts for everything else keeps it fast.
+
+## MDX for Blog Posts
+
+We chose MDX over a CMS for blog content. The tradeoffs:
+
+**Pros:**
+- Posts live in git — version controlled, reviewed, backed up
+- Full React component support inside posts
+- No external service to maintain
+- Fast rendering via `next-mdx-remote`
+
+**Cons:**
+- Non-technical family members can't easily write posts (yet)
+- No visual editor (planned for the admin panel later)
+
+For now, this works great. Blog posts are `.mdx` files in the repo, parsed with `gray-matter` for frontmatter and rendered with `next-mdx-remote/rsc`.
+
+## The Homepage
+
+The homepage follows a magazine-style layout:
+
+- **Hero** with the family name and tagline
+- **Featured post** as a large card
+- **Content grid** with recent posts in a 2-column layout
+- **Sidebar** with upcoming events, photo previews, and a weather widget
+
+All server-rendered. The weather widget hits the Open-Meteo API (free, no key required) and caches the result for 30 minutes.
+
+## What's Next
+
+The blog is just the beginning. Coming soon:
+
+- Photo albums with lightbox viewing
+- Family event calendar
+- Admin panel for content management
+- The homelab dashboard (replacing Glance)
+
+One step at a time. For now, we write.
+
+---
+
+*If you're interested in building something similar, check out the code on our GitHub. And if you're family reading this — yes, the Wi-Fi password is still the same.*
