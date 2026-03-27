@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MemberActions } from "./member-actions";
 import { InviteForm } from "./invite-form";
 
@@ -90,6 +91,11 @@ export default async function MembersPage() {
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-3">
+                    <Avatar className="size-7">
+                      <AvatarFallback className="text-xs">
+                        {(user.name || user.email).charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                     <span className="text-sm text-text font-medium truncate">
                       {user.name}
                     </span>

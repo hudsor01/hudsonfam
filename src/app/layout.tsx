@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
+import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
   title: {
@@ -36,7 +37,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
       <body className="bg-bg text-text font-sans antialiased min-h-screen">
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 
 import { submitMemory } from "@/lib/memorial-actions";
 import { useState, useRef } from "react";
+import { toast } from "sonner";
 
 const RELATIONSHIP_OPTIONS = [
   { group: "Immediate Family", options: ["Son", "Daughter", "Wife", "Husband", "Father", "Mother", "Brother", "Sister"] },
@@ -26,10 +27,11 @@ export function MemoryForm() {
       await submitMemory(formData);
       setSubmitted(true);
       formRef.current?.reset();
+      toast.success("Thank you for sharing your memory");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
-      );
+      const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

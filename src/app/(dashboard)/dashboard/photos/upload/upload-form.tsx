@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Album {
   id: string;
@@ -40,7 +48,7 @@ export function UploadForm({ albums }: { albums: Album[] }) {
     for (const file of files) {
       const formData = new FormData();
       formData.append("file", file);
-      if (selectedAlbum) {
+      if (selectedAlbum && selectedAlbum !== "__none__") {
         formData.append("albumId", selectedAlbum);
       }
       formData.append("title", file.name.replace(/\.[^/.]+$/, ""));
@@ -66,6 +74,11 @@ export function UploadForm({ albums }: { albums: Album[] }) {
     setResults(uploadResults);
     setUploading(false);
     setFiles([]);
+
+    const uploaded = uploadResults.filter((r) => !r.error).length;
+    const failed = uploadResults.filter((r) => r.error).length;
+    if (uploaded > 0) toast.success(`${uploaded} photo${uploaded !== 1 ? "s" : ""} uploaded`);
+    if (failed > 0) toast.error(`${failed} upload${failed !== 1 ? "s" : ""} failed`);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -81,18 +94,19 @@ export function UploadForm({ albums }: { albums: Album[] }) {
         <label className="block text-sm font-medium text-text-muted">
           Album (optional)
         </label>
-        <select
-          value={selectedAlbum}
-          onChange={(e) => setSelectedAlbum(e.target.value)}
-          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"
-        >
-          <option value="">No album</option>
-          {albums.map((album) => (
-            <option key={album.id} value={album.id}>
-              {album.title}
-            </option>
-          ))}
-        </select>
+        <Select value={selectedAlbum} onValueChange={setSelectedAlbum}>
+          <SelectTrigger>
+            <SelectValue placeholder="No album" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__none__">No album</SelectItem>
+            {albums.map((album) => (
+              <SelectItem key={album.id} value={album.id}>
+                {album.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* File input */}

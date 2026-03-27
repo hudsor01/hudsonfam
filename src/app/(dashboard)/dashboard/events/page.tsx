@@ -5,6 +5,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { deleteEvent } from "@/lib/dashboard-actions";
+import { DeleteButton } from "@/components/ui/delete-button";
 
 export default async function EventsPage() {
   const now = new Date();
@@ -77,19 +78,15 @@ export default async function EventsPage() {
                   >
                     Edit
                   </a>
-                  <form
+                  <DeleteButton
                     action={async () => {
                       "use server";
                       await deleteEvent(event.id);
                     }}
-                  >
-                    <button
-                      type="submit"
-                      className="text-xs text-red-400 hover:text-red-300 transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </form>
+                    title="Delete event?"
+                    description="This will permanently delete this event. This action cannot be undone."
+                    successMessage="Event deleted"
+                  />
                 </div>
               </div>
             ))}
@@ -130,19 +127,15 @@ export default async function EventsPage() {
                   >
                     Edit
                   </a>
-                  <form
+                  <DeleteButton
                     action={async () => {
                       "use server";
                       await deleteEvent(event.id);
                     }}
-                  >
-                    <button
-                      type="submit"
-                      className="text-xs text-red-400 hover:text-red-300 transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </form>
+                    title="Delete event?"
+                    description="This will permanently delete this event. This action cannot be undone."
+                    successMessage="Event deleted"
+                  />
                 </div>
               </div>
             ))}

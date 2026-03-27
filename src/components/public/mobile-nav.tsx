@@ -1,8 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { useState } from "react";
 
 interface NavLink {
   href: string;
@@ -15,47 +22,35 @@ export function MobileNav({ links }: { links: NavLink[] }) {
 
   return (
     <div className="md:hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className="text-text-muted hover:text-text p-2 -mr-2"
-        aria-label={open ? "Close menu" : "Open menu"}
-      >
-        {open ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <button
+            className="text-text-muted hover:text-text p-2 -mr-2"
+            aria-label="Open menu"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        )}
-      </button>
-
-      {open && (
-        <div className="absolute top-[65px] left-0 right-0 bg-surface border-b border-border z-50">
-          <div className="flex flex-col px-5 py-4 gap-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-[280px] bg-surface">
+          <SheetHeader>
+            <SheetTitle className="text-left font-serif text-accent">
+              The Hudson Family
+            </SheetTitle>
+          </SheetHeader>
+          <nav className="flex flex-col gap-1 mt-6">
             {links.map((link) => {
               const isActive =
                 link.href === "/"
@@ -75,7 +70,7 @@ export function MobileNav({ links }: { links: NavLink[] }) {
                 </Link>
               );
             })}
-            <div className="border-t border-border mt-2 pt-2">
+            <div className="border-t border-border mt-4 pt-4">
               <Link
                 href="/login"
                 onClick={() => setOpen(false)}
@@ -84,9 +79,9 @@ export function MobileNav({ links }: { links: NavLink[] }) {
                 Sign In
               </Link>
             </div>
-          </div>
-        </div>
-      )}
+          </nav>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

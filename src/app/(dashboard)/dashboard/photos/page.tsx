@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Card } from "@/components/ui/card";
 import { deletePhoto } from "@/lib/dashboard-actions";
+import { DeleteButton } from "@/components/ui/delete-button";
 
 export default async function PhotosPage() {
   const photos = await prisma.photo.findMany({
@@ -75,19 +76,17 @@ export default async function PhotosPage() {
                 )}
               </div>
               <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <form
+                <DeleteButton
                   action={async () => {
                     "use server";
                     await deletePhoto(photo.id);
                   }}
-                >
-                  <button
-                    type="submit"
-                    className="bg-red-500/90 hover:bg-red-500 text-white text-xs rounded px-2 py-1"
-                  >
-                    Delete
-                  </button>
-                </form>
+                  title="Delete photo?"
+                  description="This will permanently delete this photo. This action cannot be undone."
+                  label="Delete"
+                  successMessage="Photo deleted"
+                  className="bg-red-500/90 hover:bg-red-500 text-white text-xs rounded px-2 py-1"
+                />
               </div>
             </div>
           ))}

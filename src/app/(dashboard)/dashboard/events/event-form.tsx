@@ -1,8 +1,17 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 interface EventFormProps {
   action: (formData: FormData) => Promise<void>;
@@ -18,13 +27,23 @@ interface EventFormProps {
 }
 
 export function EventForm({ action, initial }: EventFormProps) {
+  const [allDay, setAllDay] = useState(initial?.allDay ?? false);
   const [error, formAction, isPending] = useActionState(
     async (_prev: string | null, formData: FormData) => {
+      // Inject the allDay value since Switch doesn't submit like a checkbox
+      if (allDay) {
+        formData.set("allDay", "on");
+      } else {
+        formData.delete("allDay");
+      }
       try {
         await action(formData);
+        toast.success(initial ? "Event updated" : "Event created");
         return null;
       } catch (e) {
-        return e instanceof Error ? e.message : "Something went wrong";
+        const msg = e instanceof Error ? e.message : "Something went wrong";
+        toast.error(msg);
+        return msg;
       }
     },
     null
@@ -84,11 +103,9 @@ export function EventForm({ action, initial }: EventFormProps) {
 
       <div className="flex items-center gap-6">
         <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            name="allDay"
-            defaultChecked={initial?.allDay}
-            className="rounded border-border text-primary focus:ring-primary/30"
+          <Switch
+            checked={allDay}
+            onCheckedChange={setAllDay}
           />
           <span className="text-sm text-text-muted">All day event</span>
         </label>
@@ -97,14 +114,15 @@ export function EventForm({ action, initial }: EventFormProps) {
           <label className="block text-sm font-medium text-text-muted">
             Visibility
           </label>
-          <select
-            name="visibility"
-            defaultValue={initial?.visibility || "PUBLIC"}
-            className="bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"
-          >
-            <option value="PUBLIC">Public</option>
-            <option value="FAMILY">Family Only</option>
-          </select>
+          <Select name="visibility" defaultValue={initial?.visibility || "PUBLIC"}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Visibility" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="PUBLIC">Public</SelectItem>
+              <SelectItem value="FAMILY">Family Only</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

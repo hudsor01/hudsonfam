@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { createInvite } from "@/lib/dashboard-actions";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function InviteForm() {
   const [email, setEmail] = useState("");
@@ -24,11 +32,13 @@ export function InviteForm() {
     setInviteLink(link);
     setLoading(false);
     setEmail("");
+    toast.success("Invite created");
   }
 
   async function handleCopy() {
     await navigator.clipboard.writeText(inviteLink);
     setCopied(true);
+    toast.success("Invite link copied");
     setTimeout(() => setCopied(false), 2000);
   }
 
@@ -47,14 +57,15 @@ export function InviteForm() {
         </div>
         <div>
           <label className="text-xs text-text-muted mb-1 block">Role</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text focus:outline-none focus:border-primary"
-          >
-            <option value="member">Member</option>
-            <option value="admin">Admin</option>
-          </select>
+          <Select value={role} onValueChange={setRole}>
+            <SelectTrigger className="w-[110px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="member">Member</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <button
           type="submit"

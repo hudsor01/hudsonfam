@@ -25,19 +25,21 @@ export function ClusterMetrics({ metrics }: ClusterMetricsProps) {
       }
     >
       <div className="flex divide-x divide-border/50">
-        <MetricCard label="Pods" value={metrics.pods} color="green" />
-        <MetricCard label="Namespaces" value={metrics.namespaces} color="gold" />
+        <MetricCard label="Pods" value={metrics.pods} color="green" tooltip="Total running pods across all namespaces" />
+        <MetricCard label="Namespaces" value={metrics.namespaces} color="gold" tooltip="Active Kubernetes namespaces" />
         <MetricCard
           label="CPU Req"
           value={metrics.cpuRequestPercent}
           suffix="%"
           color="gold"
+          tooltip="Percentage of CPU resources requested by pods"
         />
         <MetricCard
           label="Memory"
           value={metrics.memoryUsagePercent}
           suffix="%"
           color={metrics.memoryUsagePercent > 80 ? "red" : "gold"}
+          tooltip="Current node memory utilization"
         />
       </div>
     </WidgetCard>

@@ -5,6 +5,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { deleteUpdate } from "@/lib/dashboard-actions";
+import { DeleteButton } from "@/components/ui/delete-button";
 
 export default async function UpdatesPage() {
   const updates = await prisma.familyUpdate.findMany({
@@ -61,19 +62,16 @@ export default async function UpdatesPage() {
                     </Badge>
                   </div>
                 </div>
-                <form
+                <DeleteButton
                   action={async () => {
                     "use server";
                     await deleteUpdate(update.id);
                   }}
-                >
-                  <button
-                    type="submit"
-                    className="text-xs text-red-400 hover:text-red-300 transition-colors shrink-0"
-                  >
-                    Delete
-                  </button>
-                </form>
+                  title="Delete update?"
+                  description="This will permanently delete this family update. This action cannot be undone."
+                  successMessage="Update deleted"
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors shrink-0"
+                />
               </div>
             </div>
           ))}

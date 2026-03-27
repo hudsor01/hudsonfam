@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 import { MemoryForm } from "./memory-form";
 import Link from "next/link";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export const metadata: Metadata = {
   title: "Richard Hudson Sr. — In Loving Memory | The Hudson Family",
@@ -416,11 +417,11 @@ export default async function RichardHudsonSrMemorialPage() {
                   &ldquo;{memory.content}&rdquo;
                 </blockquote>
                 <div className="flex items-center gap-3">
-                  <div className="size-8 rounded-full bg-accent/10 flex items-center justify-center">
-                    <span className="text-accent text-xs font-semibold">
+                  <Avatar>
+                    <AvatarFallback className="bg-accent/10 text-accent text-xs font-semibold">
                       {memory.firstName.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
+                    </AvatarFallback>
+                  </Avatar>
                   <div>
                     <div className="flex items-center gap-2">
                       <p

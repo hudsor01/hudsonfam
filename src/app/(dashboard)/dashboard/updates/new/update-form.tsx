@@ -1,17 +1,28 @@
 "use client";
 
 import { useActionState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { createUpdate } from "@/lib/dashboard-actions";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function UpdateForm() {
   const [error, formAction, isPending] = useActionState(
     async (_prev: string | null, formData: FormData) => {
       try {
         await createUpdate(formData);
+        toast.success("Update posted");
         return null;
       } catch (e) {
-        return e instanceof Error ? e.message : "Something went wrong";
+        const msg = e instanceof Error ? e.message : "Something went wrong";
+        toast.error(msg);
+        return msg;
       }
     },
     null
@@ -42,14 +53,15 @@ export function UpdateForm() {
         <label className="block text-sm font-medium text-text-muted">
           Visibility
         </label>
-        <select
-          name="visibility"
-          defaultValue="PUBLIC"
-          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"
-        >
-          <option value="PUBLIC">Public</option>
-          <option value="FAMILY">Family Only</option>
-        </select>
+        <Select name="visibility" defaultValue="PUBLIC">
+          <SelectTrigger>
+            <SelectValue placeholder="Visibility" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="PUBLIC">Public</SelectItem>
+            <SelectItem value="FAMILY">Family Only</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex gap-3 pt-2">

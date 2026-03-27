@@ -1,7 +1,26 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { updateUserRole, banUser, unbanUser } from "@/lib/dashboard-actions";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface MemberActionsProps {
   userId: string;
@@ -11,22 +30,28 @@ interface MemberActionsProps {
 
 export function MemberActions({ userId, currentRole, isBanned }: MemberActionsProps) {
   const [loading, setLoading] = useState(false);
+  const [banReason, setBanReason] = useState("");
 
   const handleRoleChange = async (newRole: string) => {
     setLoading(true);
     try {
       await updateUserRole(userId, newRole);
+      toast.success(`Role updated to ${newRole}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update role");
     } finally {
       setLoading(false);
     }
   };
 
   const handleBan = async () => {
-    const reason = prompt("Ban reason (optional):");
-    if (reason === null) return; // User cancelled
     setLoading(true);
     try {
-      await banUser(userId, reason);
+      await banUser(userId, banReason);
+      toast.success("User banned");
+      setBanReason("");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to ban user");
     } finally {
       setLoading(false);
     }
@@ -36,6 +61,9 @@ export function MemberActions({ userId, currentRole, isBanned }: MemberActionsPr
     setLoading(true);
     try {
       await unbanUser(userId);
+      toast.success("User unbanned");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to unban user");
     } finally {
       setLoading(false);
     }
@@ -47,15 +75,19 @@ export function MemberActions({ userId, currentRole, isBanned }: MemberActionsPr
 
   return (
     <div className="flex items-center gap-2 shrink-0">
-      <select
+      <Select
         value={currentRole}
-        onChange={(e) => handleRoleChange(e.target.value)}
+        onValueChange={handleRoleChange}
         disabled={loading}
-        className="bg-bg border border-border rounded-md px-2 py-1 text-xs text-text focus:outline-none focus:border-primary disabled:opacity-50"
       >
-        <option value="member">member</option>
-        <option value="admin">admin</option>
-      </select>
+        <SelectTrigger className="w-[100px] h-7 text-xs">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="member">member</SelectItem>
+          <SelectItem value="admin">admin</SelectItem>
+        </SelectContent>
+      </Select>
 
       {isBanned ? (
         <button
@@ -66,13 +98,40 @@ export function MemberActions({ userId, currentRole, isBanned }: MemberActionsPr
           Unban
         </button>
       ) : (
-        <button
-          onClick={handleBan}
-          disabled={loading}
-          className="text-xs text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
-        >
-          Ban
-        </button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button
+              disabled={loading}
+              className="text-xs text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
+            >
+              Ban
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Ban this user?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will prevent the user from accessing the site. You can unban them later.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-text-muted">Reason (optional)</label>
+              <input
+                type="text"
+                value={banReason}
+                onChange={(e) => setBanReason(e.target.value)}
+                placeholder="Why is this user being banned?"
+                className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary"
+              />
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleBan} disabled={loading}>
+                {loading ? "Banning..." : "Ban User"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
     </div>
   );

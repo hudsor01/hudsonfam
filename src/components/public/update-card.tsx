@@ -1,3 +1,5 @@
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
 interface UpdateCardProps {
   content: string;
   images: string[];
@@ -39,10 +41,9 @@ export default function UpdateCard({
     <article className="bg-surface border border-border rounded-xl p-5">
       {/* Author and timestamp */}
       <div className="flex items-center gap-3 mb-3">
-        {/* Avatar placeholder -- first letter of name */}
-        <div className="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-medium flex-shrink-0">
-          {postedByName.charAt(0).toUpperCase()}
-        </div>
+        <Avatar className="flex-shrink-0">
+          <AvatarFallback>{postedByName.charAt(0).toUpperCase()}</AvatarFallback>
+        </Avatar>
         <div>
           <span className="text-text text-sm font-medium">
             {postedByName}

@@ -1,8 +1,16 @@
 "use client";
 
 import { useActionState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface PostFormProps {
   action: (formData: FormData) => Promise<void>;
@@ -28,9 +36,12 @@ export function PostForm({ action, initial }: PostFormProps) {
     async (_prev: string | null, formData: FormData) => {
       try {
         await action(formData);
+        toast.success(initial ? "Post updated" : "Post created");
         return null;
       } catch (e) {
-        return e instanceof Error ? e.message : "Something went wrong";
+        const msg = e instanceof Error ? e.message : "Something went wrong";
+        toast.error(msg);
+        return msg;
       }
     },
     null
@@ -100,14 +111,15 @@ export function PostForm({ action, initial }: PostFormProps) {
         <label className="block text-sm font-medium text-text-muted">
           Status
         </label>
-        <select
-          name="status"
-          defaultValue={initial?.status || "DRAFT"}
-          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"
-        >
-          <option value="DRAFT">Draft</option>
-          <option value="PUBLISHED">Published</option>
-        </select>
+        <Select name="status" defaultValue={initial?.status || "DRAFT"}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="DRAFT">Draft</SelectItem>
+            <SelectItem value="PUBLISHED">Published</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex gap-3 pt-2">

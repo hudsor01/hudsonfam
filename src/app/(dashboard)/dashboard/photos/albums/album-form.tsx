@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -28,9 +29,12 @@ export function AlbumForm({ action, initial, showCoverPhoto = false }: AlbumForm
     async (_prev: string | null, formData: FormData) => {
       try {
         await action(formData);
+        toast.success(initial ? "Album updated" : "Album created");
         return null;
       } catch (e) {
-        return e instanceof Error ? e.message : "Something went wrong";
+        const msg = e instanceof Error ? e.message : "Something went wrong";
+        toast.error(msg);
+        return msg;
       }
     },
     null

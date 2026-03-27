@@ -1,7 +1,26 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { toast } from "sonner";
 import { addMemorialMedia, removeMemorialMedia } from "@/lib/memorial-actions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function AddMediaForm() {
   const [error, setError] = useState("");
@@ -17,8 +36,11 @@ export function AddMediaForm() {
       const formData = new FormData(formRef.current!);
       await addMemorialMedia(formData);
       formRef.current?.reset();
+      toast.success("Media added");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add media");
+      const msg = err instanceof Error ? err.message : "Failed to add media";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -44,15 +66,15 @@ export function AddMediaForm() {
           <label htmlFor="type" className="block text-sm font-medium text-text-muted mb-1.5">
             Type <span className="text-accent">*</span>
           </label>
-          <select
-            id="type"
-            name="type"
-            required
-            className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
-          >
-            <option value="photo">Photo</option>
-            <option value="video">Video</option>
-          </select>
+          <Select name="type" defaultValue="photo">
+            <SelectTrigger>
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="photo">Photo</SelectItem>
+              <SelectItem value="video">Video</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -108,25 +130,44 @@ export function MediaDeleteButton({ mediaId }: MediaDeleteButtonProps) {
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm("Remove this media item?")) return;
     setLoading(true);
     try {
       await removeMemorialMedia(mediaId);
+      toast.success("Media removed");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to remove media");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <button
-      onClick={handleDelete}
-      disabled={loading}
-      className="absolute top-2 right-2 size-7 rounded-full bg-bg/80 border border-border text-red-400 hover:bg-red-400/20 hover:border-red-400/30 transition-colors flex items-center justify-center disabled:opacity-50"
-      title="Remove"
-    >
-      <svg className="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button
+          disabled={loading}
+          className="absolute top-2 right-2 size-7 rounded-full bg-bg/80 border border-border text-red-400 hover:bg-red-400/20 hover:border-red-400/30 transition-colors flex items-center justify-center disabled:opacity-50"
+          title="Remove"
+        >
+          <svg className="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Remove this media?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This will permanently remove this media item from the memorial page.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete} disabled={loading}>
+            {loading ? "Removing..." : "Remove"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

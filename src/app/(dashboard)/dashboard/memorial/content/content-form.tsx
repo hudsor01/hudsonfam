@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { updateMemorialContent } from "@/lib/memorial-actions";
 
 interface ContentSectionFormProps {
@@ -33,9 +34,12 @@ export function ContentSectionForm({
     try {
       await updateMemorialContent(section, content);
       setSaved(true);
+      toast.success("Content saved");
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save");
+      const msg = err instanceof Error ? err.message : "Failed to save";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

@@ -1,9 +1,22 @@
+"use client";
+
 import { ServiceHealth } from "@/lib/dashboard/types";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ServiceMonitorProps {
   title: string;
   services: ServiceHealth[];
 }
+
+const statusLabels: Record<ServiceHealth["status"], string> = {
+  up: "Service is running normally",
+  down: "Service is down or unreachable",
+  unknown: "Service status could not be determined",
+};
 
 function StatusDot({ status }: { status: ServiceHealth["status"] }) {
   const colors = {
@@ -13,7 +26,14 @@ function StatusDot({ status }: { status: ServiceHealth["status"] }) {
   };
 
   return (
-    <span className={`inline-block size-2 rounded-full ${colors[status]}`} />
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className={`inline-block size-2 rounded-full ${colors[status]} cursor-default`} />
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{statusLabels[status]}</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
