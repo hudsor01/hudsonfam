@@ -31,11 +31,15 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy source code
 COPY . .
 
-# Generate Prisma client
-RUN bunx prisma generate
+# Generate Prisma client (dummy URL — only needed for schema parsing, not connection)
+RUN DIRECT_DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" bunx prisma generate
 
 # Build Next.js in standalone mode
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+ENV DIRECT_DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+ENV BETTER_AUTH_SECRET="build-time-placeholder"
+ENV BETTER_AUTH_URL="http://localhost:3000"
 RUN bun run build
 
 # ============================================================
