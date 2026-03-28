@@ -1,7 +1,7 @@
 # State
 
 ## Current Phase
-Phase 8: Tailwind v4 Advanced (v1.2 — Integration Solidification)
+Phase 9: shadcn Sidebar Upgrade (v1.2 — Integration Solidification)
 
 ## What's Done
 - v1.0 — Core Site: Complete
@@ -16,10 +16,11 @@ Phase 8: Tailwind v4 Advanced (v1.2 — Integration Solidification)
 
 ## What's Done (v1.2)
 - Phase 6: Theme Alignment — shadcn-standard variable naming, destructive tokens, cn() fixes, 12 new components installed (40 total)
-- Phase 7: TW4 Quick Wins — text-balance/text-pretty on headings/body, caret-primary on inputs, open:/not-last: variants
+- Phase 7: TW4 Quick Wins — text-balance/text-pretty, caret-primary, open:/not-last: variants
+- Phase 8: TW4 Advanced — container queries, themed shadows, OKLCH gradients, scroll snap, 3D hover, contrast-more/less, logical properties
 
 ## What's Next
-Phase 8: Tailwind v4 Advanced — container queries, shadow colors, scroll snap, 3D effects, accessibility variants
+Phase 9: shadcn Sidebar Upgrade — replace static aside with SidebarProvider, collapsible, mobile-responsive
 
 ## Key Decisions
 - Use TanStack Form (NOT react-hook-form) for form validation — user requirement
