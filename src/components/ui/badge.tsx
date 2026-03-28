@@ -1,4 +1,5 @@
 import { type HTMLAttributes, forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 type BadgeVariant = "default" | "primary" | "accent" | "outline";
 
@@ -14,16 +15,15 @@ const variantStyles: Record<BadgeVariant, string> = {
 };
 
 const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ variant = "default", className = "", children, ...props }, ref) => {
+  ({ variant = "default", className, children, ...props }, ref) => {
     return (
       <span
         ref={ref}
-        className={`
-          inline-flex items-center px-2.5 py-0.5 rounded-full
-          text-xs font-medium tracking-wide
-          ${variantStyles[variant]}
-          ${className}
-        `}
+        className={cn(
+          "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium tracking-wide",
+          variantStyles[variant],
+          className
+        )}
         {...props}
       >
         {children}

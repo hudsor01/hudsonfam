@@ -1,4 +1,5 @@
 import { type HTMLAttributes, forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   hover?: boolean;
@@ -13,16 +14,16 @@ const paddingStyles = {
 };
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ hover = false, padding = "md", className = "", children, ...props }, ref) => {
+  ({ hover = false, padding = "md", className, children, ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={`
-          bg-card border border-border rounded-xl
-          ${hover ? "transition-colors duration-200 hover:border-primary/30 hover:bg-card/80" : ""}
-          ${paddingStyles[padding]}
-          ${className}
-        `}
+        className={cn(
+          "bg-card border border-border rounded-xl",
+          hover && "transition-colors duration-200 hover:border-primary/30 hover:bg-card/80",
+          paddingStyles[padding],
+          className
+        )}
         {...props}
       >
         {children}
@@ -36,11 +37,11 @@ Card.displayName = "Card";
 interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {}
 
 const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
-  ({ className = "", children, ...props }, ref) => {
+  ({ className, children, ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={`mb-3 ${className}`}
+        className={cn("mb-3", className)}
         {...props}
       >
         {children}

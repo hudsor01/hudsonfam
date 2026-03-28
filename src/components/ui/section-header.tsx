@@ -1,4 +1,5 @@
 import { type HTMLAttributes, forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 interface SectionHeaderProps extends HTMLAttributes<HTMLDivElement> {
   /** Small uppercase label (used in sidebars and section dividers) */
@@ -14,13 +15,13 @@ interface SectionHeaderProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
-  ({ label, title, subtitle, action, className = "", ...props }, ref) => {
+  ({ label, title, subtitle, action, className, ...props }, ref) => {
     // Page-level header with title + subtitle
     if (title) {
       return (
         <div
           ref={ref}
-          className={`mb-4 ${className}`}
+          className={cn("mb-4", className)}
           {...props}
         >
           <div className="flex items-center justify-between">
@@ -45,7 +46,7 @@ const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
     return (
       <div
         ref={ref}
-        className={`flex items-center justify-between mb-4 ${className}`}
+        className={cn("flex items-center justify-between mb-4", className)}
         {...props}
       >
         <h3 className="text-xs font-sans font-semibold tracking-[3px] text-primary uppercase">
