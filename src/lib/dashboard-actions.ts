@@ -286,6 +286,51 @@ export async function deletePhoto(id: string) {
   revalidatePath("/photos");
 }
 
+// --------------- Quick-create (no redirect) ---------------
+
+export async function quickCreateEvent(formData: FormData) {
+  const session = await requireRole(["owner", "admin", "member"]);
+  const title = formData.get("title");
+  if (!title) throw new Error("Title is required");
+
+  const startDate = formData.get("startDate");
+  if (!startDate) throw new Error("Start date is required");
+  const parsedStartDate = new Date(startDate as string);
+  if (isNaN(parsedStartDate.getTime())) throw new Error("Invalid start date");
+
+  await prisma.event.create({
+    data: {
+      title: title as string,
+      startDate: parsedStartDate,
+      allDay: true,
+      visibility: "PUBLIC",
+      createdById: session.user.id,
+    },
+  });
+
+  revalidatePath("/dashboard/events");
+  revalidatePath("/dashboard");
+  revalidatePath("/events");
+}
+
+export async function quickCreateUpdate(formData: FormData) {
+  const session = await requireRole(["owner", "admin", "member"]);
+  const content = formData.get("content");
+  if (!content) throw new Error("Content is required");
+
+  await prisma.familyUpdate.create({
+    data: {
+      content: content as string,
+      visibility: "PUBLIC",
+      postedById: session.user.id,
+    },
+  });
+
+  revalidatePath("/dashboard/updates");
+  revalidatePath("/dashboard");
+  revalidatePath("/family");
+}
+
 // --------------- Invites ---------------
 
 export async function createInvite(formData: FormData) {

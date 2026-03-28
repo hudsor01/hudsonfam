@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -26,6 +27,7 @@ export function UploadForm({ albums }: { albums: Album[] }) {
   const [selectedAlbum, setSelectedAlbum] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [results, setResults] = useState<UploadResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -42,10 +44,13 @@ export function UploadForm({ albums }: { albums: Album[] }) {
     if (files.length === 0) return;
 
     setUploading(true);
+    setUploadProgress(0);
     setError(null);
     const uploadResults: UploadResult[] = [];
 
-    for (const file of files) {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setUploadProgress(Math.round((i / files.length) * 100));
       const formData = new FormData();
       formData.append("file", file);
       if (selectedAlbum && selectedAlbum !== "__none__") {
@@ -71,6 +76,7 @@ export function UploadForm({ albums }: { albums: Album[] }) {
       }
     }
 
+    setUploadProgress(100);
     setResults(uploadResults);
     setUploading(false);
     setFiles([]);
@@ -154,6 +160,16 @@ export function UploadForm({ albums }: { albums: Album[] }) {
       >
         {uploading ? "Uploading..." : `Upload ${files.length || ""} Photo${files.length !== 1 ? "s" : ""}`}
       </Button>
+
+      {/* Upload progress */}
+      {uploading && (
+        <div className="space-y-1.5">
+          <Progress value={uploadProgress} />
+          <p className="text-xs text-muted-foreground">
+            Uploading... {uploadProgress}%
+          </p>
+        </div>
+      )}
 
       {/* Results */}
       {results.length > 0 && (

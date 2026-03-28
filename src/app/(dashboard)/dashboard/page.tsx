@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Badge } from "@/components/ui/badge";
+import { QuickEventDialog, QuickUpdateDialog } from "./quick-actions";
 
 export default async function DashboardPage() {
   const [postCount, publishedPostCount, photoCount, albumCount, eventCount, updateCount] =
@@ -101,6 +102,8 @@ export default async function DashboardPage() {
           >
             New Update
           </a>
+          <QuickEventDialog />
+          <QuickUpdateDialog />
         </div>
       </div>
 
