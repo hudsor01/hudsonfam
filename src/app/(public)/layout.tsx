@@ -36,7 +36,7 @@ export default function PublicLayout({
           ))}
           <Link
             href="/login"
-            className="text-accent hover:text-accent/80 transition-colors"
+            className="text-accent hover:text-accent/80 transition-colors contrast-more:underline"
           >
             Sign In
           </Link>
@@ -100,7 +100,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className="text-muted-foreground hover:text-foreground transition-colors"
+      className="text-muted-foreground hover:text-foreground transition-colors contrast-more:underline"
     >
       {children}
     </Link>
