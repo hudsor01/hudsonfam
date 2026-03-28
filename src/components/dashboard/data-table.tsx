@@ -145,30 +145,35 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Pagination */}
-      {table.getPageCount() > 1 && (
+      {(table.getPageCount() > 1 || table.getFilteredRowModel().rows.length !== data.length) && (
         <div className="flex items-center justify-between text-sm">
           <span className="text-xs text-muted-foreground">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            {table.getFilteredRowModel().rows.length} of {data.length} row{data.length !== 1 ? "s" : ""}
+            {table.getPageCount() > 1 && (
+              <> &middot; Page {table.getState().pagination.pageIndex + 1} of{" "}
+              {table.getPageCount()}</>
+            )}
           </span>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon-xs"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <ChevronLeft className="size-3" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon-xs"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <ChevronRight className="size-3" />
-            </Button>
-          </div>
+          {table.getPageCount() > 1 && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon-xs"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <ChevronLeft className="size-3" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon-xs"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                <ChevronRight className="size-3" />
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>
