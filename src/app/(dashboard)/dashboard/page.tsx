@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Badge } from "@/components/ui/badge";
+import { CollapsibleCard } from "@/components/dashboard/collapsible-card";
 import { QuickEventDialog, QuickUpdateDialog } from "./quick-actions";
 
 export default async function DashboardPage() {
@@ -110,12 +111,7 @@ export default async function DashboardPage() {
       {/* Recent activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
         {/* Recent posts */}
-        <Card padding="none">
-          <div className="px-5 py-3 border-b border-border">
-            <h3 className="text-sm font-medium text-foreground uppercase tracking-wide">
-              Recent Posts
-            </h3>
-          </div>
+        <CollapsibleCard title="Recent Posts">
           <div>
             {recentPosts.length === 0 ? (
               <div className="px-5 py-4 text-sm text-muted-foreground">
@@ -140,15 +136,10 @@ export default async function DashboardPage() {
               ))
             )}
           </div>
-        </Card>
+        </CollapsibleCard>
 
         {/* Upcoming events */}
-        <Card padding="none">
-          <div className="px-5 py-3 border-b border-border">
-            <h3 className="text-sm font-medium text-foreground uppercase tracking-wide">
-              Upcoming Events
-            </h3>
-          </div>
+        <CollapsibleCard title="Upcoming Events">
           <div>
             {upcomingEvents.length === 0 ? (
               <div className="px-5 py-4 text-sm text-muted-foreground">
@@ -174,7 +165,7 @@ export default async function DashboardPage() {
               ))
             )}
           </div>
-        </Card>
+        </CollapsibleCard>
       </div>
     </div>
   );

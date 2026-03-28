@@ -3,6 +3,11 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge, type BadgeVariant } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { MemberActions } from "./member-actions";
 
 export type MemberRow = {
@@ -27,17 +32,59 @@ export const memberColumns: ColumnDef<MemberRow>[] = [
     cell: ({ row }) => {
       const name = row.original.name;
       const email = row.original.email;
+      const role = row.original.role;
+      const createdAt = row.original.createdAt;
       const initial = (name || email).charAt(0).toUpperCase();
 
       return (
-        <div className="flex items-center gap-3">
-          <Avatar className="size-7">
-            <AvatarFallback className="text-xs">{initial}</AvatarFallback>
-          </Avatar>
-          <span className="text-sm text-foreground font-medium truncate">
-            {name}
-          </span>
-        </div>
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <button
+              type="button"
+              className="flex items-center gap-3 text-left cursor-default"
+            >
+              <Avatar className="size-7">
+                <AvatarFallback className="text-xs">{initial}</AvatarFallback>
+              </Avatar>
+              <span className="text-sm text-foreground font-medium truncate">
+                {name}
+              </span>
+            </button>
+          </HoverCardTrigger>
+          <HoverCardContent align="start" className="w-64">
+            <div className="flex items-center gap-3 mb-3">
+              <Avatar className="size-9">
+                <AvatarFallback className="text-sm">{initial}</AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">
+                  {name || "Unnamed"}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {email}
+                </p>
+              </div>
+            </div>
+            <div className="space-y-1.5 text-xs text-muted-foreground">
+              <div className="flex items-center justify-between">
+                <span>Role</span>
+                <Badge variant={getRoleVariant(role)} className="text-[10px]">
+                  {role}
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Joined</span>
+                <span className="text-foreground">
+                  {new Date(createdAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+            </div>
+          </HoverCardContent>
+        </HoverCard>
       );
     },
   },
