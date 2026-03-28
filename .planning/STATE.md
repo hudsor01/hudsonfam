@@ -1,7 +1,7 @@
 # State
 
 ## Current Phase
-Phase 12: Ecosystem Tooling (v1.2 — Integration Solidification)
+All v1.2 Integration Solidification phases complete (6-12)
 
 ## What's Done
 - v1.0 — Core Site: Complete
@@ -23,9 +23,13 @@ Phase 12: Ecosystem Tooling (v1.2 — Integration Solidification)
 - Phase 10.5: TanStack Table — DataTable component, posts/events/members tables with sort/filter/pagination
 - Phase 10.7: TanStack Query — evaluated, deferred (server-first architecture)
 - Phase 11: Component Integration — Calendar date picker, Dialog/Drawer quick actions, Pagination, Progress, Popover user profile
+- Phase 12: Ecosystem Tooling — unified radix-ui package, Collapsible/HoverCard integration, blocks evaluation (deferred)
 
 ## What's Next
-Phase 12: Ecosystem Tooling — shadcn skills, radix migration, blocks eval, additional components
+v2.0 — AI Integration (Qwen photo captions, Qdrant search, N8N automation, Resend emails)
+
+## Last Session
+2026-03-28 — Completed entire v1.2 milestone: Phases 6-12 (theme alignment, TW4 features, sidebar upgrade, TanStack Form/Table, component integration, ecosystem tooling)
 
 ## Key Decisions
 - Use TanStack Form (NOT react-hook-form) for form validation — user requirement

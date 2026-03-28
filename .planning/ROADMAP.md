@@ -19,7 +19,7 @@
 - Phase 4: Public site polish (animations, separators, scroll area) ✅
 - Phase 5: Advanced (command palette, photo effects) ✅
 
-## v1.2 — Integration Solidification (In Progress)
+## v1.2 — Integration Solidification (Complete)
 - Phase 6: Theme alignment — fix CSS variable naming to shadcn standard, hardcoded colors, cn() patterns ✅
 - Phase 7: Tailwind v4 quick wins — text-balance, text-pretty, field-sizing, accent-color, caret-color, open/not-* variants ✅
 - Phase 8: Tailwind v4 advanced — container queries, shadow colors, scroll snap, 3D effects, accessibility variants, logical properties ✅
@@ -28,7 +28,7 @@
 - Phase 10.5: TanStack Table — install @tanstack/react-table, replace manual admin list rendering with data tables ✅
 - Phase 10.7: TanStack Query evaluation — deferred (server-first architecture, no clear benefit) ✅
 - Phase 11: Component integration — wire Calendar, Dialog, Drawer, Pagination, Popover, Progress into actual pages ✅
-- Phase 12: Ecosystem tooling — shadcn skills, radix migration, blocks evaluation, additional components
+- Phase 12: Ecosystem tooling — shadcn skills, radix migration, blocks evaluation, additional components ✅
 
 ## v2.0 — AI Integration (Future)
 - Qwen 3.5 photo captions + alt text
