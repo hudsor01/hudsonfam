@@ -1,7 +1,7 @@
 # State
 
 ## Current Phase
-Phase 11: Component Integration (v1.2 — Integration Solidification)
+Phase 12: Ecosystem Tooling (v1.2 — Integration Solidification)
 
 ## What's Done
 - v1.0 — Core Site: Complete
@@ -22,9 +22,10 @@ Phase 11: Component Integration (v1.2 — Integration Solidification)
 - Phase 10: TanStack Form — @tanstack/react-form + zod, migrated all 5 forms
 - Phase 10.5: TanStack Table — DataTable component, posts/events/members tables with sort/filter/pagination
 - Phase 10.7: TanStack Query — evaluated, deferred (server-first architecture)
+- Phase 11: Component Integration — Calendar date picker, Dialog/Drawer quick actions, Pagination, Progress, Popover user profile
 
 ## What's Next
-Phase 11: Component Integration — Calendar, Dialog, Drawer, Pagination, Popover, Progress
+Phase 12: Ecosystem Tooling — shadcn skills, radix migration, blocks eval, additional components
 
 ## Key Decisions
 - Use TanStack Form (NOT react-hook-form) for form validation — user requirement
