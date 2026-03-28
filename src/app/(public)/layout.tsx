@@ -17,7 +17,7 @@ export default function PublicLayout({
 }) {
   return (
     <div className="min-h-screen flex flex-col">
-      <nav className="border-b border-border px-5 sm:px-7 py-5 flex items-center justify-between relative">
+      <nav className="border-b border-border ps-5 pe-5 sm:ps-7 sm:pe-7 py-5 flex items-center justify-between relative">
         <Link href="/" className="flex items-center gap-2.5">
           <div className="size-8 rounded-md bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white text-sm font-bold">
             H
