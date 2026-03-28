@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -12,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useZodForm } from "@/lib/form-utils";
+import { eventFormSchema } from "@/lib/schemas";
 
 interface EventFormProps {
   action: (formData: FormData) => Promise<void>;
@@ -27,103 +30,185 @@ interface EventFormProps {
 }
 
 export function EventForm({ action, initial }: EventFormProps) {
-  const [allDay, setAllDay] = useState(initial?.allDay ?? false);
-  const [error, formAction, isPending] = useActionState(
-    async (_prev: string | null, formData: FormData) => {
-      // Inject the allDay value since Switch doesn't submit like a checkbox
-      if (allDay) {
-        formData.set("allDay", "on");
-      } else {
-        formData.delete("allDay");
-      }
-      try {
-        await action(formData);
-        toast.success(initial ? "Event updated" : "Event created");
-        return null;
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "Something went wrong";
-        toast.error(msg);
-        return msg;
-      }
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
+
+  const form = useZodForm({
+    defaultValues: {
+      title: initial?.title ?? "",
+      description: initial?.description ?? "",
+      location: initial?.location ?? "",
+      startDate: initial?.startDate ?? "",
+      endDate: initial?.endDate ?? "",
+      allDay: initial?.allDay ?? false,
+      visibility: (initial?.visibility ?? "PUBLIC") as "PUBLIC" | "FAMILY",
     },
-    null
-  );
+    schema: eventFormSchema,
+  });
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setServerError(null);
+
+    form.handleSubmit();
+
+    if (!form.state.isValid) return;
+
+    setIsPending(true);
+    try {
+      const values = form.state.values;
+      const formData = new FormData();
+      formData.set("title", values.title);
+      formData.set("description", values.description ?? "");
+      formData.set("location", values.location ?? "");
+      formData.set("startDate", values.startDate);
+      formData.set("endDate", values.endDate ?? "");
+      if (values.allDay) formData.set("allDay", "on");
+      formData.set("visibility", values.visibility);
+
+      await action(formData);
+      toast.success(initial ? "Event updated" : "Event created");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Something went wrong";
+      setServerError(msg);
+      toast.error(msg);
+    } finally {
+      setIsPending(false);
+    }
+  }
 
   return (
-    <form action={formAction} className="space-y-5 max-w-2xl">
-      {error && (
+    <form onSubmit={handleSubmit} className="space-y-5 max-w-2xl">
+      {serverError && (
         <div className="bg-red-400/10 border border-red-400/25 rounded-lg px-4 py-3 text-sm text-red-400">
-          {error}
+          {serverError}
         </div>
       )}
 
-      <Input
-        label="Title"
-        name="title"
-        required
-        defaultValue={initial?.title}
-        placeholder="Family BBQ, Birthday Party, etc."
-      />
+      <form.Field name="title">
+        {(field) => (
+          <Input
+            label="Title"
+            name="title"
+            placeholder="Family BBQ, Birthday Party, etc."
+            value={field.state.value}
+            onChange={(e) => field.handleChange(e.target.value)}
+            onBlur={field.handleBlur}
+            error={field.state.meta.errors.join(", ") || undefined}
+          />
+        )}
+      </form.Field>
 
-      <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-muted-foreground">
-          Description
-        </label>
-        <textarea
-          name="description"
-          rows={3}
-          defaultValue={initial?.description || ""}
-          className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground caret-primary placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 resize-y field-sizing-content"
-          placeholder="Event details..."
-        />
-      </div>
+      <form.Field name="description">
+        {(field) => (
+          <div className="space-y-1.5">
+            <Label htmlFor="description">Description</Label>
+            <textarea
+              id="description"
+              name="description"
+              rows={3}
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+              className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground caret-primary placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 resize-y field-sizing-content"
+              placeholder="Event details..."
+            />
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-xs text-destructive mt-1">
+                {field.state.meta.errors.join(", ")}
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
 
-      <Input
-        label="Location"
-        name="location"
-        defaultValue={initial?.location || ""}
-        placeholder="Where is this happening?"
-      />
+      <form.Field name="location">
+        {(field) => (
+          <Input
+            label="Location"
+            name="location"
+            placeholder="Where is this happening?"
+            value={field.state.value}
+            onChange={(e) => field.handleChange(e.target.value)}
+            onBlur={field.handleBlur}
+            error={field.state.meta.errors.join(", ") || undefined}
+          />
+        )}
+      </form.Field>
 
       <div className="grid grid-cols-2 gap-4">
-        <Input
-          label="Start Date"
-          name="startDate"
-          type="datetime-local"
-          required
-          defaultValue={initial?.startDate}
-        />
-        <Input
-          label="End Date"
-          name="endDate"
-          type="datetime-local"
-          defaultValue={initial?.endDate || ""}
-        />
+        <form.Field name="startDate">
+          {(field) => (
+            <Input
+              label="Start Date"
+              name="startDate"
+              type="datetime-local"
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+              error={field.state.meta.errors.join(", ") || undefined}
+            />
+          )}
+        </form.Field>
+
+        <form.Field name="endDate">
+          {(field) => (
+            <Input
+              label="End Date"
+              name="endDate"
+              type="datetime-local"
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+              error={field.state.meta.errors.join(", ") || undefined}
+            />
+          )}
+        </form.Field>
       </div>
 
       <div className="flex items-center gap-6">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <Switch
-            checked={allDay}
-            onCheckedChange={setAllDay}
-          />
-          <span className="text-sm text-muted-foreground">All day event</span>
-        </label>
+        <form.Field name="allDay">
+          {(field) => (
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Switch
+                checked={field.state.value}
+                onCheckedChange={(checked) => field.handleChange(checked)}
+              />
+              <span className="text-sm text-muted-foreground">
+                All day event
+              </span>
+            </label>
+          )}
+        </form.Field>
 
-        <div className="space-y-1.5">
-          <label className="block text-sm font-medium text-muted-foreground">
-            Visibility
-          </label>
-          <Select name="visibility" defaultValue={initial?.visibility || "PUBLIC"}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Visibility" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="PUBLIC">Public</SelectItem>
-              <SelectItem value="FAMILY">Family Only</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <form.Field name="visibility">
+          {(field) => (
+            <div className="space-y-1.5">
+              <Label>Visibility</Label>
+              <Select
+                name="visibility"
+                value={field.state.value}
+                onValueChange={(v) =>
+                  field.handleChange(v as "PUBLIC" | "FAMILY")
+                }
+              >
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Visibility" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PUBLIC">Public</SelectItem>
+                  <SelectItem value="FAMILY">Family Only</SelectItem>
+                </SelectContent>
+              </Select>
+              {field.state.meta.errors.length > 0 && (
+                <p className="text-xs text-destructive mt-1">
+                  {field.state.meta.errors.join(", ")}
+                </p>
+              )}
+            </div>
+          )}
+        </form.Field>
       </div>
 
       <div className="flex gap-3 pt-2">
