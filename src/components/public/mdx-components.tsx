@@ -3,7 +3,7 @@ import type { MDXComponents } from "mdx/types";
 export const mdxComponents: MDXComponents = {
   h1: ({ children, ...props }) => (
     <h1
-      className="text-3xl sm:text-4xl font-serif text-foreground font-normal mt-10 mb-4"
+      className="text-3xl sm:text-4xl font-serif text-foreground font-normal mt-10 mb-4 text-balance"
       {...props}
     >
       {children}
@@ -11,7 +11,7 @@ export const mdxComponents: MDXComponents = {
   ),
   h2: ({ children, ...props }) => (
     <h2
-      className="text-2xl sm:text-3xl font-serif text-foreground font-normal mt-8 mb-3"
+      className="text-2xl sm:text-3xl font-serif text-foreground font-normal mt-8 mb-3 text-balance"
       {...props}
     >
       {children}
@@ -19,7 +19,7 @@ export const mdxComponents: MDXComponents = {
   ),
   h3: ({ children, ...props }) => (
     <h3
-      className="text-xl sm:text-2xl font-serif text-foreground font-normal mt-6 mb-2"
+      className="text-xl sm:text-2xl font-serif text-foreground font-normal mt-6 mb-2 text-balance"
       {...props}
     >
       {children}
@@ -27,7 +27,7 @@ export const mdxComponents: MDXComponents = {
   ),
   h4: ({ children, ...props }) => (
     <h4
-      className="text-lg font-serif text-foreground font-normal mt-5 mb-2"
+      className="text-lg font-serif text-foreground font-normal mt-5 mb-2 text-balance"
       {...props}
     >
       {children}
@@ -35,7 +35,7 @@ export const mdxComponents: MDXComponents = {
   ),
   p: ({ children, ...props }) => (
     <p
-      className="text-foreground text-base leading-relaxed mb-4"
+      className="text-foreground text-base leading-relaxed mb-4 text-pretty"
       {...props}
     >
       {children}

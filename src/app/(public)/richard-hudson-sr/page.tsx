@@ -259,14 +259,14 @@ export default async function RichardHudsonSrMemorialPage() {
             In Loving Memory
           </p>
           <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-serif text-foreground font-normal leading-tight mb-6"
+            className="text-4xl sm:text-5xl lg:text-6xl font-serif text-foreground font-normal leading-tight mb-6 text-balance"
             itemProp="name"
           >
             Richard Hudson Sr.
           </h1>
           <div className="w-16 h-px bg-accent/40 mx-auto mb-6" />
           <p
-            className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed italic"
+            className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed italic text-pretty"
             itemProp="description"
           >
             A devoted father, a wise mentor, and a true friend to everyone he
@@ -284,7 +284,7 @@ export default async function RichardHudsonSrMemorialPage() {
         <h2 className="text-xs font-sans font-semibold tracking-[4px] text-primary uppercase text-center mb-8">
           About Richard Hudson Sr.
         </h2>
-        <div className="prose prose-invert mx-auto text-muted-foreground text-sm sm:text-base leading-relaxed space-y-4">
+        <div className="prose prose-invert mx-auto text-muted-foreground text-sm sm:text-base leading-relaxed space-y-4 text-pretty">
           <p>
             Richard Hudson Sr. was a man who believed in the power of family,
             hard work, and kindness. Known to those closest to him simply as
@@ -384,14 +384,14 @@ export default async function RichardHudsonSrMemorialPage() {
         <h2 className="text-xs font-sans font-semibold tracking-[4px] text-accent uppercase text-center mb-3">
           Memories of Richard Hudson Sr.
         </h2>
-        <p className="text-muted-foreground text-sm text-center mb-12 max-w-md mx-auto">
+        <p className="text-muted-foreground text-sm text-center mb-12 max-w-md mx-auto text-pretty">
           Share a memory, a story, or a few words about what Richard Hudson Sr.
           meant to you. Every memory helps keep his legacy alive.
         </p>
 
         {/* Memory Submission Form */}
         <div className="bg-card border border-border rounded-xl p-6 sm:p-8 mb-12" id="share">
-          <h3 className="text-lg font-serif text-foreground mb-6">
+          <h3 className="text-lg font-serif text-foreground mb-6 text-balance">
             Share a Memory of Richard Hudson Sr.
           </h3>
           <MemoryForm />

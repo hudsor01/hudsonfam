@@ -89,11 +89,11 @@ export default async function BlogPostPage({ params }: PageProps) {
           <span className="text-sm text-text-dim">&bull;</span>
           <span className="text-sm text-text-dim">{post.readingTime}</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-serif text-foreground font-normal mb-3">
+        <h1 className="text-3xl sm:text-4xl font-serif text-foreground font-normal mb-3 text-balance">
           {post.frontmatter.title}
         </h1>
         {post.frontmatter.excerpt && (
-          <p className="text-muted-foreground text-lg italic leading-relaxed">
+          <p className="text-muted-foreground text-lg italic leading-relaxed text-pretty">
             {post.frontmatter.excerpt}
           </p>
         )}

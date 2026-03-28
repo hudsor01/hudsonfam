@@ -82,7 +82,7 @@ export default async function PhotosPage() {
 
                   {/* Album info */}
                   <div className="p-4">
-                    <h2 className="text-foreground font-serif text-lg group-hover:text-primary transition-colors">
+                    <h2 className="text-foreground font-serif text-lg group-hover:text-primary transition-colors text-balance">
                       {album.title}
                     </h2>
                     <div className="flex items-center gap-3 mt-1.5">
@@ -99,7 +99,7 @@ export default async function PhotosPage() {
                       </span>
                     </div>
                     {album.description && (
-                      <p className="text-muted-foreground text-sm mt-2 line-clamp-2">
+                      <p className="text-muted-foreground text-sm mt-2 line-clamp-2 text-pretty">
                         {album.description}
                       </p>
                     )}

@@ -25,7 +25,7 @@ const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
           {...props}
         >
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-serif text-foreground">{title}</h1>
+            <h1 className="text-3xl font-serif text-foreground text-balance">{title}</h1>
             {action && (
               <a
                 href={action.href}

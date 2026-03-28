@@ -33,10 +33,10 @@ export default function NotFound() {
               </div>
             </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif text-foreground mb-3">
+          <h1 className="text-2xl sm:text-3xl font-serif text-foreground mb-3 text-balance">
             Page Not Found
           </h1>
-          <p className="text-muted-foreground text-sm sm:text-base mb-8 max-w-sm mx-auto">
+          <p className="text-muted-foreground text-sm sm:text-base mb-8 max-w-sm mx-auto text-pretty">
             This page doesn&apos;t exist or has been moved. Let&apos;s get you back on track.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">

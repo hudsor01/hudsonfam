@@ -118,7 +118,7 @@ export default function EventCard({
     <div className="bg-card border border-border rounded-xl p-5 hover:border-accent/40 transition-colors">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <h3 className="text-foreground font-serif text-lg">{title}</h3>
+          <h3 className="text-foreground font-serif text-lg text-balance">{title}</h3>
 
           {/* Date with gold accent */}
           <div className="flex items-center gap-2 mt-1.5">
@@ -166,7 +166,7 @@ export default function EventCard({
 
           {/* Description */}
           {description && (
-            <p className="text-muted-foreground text-sm mt-3 line-clamp-3">
+            <p className="text-muted-foreground text-sm mt-3 line-clamp-3 text-pretty">
               {description}
             </p>
           )}

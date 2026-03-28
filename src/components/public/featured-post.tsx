@@ -51,10 +51,10 @@ export function FeaturedPost({
           <span className="text-xs text-text-dim">&bull;</span>
           <span className="text-xs text-text-dim font-sans">{readingTime}</span>
         </div>
-        <h2 className="text-xl sm:text-2xl font-serif text-foreground mb-2 group-hover:text-primary transition-colors">
+        <h2 className="text-xl sm:text-2xl font-serif text-foreground mb-2 group-hover:text-primary transition-colors text-balance">
           {title}
         </h2>
-        <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2">
+        <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2 text-pretty">
           {excerpt}
         </p>
         <div className="flex items-center justify-between">

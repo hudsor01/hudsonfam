@@ -51,10 +51,10 @@ export function PostCard({
           <span className="text-xs text-text-dim">&bull;</span>
           <span className="text-xs text-text-dim">{readingTime}</span>
         </div>
-        <h3 className="text-base font-serif text-foreground mb-1.5 group-hover:text-primary transition-colors line-clamp-2">
+        <h3 className="text-base font-serif text-foreground mb-1.5 group-hover:text-primary transition-colors line-clamp-2 text-balance">
           {title}
         </h3>
-        <p className="text-muted-foreground text-sm leading-relaxed mb-3 line-clamp-2">
+        <p className="text-muted-foreground text-sm leading-relaxed mb-3 line-clamp-2 text-pretty">
           {excerpt}
         </p>
         <div className="flex items-center justify-between">
