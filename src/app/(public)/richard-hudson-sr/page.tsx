@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import { MemoryForm } from "./memory-form";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
   title: "Richard Hudson Sr. — In Loving Memory | The Hudson Family",
@@ -247,7 +248,7 @@ export default async function RichardHudsonSrMemorialPage() {
       </nav>
 
       {/* Hero */}
-      <header className="relative overflow-hidden">
+      <header className="relative overflow-hidden motion-safe:animate-fade-in-up">
         <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg/95 to-bg" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--color-accent)_0%,_transparent_70%)] opacity-[0.04]" />
         <div className="relative max-w-3xl mx-auto text-center px-5 py-16 sm:py-24">
@@ -276,7 +277,7 @@ export default async function RichardHudsonSrMemorialPage() {
         </div>
       </header>
 
-      <div className="border-t border-border" />
+      <Separator />
 
       {/* About Richard Hudson Sr. — SEO content section */}
       <section className="max-w-3xl mx-auto px-5 py-14 sm:py-16">
@@ -305,7 +306,7 @@ export default async function RichardHudsonSrMemorialPage() {
         </div>
       </section>
 
-      <div className="border-t border-border" />
+      <Separator />
 
       {/* Photo Gallery */}
       <section className="max-w-5xl mx-auto px-5 py-14 sm:py-20">
@@ -325,7 +326,7 @@ export default async function RichardHudsonSrMemorialPage() {
                 <img
                   src={photo.src}
                   alt={photo.alt}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 hover:brightness-110 hover:saturate-110"
                   loading={i < 4 ? "eager" : "lazy"}
                   width={i === 0 ? 600 : 400}
                   height={i === 0 ? 600 : 400}
@@ -342,7 +343,7 @@ export default async function RichardHudsonSrMemorialPage() {
         </p>
       </section>
 
-      <div className="border-t border-border" />
+      <Separator />
 
       {/* Video Section */}
       <section className="max-w-3xl mx-auto px-5 py-14 sm:py-20">
@@ -376,7 +377,7 @@ export default async function RichardHudsonSrMemorialPage() {
         </div>
       </section>
 
-      <div className="border-t border-border" />
+      <Separator />
 
       {/* Memories Section */}
       <section className="max-w-3xl mx-auto px-5 py-14 sm:py-20" id="memories">

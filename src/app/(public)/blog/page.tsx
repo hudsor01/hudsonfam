@@ -67,7 +67,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-5 sm:px-7 py-10 sm:py-14">
+    <div className="max-w-5xl mx-auto px-5 sm:px-7 py-10 sm:py-14 motion-safe:animate-fade-in-up">
       {/* Page header */}
       <header className="mb-8">
         <h1 className="text-3xl sm:text-4xl font-serif text-text font-normal mb-2">

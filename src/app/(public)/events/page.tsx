@@ -45,7 +45,7 @@ export default async function EventsPage() {
   });
 
   return (
-    <div className="max-w-3xl mx-auto px-7 py-12">
+    <div className="max-w-3xl mx-auto px-7 py-12 motion-safe:animate-fade-in-up">
       <SectionHeader
         title="Events"
         subtitle="What's happening with the Hudsons"

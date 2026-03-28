@@ -7,6 +7,7 @@ import { PostCard } from "@/components/public/post-card";
 import { Sidebar } from "@/components/public/sidebar";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getAllPosts } from "@/lib/blog";
+import { Separator } from "@/components/ui/separator";
 
 function formatDate(date: Date | string): string {
   return new Date(date).toLocaleDateString("en-US", {
@@ -70,7 +71,7 @@ export default async function HomePage() {
     <div>
       <Hero />
 
-      <div className="border-t border-border" />
+      <Separator />
 
       <div className="max-w-7xl mx-auto px-5 sm:px-7 py-10 sm:py-14">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 lg:gap-10">

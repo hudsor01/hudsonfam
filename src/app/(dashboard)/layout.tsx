@@ -1,4 +1,5 @@
 import { requireRole } from "@/lib/session";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default async function DashboardLayout({
   children,
@@ -31,15 +32,19 @@ export default async function DashboardLayout({
           </div>
           <span className="text-text text-sm font-medium">Dashboard</span>
         </div>
-        {navLinks.map((link) => (
-          <a
-            key={link.href}
-            href={link.href}
-            className="text-sm text-text-muted hover:text-text px-3 py-2 rounded-md hover:bg-bg"
-          >
-            {link.label}
-          </a>
-        ))}
+        <ScrollArea className="flex-1">
+          <div className="flex flex-col gap-1">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-sm text-text-muted hover:text-text px-3 py-2 rounded-md hover:bg-bg"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </ScrollArea>
         <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
           <p className="text-xs text-text-dim truncate">{userName}</p>
           <a href="/" className="text-xs text-text-dim hover:text-text-muted transition-colors">

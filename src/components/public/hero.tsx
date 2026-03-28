@@ -1,6 +1,6 @@
 export function Hero() {
   return (
-    <section className="text-center py-16 sm:py-20 px-5">
+    <section className="text-center py-16 sm:py-20 px-5 motion-safe:animate-fade-in-up">
       <p className="text-xs tracking-[4px] text-accent mb-3 font-sans uppercase">
         Est. 2024 &bull; Dallas, Texas
       </p>
