@@ -1,18 +1,36 @@
 # State
 
 ## Current Phase
-Phase 3-5: UI Enhancement (Phases 1-2 complete)
+Phase 6: Theme Alignment (v1.2 — Integration Solidification)
 
 ## What's Done
-- Phase 1: Foundation — OKLCH colors, theme tokens, shadcn bridge, size-X cleanup, motion-safe, field-sizing-content
-- Phase 2: Core Components — Sonner toasts, Avatar, AlertDialog, Sheet, Tooltip, Skeleton, Select, Switch
+- v1.0 — Core Site: Complete
+- v1.1 — UI Enhancement: All 5 phases complete
+  - Phase 1: Foundation — OKLCH colors, theme tokens, shadcn bridge
+  - Phase 2: Core Components — Sonner, Avatar, AlertDialog, Sheet, Tooltip, Skeleton, Select, Switch
+  - Phase 3: Dashboard — Breadcrumbs, Tabs, DropdownMenu row actions
+  - Phase 4: Public Site — fade-in-up animations, Separator, ScrollArea
+  - Phase 5: Advanced — Command palette, photo hover effects
 - All 28 shadcn/ui components installed at src/components/ui/
 - 270 tests passing, build clean
 
 ## What's Next
-Phase 3: Dashboard overhaul (breadcrumbs, tabs, dropdown menus)
-Phase 4: Public site polish (animations, separators, scroll area)
-Phase 5: Advanced (command palette, photo effects)
+Phase 6: Fix CSS variable naming to shadcn standard, hardcoded colors, cn() patterns
+
+## Key Decisions
+- Use TanStack Form (NOT react-hook-form) for form validation — user requirement
+- Use TanStack Table for admin data tables — user requirement
+- Evaluate TanStack Query — adopt only if beneficial without slowing down
+- Never remove unused shadcn components — integrate them into the project instead
+
+## Research
+Full documentation audit completed 2026-03-28:
+- Tailwind CSS v4 official docs (100+ pages) — all utilities, theme, config, upgrade guide, variants
+- shadcn/ui official docs (70+ pages) — components, theming, blocks, CLI, registry, changelog
+- Codebase audit of all 28 ui/ components, globals.css, components.json
+
+Findings: 5 critical issues, 17 unused TW4 features, 11 unleveraged shadcn features
+Research saved to: .planning/phases/06-theme-alignment/06-RESEARCH.md
 
 ## Last Session
-2026-03-28 — Installed all shadcn components, fixed Button/Input API compatibility after overwrite
+2026-03-28 — Completed v1.1 Phases 3-5, began v1.2 research and planning
