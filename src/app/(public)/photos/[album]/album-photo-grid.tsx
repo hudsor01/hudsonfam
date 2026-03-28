@@ -33,7 +33,7 @@ export default function AlbumPhotoGrid({ photos }: AlbumPhotoGridProps) {
             <img
               src={photo.thumbnailPath}
               alt={photo.title || photo.caption || "Photo"}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-cover group-hover:scale-105 hover:brightness-110 hover:saturate-110 transition-all duration-500"
               loading="lazy"
             />
             {/* Hover overlay with title */}
