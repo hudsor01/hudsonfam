@@ -1,7 +1,7 @@
 # State
 
 ## Current Phase
-Phase 9: shadcn Sidebar Upgrade (v1.2 — Integration Solidification)
+Phase 10: TanStack Form (v1.2 — Integration Solidification)
 
 ## What's Done
 - v1.0 — Core Site: Complete
@@ -18,9 +18,10 @@ Phase 9: shadcn Sidebar Upgrade (v1.2 — Integration Solidification)
 - Phase 6: Theme Alignment — shadcn-standard variable naming, destructive tokens, cn() fixes, 12 new components installed (40 total)
 - Phase 7: TW4 Quick Wins — text-balance/text-pretty, caret-primary, open:/not-last: variants
 - Phase 8: TW4 Advanced — container queries, themed shadows, OKLCH gradients, scroll snap, 3D hover, contrast-more/less, logical properties
+- Phase 9: Sidebar Upgrade — shadcn SidebarProvider with collapsible, mobile Sheet, active state, Cmd+B shortcut
 
 ## What's Next
-Phase 9: shadcn Sidebar Upgrade — replace static aside with SidebarProvider, collapsible, mobile-responsive
+Phase 10: TanStack Form + zod — install infrastructure, create schemas, migrate all forms
 
 ## Key Decisions
 - Use TanStack Form (NOT react-hook-form) for form validation — user requirement
