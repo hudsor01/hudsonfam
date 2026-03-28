@@ -23,12 +23,12 @@ export default function AlbumPhotoGrid({ photos }: AlbumPhotoGridProps) {
 
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-8">
+      <div className="max-sm:flex max-sm:overflow-x-auto max-sm:snap-x max-sm:snap-mandatory max-sm:gap-3 max-sm:-mx-5 max-sm:px-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-8">
         {photos.map((photo, index) => (
           <button
             key={photo.id}
             onClick={() => setLightboxIndex(index)}
-            className="group relative aspect-square overflow-hidden rounded-lg bg-background border border-border hover:border-primary/40 transition-colors cursor-pointer"
+            className="max-sm:snap-center max-sm:shrink-0 max-sm:w-[80vw] group relative aspect-square overflow-hidden rounded-lg bg-background border border-border hover:border-primary/40 transition-colors cursor-pointer"
           >
             <img
               src={photo.thumbnailPath}
