@@ -25,8 +25,8 @@
 - Phase 8: Tailwind v4 advanced — container queries, shadow colors, scroll snap, 3D effects, accessibility variants, logical properties ✅
 - Phase 9: shadcn sidebar upgrade — replace static aside with full SidebarProvider, collapsible, mobile-responsive ✅
 - Phase 10: TanStack Form — install @tanstack/react-form + zod, migrate all forms to client-side validation ✅
-- Phase 10.5: TanStack Table — install @tanstack/react-table, replace manual admin list rendering with data tables
-- Phase 10.7: TanStack Query evaluation — assess whether @tanstack/react-query benefits the project
+- Phase 10.5: TanStack Table — install @tanstack/react-table, replace manual admin list rendering with data tables ✅
+- Phase 10.7: TanStack Query evaluation — deferred (server-first architecture, no clear benefit) ✅
 - Phase 11: Component integration — wire Calendar, Dialog, Drawer, Pagination, Popover, Progress into actual pages
 - Phase 12: Ecosystem tooling — shadcn skills, radix migration, blocks evaluation, additional components
 

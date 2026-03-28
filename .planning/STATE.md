@@ -1,7 +1,7 @@
 # State
 
 ## Current Phase
-Phase 10.5: TanStack Table (v1.2 — Integration Solidification)
+Phase 11: Component Integration (v1.2 — Integration Solidification)
 
 ## What's Done
 - v1.0 — Core Site: Complete
@@ -19,10 +19,12 @@ Phase 10.5: TanStack Table (v1.2 — Integration Solidification)
 - Phase 7: TW4 Quick Wins — text-balance/text-pretty, caret-primary, open:/not-last: variants
 - Phase 8: TW4 Advanced — container queries, themed shadows, OKLCH gradients, scroll snap, 3D hover, contrast-more/less, logical properties
 - Phase 9: Sidebar Upgrade — shadcn SidebarProvider with collapsible, mobile Sheet, active state, Cmd+B shortcut
-- Phase 10: TanStack Form — @tanstack/react-form + zod schemas, migrated all 5 forms with client-side validation
+- Phase 10: TanStack Form — @tanstack/react-form + zod, migrated all 5 forms
+- Phase 10.5: TanStack Table — DataTable component, posts/events/members tables with sort/filter/pagination
+- Phase 10.7: TanStack Query — evaluated, deferred (server-first architecture)
 
 ## What's Next
-Phase 10.5: TanStack Table — @tanstack/react-table for admin data tables
+Phase 11: Component Integration — Calendar, Dialog, Drawer, Pagination, Popover, Progress
 
 ## Key Decisions
 - Use TanStack Form (NOT react-hook-form) for form validation — user requirement
