@@ -2,9 +2,17 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -13,8 +21,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import { useZodForm } from "@/lib/form-utils";
 import { eventFormSchema } from "@/lib/schemas";
+
+/**
+ * Parse a datetime-local string ("2026-03-28T14:00") into a Date, or undefined.
+ */
+function parseDatetimeLocal(value: string): Date | undefined {
+  if (!value) return undefined;
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? undefined : d;
+}
+
+/**
+ * Extract the time portion ("HH:mm") from a datetime-local string,
+ * defaulting to "12:00" if absent.
+ */
+function extractTime(value: string): string {
+  if (!value) return "12:00";
+  const parts = value.split("T");
+  return parts[1] ?? "12:00";
+}
+
+/**
+ * Combine a Date (for the date portion) with a time string ("HH:mm")
+ * into a datetime-local string ("2026-03-28T14:00").
+ */
+function combineDateAndTime(date: Date, time: string): string {
+  const dateStr = format(date, "yyyy-MM-dd");
+  return `${dateStr}T${time}`;
+}
 
 interface EventFormProps {
   action: (formData: FormData) => Promise<void>;
@@ -139,31 +176,121 @@ export function EventForm({ action, initial }: EventFormProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <form.Field name="startDate">
-          {(field) => (
-            <Input
-              label="Start Date"
-              name="startDate"
-              type="datetime-local"
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-              onBlur={field.handleBlur}
-              error={field.state.meta.errors.join(", ") || undefined}
-            />
-          )}
+          {(field) => {
+            const dateValue = parseDatetimeLocal(field.state.value);
+            const timeValue = extractTime(field.state.value);
+            return (
+              <div className="space-y-1.5">
+                <Label>Start Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !dateValue && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 size-4" />
+                      {dateValue
+                        ? format(dateValue, "MMM d, yyyy")
+                        : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dateValue}
+                      onSelect={(date) => {
+                        if (date) {
+                          field.handleChange(
+                            combineDateAndTime(date, timeValue)
+                          );
+                        }
+                      }}
+                      defaultMonth={dateValue}
+                    />
+                  </PopoverContent>
+                </Popover>
+                <Input
+                  type="time"
+                  value={timeValue}
+                  onChange={(e) => {
+                    const d = dateValue ?? new Date();
+                    field.handleChange(
+                      combineDateAndTime(d, e.target.value || "12:00")
+                    );
+                  }}
+                />
+                {field.state.meta.errors.length > 0 && (
+                  <p className="text-xs text-destructive mt-1">
+                    {field.state.meta.errors.join(", ")}
+                  </p>
+                )}
+              </div>
+            );
+          }}
         </form.Field>
 
         <form.Field name="endDate">
-          {(field) => (
-            <Input
-              label="End Date"
-              name="endDate"
-              type="datetime-local"
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-              onBlur={field.handleBlur}
-              error={field.state.meta.errors.join(", ") || undefined}
-            />
-          )}
+          {(field) => {
+            const dateValue = parseDatetimeLocal(field.state.value);
+            const timeValue = extractTime(field.state.value);
+            return (
+              <div className="space-y-1.5">
+                <Label>End Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !dateValue && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 size-4" />
+                      {dateValue
+                        ? format(dateValue, "MMM d, yyyy")
+                        : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dateValue}
+                      onSelect={(date) => {
+                        if (date) {
+                          field.handleChange(
+                            combineDateAndTime(date, timeValue)
+                          );
+                        } else {
+                          field.handleChange("");
+                        }
+                      }}
+                      defaultMonth={dateValue}
+                    />
+                  </PopoverContent>
+                </Popover>
+                <Input
+                  type="time"
+                  value={dateValue ? timeValue : ""}
+                  onChange={(e) => {
+                    const d = dateValue ?? new Date();
+                    field.handleChange(
+                      combineDateAndTime(d, e.target.value || "12:00")
+                    );
+                  }}
+                />
+                {field.state.meta.errors.length > 0 && (
+                  <p className="text-xs text-destructive mt-1">
+                    {field.state.meta.errors.join(", ")}
+                  </p>
+                )}
+              </div>
+            );
+          }}
         </form.Field>
       </div>
 
