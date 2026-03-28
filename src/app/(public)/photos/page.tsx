@@ -31,7 +31,7 @@ export default async function PhotosPage() {
           No albums yet. Check back soon.
         </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        <div className="@container grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-6 mt-8">
           {albums.map((album) => {
             const coverPhoto = album.photos[0] || null;
             const photoCount = album._count.photos;
