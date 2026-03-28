@@ -9,6 +9,7 @@ export default async function DashboardLayout({
 }) {
   const session = await requireRole(["owner", "admin", "member"]);
   const userName = session.user.name || session.user.email;
+  const userEmail = session.user.email;
   const userRole = (session.user as { role?: string }).role || "member";
 
   const navLinks = [
@@ -26,7 +27,7 @@ export default async function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebar navLinks={navLinks} userName={userName} userRole={userRole} />
+      <AppSidebar navLinks={navLinks} userName={userName} userEmail={userEmail} userRole={userRole} />
       <SidebarInset>
         <header className="flex items-center gap-2 p-4 border-b border-border">
           <SidebarTrigger />
