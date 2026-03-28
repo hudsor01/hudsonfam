@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { SectionHeader } from "@/components/ui/section-header";
 import EventCard from "@/components/public/event-card";
+import { EventsMiniCalendar } from "@/components/public/events-mini-calendar";
 
 export const metadata = {
   title: "Events | The Hudson Family",
@@ -77,6 +78,18 @@ export default async function EventsPage() {
           </div>
         )}
       </div>
+
+      {/* Mini-calendar with event dates highlighted */}
+      {upcomingEvents.length > 0 && (
+        <div className="mt-10">
+          <h2 className="text-muted-foreground text-xs tracking-[3px] uppercase mb-4">
+            Calendar
+          </h2>
+          <EventsMiniCalendar
+            eventDates={upcomingEvents.map((e) => e.startDate.toISOString())}
+          />
+        </div>
+      )}
 
       {/* Past events */}
       {pastEvents.length > 0 && (
