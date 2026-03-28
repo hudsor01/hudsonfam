@@ -186,7 +186,7 @@ export function MemoryForm() {
           rows={5}
           maxLength={5000}
           placeholder="Share a memory, a story, or a few words about what Richard meant to you..."
-          className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors resize-y field-sizing-content min-h-[120px]"
+          className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground caret-primary placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors resize-y field-sizing-content min-h-[120px]"
         />
       </div>
 
