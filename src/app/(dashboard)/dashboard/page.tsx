@@ -45,11 +45,11 @@ export default async function DashboardPage() {
       />
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-6">
+      <div className="@container grid grid-cols-2 @sm:grid-cols-3 @lg:grid-cols-5 gap-4 mt-6">
         {stats.map((stat) => (
           <a key={stat.label} href={stat.href}>
             <Card hover padding="md" className="text-center">
-              <div className="text-2xl font-semibold text-primary">
+              <div className="text-xl @sm:text-2xl font-semibold text-primary">
                 {stat.value}
               </div>
               <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">

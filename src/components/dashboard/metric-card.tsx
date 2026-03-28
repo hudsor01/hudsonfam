@@ -24,10 +24,10 @@ const colorClasses: Record<string, string> = {
 
 export function MetricCard({ label, value, suffix, color = "default", tooltip }: MetricCardProps) {
   const content = (
-    <div className="flex-1 text-center">
-      <div className={`text-2xl font-semibold ${colorClasses[color]}`}>
+    <div className="@container flex-1 text-center">
+      <div className={`text-xl @sm:text-2xl @md:text-3xl font-semibold ${colorClasses[color]}`}>
         {value}
-        {suffix && <span className="text-base">{suffix}</span>}
+        {suffix && <span className="text-sm @sm:text-base">{suffix}</span>}
       </div>
       <div className="text-xs uppercase tracking-wider text-text-dim mt-1">
         {label}
