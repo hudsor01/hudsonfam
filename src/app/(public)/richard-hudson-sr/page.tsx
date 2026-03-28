@@ -252,7 +252,7 @@ export default async function RichardHudsonSrMemorialPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--color-accent)_0%,_transparent_70%)] opacity-[0.04]" />
         <div className="relative max-w-3xl mx-auto text-center px-5 py-16 sm:py-24">
-          <div className="size-20 rounded-full bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/20 flex items-center justify-center mx-auto mb-8">
+          <div className="size-20 rounded-full bg-linear-to-br/oklch from-accent/20 to-accent/5 border border-accent/20 flex items-center justify-center mx-auto mb-8">
             <span className="text-3xl font-serif text-accent">R</span>
           </div>
           <p className="text-xs tracking-[5px] text-accent/80 uppercase mb-4 font-sans">
@@ -354,7 +354,7 @@ export default async function RichardHudsonSrMemorialPage() {
           Watch and share video memories of Richard Hudson Sr.
         </p>
         <div className="bg-card border border-border rounded-xl overflow-hidden">
-          <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-card to-background">
+          <div className="aspect-video flex items-center justify-center bg-linear-to-br/oklch from-card to-background">
             <div className="text-center">
               <div className="size-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4">
                 <svg

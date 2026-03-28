@@ -28,7 +28,7 @@ export default function NotFound() {
               404
             </span>
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="size-20 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 border border-border flex items-center justify-center">
+              <div className="size-20 rounded-2xl bg-linear-to-br/oklch from-primary/20 to-accent/20 border border-border flex items-center justify-center">
                 <span className="text-3xl font-serif text-accent">H</span>
               </div>
             </div>
