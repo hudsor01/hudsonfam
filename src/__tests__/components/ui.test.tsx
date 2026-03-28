@@ -95,10 +95,10 @@ describe('Card', () => {
     expect(card!.className).not.toContain('hover:border-primary/30');
   });
 
-  it('applies bg-surface class', () => {
+  it('applies bg-card class', () => {
     render(<Card>Styled</Card>);
     const card = screen.getByText('Styled').closest('div');
-    expect(card!.className).toContain('bg-surface');
+    expect(card!.className).toContain('bg-card');
   });
 });
 

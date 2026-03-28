@@ -22,7 +22,7 @@ export default async function AlbumsPage() {
 
       {albums.length === 0 ? (
         <Card padding="lg" className="text-center mt-6">
-          <p className="text-text-muted text-sm">No albums yet.</p>
+          <p className="text-muted-foreground text-sm">No albums yet.</p>
           <a
             href="/dashboard/photos/albums/new"
             className="inline-block mt-3 text-sm text-primary hover:text-primary/80 transition-colors"
@@ -39,10 +39,10 @@ export default async function AlbumsPage() {
               className="block"
             >
               <Card hover padding="md">
-                <h3 className="text-text font-serif text-lg">{album.title}</h3>
+                <h3 className="text-foreground font-serif text-lg">{album.title}</h3>
                 <div className="flex items-center gap-3 mt-1.5">
                   {album.date && (
-                    <span className="text-text-muted text-xs">
+                    <span className="text-muted-foreground text-xs">
                       {new Date(album.date).toLocaleDateString("en-US", {
                         month: "long",
                         year: "numeric",
@@ -54,7 +54,7 @@ export default async function AlbumsPage() {
                   </span>
                 </div>
                 {album.description && (
-                  <p className="text-text-muted text-sm mt-2 line-clamp-2">
+                  <p className="text-muted-foreground text-sm mt-2 line-clamp-2">
                     {album.description}
                   </p>
                 )}

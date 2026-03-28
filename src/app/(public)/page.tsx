@@ -122,10 +122,10 @@ export default async function HomePage() {
             {/* Empty state when no posts */}
             {publishedPosts.length === 0 && (
               <section className="text-center py-16">
-                <p className="text-lg font-serif text-text mb-2">
+                <p className="text-lg font-serif text-foreground mb-2">
                   Coming Soon
                 </p>
-                <p className="text-sm text-text-muted">
+                <p className="text-sm text-muted-foreground">
                   We&apos;re working on our first posts. Check back soon!
                 </p>
               </section>

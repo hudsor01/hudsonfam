@@ -67,7 +67,7 @@ export default async function MemorialContentPage() {
         ))}
       </div>
 
-      <div className="mt-6 bg-surface/50 border border-border rounded-xl px-5 py-4">
+      <div className="mt-6 bg-card/50 border border-border rounded-xl px-5 py-4">
         <p className="text-xs text-text-dim">
           Changes are saved individually per section. The memorial page will update automatically
           after saving. If a section has no saved content, the default text will be used.

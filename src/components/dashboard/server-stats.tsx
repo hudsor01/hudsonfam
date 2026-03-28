@@ -13,7 +13,7 @@ function ProgressBar({
   color: string;
 }) {
   return (
-    <div className="w-full h-1.5 bg-bg rounded-full overflow-hidden">
+    <div className="w-full h-1.5 bg-background rounded-full overflow-hidden">
       <div
         className={`h-full rounded-full transition-all ${color}`}
         style={{ width: `${Math.min(percent, 100)}%` }}
@@ -45,8 +45,8 @@ function StatRow({
   return (
     <div className="space-y-1.5">
       <div className="flex justify-between text-xs">
-        <span className="text-text-muted">{label}</span>
-        <span className="text-text">
+        <span className="text-muted-foreground">{label}</span>
+        <span className="text-foreground">
           {used} / {total} {unit}{" "}
           <span className="text-text-dim">({percent}%)</span>
         </span>

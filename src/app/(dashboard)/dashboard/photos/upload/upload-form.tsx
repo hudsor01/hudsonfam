@@ -91,7 +91,7 @@ export function UploadForm({ albums }: { albums: Album[] }) {
     <div className="max-w-2xl space-y-5">
       {/* Album selector */}
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-text-muted">
+        <label className="block text-sm font-medium text-muted-foreground">
           Album (optional)
         </label>
         <Select value={selectedAlbum} onValueChange={setSelectedAlbum}>
@@ -111,7 +111,7 @@ export function UploadForm({ albums }: { albums: Album[] }) {
 
       {/* File input */}
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-text-muted">
+        <label className="block text-sm font-medium text-muted-foreground">
           Select Photos
         </label>
         <input
@@ -120,7 +120,7 @@ export function UploadForm({ albums }: { albums: Album[] }) {
           multiple
           accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif"
           onChange={handleFileChange}
-          className="block w-full text-sm text-text-muted file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-white hover:file:bg-primary/90 file:cursor-pointer"
+          className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-white hover:file:bg-primary/90 file:cursor-pointer"
         />
         {files.length > 0 && (
           <p className="text-xs text-text-dim">
@@ -135,7 +135,7 @@ export function UploadForm({ albums }: { albums: Album[] }) {
           {files.map((file, i) => (
             <div
               key={i}
-              className="aspect-square bg-surface border border-border rounded-lg overflow-hidden"
+              className="aspect-square bg-card border border-border rounded-lg overflow-hidden"
             >
               <img
                 src={URL.createObjectURL(file)}
@@ -185,7 +185,7 @@ export function UploadForm({ albums }: { albums: Album[] }) {
                 .map((r) => (
                   <div
                     key={r.id}
-                    className="aspect-square bg-surface border border-border rounded-lg overflow-hidden"
+                    className="aspect-square bg-card border border-border rounded-lg overflow-hidden"
                   >
                     <img
                       src={r.thumbnailUrl}

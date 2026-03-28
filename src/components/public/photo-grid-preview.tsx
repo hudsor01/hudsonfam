@@ -19,7 +19,7 @@ export function PhotoGridPreview({ photos }: PhotoGridPreviewProps) {
         {displayPhotos.map((photo) => (
           <div
             key={photo.id}
-            className="aspect-square rounded-md overflow-hidden bg-bg"
+            className="aspect-square rounded-md overflow-hidden bg-background"
           >
             <img
               src={photo.thumbnailPath}
@@ -33,7 +33,7 @@ export function PhotoGridPreview({ photos }: PhotoGridPreviewProps) {
           (_, i) => (
             <div
               key={`placeholder-${i}`}
-              className="aspect-square rounded-md bg-bg border border-border/50"
+              className="aspect-square rounded-md bg-background border border-border/50"
             />
           )
         )}

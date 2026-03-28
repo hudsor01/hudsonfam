@@ -38,14 +38,14 @@ export default function UpdateCard({
   createdAt,
 }: UpdateCardProps) {
   return (
-    <article className="bg-surface border border-border rounded-xl p-5">
+    <article className="bg-card border border-border rounded-xl p-5">
       {/* Author and timestamp */}
       <div className="flex items-center gap-3 mb-3">
         <Avatar className="flex-shrink-0">
           <AvatarFallback>{postedByName.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div>
-          <span className="text-text text-sm font-medium">
+          <span className="text-foreground text-sm font-medium">
             {postedByName}
           </span>
           <span className="text-text-dim text-xs ml-2">
@@ -55,7 +55,7 @@ export default function UpdateCard({
       </div>
 
       {/* Content */}
-      <div className="text-text text-sm leading-relaxed whitespace-pre-wrap">
+      <div className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
         {content}
       </div>
 
@@ -73,7 +73,7 @@ export default function UpdateCard({
           {images.map((imageId, index) => (
             <div
               key={index}
-              className={`rounded-lg overflow-hidden bg-bg ${
+              className={`rounded-lg overflow-hidden bg-background ${
                 images.length === 1
                   ? "max-h-96"
                   : "aspect-square"

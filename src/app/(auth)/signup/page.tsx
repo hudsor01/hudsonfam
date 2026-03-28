@@ -38,7 +38,7 @@ function SignupForm() {
   if (validating) {
     return (
       <div className="text-center py-4">
-        <p className="text-sm text-text-muted">Validating invite...</p>
+        <p className="text-sm text-muted-foreground">Validating invite...</p>
       </div>
     );
   }
@@ -46,8 +46,8 @@ function SignupForm() {
   if (!token || !tokenValid) {
     return (
       <div>
-        <h1 className="text-xl font-serif text-text mb-2">Invite Required</h1>
-        <p className="text-sm text-text-muted">
+        <h1 className="text-xl font-serif text-foreground mb-2">Invite Required</h1>
+        <p className="text-sm text-muted-foreground">
           {error || "Registration is invite-only. Ask a family member for an invite link."}
         </p>
       </div>
@@ -77,8 +77,8 @@ function SignupForm() {
 
   return (
     <div>
-      <h1 className="text-xl font-serif text-text mb-1">Join the Family</h1>
-      <p className="text-sm text-text-muted mb-6">Create your account to get started</p>
+      <h1 className="text-xl font-serif text-foreground mb-1">Join the Family</h1>
+      <p className="text-sm text-muted-foreground mb-6">Create your account to get started</p>
 
       <button onClick={handleGoogleSignUp} className="w-full bg-white text-gray-800 rounded-lg py-2.5 px-4 text-sm font-medium hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center gap-2">
         Continue with Google
@@ -91,9 +91,9 @@ function SignupForm() {
       </div>
 
       <form onSubmit={handleEmailSignUp} className="space-y-3">
-        <input type="text" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} required className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary" />
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary" />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary" />
+        <input type="text" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} required className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary" />
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary" />
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary" />
         {error && <p className="text-red-400 text-xs">{error}</p>}
         <button type="submit" disabled={loading} className="w-full bg-primary text-white rounded-lg py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
           {loading ? "Creating account..." : "Create Account"}

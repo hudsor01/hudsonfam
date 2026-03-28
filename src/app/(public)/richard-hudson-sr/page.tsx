@@ -227,7 +227,7 @@ export default async function RichardHudsonSrMemorialPage() {
             <Link
               href="/"
               itemProp="item"
-              className="hover:text-text-muted transition-colors"
+              className="hover:text-muted-foreground transition-colors"
             >
               <span itemProp="name">Home</span>
             </Link>
@@ -249,7 +249,7 @@ export default async function RichardHudsonSrMemorialPage() {
 
       {/* Hero */}
       <header className="relative overflow-hidden motion-safe:animate-fade-in-up">
-        <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg/95 to-bg" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--color-accent)_0%,_transparent_70%)] opacity-[0.04]" />
         <div className="relative max-w-3xl mx-auto text-center px-5 py-16 sm:py-24">
           <div className="size-20 rounded-full bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/20 flex items-center justify-center mx-auto mb-8">
@@ -259,14 +259,14 @@ export default async function RichardHudsonSrMemorialPage() {
             In Loving Memory
           </p>
           <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-serif text-text font-normal leading-tight mb-6"
+            className="text-4xl sm:text-5xl lg:text-6xl font-serif text-foreground font-normal leading-tight mb-6"
             itemProp="name"
           >
             Richard Hudson Sr.
           </h1>
           <div className="w-16 h-px bg-accent/40 mx-auto mb-6" />
           <p
-            className="text-text-muted text-base sm:text-lg max-w-xl mx-auto leading-relaxed italic"
+            className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed italic"
             itemProp="description"
           >
             A devoted father, a wise mentor, and a true friend to everyone he
@@ -284,7 +284,7 @@ export default async function RichardHudsonSrMemorialPage() {
         <h2 className="text-xs font-sans font-semibold tracking-[4px] text-primary uppercase text-center mb-8">
           About Richard Hudson Sr.
         </h2>
-        <div className="prose prose-invert mx-auto text-text-muted text-sm sm:text-base leading-relaxed space-y-4">
+        <div className="prose prose-invert mx-auto text-muted-foreground text-sm sm:text-base leading-relaxed space-y-4">
           <p>
             Richard Hudson Sr. was a man who believed in the power of family,
             hard work, and kindness. Known to those closest to him simply as
@@ -331,7 +331,7 @@ export default async function RichardHudsonSrMemorialPage() {
                   width={i === 0 ? 600 : 400}
                   height={i === 0 ? 600 : 400}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-bg/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
               <figcaption className="sr-only">{photo.alt}</figcaption>
             </figure>
@@ -353,8 +353,8 @@ export default async function RichardHudsonSrMemorialPage() {
         <p className="text-text-dim text-sm text-center mb-10">
           Watch and share video memories of Richard Hudson Sr.
         </p>
-        <div className="bg-surface border border-border rounded-xl overflow-hidden">
-          <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-surface to-bg">
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-card to-background">
             <div className="text-center">
               <div className="size-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4">
                 <svg
@@ -366,7 +366,7 @@ export default async function RichardHudsonSrMemorialPage() {
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
-              <p className="text-text-muted text-sm">
+              <p className="text-muted-foreground text-sm">
                 Video tributes for Richard Hudson Sr. coming soon
               </p>
               <p className="text-text-dim text-xs mt-1">
@@ -384,14 +384,14 @@ export default async function RichardHudsonSrMemorialPage() {
         <h2 className="text-xs font-sans font-semibold tracking-[4px] text-accent uppercase text-center mb-3">
           Memories of Richard Hudson Sr.
         </h2>
-        <p className="text-text-muted text-sm text-center mb-12 max-w-md mx-auto">
+        <p className="text-muted-foreground text-sm text-center mb-12 max-w-md mx-auto">
           Share a memory, a story, or a few words about what Richard Hudson Sr.
           meant to you. Every memory helps keep his legacy alive.
         </p>
 
         {/* Memory Submission Form */}
-        <div className="bg-surface border border-border rounded-xl p-6 sm:p-8 mb-12" id="share">
-          <h3 className="text-lg font-serif text-text mb-6">
+        <div className="bg-card border border-border rounded-xl p-6 sm:p-8 mb-12" id="share">
+          <h3 className="text-lg font-serif text-foreground mb-6">
             Share a Memory of Richard Hudson Sr.
           </h3>
           <MemoryForm />
@@ -407,12 +407,12 @@ export default async function RichardHudsonSrMemorialPage() {
             {memories.map((memory) => (
               <article
                 key={memory.id}
-                className="bg-surface/50 border border-border/60 rounded-xl p-6 transition-colors hover:border-accent/20"
+                className="bg-card/50 border border-border/60 rounded-xl p-6 transition-colors hover:border-accent/20"
                 itemScope
                 itemType="https://schema.org/Comment"
               >
                 <blockquote
-                  className="text-text text-sm sm:text-base leading-relaxed whitespace-pre-wrap mb-4"
+                  className="text-foreground text-sm sm:text-base leading-relaxed whitespace-pre-wrap mb-4"
                   itemProp="text"
                 >
                   &ldquo;{memory.content}&rdquo;
@@ -426,7 +426,7 @@ export default async function RichardHudsonSrMemorialPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <p
-                        className="text-sm text-text font-medium"
+                        className="text-sm text-foreground font-medium"
                         itemProp="author"
                       >
                         {memory.firstName} {memory.lastName}
@@ -455,7 +455,7 @@ export default async function RichardHudsonSrMemorialPage() {
 
         {memories.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-text-muted text-sm italic">
+            <p className="text-muted-foreground text-sm italic">
               Be the first to share a memory of Richard Hudson Sr.
             </p>
           </div>
@@ -466,7 +466,7 @@ export default async function RichardHudsonSrMemorialPage() {
       <section className="border-t border-border">
         <div className="max-w-xl mx-auto text-center px-5 py-16">
           <div className="w-12 h-px bg-accent/40 mx-auto mb-6" />
-          <p className="text-text-muted text-sm italic leading-relaxed">
+          <p className="text-muted-foreground text-sm italic leading-relaxed">
             &ldquo;What we have once enjoyed we can never lose. All that we love
             deeply becomes a part of us.&rdquo;
           </p>

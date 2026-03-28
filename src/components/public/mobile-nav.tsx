@@ -25,7 +25,7 @@ export function MobileNav({ links }: { links: NavLink[] }) {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <button
-            className="text-text-muted hover:text-text p-2 -mr-2"
+            className="text-muted-foreground hover:text-foreground p-2 -mr-2"
             aria-label="Open menu"
           >
             <svg
@@ -44,7 +44,7 @@ export function MobileNav({ links }: { links: NavLink[] }) {
             </svg>
           </button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-[280px] bg-surface">
+        <SheetContent side="left" className="w-[280px] bg-card">
           <SheetHeader>
             <SheetTitle className="text-left font-serif text-accent">
               The Hudson Family
@@ -63,7 +63,7 @@ export function MobileNav({ links }: { links: NavLink[] }) {
                   onClick={() => setOpen(false)}
                   className={`
                     px-3 py-2.5 rounded-md text-sm transition-colors
-                    ${isActive ? "text-text bg-bg" : "text-text-muted hover:text-text hover:bg-bg"}
+                    ${isActive ? "text-foreground bg-background" : "text-muted-foreground hover:text-foreground hover:bg-background"}
                   `}
                 >
                   {link.label}
@@ -74,7 +74,7 @@ export function MobileNav({ links }: { links: NavLink[] }) {
               <Link
                 href="/login"
                 onClick={() => setOpen(false)}
-                className="px-3 py-2.5 rounded-md text-sm text-accent hover:bg-bg transition-colors block"
+                className="px-3 py-2.5 rounded-md text-sm text-accent hover:bg-background transition-colors block"
               >
                 Sign In
               </Link>

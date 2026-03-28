@@ -23,7 +23,7 @@ export function PostCard({
   readingTime,
 }: PostCardProps) {
   return (
-    <article className="relative bg-surface border border-border rounded-xl overflow-hidden h-full transition-colors duration-200 hover:border-primary/30 group">
+    <article className="relative bg-card border border-border rounded-xl overflow-hidden h-full transition-colors duration-200 hover:border-primary/30 group">
       {/* Full-card link using pseudo-element overlay */}
       <Link
         href={`/blog/${slug}`}
@@ -32,7 +32,7 @@ export function PostCard({
       />
 
       {coverImage && (
-        <div className="aspect-[16/9] bg-bg overflow-hidden">
+        <div className="aspect-[16/9] bg-background overflow-hidden">
           <img
             src={coverImage}
             alt={title}
@@ -51,10 +51,10 @@ export function PostCard({
           <span className="text-xs text-text-dim">&bull;</span>
           <span className="text-xs text-text-dim">{readingTime}</span>
         </div>
-        <h3 className="text-base font-serif text-text mb-1.5 group-hover:text-primary transition-colors line-clamp-2">
+        <h3 className="text-base font-serif text-foreground mb-1.5 group-hover:text-primary transition-colors line-clamp-2">
           {title}
         </h3>
-        <p className="text-text-muted text-sm leading-relaxed mb-3 line-clamp-2">
+        <p className="text-muted-foreground text-sm leading-relaxed mb-3 line-clamp-2">
           {excerpt}
         </p>
         <div className="flex items-center justify-between">

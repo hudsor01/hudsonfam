@@ -44,20 +44,20 @@ export default async function MemoriesModPage() {
         {/* Pending Review Tab */}
         <TabsContent value="pending">
           {pending.length === 0 ? (
-            <div className="bg-surface border border-border rounded-xl px-5 py-8 text-center mt-4">
-              <p className="text-sm text-text-muted">No memories pending review.</p>
+            <div className="bg-card border border-border rounded-xl px-5 py-8 text-center mt-4">
+              <p className="text-sm text-muted-foreground">No memories pending review.</p>
             </div>
           ) : (
             <div className="space-y-3 mt-4">
               {pending.map((memory) => (
                 <div
                   key={memory.id}
-                  className="bg-surface border border-amber-500/15 rounded-xl px-5 py-4"
+                  className="bg-card border border-amber-500/15 rounded-xl px-5 py-4"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm text-text font-medium">
+                        <span className="text-sm text-foreground font-medium">
                           {memory.firstName} {memory.lastName}
                         </span>
                         <Badge variant="accent" className="text-[10px]">
@@ -77,7 +77,7 @@ export default async function MemoriesModPage() {
                           })}
                         </span>
                       </div>
-                      <blockquote className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap bg-bg/50 rounded-lg px-4 py-3 border-l-2 border-amber-500/30">
+                      <blockquote className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap bg-background/50 rounded-lg px-4 py-3 border-l-2 border-amber-500/30">
                         {memory.content}
                       </blockquote>
                     </div>
@@ -92,20 +92,20 @@ export default async function MemoriesModPage() {
         {/* Approved Tab */}
         <TabsContent value="approved">
           {approved.length === 0 ? (
-            <div className="bg-surface border border-border rounded-xl px-5 py-8 text-center mt-4">
-              <p className="text-sm text-text-muted">No approved memories yet.</p>
+            <div className="bg-card border border-border rounded-xl px-5 py-8 text-center mt-4">
+              <p className="text-sm text-muted-foreground">No approved memories yet.</p>
             </div>
           ) : (
             <div className="space-y-3 mt-4">
               {approved.map((memory) => (
                 <div
                   key={memory.id}
-                  className="bg-surface border border-border rounded-xl px-5 py-4"
+                  className="bg-card border border-border rounded-xl px-5 py-4"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm text-text font-medium">
+                        <span className="text-sm text-foreground font-medium">
                           {memory.firstName} {memory.lastName}
                         </span>
                         <Badge variant="accent" className="text-[10px]">
@@ -123,7 +123,7 @@ export default async function MemoriesModPage() {
                           })}
                         </span>
                       </div>
-                      <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap">
+                      <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
                         {memory.content}
                       </p>
                     </div>

@@ -53,12 +53,12 @@ export default async function EventsPage() {
 
       {/* Upcoming events */}
       <div className="mt-8">
-        <h2 className="text-text-muted text-xs tracking-[3px] uppercase mb-4">
+        <h2 className="text-muted-foreground text-xs tracking-[3px] uppercase mb-4">
           Upcoming
         </h2>
 
         {upcomingEvents.length === 0 ? (
-          <p className="text-text-muted text-sm">
+          <p className="text-muted-foreground text-sm">
             No upcoming events scheduled.
           </p>
         ) : (
@@ -82,7 +82,7 @@ export default async function EventsPage() {
       {pastEvents.length > 0 && (
         <div className="mt-12">
           <details>
-            <summary className="text-text-muted text-xs tracking-[3px] uppercase cursor-pointer hover:text-text transition-colors select-none">
+            <summary className="text-muted-foreground text-xs tracking-[3px] uppercase cursor-pointer hover:text-foreground transition-colors select-none">
               Past Events ({pastEvents.length})
             </summary>
 

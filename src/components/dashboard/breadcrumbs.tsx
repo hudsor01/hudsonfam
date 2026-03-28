@@ -21,7 +21,7 @@ export function DashboardBreadcrumbs({ items }: DashboardBreadcrumbsProps) {
     <Breadcrumb className="mb-4">
       <BreadcrumbList className="text-xs text-text-dim">
         <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard" className="text-text-muted hover:text-text">
+          <BreadcrumbLink href="/dashboard" className="text-muted-foreground hover:text-foreground">
             Dashboard
           </BreadcrumbLink>
         </BreadcrumbItem>
@@ -32,11 +32,11 @@ export function DashboardBreadcrumbs({ items }: DashboardBreadcrumbsProps) {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 {isLast || !item.href ? (
-                  <BreadcrumbPage className="text-text-muted">
+                  <BreadcrumbPage className="text-muted-foreground">
                     {item.label}
                   </BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink href={item.href} className="text-text-muted hover:text-text">
+                  <BreadcrumbLink href={item.href} className="text-muted-foreground hover:text-foreground">
                     {item.label}
                   </BreadcrumbLink>
                 )}

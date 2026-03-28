@@ -55,12 +55,12 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
       <div className="mb-6">
         <Link
           href="/photos"
-          className="text-text-muted text-sm hover:text-primary transition-colors"
+          className="text-muted-foreground text-sm hover:text-primary transition-colors"
         >
           Photos
         </Link>
         <span className="text-text-dim text-sm mx-2">/</span>
-        <span className="text-text text-sm">{album.title}</span>
+        <span className="text-foreground text-sm">{album.title}</span>
       </div>
 
       <SectionHeader
@@ -72,7 +72,7 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
       />
 
       {album.photos.length === 0 ? (
-        <p className="text-text-muted text-sm mt-8">
+        <p className="text-muted-foreground text-sm mt-8">
           This album is empty.
         </p>
       ) : (

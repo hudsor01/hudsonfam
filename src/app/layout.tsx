@@ -36,7 +36,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
-      <body className="bg-bg text-text font-sans antialiased min-h-screen">
+      <body className="bg-background text-foreground font-sans antialiased min-h-screen">
         <Providers>
           {children}
         </Providers>

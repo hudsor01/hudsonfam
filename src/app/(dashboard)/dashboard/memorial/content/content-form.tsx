@@ -46,9 +46,9 @@ export function ContentSectionForm({
   }
 
   return (
-    <div className="bg-surface border border-border rounded-xl p-5">
+    <div className="bg-card border border-border rounded-xl p-5">
       <div className="mb-3">
-        <h3 className="text-sm font-medium text-text">{label}</h3>
+        <h3 className="text-sm font-medium text-foreground">{label}</h3>
         <p className="text-xs text-text-dim mt-0.5">{description}</p>
       </div>
 
@@ -56,7 +56,7 @@ export function ContentSectionForm({
         value={content}
         onChange={(e) => setContent(e.target.value)}
         rows={rows}
-        className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors resize-y field-sizing-content"
+        className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors resize-y field-sizing-content"
       />
 
       {error && (

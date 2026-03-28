@@ -52,7 +52,7 @@ export default async function DashboardPage() {
               <div className="text-2xl font-semibold text-primary">
                 {stat.value}
               </div>
-              <div className="text-xs text-text-muted mt-1 uppercase tracking-wider">
+              <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
                 {stat.label}
               </div>
               {"published" in stat && (
@@ -79,25 +79,25 @@ export default async function DashboardPage() {
           </a>
           <a
             href="/dashboard/photos/upload"
-            className="inline-flex items-center gap-2 bg-surface border border-border text-text px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
+            className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
           >
             Upload Photos
           </a>
           <a
             href="/dashboard/photos/albums/new"
-            className="inline-flex items-center gap-2 bg-surface border border-border text-text px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
+            className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
           >
             New Album
           </a>
           <a
             href="/dashboard/events/new"
-            className="inline-flex items-center gap-2 bg-surface border border-border text-text px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
+            className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
           >
             New Event
           </a>
           <a
             href="/dashboard/updates/new"
-            className="inline-flex items-center gap-2 bg-surface border border-border text-text px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
+            className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
           >
             New Update
           </a>
@@ -109,13 +109,13 @@ export default async function DashboardPage() {
         {/* Recent posts */}
         <Card padding="none">
           <div className="px-5 py-3 border-b border-border">
-            <h3 className="text-sm font-medium text-text uppercase tracking-wide">
+            <h3 className="text-sm font-medium text-foreground uppercase tracking-wide">
               Recent Posts
             </h3>
           </div>
           <div className="divide-y divide-border/50">
             {recentPosts.length === 0 ? (
-              <div className="px-5 py-4 text-sm text-text-muted">
+              <div className="px-5 py-4 text-sm text-muted-foreground">
                 No posts yet.
               </div>
             ) : (
@@ -123,9 +123,9 @@ export default async function DashboardPage() {
                 <a
                   key={post.id}
                   href={`/dashboard/posts/${post.id}`}
-                  className="flex items-center justify-between px-5 py-3 hover:bg-bg/50 transition-colors"
+                  className="flex items-center justify-between px-5 py-3 hover:bg-background/50 transition-colors"
                 >
-                  <span className="text-sm text-text truncate mr-3">
+                  <span className="text-sm text-foreground truncate mr-3">
                     {post.title}
                   </span>
                   <div className="flex items-center gap-2 shrink-0">
@@ -142,13 +142,13 @@ export default async function DashboardPage() {
         {/* Upcoming events */}
         <Card padding="none">
           <div className="px-5 py-3 border-b border-border">
-            <h3 className="text-sm font-medium text-text uppercase tracking-wide">
+            <h3 className="text-sm font-medium text-foreground uppercase tracking-wide">
               Upcoming Events
             </h3>
           </div>
           <div className="divide-y divide-border/50">
             {upcomingEvents.length === 0 ? (
-              <div className="px-5 py-4 text-sm text-text-muted">
+              <div className="px-5 py-4 text-sm text-muted-foreground">
                 No upcoming events.
               </div>
             ) : (
@@ -156,9 +156,9 @@ export default async function DashboardPage() {
                 <a
                   key={event.id}
                   href={`/dashboard/events/${event.id}`}
-                  className="flex items-center justify-between px-5 py-3 hover:bg-bg/50 transition-colors"
+                  className="flex items-center justify-between px-5 py-3 hover:bg-background/50 transition-colors"
                 >
-                  <span className="text-sm text-text truncate mr-3">
+                  <span className="text-sm text-foreground truncate mr-3">
                     {event.title}
                   </span>
                   <span className="text-xs text-text-dim shrink-0">

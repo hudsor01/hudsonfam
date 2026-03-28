@@ -70,10 +70,10 @@ export default async function BlogPage({ searchParams }: PageProps) {
     <div className="max-w-5xl mx-auto px-5 sm:px-7 py-10 sm:py-14 motion-safe:animate-fade-in-up">
       {/* Page header */}
       <header className="mb-8">
-        <h1 className="text-3xl sm:text-4xl font-serif text-text font-normal mb-2">
+        <h1 className="text-3xl sm:text-4xl font-serif text-foreground font-normal mb-2">
           Blog
         </h1>
-        <p className="text-text-muted">
+        <p className="text-muted-foreground">
           Stories, thoughts, and updates from our family.
         </p>
       </header>
@@ -107,7 +107,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
       {/* Active filter indicator */}
       {activeTag && (
         <div className="mb-6 flex items-center gap-2">
-          <span className="text-sm text-text-muted">
+          <span className="text-sm text-muted-foreground">
             Showing posts tagged &ldquo;{activeTag}&rdquo;
           </span>
           <Link
@@ -147,7 +147,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
               {safePage > 1 && (
                 <Link
                   href={pageUrl(safePage - 1)}
-                  className="px-3 py-2 text-sm text-text-muted hover:text-text bg-surface border border-border rounded-lg hover:border-primary/30 transition-colors"
+                  className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground bg-card border border-border rounded-lg hover:border-primary/30 transition-colors"
                 >
                   Previous
                 </Link>
@@ -163,7 +163,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
                       ${
                         page === safePage
                           ? "bg-primary text-white"
-                          : "text-text-muted hover:text-text bg-surface border border-border hover:border-primary/30"
+                          : "text-muted-foreground hover:text-foreground bg-card border border-border hover:border-primary/30"
                       }
                     `}
                   >
@@ -175,7 +175,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
               {safePage < totalPages && (
                 <Link
                   href={pageUrl(safePage + 1)}
-                  className="px-3 py-2 text-sm text-text-muted hover:text-text bg-surface border border-border rounded-lg hover:border-primary/30 transition-colors"
+                  className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground bg-card border border-border rounded-lg hover:border-primary/30 transition-colors"
                 >
                   Next
                 </Link>
@@ -185,10 +185,10 @@ export default async function BlogPage({ searchParams }: PageProps) {
         </>
       ) : (
         <div className="text-center py-16">
-          <p className="text-lg font-serif text-text mb-2">
+          <p className="text-lg font-serif text-foreground mb-2">
             {activeTag ? "No posts with this tag" : "No posts yet"}
           </p>
-          <p className="text-sm text-text-muted">
+          <p className="text-sm text-muted-foreground">
             {activeTag
               ? "Try a different tag or view all posts."
               : "Check back soon for our first blog post!"}

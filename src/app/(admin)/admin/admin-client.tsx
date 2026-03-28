@@ -65,7 +65,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
       {/* Header with refresh indicator */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-serif text-text">Homelab Dashboard</h1>
+          <h1 className="text-2xl font-serif text-foreground">Homelab Dashboard</h1>
           <p className="text-sm text-text-dim mt-1">
             Last updated:{" "}
             {lastRefresh.toLocaleTimeString("en-US", {
@@ -81,7 +81,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
         <button
           onClick={refresh}
           disabled={isRefreshing}
-          className="text-sm text-text-muted hover:text-text px-3 py-1.5 rounded-md border border-border hover:bg-surface transition-colors disabled:opacity-50"
+          className="text-sm text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-md border border-border hover:bg-card transition-colors disabled:opacity-50"
         >
           Refresh
         </button>

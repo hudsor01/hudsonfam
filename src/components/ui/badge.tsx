@@ -7,10 +7,10 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: "bg-surface text-text-muted border border-border",
+  default: "bg-card text-muted-foreground border border-border",
   primary: "bg-primary/15 text-primary border border-primary/25",
   accent: "bg-accent/15 text-accent border border-accent/25",
-  outline: "bg-transparent text-text-muted border border-border",
+  outline: "bg-transparent text-muted-foreground border border-border",
 };
 
 const Badge = forwardRef<HTMLSpanElement, BadgeProps>(

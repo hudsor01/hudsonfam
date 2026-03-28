@@ -115,13 +115,13 @@ export function MemberActions({ userId, currentRole, isBanned }: MemberActionsPr
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-text-muted">Reason (optional)</label>
+              <label className="text-sm font-medium text-muted-foreground">Reason (optional)</label>
               <input
                 type="text"
                 value={banReason}
                 onChange={(e) => setBanReason(e.target.value)}
                 placeholder="Why is this user being banned?"
-                className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary"
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary"
               />
             </div>
             <AlertDialogFooter>

@@ -11,7 +11,7 @@ export default function PublicLoading() {
       {/* Content skeletons */}
       <div className="space-y-6">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="rounded-xl border border-border bg-surface p-5">
+          <div key={i} className="rounded-xl border border-border bg-card p-5">
             <Skeleton className="h-5 w-3/4 mb-3" />
             <Skeleton className="h-3 w-full mb-2" />
             <Skeleton className="h-3 w-5/6" />

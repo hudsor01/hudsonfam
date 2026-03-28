@@ -55,10 +55,10 @@ export function MemoryForm() {
             />
           </svg>
         </div>
-        <p className="text-text font-serif text-lg mb-2">
+        <p className="text-foreground font-serif text-lg mb-2">
           Thank you for sharing
         </p>
-        <p className="text-text-muted text-sm mb-6">
+        <p className="text-muted-foreground text-sm mb-6">
           Thank you for sharing your memory. It will be visible once reviewed by the family.
         </p>
         <button
@@ -77,7 +77,7 @@ export function MemoryForm() {
         <div>
           <label
             htmlFor="firstName"
-            className="block text-xs text-text-muted mb-1.5"
+            className="block text-xs text-muted-foreground mb-1.5"
           >
             First Name <span className="text-accent">*</span>
           </label>
@@ -87,13 +87,13 @@ export function MemoryForm() {
             type="text"
             required
             placeholder="First name"
-            className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
+            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
           />
         </div>
         <div>
           <label
             htmlFor="lastName"
-            className="block text-xs text-text-muted mb-1.5"
+            className="block text-xs text-muted-foreground mb-1.5"
           >
             Last Name <span className="text-accent">*</span>
           </label>
@@ -103,7 +103,7 @@ export function MemoryForm() {
             type="text"
             required
             placeholder="Last name"
-            className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
+            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
           />
         </div>
       </div>
@@ -112,7 +112,7 @@ export function MemoryForm() {
         <div>
           <label
             htmlFor="email"
-            className="block text-xs text-text-muted mb-1.5"
+            className="block text-xs text-muted-foreground mb-1.5"
           >
             Email <span className="text-accent">*</span>{" "}
             <span className="text-text-dim">(not displayed publicly)</span>
@@ -123,13 +123,13 @@ export function MemoryForm() {
             type="email"
             required
             placeholder="your@email.com"
-            className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
+            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
           />
         </div>
         <div>
           <label
             htmlFor="phone"
-            className="block text-xs text-text-muted mb-1.5"
+            className="block text-xs text-muted-foreground mb-1.5"
           >
             Phone <span className="text-text-dim">(optional)</span>
           </label>
@@ -138,7 +138,7 @@ export function MemoryForm() {
             name="phone"
             type="tel"
             placeholder="(555) 555-5555"
-            className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
+            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
           />
         </div>
       </div>
@@ -146,7 +146,7 @@ export function MemoryForm() {
       <div>
         <label
           htmlFor="relationship"
-          className="block text-xs text-text-muted mb-1.5"
+          className="block text-xs text-muted-foreground mb-1.5"
         >
           Relationship <span className="text-accent">*</span>
         </label>
@@ -155,7 +155,7 @@ export function MemoryForm() {
           name="relationship"
           required
           defaultValue=""
-          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text focus:outline-none focus:border-accent/50 transition-colors"
+          className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-accent/50 transition-colors"
         >
           <option value="" disabled className="text-text-dim">
             Select your relationship...
@@ -175,7 +175,7 @@ export function MemoryForm() {
       <div>
         <label
           htmlFor="content"
-          className="block text-xs text-text-muted mb-1.5"
+          className="block text-xs text-muted-foreground mb-1.5"
         >
           Your Memory <span className="text-accent">*</span>
         </label>
@@ -186,7 +186,7 @@ export function MemoryForm() {
           rows={5}
           maxLength={5000}
           placeholder="Share a memory, a story, or a few words about what Richard meant to you..."
-          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors resize-y field-sizing-content min-h-[120px]"
+          className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors resize-y field-sizing-content min-h-[120px]"
         />
       </div>
 

@@ -63,7 +63,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       {/* Back link */}
       <Link
         href="/blog"
-        className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors mb-8"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -89,11 +89,11 @@ export default async function BlogPostPage({ params }: PageProps) {
           <span className="text-sm text-text-dim">&bull;</span>
           <span className="text-sm text-text-dim">{post.readingTime}</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-serif text-text font-normal mb-3">
+        <h1 className="text-3xl sm:text-4xl font-serif text-foreground font-normal mb-3">
           {post.frontmatter.title}
         </h1>
         {post.frontmatter.excerpt && (
-          <p className="text-text-muted text-lg italic leading-relaxed">
+          <p className="text-muted-foreground text-lg italic leading-relaxed">
             {post.frontmatter.excerpt}
           </p>
         )}

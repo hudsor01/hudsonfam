@@ -18,8 +18,8 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={`
-          bg-surface border border-border rounded-xl
-          ${hover ? "transition-colors duration-200 hover:border-primary/30 hover:bg-surface/80" : ""}
+          bg-card border border-border rounded-xl
+          ${hover ? "transition-colors duration-200 hover:border-primary/30 hover:bg-card/80" : ""}
           ${paddingStyles[padding]}
           ${className}
         `}

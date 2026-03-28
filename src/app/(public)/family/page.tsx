@@ -57,7 +57,7 @@ export default async function FamilyPage() {
       />
 
       {displayUpdates.length === 0 ? (
-        <div className="mt-12 text-center py-12 bg-surface border border-border rounded-xl">
+        <div className="mt-12 text-center py-12 bg-card border border-border rounded-xl">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="48"
@@ -72,10 +72,10 @@ export default async function FamilyPage() {
           >
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
-          <p className="text-lg font-serif text-text mb-2">
+          <p className="text-lg font-serif text-foreground mb-2">
             No updates just yet
           </p>
-          <p className="text-sm text-text-muted mb-6 max-w-sm mx-auto">
+          <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
             We&apos;re settling into our new life in Dallas. While we get
             organized, check out our latest blog posts for what we&apos;ve been
             up to.

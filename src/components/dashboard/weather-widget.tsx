@@ -14,7 +14,7 @@ function WeatherIcon({ icon }: { icon: string }) {
       </svg>
     ),
     cloud: (
-      <svg className="size-10 text-text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <svg className="size-10 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
       </svg>
     ),
@@ -60,11 +60,11 @@ export function WeatherWidget({ weather }: WeatherWidgetProps) {
       <div className="flex items-center gap-4">
         <WeatherIcon icon={weather.icon} />
         <div>
-          <div className="text-3xl font-semibold text-text">
+          <div className="text-3xl font-semibold text-foreground">
             {weather.temperature}
-            <span className="text-lg text-text-muted">&deg;F</span>
+            <span className="text-lg text-muted-foreground">&deg;F</span>
           </div>
-          <div className="text-sm text-text-muted">{weather.condition}</div>
+          <div className="text-sm text-muted-foreground">{weather.condition}</div>
         </div>
       </div>
       <div className="mt-3 flex gap-4 text-xs text-text-dim">

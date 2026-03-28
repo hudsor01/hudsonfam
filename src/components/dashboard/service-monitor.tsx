@@ -42,9 +42,9 @@ export function ServiceMonitor({ title, services }: ServiceMonitorProps) {
   const anyDown = services.some((s) => s.status === "down");
 
   return (
-    <div className="bg-surface border border-border rounded-xl overflow-hidden">
+    <div className="bg-card border border-border rounded-xl overflow-hidden">
       <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-        <h3 className="text-sm font-medium text-text tracking-wide uppercase">
+        <h3 className="text-sm font-medium text-foreground tracking-wide uppercase">
           {title}
         </h3>
         <span
@@ -66,11 +66,11 @@ export function ServiceMonitor({ title, services }: ServiceMonitorProps) {
             href={service.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between px-4 py-2.5 hover:bg-bg/50 transition-colors"
+            className="flex items-center justify-between px-4 py-2.5 hover:bg-background/50 transition-colors"
           >
             <div className="flex items-center gap-2.5">
               <StatusDot status={service.status} />
-              <span className="text-sm text-text">{service.name}</span>
+              <span className="text-sm text-foreground">{service.name}</span>
             </div>
             {service.responseTime !== undefined && service.status === "up" && (
               <span className="text-xs text-text-dim">

@@ -3,7 +3,7 @@ import type { MDXComponents } from "mdx/types";
 export const mdxComponents: MDXComponents = {
   h1: ({ children, ...props }) => (
     <h1
-      className="text-3xl sm:text-4xl font-serif text-text font-normal mt-10 mb-4"
+      className="text-3xl sm:text-4xl font-serif text-foreground font-normal mt-10 mb-4"
       {...props}
     >
       {children}
@@ -11,7 +11,7 @@ export const mdxComponents: MDXComponents = {
   ),
   h2: ({ children, ...props }) => (
     <h2
-      className="text-2xl sm:text-3xl font-serif text-text font-normal mt-8 mb-3"
+      className="text-2xl sm:text-3xl font-serif text-foreground font-normal mt-8 mb-3"
       {...props}
     >
       {children}
@@ -19,7 +19,7 @@ export const mdxComponents: MDXComponents = {
   ),
   h3: ({ children, ...props }) => (
     <h3
-      className="text-xl sm:text-2xl font-serif text-text font-normal mt-6 mb-2"
+      className="text-xl sm:text-2xl font-serif text-foreground font-normal mt-6 mb-2"
       {...props}
     >
       {children}
@@ -27,7 +27,7 @@ export const mdxComponents: MDXComponents = {
   ),
   h4: ({ children, ...props }) => (
     <h4
-      className="text-lg font-serif text-text font-normal mt-5 mb-2"
+      className="text-lg font-serif text-foreground font-normal mt-5 mb-2"
       {...props}
     >
       {children}
@@ -35,7 +35,7 @@ export const mdxComponents: MDXComponents = {
   ),
   p: ({ children, ...props }) => (
     <p
-      className="text-text text-base leading-relaxed mb-4"
+      className="text-foreground text-base leading-relaxed mb-4"
       {...props}
     >
       {children}
@@ -52,7 +52,7 @@ export const mdxComponents: MDXComponents = {
   ),
   ul: ({ children, ...props }) => (
     <ul
-      className="list-disc list-inside text-text mb-4 space-y-1 pl-2"
+      className="list-disc list-inside text-foreground mb-4 space-y-1 pl-2"
       {...props}
     >
       {children}
@@ -60,20 +60,20 @@ export const mdxComponents: MDXComponents = {
   ),
   ol: ({ children, ...props }) => (
     <ol
-      className="list-decimal list-inside text-text mb-4 space-y-1 pl-2"
+      className="list-decimal list-inside text-foreground mb-4 space-y-1 pl-2"
       {...props}
     >
       {children}
     </ol>
   ),
   li: ({ children, ...props }) => (
-    <li className="text-text leading-relaxed" {...props}>
+    <li className="text-foreground leading-relaxed" {...props}>
       {children}
     </li>
   ),
   blockquote: ({ children, ...props }) => (
     <blockquote
-      className="border-l-3 border-accent pl-4 my-6 italic text-text-muted"
+      className="border-l-3 border-accent pl-4 my-6 italic text-muted-foreground"
       {...props}
     >
       {children}
@@ -84,7 +84,7 @@ export const mdxComponents: MDXComponents = {
     if (!className) {
       return (
         <code
-          className="bg-surface border border-border rounded px-1.5 py-0.5 text-sm font-mono text-accent"
+          className="bg-card border border-border rounded px-1.5 py-0.5 text-sm font-mono text-accent"
           {...props}
         >
           {children}
@@ -100,7 +100,7 @@ export const mdxComponents: MDXComponents = {
   },
   pre: ({ children, ...props }) => (
     <pre
-      className="bg-surface border border-border rounded-xl p-4 overflow-x-auto mb-4 text-sm leading-relaxed"
+      className="bg-card border border-border rounded-xl p-4 overflow-x-auto mb-4 text-sm leading-relaxed"
       {...props}
     >
       {children}
@@ -137,7 +137,7 @@ export const mdxComponents: MDXComponents = {
   ),
   th: ({ children, ...props }) => (
     <th
-      className="border border-border bg-surface px-3 py-2 text-left text-text font-medium"
+      className="border border-border bg-card px-3 py-2 text-left text-foreground font-medium"
       {...props}
     >
       {children}
@@ -145,19 +145,19 @@ export const mdxComponents: MDXComponents = {
   ),
   td: ({ children, ...props }) => (
     <td
-      className="border border-border px-3 py-2 text-text-muted"
+      className="border border-border px-3 py-2 text-muted-foreground"
       {...props}
     >
       {children}
     </td>
   ),
   strong: ({ children, ...props }) => (
-    <strong className="font-semibold text-text" {...props}>
+    <strong className="font-semibold text-foreground" {...props}>
       {children}
     </strong>
   ),
   em: ({ children, ...props }) => (
-    <em className="italic text-text-muted" {...props}>
+    <em className="italic text-muted-foreground" {...props}>
       {children}
     </em>
   ),

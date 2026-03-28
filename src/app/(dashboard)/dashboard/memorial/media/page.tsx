@@ -27,7 +27,7 @@ export default async function MemorialMediaPage() {
       />
 
       {/* Add Media Form */}
-      <div className="mt-6 bg-surface border border-border rounded-xl p-5">
+      <div className="mt-6 bg-card border border-border rounded-xl p-5">
         <h2 className="text-xs font-sans font-semibold tracking-[3px] text-accent uppercase mb-4">
           Add Media
         </h2>
@@ -44,15 +44,15 @@ export default async function MemorialMediaPage() {
         </div>
 
         {photos.length === 0 ? (
-          <div className="bg-surface border border-border rounded-xl px-5 py-8 text-center">
-            <p className="text-sm text-text-muted">No photos added yet.</p>
+          <div className="bg-card border border-border rounded-xl px-5 py-8 text-center">
+            <p className="text-sm text-muted-foreground">No photos added yet.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {photos.map((photo) => (
               <div
                 key={photo.id}
-                className="relative group bg-surface border border-border rounded-lg overflow-hidden"
+                className="relative group bg-card border border-border rounded-lg overflow-hidden"
               >
                 <div className="aspect-square">
                   <img
@@ -64,7 +64,7 @@ export default async function MemorialMediaPage() {
                 </div>
                 <div className="px-3 py-2">
                   {photo.caption && (
-                    <p className="text-xs text-text-muted truncate">{photo.caption}</p>
+                    <p className="text-xs text-muted-foreground truncate">{photo.caption}</p>
                   )}
                   <p className="text-[10px] text-text-dim">Order: {photo.sortOrder}</p>
                 </div>
@@ -85,15 +85,15 @@ export default async function MemorialMediaPage() {
         </div>
 
         {videos.length === 0 ? (
-          <div className="bg-surface border border-border rounded-xl px-5 py-8 text-center">
-            <p className="text-sm text-text-muted">No videos added yet.</p>
+          <div className="bg-card border border-border rounded-xl px-5 py-8 text-center">
+            <p className="text-sm text-muted-foreground">No videos added yet.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {videos.map((video) => (
               <div
                 key={video.id}
-                className="relative bg-surface border border-border rounded-lg overflow-hidden px-4 py-3"
+                className="relative bg-card border border-border rounded-lg overflow-hidden px-4 py-3"
               >
                 <div className="flex items-center gap-3">
                   <div className="size-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
@@ -102,9 +102,9 @@ export default async function MemorialMediaPage() {
                     </svg>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-text truncate">{video.url}</p>
+                    <p className="text-sm text-foreground truncate">{video.url}</p>
                     {video.caption && (
-                      <p className="text-xs text-text-muted truncate">{video.caption}</p>
+                      <p className="text-xs text-muted-foreground truncate">{video.caption}</p>
                     )}
                     <p className="text-[10px] text-text-dim">Order: {video.sortOrder}</p>
                   </div>

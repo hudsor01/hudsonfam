@@ -50,7 +50,7 @@ export function AddMediaForm() {
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="url" className="block text-sm font-medium text-text-muted mb-1.5">
+          <label htmlFor="url" className="block text-sm font-medium text-muted-foreground mb-1.5">
             URL <span className="text-accent">*</span>
           </label>
           <input
@@ -59,11 +59,11 @@ export function AddMediaForm() {
             type="url"
             required
             placeholder="https://images.unsplash.com/..."
-            className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
+            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
           />
         </div>
         <div>
-          <label htmlFor="type" className="block text-sm font-medium text-text-muted mb-1.5">
+          <label htmlFor="type" className="block text-sm font-medium text-muted-foreground mb-1.5">
             Type <span className="text-accent">*</span>
           </label>
           <Select name="type" defaultValue="photo">
@@ -79,7 +79,7 @@ export function AddMediaForm() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="caption" className="block text-sm font-medium text-text-muted mb-1.5">
+          <label htmlFor="caption" className="block text-sm font-medium text-muted-foreground mb-1.5">
             Caption <span className="text-text-dim">(optional)</span>
           </label>
           <input
@@ -87,11 +87,11 @@ export function AddMediaForm() {
             name="caption"
             type="text"
             placeholder="Describe this photo or video"
-            className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
+            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
           />
         </div>
         <div>
-          <label htmlFor="sortOrder" className="block text-sm font-medium text-text-muted mb-1.5">
+          <label htmlFor="sortOrder" className="block text-sm font-medium text-muted-foreground mb-1.5">
             Sort Order
           </label>
           <input
@@ -100,7 +100,7 @@ export function AddMediaForm() {
             type="number"
             defaultValue={0}
             min={0}
-            className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
+            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
           />
         </div>
       </div>
@@ -146,7 +146,7 @@ export function MediaDeleteButton({ mediaId }: MediaDeleteButtonProps) {
       <AlertDialogTrigger asChild>
         <button
           disabled={loading}
-          className="absolute top-2 right-2 size-7 rounded-full bg-bg/80 border border-border text-red-400 hover:bg-red-400/20 hover:border-red-400/30 transition-colors flex items-center justify-center disabled:opacity-50"
+          className="absolute top-2 right-2 size-7 rounded-full bg-background/80 border border-border text-red-400 hover:bg-red-400/20 hover:border-red-400/30 transition-colors flex items-center justify-center disabled:opacity-50"
           title="Remove"
         >
           <svg className="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

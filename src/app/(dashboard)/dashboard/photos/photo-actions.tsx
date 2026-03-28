@@ -48,7 +48,7 @@ export function PhotoActions({ photoId, deleteAction }: PhotoActionsProps) {
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="p-1.5 rounded-md bg-bg/80 text-text-dim hover:text-text hover:bg-bg transition-colors"
+            className="p-1.5 rounded-md bg-background/80 text-text-dim hover:text-foreground hover:bg-background transition-colors"
             aria-label="Photo actions"
           >
             <MoreHorizontal className="size-4" />

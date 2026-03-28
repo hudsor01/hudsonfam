@@ -47,10 +47,10 @@ export default async function MemorialAdminPage() {
               </svg>
             </div>
             <div>
-              <p className="text-sm text-text font-medium">
+              <p className="text-sm text-foreground font-medium">
                 {pendingMemories} memor{pendingMemories === 1 ? "y" : "ies"} awaiting review
               </p>
-              <p className="text-xs text-text-muted mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 New memories require approval before appearing on the memorial page.
               </p>
             </div>
@@ -77,7 +77,7 @@ export default async function MemorialAdminPage() {
                   </Badge>
                 )}
               </div>
-              <div className="text-xs text-text-muted mt-1 uppercase tracking-wider">
+              <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
                 {stat.label}
               </div>
             </Card>
@@ -99,20 +99,20 @@ export default async function MemorialAdminPage() {
           </a>
           <a
             href="/dashboard/memorial/media"
-            className="inline-flex items-center gap-2 bg-surface border border-border text-text px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
+            className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
           >
             Manage Media
           </a>
           <a
             href="/dashboard/memorial/content"
-            className="inline-flex items-center gap-2 bg-surface border border-border text-text px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
+            className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
           >
             Edit Page Content
           </a>
           <a
             href="/richard-hudson-sr"
             target="_blank"
-            className="inline-flex items-center gap-2 bg-surface border border-border text-text px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
+            className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
           >
             View Memorial Page
           </a>
@@ -131,14 +131,14 @@ export default async function MemorialAdminPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm text-text font-medium">
+                      <span className="text-sm text-foreground font-medium">
                         {memory.firstName} {memory.lastName}
                       </span>
                       <Badge variant="accent" className="text-[10px]">
                         {memory.relationship}
                       </Badge>
                     </div>
-                    <p className="text-sm text-text-muted line-clamp-2">
+                    <p className="text-sm text-muted-foreground line-clamp-2">
                       {memory.content}
                     </p>
                     <p className="text-xs text-text-dim mt-1">

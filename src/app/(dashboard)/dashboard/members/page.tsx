@@ -53,16 +53,16 @@ export default async function MembersPage() {
             {invites.map((invite) => (
               <div
                 key={invite.id}
-                className="bg-surface border border-border rounded-lg px-4 py-3 flex items-center justify-between text-xs"
+                className="bg-card border border-border rounded-lg px-4 py-3 flex items-center justify-between text-xs"
               >
                 <div>
-                  <span className="text-text-muted">{invite.email || "Any email"}</span>
+                  <span className="text-muted-foreground">{invite.email || "Any email"}</span>
                   <span className="text-text-dim ml-3">
                     Expires {new Date(invite.expiresAt).toLocaleDateString()}
                   </span>
                   <Badge variant="outline" className="ml-2">{invite.role}</Badge>
                 </div>
-                <code className="text-text-dim bg-bg px-2 py-1 rounded text-[10px] select-all">
+                <code className="text-text-dim bg-background px-2 py-1 rounded text-[10px] select-all">
                   /signup?token={invite.token}
                 </code>
               </div>
@@ -88,7 +88,7 @@ export default async function MembersPage() {
           return (
             <div
               key={user.id}
-              className="bg-surface border border-border rounded-lg px-5 py-4"
+              className="bg-card border border-border rounded-lg px-5 py-4"
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0 flex-1">
@@ -98,7 +98,7 @@ export default async function MembersPage() {
                         {(user.name || user.email).charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm text-text font-medium truncate">
+                    <span className="text-sm text-foreground font-medium truncate">
                       {user.name}
                     </span>
                     <Badge variant={roleVariant}>{role}</Badge>
@@ -109,7 +109,7 @@ export default async function MembersPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-3 mt-1">
-                    <span className="text-xs text-text-muted">{user.email}</span>
+                    <span className="text-xs text-muted-foreground">{user.email}</span>
                     <span className="text-xs text-text-dim">
                       Joined{" "}
                       {new Date(user.createdAt).toLocaleDateString("en-US", {

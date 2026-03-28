@@ -27,7 +27,7 @@ export default async function PhotosPage() {
       <SectionHeader title="Photos" subtitle="Family moments captured" />
 
       {albums.length === 0 ? (
-        <p className="text-text-muted text-sm mt-8">
+        <p className="text-muted-foreground text-sm mt-8">
           No albums yet. Check back soon.
         </p>
       ) : (
@@ -42,9 +42,9 @@ export default async function PhotosPage() {
                 href={`/photos/${album.slug}`}
                 className="group block"
               >
-                <div className="bg-surface border border-border rounded-xl overflow-hidden hover:border-primary/40 transition-colors">
+                <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/40 transition-colors">
                   {/* Cover image */}
-                  <div className="aspect-[4/3] bg-bg overflow-hidden">
+                  <div className="aspect-[4/3] bg-background overflow-hidden">
                     {coverPhoto ? (
                       <img
                         src={coverPhoto.thumbnailPath}
@@ -82,12 +82,12 @@ export default async function PhotosPage() {
 
                   {/* Album info */}
                   <div className="p-4">
-                    <h2 className="text-text font-serif text-lg group-hover:text-primary transition-colors">
+                    <h2 className="text-foreground font-serif text-lg group-hover:text-primary transition-colors">
                       {album.title}
                     </h2>
                     <div className="flex items-center gap-3 mt-1.5">
                       {album.date && (
-                        <span className="text-text-muted text-xs">
+                        <span className="text-muted-foreground text-xs">
                           {new Date(album.date).toLocaleDateString("en-US", {
                             month: "long",
                             year: "numeric",
@@ -99,7 +99,7 @@ export default async function PhotosPage() {
                       </span>
                     </div>
                     {album.description && (
-                      <p className="text-text-muted text-sm mt-2 line-clamp-2">
+                      <p className="text-muted-foreground text-sm mt-2 line-clamp-2">
                         {album.description}
                       </p>
                     )}

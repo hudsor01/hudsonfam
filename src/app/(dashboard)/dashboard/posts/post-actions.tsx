@@ -50,7 +50,7 @@ export function PostActions({ postId, deleteAction }: PostActionsProps) {
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="p-1.5 rounded-md text-text-dim hover:text-text hover:bg-bg/50 transition-colors"
+            className="p-1.5 rounded-md text-text-dim hover:text-foreground hover:bg-background/50 transition-colors"
             aria-label="Post actions"
           >
             <MoreHorizontal className="size-4" />

@@ -81,14 +81,14 @@ export function PostForm({ action, initial }: PostFormProps) {
       />
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-text-muted">
+        <label className="block text-sm font-medium text-muted-foreground">
           Excerpt
         </label>
         <textarea
           name="excerpt"
           rows={3}
           defaultValue={initial?.excerpt || ""}
-          className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 resize-y field-sizing-content"
+          className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 resize-y field-sizing-content"
           placeholder="Brief summary of the post..."
         />
       </div>
@@ -108,7 +108,7 @@ export function PostForm({ action, initial }: PostFormProps) {
       />
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-text-muted">
+        <label className="block text-sm font-medium text-muted-foreground">
           Status
         </label>
         <Select name="status" defaultValue={initial?.status || "DRAFT"}>

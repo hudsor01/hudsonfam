@@ -68,7 +68,7 @@ export default async function EditAlbumPage({ params }: Props) {
             {album.photos.map((photo) => (
               <div
                 key={photo.id}
-                className="aspect-square bg-surface border border-border rounded-lg overflow-hidden"
+                className="aspect-square bg-card border border-border rounded-lg overflow-hidden"
               >
                 <img
                   src={`/api/images/${photo.id}?size=thumbnail`}

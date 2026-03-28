@@ -2,21 +2,21 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col bg-bg">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Nav */}
       <nav className="border-b border-border px-5 sm:px-7 py-5 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
           <div className="size-8 rounded-md bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white text-sm font-bold">
             H
           </div>
-          <span className="text-text text-[15px] font-medium tracking-wide">
+          <span className="text-foreground text-[15px] font-medium tracking-wide">
             THE HUDSONS
           </span>
         </Link>
         <div className="hidden sm:flex items-center gap-6 text-sm tracking-wide">
-          <Link href="/" className="text-text-muted hover:text-text transition-colors">Home</Link>
-          <Link href="/blog" className="text-text-muted hover:text-text transition-colors">Blog</Link>
-          <Link href="/photos" className="text-text-muted hover:text-text transition-colors">Photos</Link>
+          <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">Home</Link>
+          <Link href="/blog" className="text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
+          <Link href="/photos" className="text-muted-foreground hover:text-foreground transition-colors">Photos</Link>
         </div>
       </nav>
 
@@ -33,10 +33,10 @@ export default function NotFound() {
               </div>
             </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif text-text mb-3">
+          <h1 className="text-2xl sm:text-3xl font-serif text-foreground mb-3">
             Page Not Found
           </h1>
-          <p className="text-text-muted text-sm sm:text-base mb-8 max-w-sm mx-auto">
+          <p className="text-muted-foreground text-sm sm:text-base mb-8 max-w-sm mx-auto">
             This page doesn&apos;t exist or has been moved. Let&apos;s get you back on track.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -48,13 +48,13 @@ export default function NotFound() {
             </Link>
             <Link
               href="/blog"
-              className="w-full sm:w-auto px-6 py-3 bg-surface text-text-muted text-sm font-medium rounded-lg border border-border hover:text-text hover:border-primary/30 transition-colors text-center"
+              className="w-full sm:w-auto px-6 py-3 bg-card text-muted-foreground text-sm font-medium rounded-lg border border-border hover:text-foreground hover:border-primary/30 transition-colors text-center"
             >
               Read the Blog
             </Link>
             <Link
               href="/photos"
-              className="w-full sm:w-auto px-6 py-3 bg-surface text-text-muted text-sm font-medium rounded-lg border border-border hover:text-text hover:border-primary/30 transition-colors text-center"
+              className="w-full sm:w-auto px-6 py-3 bg-card text-muted-foreground text-sm font-medium rounded-lg border border-border hover:text-foreground hover:border-primary/30 transition-colors text-center"
             >
               View Photos
             </Link>

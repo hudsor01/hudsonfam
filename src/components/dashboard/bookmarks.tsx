@@ -27,9 +27,9 @@ const BOOKMARK_GROUPS: BookmarkGroup[] = [
 
 export function Bookmarks() {
   return (
-    <div className="bg-surface border border-border rounded-xl overflow-hidden">
+    <div className="bg-card border border-border rounded-xl overflow-hidden">
       <div className="px-4 py-3 border-b border-border">
-        <h3 className="text-sm font-medium text-text tracking-wide uppercase">
+        <h3 className="text-sm font-medium text-foreground tracking-wide uppercase">
           Bookmarks
         </h3>
       </div>
@@ -47,7 +47,7 @@ export function Bookmarks() {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-text-muted hover:text-text hover:bg-bg/50 transition-colors"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-background/50 transition-colors"
                   >
                     <svg
                       className="w-3.5 h-3.5 text-text-dim"

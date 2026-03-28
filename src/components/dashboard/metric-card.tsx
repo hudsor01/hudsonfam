@@ -19,7 +19,7 @@ const colorClasses: Record<string, string> = {
   gold: "text-accent",
   red: "text-red-400",
   blue: "text-primary",
-  default: "text-text",
+  default: "text-foreground",
 };
 
 export function MetricCard({ label, value, suffix, color = "default", tooltip }: MetricCardProps) {

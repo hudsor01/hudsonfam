@@ -24,7 +24,7 @@ export function Sidebar({ events, photos }: SidebarProps) {
   return (
     <aside className="space-y-6">
       {/* Upcoming Events */}
-      <div className="bg-surface border border-border rounded-xl p-5">
+      <div className="bg-card border border-border rounded-xl p-5">
         <SectionHeader label="Upcoming" action={{ text: "View all", href: "/events" }} />
         {events.length > 0 ? (
           <ul className="space-y-3">
@@ -38,7 +38,7 @@ export function Sidebar({ events, photos }: SidebarProps) {
                   </span>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm text-text font-medium truncate">
+                  <p className="text-sm text-foreground font-medium truncate">
                     {event.title}
                   </p>
                   <p className="text-xs text-text-dim">
@@ -58,7 +58,7 @@ export function Sidebar({ events, photos }: SidebarProps) {
       </div>
 
       {/* Latest Photos */}
-      <div className="bg-surface border border-border rounded-xl p-5">
+      <div className="bg-card border border-border rounded-xl p-5">
         <SectionHeader label="Photos" action={{ text: "View all", href: "/photos" }} />
         {photos.length > 0 ? (
           <PhotoGridPreview photos={photos} />
@@ -68,7 +68,7 @@ export function Sidebar({ events, photos }: SidebarProps) {
       </div>
 
       {/* Weather */}
-      <div className="bg-surface border border-border rounded-xl p-5">
+      <div className="bg-card border border-border rounded-xl p-5">
         <SectionHeader label="Weather" />
         <WeatherWidget />
       </div>

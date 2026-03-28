@@ -45,19 +45,19 @@ export default async function EventsPage() {
         </h2>
         {upcomingEvents.length === 0 ? (
           <Card padding="md">
-            <p className="text-text-muted text-sm">No upcoming events.</p>
+            <p className="text-muted-foreground text-sm">No upcoming events.</p>
           </Card>
         ) : (
           <div className="space-y-2">
             {upcomingEvents.map((event) => (
               <div
                 key={event.id}
-                className="flex items-center justify-between bg-surface border border-border rounded-lg px-5 py-3 hover:border-primary/30 transition-colors"
+                className="flex items-center justify-between bg-card border border-border rounded-lg px-5 py-3 hover:border-primary/30 transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <a
                     href={`/dashboard/events/${event.id}`}
-                    className="text-sm text-text hover:text-primary truncate transition-colors"
+                    className="text-sm text-foreground hover:text-primary truncate transition-colors"
                   >
                     {event.title}
                   </a>
@@ -96,12 +96,12 @@ export default async function EventsPage() {
             {pastEvents.map((event) => (
               <div
                 key={event.id}
-                className="flex items-center justify-between bg-surface border border-border rounded-lg px-5 py-3 opacity-60"
+                className="flex items-center justify-between bg-card border border-border rounded-lg px-5 py-3 opacity-60"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <a
                     href={`/dashboard/events/${event.id}`}
-                    className="text-sm text-text hover:text-primary truncate transition-colors"
+                    className="text-sm text-foreground hover:text-primary truncate transition-colors"
                   >
                     {event.title}
                   </a>

@@ -24,18 +24,18 @@ const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
           {...props}
         >
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-serif text-text">{title}</h1>
+            <h1 className="text-3xl font-serif text-foreground">{title}</h1>
             {action && (
               <a
                 href={action.href}
-                className="text-xs text-text-dim hover:text-text-muted transition-colors"
+                className="text-xs text-text-dim hover:text-muted-foreground transition-colors"
               >
                 {action.text}
               </a>
             )}
           </div>
           {subtitle && (
-            <p className="text-text-muted text-sm mt-1">{subtitle}</p>
+            <p className="text-muted-foreground text-sm mt-1">{subtitle}</p>
           )}
         </div>
       );
@@ -54,7 +54,7 @@ const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
         {action && (
           <a
             href={action.href}
-            className="text-xs text-text-dim hover:text-text-muted transition-colors"
+            className="text-xs text-text-dim hover:text-muted-foreground transition-colors"
           >
             {action.text}
           </a>

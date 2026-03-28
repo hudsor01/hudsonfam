@@ -23,7 +23,7 @@ export function FeaturedPost({
   readingTime,
 }: FeaturedPostProps) {
   return (
-    <article className="relative bg-surface border border-border rounded-xl overflow-hidden transition-colors duration-200 hover:border-primary/30 group">
+    <article className="relative bg-card border border-border rounded-xl overflow-hidden transition-colors duration-200 hover:border-primary/30 group">
       {/* Full-card link using pseudo-element overlay */}
       <Link
         href={`/blog/${slug}`}
@@ -32,7 +32,7 @@ export function FeaturedPost({
       />
 
       {coverImage && (
-        <div className="aspect-[21/9] bg-bg overflow-hidden">
+        <div className="aspect-[21/9] bg-background overflow-hidden">
           <img
             src={coverImage}
             alt={title}
@@ -51,10 +51,10 @@ export function FeaturedPost({
           <span className="text-xs text-text-dim">&bull;</span>
           <span className="text-xs text-text-dim font-sans">{readingTime}</span>
         </div>
-        <h2 className="text-xl sm:text-2xl font-serif text-text mb-2 group-hover:text-primary transition-colors">
+        <h2 className="text-xl sm:text-2xl font-serif text-foreground mb-2 group-hover:text-primary transition-colors">
           {title}
         </h2>
-        <p className="text-text-muted text-sm leading-relaxed mb-4 line-clamp-2">
+        <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2">
           {excerpt}
         </p>
         <div className="flex items-center justify-between">

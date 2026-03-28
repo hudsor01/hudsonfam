@@ -33,8 +33,8 @@ export default function LoginPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-serif text-text mb-1">Sign In</h1>
-      <p className="text-sm text-text-muted mb-6">Welcome back to The Hudsons</p>
+      <h1 className="text-xl font-serif text-foreground mb-1">Sign In</h1>
+      <p className="text-sm text-muted-foreground mb-6">Welcome back to The Hudsons</p>
 
       <button
         onClick={handleGoogleSignIn}
@@ -56,8 +56,8 @@ export default function LoginPage() {
       </div>
 
       <form onSubmit={handleEmailSignIn} className="space-y-3">
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary" />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary" />
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary" />
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary" />
         {error && <p className="text-red-400 text-xs">{error}</p>}
         <button type="submit" disabled={loading} className="w-full bg-primary text-white rounded-lg py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
           {loading ? "Signing in..." : "Sign In"}

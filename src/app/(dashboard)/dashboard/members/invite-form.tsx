@@ -46,17 +46,17 @@ export function InviteForm() {
     <div>
       <form onSubmit={handleSubmit} className="flex items-end gap-3">
         <div className="flex-1">
-          <label className="text-xs text-text-muted mb-1 block">Email (optional)</label>
+          <label className="text-xs text-muted-foreground mb-1 block">Email (optional)</label>
           <input
             type="email"
             placeholder="family@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary"
+            className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary"
           />
         </div>
         <div>
-          <label className="text-xs text-text-muted mb-1 block">Role</label>
+          <label className="text-xs text-muted-foreground mb-1 block">Role</label>
           <Select value={role} onValueChange={setRole}>
             <SelectTrigger className="w-[110px]">
               <SelectValue />
@@ -77,11 +77,11 @@ export function InviteForm() {
       </form>
 
       {inviteLink && (
-        <div className="mt-3 bg-bg border border-accent/30 rounded-lg px-4 py-3 flex items-center gap-3">
+        <div className="mt-3 bg-background border border-accent/30 rounded-lg px-4 py-3 flex items-center gap-3">
           <code className="text-xs text-accent flex-1 select-all truncate">{inviteLink}</code>
           <button
             onClick={handleCopy}
-            className="text-xs text-text-muted hover:text-text px-2 py-1 border border-border rounded-md transition-colors shrink-0"
+            className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 border border-border rounded-md transition-colors shrink-0"
           >
             {copied ? "Copied!" : "Copy"}
           </button>

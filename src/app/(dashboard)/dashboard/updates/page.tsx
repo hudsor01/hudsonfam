@@ -23,7 +23,7 @@ export default async function UpdatesPage() {
 
       {updates.length === 0 ? (
         <Card padding="lg" className="text-center mt-6">
-          <p className="text-text-muted text-sm">No updates yet.</p>
+          <p className="text-muted-foreground text-sm">No updates yet.</p>
           <a
             href="/dashboard/updates/new"
             className="inline-block mt-3 text-sm text-primary hover:text-primary/80 transition-colors"
@@ -36,11 +36,11 @@ export default async function UpdatesPage() {
           {updates.map((update) => (
             <div
               key={update.id}
-              className="bg-surface border border-border rounded-lg px-5 py-4"
+              className="bg-card border border-border rounded-lg px-5 py-4"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm text-text whitespace-pre-wrap">
+                  <p className="text-sm text-foreground whitespace-pre-wrap">
                     {update.content}
                   </p>
                   <div className="flex items-center gap-3 mt-2">

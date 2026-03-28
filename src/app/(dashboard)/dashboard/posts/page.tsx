@@ -22,7 +22,7 @@ export default async function PostsPage() {
 
       {posts.length === 0 ? (
         <Card padding="lg" className="text-center mt-6">
-          <p className="text-text-muted text-sm">No posts yet.</p>
+          <p className="text-muted-foreground text-sm">No posts yet.</p>
           <a
             href="/dashboard/posts/new"
             className="inline-block mt-3 text-sm text-primary hover:text-primary/80 transition-colors"
@@ -35,12 +35,12 @@ export default async function PostsPage() {
           {posts.map((post) => (
             <div
               key={post.id}
-              className="flex items-center justify-between bg-surface border border-border rounded-lg px-5 py-3 hover:border-primary/30 transition-colors"
+              className="flex items-center justify-between bg-card border border-border rounded-lg px-5 py-3 hover:border-primary/30 transition-colors"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <a
                   href={`/dashboard/posts/${post.id}`}
-                  className="text-sm text-text hover:text-primary truncate transition-colors"
+                  className="text-sm text-foreground hover:text-primary truncate transition-colors"
                 >
                   {post.title}
                 </a>

@@ -28,7 +28,7 @@ export default async function PhotosPage() {
       <div className="flex gap-3 mt-4 mb-6">
         <a
           href="/dashboard/photos/albums"
-          className="text-sm text-text-muted hover:text-text bg-surface border border-border rounded-lg px-4 py-2 transition-colors"
+          className="text-sm text-muted-foreground hover:text-foreground bg-card border border-border rounded-lg px-4 py-2 transition-colors"
         >
           Manage Albums
         </a>
@@ -42,7 +42,7 @@ export default async function PhotosPage() {
 
       {photos.length === 0 ? (
         <Card padding="lg" className="text-center">
-          <p className="text-text-muted text-sm">No photos uploaded yet.</p>
+          <p className="text-muted-foreground text-sm">No photos uploaded yet.</p>
           <a
             href="/dashboard/photos/upload"
             className="inline-block mt-3 text-sm text-primary hover:text-primary/80 transition-colors"
@@ -55,7 +55,7 @@ export default async function PhotosPage() {
           {photos.map((photo) => (
             <div
               key={photo.id}
-              className="group relative bg-surface border border-border rounded-lg overflow-hidden"
+              className="group relative bg-card border border-border rounded-lg overflow-hidden"
             >
               <div className="aspect-square overflow-hidden">
                 <img
@@ -66,7 +66,7 @@ export default async function PhotosPage() {
                 />
               </div>
               <div className="p-2">
-                <p className="text-xs text-text truncate">
+                <p className="text-xs text-foreground truncate">
                   {photo.title || "Untitled"}
                 </p>
                 {photo.album && (

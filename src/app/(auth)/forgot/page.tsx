@@ -19,18 +19,18 @@ export default function ForgotPage() {
   if (sent) {
     return (
       <div>
-        <h1 className="text-xl font-serif text-text mb-2">Check Your Email</h1>
-        <p className="text-sm text-text-muted">If an account exists for {email}, you&apos;ll receive a password reset link.</p>
+        <h1 className="text-xl font-serif text-foreground mb-2">Check Your Email</h1>
+        <p className="text-sm text-muted-foreground">If an account exists for {email}, you&apos;ll receive a password reset link.</p>
       </div>
     );
   }
 
   return (
     <div>
-      <h1 className="text-xl font-serif text-text mb-1">Reset Password</h1>
-      <p className="text-sm text-text-muted mb-6">Enter your email to receive a reset link</p>
+      <h1 className="text-xl font-serif text-foreground mb-1">Reset Password</h1>
+      <p className="text-sm text-muted-foreground mb-6">Enter your email to receive a reset link</p>
       <form onSubmit={handleSubmit} className="space-y-3">
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:outline-none focus:border-primary" />
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary" />
         <button type="submit" disabled={loading} className="w-full bg-primary text-white rounded-lg py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
           {loading ? "Sending..." : "Send Reset Link"}
         </button>

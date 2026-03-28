@@ -28,7 +28,7 @@ export default function AlbumPhotoGrid({ photos }: AlbumPhotoGridProps) {
           <button
             key={photo.id}
             onClick={() => setLightboxIndex(index)}
-            className="group relative aspect-square overflow-hidden rounded-lg bg-bg border border-border hover:border-primary/40 transition-colors cursor-pointer"
+            className="group relative aspect-square overflow-hidden rounded-lg bg-background border border-border hover:border-primary/40 transition-colors cursor-pointer"
           >
             <img
               src={photo.thumbnailPath}

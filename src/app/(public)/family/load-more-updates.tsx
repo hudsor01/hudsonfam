@@ -70,7 +70,7 @@ export default function LoadMoreUpdates({
           <button
             onClick={loadMore}
             disabled={isPending}
-            className="bg-surface border border-border rounded-lg px-6 py-2.5 text-sm text-text-muted hover:text-text hover:border-primary/40 transition-colors disabled:opacity-50"
+            className="bg-card border border-border rounded-lg px-6 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors disabled:opacity-50"
           >
             {isPending ? "Loading..." : "Load More"}
           </button>

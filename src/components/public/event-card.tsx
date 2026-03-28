@@ -115,10 +115,10 @@ export default function EventCard({
   const relativeLabel = getRelativeLabel(startDate);
 
   return (
-    <div className="bg-surface border border-border rounded-xl p-5 hover:border-accent/40 transition-colors">
+    <div className="bg-card border border-border rounded-xl p-5 hover:border-accent/40 transition-colors">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <h3 className="text-text font-serif text-lg">{title}</h3>
+          <h3 className="text-foreground font-serif text-lg">{title}</h3>
 
           {/* Date with gold accent */}
           <div className="flex items-center gap-2 mt-1.5">
@@ -160,13 +160,13 @@ export default function EventCard({
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                 <circle cx="12" cy="10" r="3" />
               </svg>
-              <span className="text-text-muted text-sm">{location}</span>
+              <span className="text-muted-foreground text-sm">{location}</span>
             </div>
           )}
 
           {/* Description */}
           {description && (
-            <p className="text-text-muted text-sm mt-3 line-clamp-3">
+            <p className="text-muted-foreground text-sm mt-3 line-clamp-3">
               {description}
             </p>
           )}

@@ -74,12 +74,12 @@ export async function WeatherWidget() {
       <span className="text-3xl">{weather.icon}</span>
       <div>
         <div className="flex items-baseline gap-1.5">
-          <span className="text-2xl font-serif text-text">
+          <span className="text-2xl font-serif text-foreground">
             {weather.temperature}&deg;
           </span>
           <span className="text-xs text-text-dim">F</span>
         </div>
-        <p className="text-sm text-text-muted">{weather.condition}</p>
+        <p className="text-sm text-muted-foreground">{weather.condition}</p>
         <p className="text-xs text-text-dim">
           H: {weather.high}&deg; L: {weather.low}&deg;
         </p>
