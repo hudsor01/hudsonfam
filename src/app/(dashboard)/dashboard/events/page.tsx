@@ -2,32 +2,37 @@ export const dynamic = "force-dynamic";
 
 import prisma from "@/lib/prisma";
 import { SectionHeader } from "@/components/ui/section-header";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { deleteEvent } from "@/lib/dashboard-actions";
-import { EventActions } from "./event-actions";
+import { EventsDataTable } from "./events-data-table";
 
 export default async function EventsPage() {
   const now = new Date();
 
-  const upcomingEvents = await prisma.event.findMany({
-    where: { startDate: { gte: now } },
-    orderBy: { startDate: "asc" },
-  });
+  const [upcomingEvents, pastEvents] = await Promise.all([
+    prisma.event.findMany({
+      where: { startDate: { gte: now } },
+      orderBy: { startDate: "asc" },
+    }),
+    prisma.event.findMany({
+      where: { startDate: { lt: now } },
+      orderBy: { startDate: "desc" },
+      take: 20,
+    }),
+  ]);
 
-  const pastEvents = await prisma.event.findMany({
-    where: { startDate: { lt: now } },
-    orderBy: { startDate: "desc" },
-    take: 20,
-  });
-
-  function formatDate(date: Date) {
-    return new Date(date).toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+  function toRows(events: typeof upcomingEvents) {
+    return events.map((event) => ({
+      id: event.id,
+      title: event.title,
+      visibility: event.visibility,
+      allDay: event.allDay,
+      startDate: event.startDate.toISOString(),
+      deleteAction: (async () => {
+        "use server";
+        await deleteEvent(event.id);
+      }) as () => Promise<void>,
+    }));
   }
 
   return (
@@ -48,41 +53,7 @@ export default async function EventsPage() {
             <p className="text-muted-foreground text-sm">No upcoming events.</p>
           </Card>
         ) : (
-          <div className="space-y-2">
-            {upcomingEvents.map((event) => (
-              <div
-                key={event.id}
-                className="flex items-center justify-between bg-card border border-border rounded-lg px-5 py-3 hover:border-primary/30 transition-colors"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <a
-                    href={`/dashboard/events/${event.id}`}
-                    className="text-sm text-foreground hover:text-primary truncate transition-colors"
-                  >
-                    {event.title}
-                  </a>
-                  <Badge variant={event.visibility === "FAMILY" ? "accent" : "outline"}>
-                    {event.visibility.toLowerCase()}
-                  </Badge>
-                  {event.allDay && (
-                    <Badge variant="outline">all day</Badge>
-                  )}
-                </div>
-                <div className="flex items-center gap-4 shrink-0 ml-4">
-                  <span className="text-xs text-text-dim">
-                    {formatDate(event.startDate)}
-                  </span>
-                  <EventActions
-                    eventId={event.id}
-                    deleteAction={async () => {
-                      "use server";
-                      await deleteEvent(event.id);
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+          <EventsDataTable data={toRows(upcomingEvents)} />
         )}
       </div>
 
@@ -92,37 +63,8 @@ export default async function EventsPage() {
           <h2 className="text-xs font-sans font-semibold tracking-[3px] text-primary uppercase mb-4">
             Past Events
           </h2>
-          <div className="space-y-2">
-            {pastEvents.map((event) => (
-              <div
-                key={event.id}
-                className="flex items-center justify-between bg-card border border-border rounded-lg px-5 py-3 opacity-60"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <a
-                    href={`/dashboard/events/${event.id}`}
-                    className="text-sm text-foreground hover:text-primary truncate transition-colors"
-                  >
-                    {event.title}
-                  </a>
-                  <Badge variant={event.visibility === "FAMILY" ? "accent" : "outline"}>
-                    {event.visibility.toLowerCase()}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-4 shrink-0 ml-4">
-                  <span className="text-xs text-text-dim">
-                    {formatDate(event.startDate)}
-                  </span>
-                  <EventActions
-                    eventId={event.id}
-                    deleteAction={async () => {
-                      "use server";
-                      await deleteEvent(event.id);
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+          <div className="opacity-60">
+            <EventsDataTable data={toRows(pastEvents)} />
           </div>
         </div>
       )}
