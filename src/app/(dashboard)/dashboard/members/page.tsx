@@ -5,9 +5,8 @@ import { requireRole } from "@/lib/session";
 import { SectionHeader } from "@/components/ui/section-header";
 import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MemberActions } from "./member-actions";
 import { InviteForm } from "./invite-form";
+import { MembersDataTable } from "./members-data-table";
 
 export default async function MembersPage() {
   await requireRole(["owner"]);
@@ -31,6 +30,15 @@ export default async function MembersPage() {
       orderBy: { createdAt: "desc" },
     }),
   ]);
+
+  const memberRows = users.map((user) => ({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role || "member",
+    banned: user.banned || false,
+    createdAt: user.createdAt.toISOString(),
+  }));
 
   return (
     <div>
@@ -75,61 +83,7 @@ export default async function MembersPage() {
       <h2 className="text-xs font-sans font-semibold tracking-[3px] text-primary uppercase mb-4">
         Registered Users
       </h2>
-      <div className="space-y-2">
-        {users.map((user) => {
-          const role = user.role || "member";
-          const roleVariant =
-            role === "owner"
-              ? "accent"
-              : role === "admin"
-                ? "primary"
-                : "outline";
-
-          return (
-            <div
-              key={user.id}
-              className="bg-card border border-border rounded-lg px-5 py-4"
-            >
-              <div className="flex items-center justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="size-7">
-                      <AvatarFallback className="text-xs">
-                        {(user.name || user.email).charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm text-foreground font-medium truncate">
-                      {user.name}
-                    </span>
-                    <Badge variant={roleVariant}>{role}</Badge>
-                    {user.banned && (
-                      <Badge variant="default" className="bg-red-400/10 text-red-400 border-red-400/25">
-                        banned
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="text-xs text-muted-foreground">{user.email}</span>
-                    <span className="text-xs text-text-dim">
-                      Joined{" "}
-                      {new Date(user.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </div>
-                </div>
-                <MemberActions
-                  userId={user.id}
-                  currentRole={role}
-                  isBanned={user.banned || false}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <MembersDataTable data={memberRows} />
     </div>
   );
 }

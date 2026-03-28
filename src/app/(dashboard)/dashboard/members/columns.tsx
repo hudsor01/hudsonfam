@@ -1,0 +1,99 @@
+"use client";
+
+import type { ColumnDef } from "@tanstack/react-table";
+import { Badge, type BadgeVariant } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MemberActions } from "./member-actions";
+
+export type MemberRow = {
+  id: string;
+  name: string | null;
+  email: string;
+  role: string;
+  banned: boolean;
+  createdAt: string;
+};
+
+function getRoleVariant(role: string): BadgeVariant {
+  if (role === "owner") return "accent";
+  if (role === "admin") return "primary";
+  return "outline";
+}
+
+export const memberColumns: ColumnDef<MemberRow>[] = [
+  {
+    accessorKey: "name",
+    header: "User",
+    cell: ({ row }) => {
+      const name = row.original.name;
+      const email = row.original.email;
+      const initial = (name || email).charAt(0).toUpperCase();
+
+      return (
+        <div className="flex items-center gap-3">
+          <Avatar className="size-7">
+            <AvatarFallback className="text-xs">{initial}</AvatarFallback>
+          </Avatar>
+          <span className="text-sm text-foreground font-medium truncate">
+            {name}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "role",
+    header: "Role",
+    cell: ({ row }) => {
+      const role = row.getValue("role") as string;
+      return (
+        <div className="flex items-center gap-1.5">
+          <Badge variant={getRoleVariant(role)}>{role}</Badge>
+          {row.original.banned && (
+            <Badge
+              variant="default"
+              className="bg-red-400/10 text-red-400 border-red-400/25"
+            >
+              banned
+            </Badge>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+    cell: ({ row }) => (
+      <span className="text-xs text-muted-foreground">
+        {row.getValue("email")}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Joined",
+    cell: ({ row }) => (
+      <span className="text-xs text-text-dim">
+        {new Date(row.getValue("createdAt")).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })}
+      </span>
+    ),
+  },
+  {
+    id: "actions",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <div className="flex justify-end">
+        <MemberActions
+          userId={row.original.id}
+          currentRole={row.original.role}
+          isBanned={row.original.banned}
+        />
+      </div>
+    ),
+  },
+];
