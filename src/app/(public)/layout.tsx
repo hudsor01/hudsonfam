@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MobileNav } from "@/components/public/mobile-nav";
+import { UserNav } from "@/components/public/user-nav";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -34,12 +35,7 @@ export default function PublicLayout({
               {link.label}
             </NavLink>
           ))}
-          <Link
-            href="/login"
-            className="text-accent hover:text-accent/80 transition-colors contrast-more:underline"
-          >
-            Sign In
-          </Link>
+          <UserNav />
         </div>
 
         {/* Mobile nav */}
