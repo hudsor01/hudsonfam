@@ -2,15 +2,25 @@ export const dynamic = "force-dynamic";
 
 import prisma from "@/lib/prisma";
 import { SectionHeader } from "@/components/ui/section-header";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { deletePost } from "@/lib/dashboard-actions";
-import { PostActions } from "./post-actions";
+import { PostsDataTable } from "./posts-data-table";
 
 export default async function PostsPage() {
   const posts = await prisma.blogPost.findMany({
     orderBy: { updatedAt: "desc" },
   });
+
+  const rows = posts.map((post) => ({
+    id: post.id,
+    title: post.title,
+    status: post.status,
+    updatedAt: post.updatedAt.toISOString(),
+    deleteAction: (async () => {
+      "use server";
+      await deletePost(post.id);
+    }) as () => Promise<void>,
+  }));
 
   return (
     <div>
@@ -31,44 +41,8 @@ export default async function PostsPage() {
           </a>
         </Card>
       ) : (
-        <div className="mt-6 space-y-2">
-          {posts.map((post) => (
-            <div
-              key={post.id}
-              className="flex items-center justify-between bg-card border border-border rounded-lg px-5 py-3 hover:border-primary/30 transition-colors"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <a
-                  href={`/dashboard/posts/${post.id}`}
-                  className="text-sm text-foreground hover:text-primary truncate transition-colors"
-                >
-                  {post.title}
-                </a>
-                <Badge
-                  variant={
-                    post.status === "PUBLISHED" ? "primary" : "outline"
-                  }
-                >
-                  {post.status.toLowerCase()}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-4 shrink-0 ml-4">
-                <span className="text-xs text-text-dim">
-                  {new Date(post.updatedAt).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </span>
-                <PostActions
-                  postId={post.id}
-                  deleteAction={async () => {
-                    "use server";
-                    await deletePost(post.id);
-                  }}
-                />
-              </div>
-            </div>
-          ))}
+        <div className="mt-6">
+          <PostsDataTable data={rows} />
         </div>
       )}
     </div>
