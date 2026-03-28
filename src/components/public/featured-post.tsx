@@ -32,11 +32,11 @@ export function FeaturedPost({
       />
 
       {coverImage && (
-        <div className="aspect-[21/9] bg-background overflow-hidden">
+        <div className="aspect-[21/9] bg-background overflow-hidden perspective-midrange">
           <img
             src={coverImage}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:rotate-y-1"
           />
         </div>
       )}
