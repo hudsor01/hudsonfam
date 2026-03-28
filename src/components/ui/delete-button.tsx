@@ -29,7 +29,7 @@ export function DeleteButton({
   description = "This action cannot be undone. This will permanently delete this item.",
   label = "Delete",
   successMessage = "Deleted successfully",
-  className = "text-xs text-red-400 hover:text-red-300 transition-colors",
+  className = "text-xs text-destructive hover:text-destructive/80 transition-colors",
 }: DeleteButtonProps) {
   const [loading, setLoading] = useState(false);
 
