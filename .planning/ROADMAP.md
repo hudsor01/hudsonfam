@@ -20,7 +20,7 @@
 - Phase 5: Advanced (command palette, photo effects) ✅
 
 ## v1.2 — Integration Solidification (In Progress)
-- Phase 6: Theme alignment — fix CSS variable naming to shadcn standard, hardcoded colors, cn() patterns 🚧
+- Phase 6: Theme alignment — fix CSS variable naming to shadcn standard, hardcoded colors, cn() patterns ✅
 - Phase 7: Tailwind v4 quick wins — text-balance, text-pretty, field-sizing, accent-color, caret-color, open/not-* variants
 - Phase 8: Tailwind v4 advanced — container queries, shadow colors, scroll snap, 3D effects, accessibility variants, logical properties
 - Phase 9: shadcn sidebar upgrade — replace static aside with full SidebarProvider, collapsible, mobile-responsive

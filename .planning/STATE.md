@@ -1,7 +1,7 @@
 # State
 
 ## Current Phase
-Phase 6: Theme Alignment (v1.2 — Integration Solidification)
+Phase 7: Tailwind v4 Quick Wins (v1.2 — Integration Solidification)
 
 ## What's Done
 - v1.0 — Core Site: Complete
@@ -14,8 +14,11 @@ Phase 6: Theme Alignment (v1.2 — Integration Solidification)
 - All 28 shadcn/ui components installed at src/components/ui/
 - 270 tests passing, build clean
 
+## What's Done (v1.2)
+- Phase 6: Theme Alignment — shadcn-standard variable naming, destructive tokens, cn() fixes, 12 new components installed (40 total)
+
 ## What's Next
-Phase 6: Fix CSS variable naming to shadcn standard, hardcoded colors, cn() patterns
+Phase 7: Tailwind v4 Quick Wins — text-balance, text-pretty, field-sizing, accent-color, caret-color
 
 ## Key Decisions
 - Use TanStack Form (NOT react-hook-form) for form validation — user requirement
