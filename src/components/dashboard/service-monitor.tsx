@@ -59,14 +59,14 @@ export function ServiceMonitor({ title, services }: ServiceMonitorProps) {
           {allUp ? "All Up" : anyDown ? "Degraded" : "Partial"}
         </span>
       </div>
-      <div className="divide-y divide-border/50">
+      <div>
         {services.map((service) => (
           <a
             key={service.name}
             href={service.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between px-4 py-2.5 hover:bg-background/50 transition-colors"
+            className="flex items-center justify-between px-4 py-2.5 not-last:border-b not-last:border-border/50 hover:bg-background/50 transition-colors"
           >
             <div className="flex items-center gap-2.5">
               <StatusDot status={service.status} />

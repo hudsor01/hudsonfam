@@ -113,7 +113,7 @@ export default async function DashboardPage() {
               Recent Posts
             </h3>
           </div>
-          <div className="divide-y divide-border/50">
+          <div>
             {recentPosts.length === 0 ? (
               <div className="px-5 py-4 text-sm text-muted-foreground">
                 No posts yet.
@@ -123,7 +123,7 @@ export default async function DashboardPage() {
                 <a
                   key={post.id}
                   href={`/dashboard/posts/${post.id}`}
-                  className="flex items-center justify-between px-5 py-3 hover:bg-background/50 transition-colors"
+                  className="flex items-center justify-between px-5 py-3 not-last:border-b not-last:border-border/50 hover:bg-background/50 transition-colors"
                 >
                   <span className="text-sm text-foreground truncate mr-3">
                     {post.title}
@@ -146,7 +146,7 @@ export default async function DashboardPage() {
               Upcoming Events
             </h3>
           </div>
-          <div className="divide-y divide-border/50">
+          <div>
             {upcomingEvents.length === 0 ? (
               <div className="px-5 py-4 text-sm text-muted-foreground">
                 No upcoming events.
@@ -156,7 +156,7 @@ export default async function DashboardPage() {
                 <a
                   key={event.id}
                   href={`/dashboard/events/${event.id}`}
-                  className="flex items-center justify-between px-5 py-3 hover:bg-background/50 transition-colors"
+                  className="flex items-center justify-between px-5 py-3 not-last:border-b not-last:border-border/50 hover:bg-background/50 transition-colors"
                 >
                   <span className="text-sm text-foreground truncate mr-3">
                     {event.title}
