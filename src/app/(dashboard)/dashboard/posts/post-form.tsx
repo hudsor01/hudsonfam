@@ -123,7 +123,7 @@ export function PostForm({ action, initial }: PostFormProps) {
       </div>
 
       <div className="flex gap-3 pt-2">
-        <Button type="submit" loading={isPending}>
+        <Button type="submit" disabled={isPending}>
           {initial ? "Update Post" : "Create Post"}
         </Button>
         <a href="/dashboard/posts">

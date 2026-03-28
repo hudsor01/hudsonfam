@@ -1,45 +1,44 @@
-import { type InputHTMLAttributes, forwardRef } from "react";
+import * as React from "react"
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+import { cn } from "@/lib/utils"
+
+interface InputProps extends React.ComponentProps<"input"> {
   label?: string;
   error?: string;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className = "", id, ...props }, ref) => {
-    const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
+function Input({ className, type, label, error, id, ...props }: InputProps) {
+  const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
 
-    return (
-      <div className="space-y-1.5">
-        {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-text-muted"
-          >
-            {label}
-          </label>
+  return (
+    <div className="w-full">
+      {label && (
+        <label
+          htmlFor={inputId}
+          className="block text-xs text-muted-foreground mb-1.5"
+        >
+          {label}
+        </label>
+      )}
+      <input
+        type={type}
+        id={inputId}
+        data-slot="input"
+        className={cn(
+          "h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30",
+          "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+          "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
+          error && "border-destructive",
+          className
         )}
-        <input
-          ref={ref}
-          id={inputId}
-          className={`
-            w-full bg-bg border rounded-lg px-3 py-2.5 text-sm text-text
-            placeholder:text-text-dim
-            focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30
-            disabled:opacity-50 disabled:cursor-not-allowed
-            ${error ? "border-red-400" : "border-border"}
-            ${className}
-          `}
-          {...props}
-        />
-        {error && (
-          <p className="text-xs text-red-400">{error}</p>
-        )}
-      </div>
-    );
-  }
-);
+        {...props}
+      />
+      {error && (
+        <p className="text-xs text-destructive mt-1">{error}</p>
+      )}
+    </div>
+  )
+}
 
-Input.displayName = "Input";
-
-export { Input, type InputProps };
+export { Input }
+export type { InputProps }

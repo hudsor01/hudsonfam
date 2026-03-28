@@ -103,7 +103,7 @@ export function AlbumForm({ action, initial, showCoverPhoto = false }: AlbumForm
       )}
 
       <div className="flex gap-3 pt-2">
-        <Button type="submit" loading={isPending}>
+        <Button type="submit" disabled={isPending}>
           {initial ? "Update Album" : "Create Album"}
         </Button>
         <a href="/dashboard/photos/albums">

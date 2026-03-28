@@ -65,7 +65,7 @@ export function UpdateForm() {
       </div>
 
       <div className="flex gap-3 pt-2">
-        <Button type="submit" loading={isPending}>
+        <Button type="submit" disabled={isPending}>
           Post Update
         </Button>
         <a href="/dashboard/updates">

@@ -150,8 +150,7 @@ export function UploadForm({ albums }: { albums: Album[] }) {
       {/* Upload button */}
       <Button
         onClick={handleUpload}
-        disabled={files.length === 0}
-        loading={uploading}
+        disabled={files.length === 0 || uploading}
       >
         {uploading ? "Uploading..." : `Upload ${files.length || ""} Photo${files.length !== 1 ? "s" : ""}`}
       </Button>

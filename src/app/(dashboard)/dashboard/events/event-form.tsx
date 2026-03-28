@@ -127,7 +127,7 @@ export function EventForm({ action, initial }: EventFormProps) {
       </div>
 
       <div className="flex gap-3 pt-2">
-        <Button type="submit" loading={isPending}>
+        <Button type="submit" disabled={isPending}>
           {initial ? "Update Event" : "Create Event"}
         </Button>
         <a href="/dashboard/events">

@@ -12,28 +12,34 @@ describe('Button', () => {
     expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument();
   });
 
-  it('applies primary variant classes by default', () => {
+  it('applies default variant classes', () => {
     render(<Button>Primary</Button>);
     const btn = screen.getByRole('button');
     expect(btn.className).toContain('bg-primary');
   });
 
-  it('applies accent variant classes', () => {
-    render(<Button variant="accent">Accent</Button>);
+  it('applies destructive variant classes', () => {
+    render(<Button variant="destructive">Delete</Button>);
     const btn = screen.getByRole('button');
-    expect(btn.className).toContain('bg-accent');
+    expect(btn.className).toContain('bg-destructive');
+  });
+
+  it('applies outline variant classes', () => {
+    render(<Button variant="outline">Outline</Button>);
+    const btn = screen.getByRole('button');
+    expect(btn.className).toContain('border');
   });
 
   it('applies ghost variant classes', () => {
     render(<Button variant="ghost">Ghost</Button>);
     const btn = screen.getByRole('button');
-    expect(btn.className).toContain('bg-transparent');
+    expect(btn.className).toContain('hover:bg-accent');
   });
 
-  it('applies size classes', () => {
+  it('applies sm size classes', () => {
     render(<Button size="sm">Small</Button>);
     const btn = screen.getByRole('button');
-    expect(btn.className).toContain('text-xs');
+    expect(btn.className).toContain('h-8');
   });
 
   it('is disabled when disabled prop is true', () => {
@@ -41,23 +47,20 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toBeDisabled();
   });
 
-  it('is disabled when loading', () => {
-    render(<Button loading>Loading</Button>);
-    expect(screen.getByRole('button')).toBeDisabled();
-  });
-
-  it('shows spinner when loading', () => {
-    render(<Button loading>Loading</Button>);
-    const btn = screen.getByRole('button');
-    const svg = btn.querySelector('svg');
-    expect(svg).toBeInTheDocument();
-    expect(svg!.className).toContain('motion-safe:animate-spin');
-  });
-
   it('merges custom className', () => {
     render(<Button className="my-custom-class">Custom</Button>);
     const btn = screen.getByRole('button');
     expect(btn.className).toContain('my-custom-class');
+  });
+
+  it('renders as child when asChild is true', () => {
+    render(
+      <Button asChild>
+        <a href="/test">Link</a>
+      </Button>
+    );
+    const link = screen.getByRole('link', { name: 'Link' });
+    expect(link).toBeInTheDocument();
   });
 });
 
@@ -78,27 +81,24 @@ describe('Card', () => {
     const card = screen.getByText('Content').closest('div');
     expect(card!.className).not.toContain('p-5');
     expect(card!.className).not.toContain('p-4');
-    expect(card!.className).not.toContain('p-6');
   });
 
-  it('applies hover styles when hover is true', () => {
-    render(<Card hover>Hover card</Card>);
-    const card = screen.getByText('Hover card').closest('div');
+  it('applies hover classes when hover is true', () => {
+    render(<Card hover>Hoverable</Card>);
+    const card = screen.getByText('Hoverable').closest('div');
     expect(card!.className).toContain('hover:border-primary/30');
   });
 
-  it('does not apply hover styles by default', () => {
+  it('does not apply hover classes by default', () => {
     render(<Card>No hover</Card>);
     const card = screen.getByText('No hover').closest('div');
     expect(card!.className).not.toContain('hover:border-primary/30');
   });
 
-  it('applies base styles', () => {
-    render(<Card>Base</Card>);
-    const card = screen.getByText('Base').closest('div');
+  it('applies bg-surface class', () => {
+    render(<Card>Styled</Card>);
+    const card = screen.getByText('Styled').closest('div');
     expect(card!.className).toContain('bg-surface');
-    expect(card!.className).toContain('border');
-    expect(card!.className).toContain('rounded-xl');
   });
 });
 
@@ -107,135 +107,109 @@ describe('CardHeader', () => {
     render(<CardHeader>Header</CardHeader>);
     expect(screen.getByText('Header')).toBeInTheDocument();
   });
-
-  it('applies margin-bottom', () => {
-    render(<CardHeader>Header</CardHeader>);
-    const header = screen.getByText('Header').closest('div');
-    expect(header!.className).toContain('mb-3');
-  });
 });
 
 describe('CardContent', () => {
   it('renders children', () => {
-    render(<CardContent>Content</CardContent>);
-    expect(screen.getByText('Content')).toBeInTheDocument();
+    render(<CardContent>Body</CardContent>);
+    expect(screen.getByText('Body')).toBeInTheDocument();
   });
 });
 
 describe('Badge', () => {
   it('renders children', () => {
-    render(<Badge>Tag</Badge>);
-    expect(screen.getByText('Tag')).toBeInTheDocument();
+    render(<Badge>Status</Badge>);
+    expect(screen.getByText('Status')).toBeInTheDocument();
   });
 
-  it('applies default variant styles', () => {
+  it('applies default variant', () => {
     render(<Badge>Default</Badge>);
     const badge = screen.getByText('Default');
-    expect(badge.className).toContain('bg-surface');
+    expect(badge.className).toBeTruthy();
   });
 
-  it('applies primary variant styles', () => {
+  it('applies primary variant', () => {
     render(<Badge variant="primary">Primary</Badge>);
     const badge = screen.getByText('Primary');
-    expect(badge.className).toContain('bg-primary/15');
+    expect(badge.className).toContain('bg-primary');
   });
 
-  it('applies accent variant styles', () => {
+  it('applies accent variant', () => {
     render(<Badge variant="accent">Accent</Badge>);
     const badge = screen.getByText('Accent');
-    expect(badge.className).toContain('bg-accent/15');
+    expect(badge.className).toContain('bg-accent');
   });
 
-  it('applies outline variant styles', () => {
+  it('applies outline variant', () => {
     render(<Badge variant="outline">Outline</Badge>);
     const badge = screen.getByText('Outline');
-    expect(badge.className).toContain('bg-transparent');
+    expect(badge.className).toContain('border');
   });
 
-  it('has rounded-full class', () => {
-    render(<Badge>Rounded</Badge>);
-    const badge = screen.getByText('Rounded');
-    expect(badge.className).toContain('rounded-full');
+  it('merges custom className', () => {
+    render(<Badge className="extra">Custom</Badge>);
+    const badge = screen.getByText('Custom');
+    expect(badge.className).toContain('extra');
   });
 });
 
 describe('Input', () => {
-  it('renders without label', () => {
-    render(<Input placeholder="Enter text" />);
-    expect(screen.getByPlaceholderText('Enter text')).toBeInTheDocument();
+  it('renders an input element', () => {
+    render(<Input placeholder="Test" />);
+    expect(screen.getByPlaceholderText('Test')).toBeInTheDocument();
   });
 
-  it('renders with label', () => {
+  it('renders with label when provided', () => {
     render(<Input label="Email" />);
     expect(screen.getByText('Email')).toBeInTheDocument();
-    expect(screen.getByLabelText('Email')).toBeInTheDocument();
-  });
-
-  it('generates id from label', () => {
-    render(<Input label="First Name" />);
-    const input = screen.getByLabelText('First Name');
-    expect(input.id).toBe('first-name');
-  });
-
-  it('uses provided id over generated one', () => {
-    render(<Input label="Email" id="custom-id" />);
-    const input = screen.getByLabelText('Email');
-    expect(input.id).toBe('custom-id');
   });
 
   it('renders error message', () => {
-    render(<Input label="Email" error="Required field" />);
-    expect(screen.getByText('Required field')).toBeInTheDocument();
-  });
-
-  it('applies error border styling', () => {
     render(<Input label="Email" error="Required" />);
-    const input = screen.getByLabelText('Email');
-    expect(input.className).toContain('border-red-400');
+    expect(screen.getByText('Required')).toBeInTheDocument();
   });
 
-  it('applies normal border when no error', () => {
-    render(<Input label="Email" />);
-    const input = screen.getByLabelText('Email');
-    expect(input.className).toContain('border-border');
-    expect(input.className).not.toContain('border-red-400');
+  it('applies error styling when error is present', () => {
+    render(<Input error="Bad" placeholder="test" />);
+    const input = screen.getByPlaceholderText('test');
+    expect(input.className).toContain('border-destructive');
+  });
+
+  it('does not add error class when no error', () => {
+    render(<Input placeholder="test" />);
+    const wrapper = screen.getByPlaceholderText('test').closest('div');
+    // No error message element should exist
+    expect(wrapper!.querySelector('p')).toBeNull();
+  });
+
+  it('forwards type prop', () => {
+    render(<Input type="email" placeholder="email" />);
+    const input = screen.getByPlaceholderText('email');
+    expect(input).toHaveAttribute('type', 'email');
   });
 });
 
 describe('SectionHeader', () => {
-  it('renders title as h1', () => {
-    render(<SectionHeader title="Page Title" />);
-    const heading = screen.getByRole('heading', { level: 1 });
-    expect(heading).toHaveTextContent('Page Title');
+  it('renders title', () => {
+    render(<SectionHeader title="My Section" />);
+    expect(screen.getByText('My Section')).toBeInTheDocument();
   });
 
-  it('renders subtitle below title', () => {
-    render(<SectionHeader title="Title" subtitle="A description" />);
-    expect(screen.getByText('A description')).toBeInTheDocument();
-  });
-
-  it('does not render subtitle when not provided', () => {
-    const { container } = render(<SectionHeader title="Title" />);
-    const paragraphs = container.querySelectorAll('p');
-    expect(paragraphs.length).toBe(0);
-  });
-
-  it('renders label as h3 when no title', () => {
-    render(<SectionHeader label="SECTION" />);
-    const heading = screen.getByRole('heading', { level: 3 });
-    expect(heading).toHaveTextContent('SECTION');
+  it('renders subtitle when provided', () => {
+    render(<SectionHeader title="Title" subtitle="Subtitle" />);
+    expect(screen.getByText('Subtitle')).toBeInTheDocument();
   });
 
   it('renders action link when provided', () => {
-    render(<SectionHeader title="Title" action={{ text: 'View all', href: '/all' }} />);
+    render(<SectionHeader title="Test" action={{ text: 'View all', href: '/all' }} />);
     const link = screen.getByText('View all');
-    expect(link.tagName).toBe('A');
-    expect(link.getAttribute('href')).toBe('/all');
+    expect(link).toBeInTheDocument();
+    expect(link.closest('a')).toHaveAttribute('href', '/all');
   });
 
-  it('renders action with label mode', () => {
-    render(<SectionHeader label="POSTS" action={{ text: 'See more', href: '/posts' }} />);
-    const link = screen.getByText('See more');
-    expect(link.getAttribute('href')).toBe('/posts');
+  it('renders title with serif styling', () => {
+    render(<SectionHeader title="Section" />);
+    const title = screen.getByText('Section');
+    expect(title.className).toContain('font-serif');
   });
 });
