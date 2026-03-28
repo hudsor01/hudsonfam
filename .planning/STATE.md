@@ -1,7 +1,7 @@
 # State
 
 ## Current Phase
-Phase 7: Tailwind v4 Quick Wins (v1.2 — Integration Solidification)
+Phase 8: Tailwind v4 Advanced (v1.2 — Integration Solidification)
 
 ## What's Done
 - v1.0 — Core Site: Complete
@@ -16,9 +16,10 @@ Phase 7: Tailwind v4 Quick Wins (v1.2 — Integration Solidification)
 
 ## What's Done (v1.2)
 - Phase 6: Theme Alignment — shadcn-standard variable naming, destructive tokens, cn() fixes, 12 new components installed (40 total)
+- Phase 7: TW4 Quick Wins — text-balance/text-pretty on headings/body, caret-primary on inputs, open:/not-last: variants
 
 ## What's Next
-Phase 7: Tailwind v4 Quick Wins — text-balance, text-pretty, field-sizing, accent-color, caret-color
+Phase 8: Tailwind v4 Advanced — container queries, shadow colors, scroll snap, 3D effects, accessibility variants
 
 ## Key Decisions
 - Use TanStack Form (NOT react-hook-form) for form validation — user requirement
