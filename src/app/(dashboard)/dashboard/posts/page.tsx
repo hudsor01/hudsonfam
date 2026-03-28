@@ -5,7 +5,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { deletePost } from "@/lib/dashboard-actions";
-import { DeleteButton } from "@/components/ui/delete-button";
+import { PostActions } from "./post-actions";
 
 export default async function PostsPage() {
   const posts = await prisma.blogPost.findMany({
@@ -59,20 +59,12 @@ export default async function PostsPage() {
                     day: "numeric",
                   })}
                 </span>
-                <a
-                  href={`/dashboard/posts/${post.id}`}
-                  className="text-xs text-text-muted hover:text-text transition-colors"
-                >
-                  Edit
-                </a>
-                <DeleteButton
-                  action={async () => {
+                <PostActions
+                  postId={post.id}
+                  deleteAction={async () => {
                     "use server";
                     await deletePost(post.id);
                   }}
-                  title="Delete post?"
-                  description="This will permanently delete this blog post. This action cannot be undone."
-                  successMessage="Post deleted"
                 />
               </div>
             </div>

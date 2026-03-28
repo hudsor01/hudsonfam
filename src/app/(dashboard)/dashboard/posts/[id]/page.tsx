@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { SectionHeader } from "@/components/ui/section-header";
+import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { PostForm } from "../post-form";
 import { updatePost } from "@/lib/dashboard-actions";
 
@@ -28,6 +29,7 @@ export default async function EditPostPage({ params }: Props) {
 
   return (
     <div>
+      <DashboardBreadcrumbs items={[{ label: "Posts", href: "/dashboard/posts" }, { label: post.title }]} />
       <SectionHeader title="Edit Post" subtitle={post.title} />
       <div className="mt-6">
         <PostForm

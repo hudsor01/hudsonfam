@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import prisma from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
 import { SectionHeader } from "@/components/ui/section-header";
+import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { AddMediaForm, MediaDeleteButton } from "./media-form";
 
@@ -18,6 +19,7 @@ export default async function MemorialMediaPage() {
 
   return (
     <div>
+      <DashboardBreadcrumbs items={[{ label: "Memorial", href: "/dashboard/memorial" }, { label: "Media" }]} />
       <SectionHeader
         title="Memorial Media"
         subtitle={`${media.length} media item${media.length !== 1 ? "s" : ""}`}

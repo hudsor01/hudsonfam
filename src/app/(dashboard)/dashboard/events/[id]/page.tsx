@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { SectionHeader } from "@/components/ui/section-header";
+import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { EventForm } from "../event-form";
 import { updateEvent } from "@/lib/dashboard-actions";
 
@@ -35,6 +36,7 @@ export default async function EditEventPage({ params }: Props) {
 
   return (
     <div>
+      <DashboardBreadcrumbs items={[{ label: "Events", href: "/dashboard/events" }, { label: event.title }]} />
       <SectionHeader title="Edit Event" subtitle={event.title} />
       <div className="mt-6">
         <EventForm

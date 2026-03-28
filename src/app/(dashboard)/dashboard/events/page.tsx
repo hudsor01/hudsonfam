@@ -5,7 +5,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { deleteEvent } from "@/lib/dashboard-actions";
-import { DeleteButton } from "@/components/ui/delete-button";
+import { EventActions } from "./event-actions";
 
 export default async function EventsPage() {
   const now = new Date();
@@ -72,20 +72,12 @@ export default async function EventsPage() {
                   <span className="text-xs text-text-dim">
                     {formatDate(event.startDate)}
                   </span>
-                  <a
-                    href={`/dashboard/events/${event.id}`}
-                    className="text-xs text-text-muted hover:text-text transition-colors"
-                  >
-                    Edit
-                  </a>
-                  <DeleteButton
-                    action={async () => {
+                  <EventActions
+                    eventId={event.id}
+                    deleteAction={async () => {
                       "use server";
                       await deleteEvent(event.id);
                     }}
-                    title="Delete event?"
-                    description="This will permanently delete this event. This action cannot be undone."
-                    successMessage="Event deleted"
                   />
                 </div>
               </div>
@@ -121,20 +113,12 @@ export default async function EventsPage() {
                   <span className="text-xs text-text-dim">
                     {formatDate(event.startDate)}
                   </span>
-                  <a
-                    href={`/dashboard/events/${event.id}`}
-                    className="text-xs text-text-muted hover:text-text transition-colors"
-                  >
-                    Edit
-                  </a>
-                  <DeleteButton
-                    action={async () => {
+                  <EventActions
+                    eventId={event.id}
+                    deleteAction={async () => {
                       "use server";
                       await deleteEvent(event.id);
                     }}
-                    title="Delete event?"
-                    description="This will permanently delete this event. This action cannot be undone."
-                    successMessage="Event deleted"
                   />
                 </div>
               </div>

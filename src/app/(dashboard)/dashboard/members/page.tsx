@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import prisma from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
 import { SectionHeader } from "@/components/ui/section-header";
+import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MemberActions } from "./member-actions";
@@ -33,6 +34,7 @@ export default async function MembersPage() {
 
   return (
     <div>
+      <DashboardBreadcrumbs items={[{ label: "Members" }]} />
       <SectionHeader
         title="Members"
         subtitle={`${users.length} registered user${users.length !== 1 ? "s" : ""}`}

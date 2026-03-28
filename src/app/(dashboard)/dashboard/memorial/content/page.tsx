@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import prisma from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
 import { SectionHeader } from "@/components/ui/section-header";
+import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { ContentSectionForm } from "./content-form";
 
 const DEFAULTS: Record<string, string> = {
@@ -46,6 +47,7 @@ export default async function MemorialContentPage() {
 
   return (
     <div>
+      <DashboardBreadcrumbs items={[{ label: "Memorial", href: "/dashboard/memorial" }, { label: "Content" }]} />
       <SectionHeader
         title="Page Content"
         subtitle="Edit the text sections of the memorial page"

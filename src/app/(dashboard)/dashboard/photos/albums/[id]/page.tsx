@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { SectionHeader } from "@/components/ui/section-header";
+import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { AlbumForm } from "../album-form";
 import { updateAlbum } from "@/lib/dashboard-actions";
 
@@ -36,6 +37,7 @@ export default async function EditAlbumPage({ params }: Props) {
 
   return (
     <div>
+      <DashboardBreadcrumbs items={[{ label: "Photos", href: "/dashboard/photos" }, { label: "Albums", href: "/dashboard/photos/albums" }, { label: album.title }]} />
       <SectionHeader
         title="Edit Album"
         subtitle={`${album.title} (${album._count.photos} photos)`}
@@ -71,7 +73,7 @@ export default async function EditAlbumPage({ params }: Props) {
                 <img
                   src={`/api/images/${photo.id}?size=thumbnail`}
                   alt={photo.title || "Photo"}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover hover:brightness-110 hover:saturate-110 transition-all"
                   loading="lazy"
                 />
               </div>
