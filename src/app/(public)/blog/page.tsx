@@ -2,6 +2,15 @@ import { getAllPosts, getAllTags, getPostsByTag } from "@/lib/blog";
 import { PostCard } from "@/components/public/post-card";
 import { Badge } from "@/components/ui/badge";
 import { SectionHeader } from "@/components/ui/section-header";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -143,44 +152,77 @@ export default async function BlogPage({ searchParams }: PageProps) {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <nav className="flex items-center justify-center gap-2">
-              {safePage > 1 && (
-                <Link
-                  href={pageUrl(safePage - 1)}
-                  className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground bg-card border border-border rounded-lg hover:border-primary/30 transition-colors"
-                >
-                  Previous
-                </Link>
-              )}
+            <Pagination>
+              <PaginationContent>
+                {safePage > 1 && (
+                  <PaginationItem>
+                    <PaginationPrevious href={pageUrl(safePage - 1)} />
+                  </PaginationItem>
+                )}
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <Link
-                    key={page}
-                    href={pageUrl(page)}
-                    className={`
-                      px-3 py-2 text-sm rounded-lg transition-colors
-                      ${
-                        page === safePage
-                          ? "bg-primary text-white"
-                          : "text-muted-foreground hover:text-foreground bg-card border border-border hover:border-primary/30"
-                      }
-                    `}
-                  >
-                    {page}
-                  </Link>
-                )
-              )}
+                {(() => {
+                  const items: React.ReactNode[] = [];
+                  // Always show first page
+                  items.push(
+                    <PaginationItem key={1}>
+                      <PaginationLink href={pageUrl(1)} isActive={safePage === 1}>
+                        1
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
 
-              {safePage < totalPages && (
-                <Link
-                  href={pageUrl(safePage + 1)}
-                  className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground bg-card border border-border rounded-lg hover:border-primary/30 transition-colors"
-                >
-                  Next
-                </Link>
-              )}
-            </nav>
+                  if (safePage > 3) {
+                    items.push(
+                      <PaginationItem key="ellipsis-start">
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    );
+                  }
+
+                  // Pages around current
+                  for (
+                    let page = Math.max(2, safePage - 1);
+                    page <= Math.min(totalPages - 1, safePage + 1);
+                    page++
+                  ) {
+                    items.push(
+                      <PaginationItem key={page}>
+                        <PaginationLink href={pageUrl(page)} isActive={safePage === page}>
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+
+                  if (safePage < totalPages - 2) {
+                    items.push(
+                      <PaginationItem key="ellipsis-end">
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    );
+                  }
+
+                  // Always show last page (if more than 1 page)
+                  if (totalPages > 1) {
+                    items.push(
+                      <PaginationItem key={totalPages}>
+                        <PaginationLink href={pageUrl(totalPages)} isActive={safePage === totalPages}>
+                          {totalPages}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+
+                  return items;
+                })()}
+
+                {safePage < totalPages && (
+                  <PaginationItem>
+                    <PaginationNext href={pageUrl(safePage + 1)} />
+                  </PaginationItem>
+                )}
+              </PaginationContent>
+            </Pagination>
           )}
         </>
       ) : (
