@@ -23,7 +23,7 @@ export function PostCard({
   readingTime,
 }: PostCardProps) {
   return (
-    <article className="relative bg-card border border-border rounded-xl overflow-hidden h-full transition-colors duration-200 hover:border-primary/30 group">
+    <article className="relative bg-card border border-border rounded-xl overflow-hidden h-full transition-all duration-200 hover:border-primary/30 hover:shadow-md hover:shadow-primary/10 group">
       {/* Full-card link using pseudo-element overlay */}
       <Link
         href={`/blog/${slug}`}
@@ -41,7 +41,7 @@ export function PostCard({
         </div>
       )}
       {!coverImage && (
-        <div className="aspect-[16/9] bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center">
+        <div className="aspect-[16/9] bg-linear-to-br/oklch from-primary/5 to-accent/5 flex items-center justify-center">
           <span className="text-4xl font-serif text-primary/15">HF</span>
         </div>
       )}

@@ -23,7 +23,7 @@ export function FeaturedPost({
   readingTime,
 }: FeaturedPostProps) {
   return (
-    <article className="relative bg-card border border-border rounded-xl overflow-hidden transition-colors duration-200 hover:border-primary/30 group">
+    <article className="relative bg-card border border-border rounded-xl overflow-hidden transition-all duration-200 hover:border-primary/30 hover:shadow-md hover:shadow-primary/10 group">
       {/* Full-card link using pseudo-element overlay */}
       <Link
         href={`/blog/${slug}`}
@@ -41,7 +41,7 @@ export function FeaturedPost({
         </div>
       )}
       {!coverImage && (
-        <div className="aspect-[21/9] bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+        <div className="aspect-[21/9] bg-linear-to-br/oklch from-primary/10 to-accent/10 flex items-center justify-center">
           <span className="text-6xl font-serif text-primary/20">HF</span>
         </div>
       )}

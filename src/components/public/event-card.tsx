@@ -115,7 +115,7 @@ export default function EventCard({
   const relativeLabel = getRelativeLabel(startDate);
 
   return (
-    <div className="bg-card border border-border rounded-xl p-5 hover:border-accent/40 transition-colors">
+    <div className="bg-card border border-border rounded-xl p-5 hover:border-accent/40 hover:shadow-md hover:shadow-accent/10 transition-all">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <h3 className="text-foreground font-serif text-lg text-balance">{title}</h3>
