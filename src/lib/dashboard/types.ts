@@ -7,6 +7,17 @@ export interface ServiceHealth {
   group: string;
 }
 
+export interface FamilyServiceHealth {
+  name: string;
+  url: string;
+  checkUrl: string;
+  status: "up" | "down" | "unknown";
+  responseTime?: number;
+  group: string;
+  description: string;
+  lanOnly?: boolean;
+}
+
 export interface ClusterMetrics {
   pods: number;
   namespaces: number;

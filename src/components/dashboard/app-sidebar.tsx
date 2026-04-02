@@ -14,6 +14,7 @@ import {
   Settings,
   LogOut,
   ChevronsUpDown,
+  AppWindow,
 } from "lucide-react";
 
 import {
@@ -40,6 +41,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Photos: Image,
   Events: CalendarDays,
   Updates: Bell,
+  Services: AppWindow,
   Members: Users,
   Memorial: Heart,
 };

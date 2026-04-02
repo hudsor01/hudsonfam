@@ -55,7 +55,7 @@ function SignupForm() {
   }
 
   async function handleGoogleSignUp() {
-    await authClient.signIn.social({ provider: "google" });
+    await authClient.signIn.social({ provider: "google", callbackURL: "/dashboard" });
   }
 
   async function handleEmailSignUp(e: React.FormEvent) {

@@ -18,6 +18,7 @@ export default async function DashboardLayout({
     { href: "/dashboard/photos", label: "Photos" },
     { href: "/dashboard/events", label: "Events" },
     { href: "/dashboard/updates", label: "Updates" },
+    { href: "/dashboard/services", label: "Services" },
   ];
 
   if (userRole === "owner") {

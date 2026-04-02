@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   async function handleGoogleSignIn() {
-    await authClient.signIn.social({ provider: "google" });
+    await authClient.signIn.social({ provider: "google", callbackURL: "/dashboard" });
   }
 
   async function handleEmailSignIn(e: React.FormEvent) {
