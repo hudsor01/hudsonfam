@@ -40,7 +40,7 @@ describe('image utilities', () => {
     vi.clearAllMocks();
     mockMkdir.mockResolvedValue(undefined);
     mockWriteFile.mockResolvedValue(undefined);
-    mockToFile.mockResolvedValue(undefined);
+    mockToFile.mockResolvedValue({ width: 2400, height: 1800 });
     mockUnlink.mockResolvedValue(undefined);
     mockMetadata.mockResolvedValue({
       width: 4000,
@@ -50,7 +50,7 @@ describe('image utilities', () => {
   });
 
   describe('processImage', () => {
-    it('creates original, thumbnail, and medium files', async () => {
+    it('creates compressed original, thumbnail, and medium files', async () => {
       const buffer = Buffer.from('fake-image-data');
 
       const result = await processImage(buffer, 'photo-123', 'album-1', 'photo.jpg');
@@ -58,31 +58,30 @@ describe('image utilities', () => {
       // Should create directories
       expect(mockMkdir).toHaveBeenCalledTimes(2);
 
-      // Should write original
-      expect(mockWriteFile).toHaveBeenCalledTimes(1);
+      // Original saved as compressed WebP (no raw writeFile)
+      expect(mockWriteFile).not.toHaveBeenCalled();
       expect(result.originalPath).toContain('album-1');
-      expect(result.originalPath).toContain('photo-123.jpg');
+      expect(result.originalPath).toContain('photo-123.webp');
 
-      // Should generate thumbnail and medium
-      expect(mockResize).toHaveBeenCalledTimes(2);
-      expect(mockToFile).toHaveBeenCalledTimes(2);
+      // Should resize 3 times: original (2400px), thumbnail (400px), medium (1200px)
+      expect(mockResize).toHaveBeenCalledTimes(3);
+      expect(mockToFile).toHaveBeenCalledTimes(3);
 
-      // Thumbnail at 400px
+      expect(mockResize).toHaveBeenCalledWith(2400, null, { withoutEnlargement: true });
       expect(mockResize).toHaveBeenCalledWith(400, null, { withoutEnlargement: true });
-      // Medium at 1200px
       expect(mockResize).toHaveBeenCalledWith(1200, null, { withoutEnlargement: true });
 
       expect(result.thumbnailPath).toContain('photo-123-thumbnail.webp');
       expect(result.mediumPath).toContain('photo-123-medium.webp');
     });
 
-    it('returns image dimensions from metadata', async () => {
+    it('returns dimensions from compressed output', async () => {
       const buffer = Buffer.from('fake-image-data');
 
       const result = await processImage(buffer, 'photo-123', 'album-1', 'photo.jpg');
 
-      expect(result.width).toBe(4000);
-      expect(result.height).toBe(3000);
+      expect(result.width).toBe(2400);
+      expect(result.height).toBe(1800);
     });
 
     it('returns null takenAt when no EXIF data', async () => {
@@ -93,30 +92,12 @@ describe('image utilities', () => {
       expect(result.takenAt).toBeNull();
     });
 
-    it('uses correct extension from original filename', async () => {
+    it('always saves original as WebP regardless of input format', async () => {
       const buffer = Buffer.from('fake-image-data');
 
       const result = await processImage(buffer, 'photo-123', 'album-1', 'photo.png');
 
-      expect(result.originalPath).toContain('photo-123.png');
-    });
-
-    it('defaults to .jpg when filename has no extension', async () => {
-      const buffer = Buffer.from('fake-image-data');
-
-      const result = await processImage(buffer, 'photo-123', 'album-1', 'photo');
-
-      expect(result.originalPath).toContain('photo-123.jpg');
-    });
-
-    it('handles zero dimensions gracefully', async () => {
-      mockMetadata.mockResolvedValue({ width: undefined, height: undefined, exif: null });
-      const buffer = Buffer.from('fake-image-data');
-
-      const result = await processImage(buffer, 'photo-123', 'album-1', 'photo.jpg');
-
-      expect(result.width).toBe(0);
-      expect(result.height).toBe(0);
+      expect(result.originalPath).toContain('photo-123.webp');
     });
   });
 

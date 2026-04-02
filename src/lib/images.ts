@@ -75,19 +75,19 @@ export async function processImage(
 ): Promise<ImageMetadata> {
   const ext = path.extname(originalFilename).toLowerCase() || ".jpg";
 
-  // Get original dimensions
-  const metadata = await sharp(buffer).metadata();
-  const width = metadata.width || 0;
-  const height = metadata.height || 0;
-
-  // Extract EXIF date
+  // Extract EXIF date before any processing
   const takenAt = await extractExifDate(buffer);
 
-  // 1. Save original to NAS
+  // 1. Compress and save original to NAS (cap at 2400px wide, WebP q85)
   const originalDir = path.join(ORIGINALS_DIR, albumId);
   await ensureDir(originalDir);
-  const originalPath = path.join(originalDir, `${photoId}${ext}`);
-  await fs.writeFile(originalPath, buffer);
+  const originalPath = path.join(originalDir, `${photoId}.webp`);
+  const originalInfo = await sharp(buffer)
+    .resize(2400, null, { withoutEnlargement: true })
+    .webp({ quality: 85 })
+    .toFile(originalPath);
+  const width = originalInfo.width;
+  const height = originalInfo.height;
 
   // 2. Generate thumbnail (400px wide, WebP)
   await ensureDir(THUMBNAILS_DIR);
