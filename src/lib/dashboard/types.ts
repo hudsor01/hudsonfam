@@ -11,11 +11,12 @@ export interface FamilyServiceHealth {
   name: string;
   url: string;
   checkUrl: string;
-  status: "up" | "down" | "unknown";
+  status: "up" | "down" | "unknown" | "skipped";
   responseTime?: number;
   group: string;
   description: string;
   lanOnly?: boolean;
+  skipHealthCheck?: boolean;
 }
 
 export interface ClusterMetrics {

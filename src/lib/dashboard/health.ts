@@ -14,6 +14,7 @@ interface FamilyServiceDefinition {
   group: string;
   description: string;
   lanOnly?: boolean;
+  skipHealthCheck?: boolean;
 }
 
 const FAMILY_SERVICES: FamilyServiceDefinition[] = [
@@ -53,10 +54,11 @@ const FAMILY_SERVICES: FamilyServiceDefinition[] = [
   {
     name: "Hudson AI",
     url: "http://chat.homelab",
-    checkUrl: "http://chat.homelab",
+    checkUrl: "",
     group: "AI",
     description: "Chat with AI assistant",
     lanOnly: true,
+    skipHealthCheck: true,
   },
 ];
 
@@ -242,6 +244,10 @@ export function groupServices(
 async function checkFamilyService(
   service: FamilyServiceDefinition
 ): Promise<FamilyServiceHealth> {
+  if (service.skipHealthCheck) {
+    return { ...service, status: "skipped" };
+  }
+
   const start = Date.now();
   try {
     const controller = new AbortController();

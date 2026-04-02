@@ -35,13 +35,13 @@ interface ServicesGridProps {
 }
 
 function StatusDot({ status }: { status: FamilyServiceHealth["status"] }) {
-  const colors = {
+  const colors: Record<string, string> = {
     up: "bg-emerald-400 shadow-emerald-400/50",
     down: "bg-red-400 shadow-red-400/50",
     unknown: "bg-yellow-400 shadow-yellow-400/50",
   };
 
-  const labels = {
+  const labels: Record<string, string> = {
     up: "Online",
     down: "Offline",
     unknown: "Unknown",
@@ -93,7 +93,9 @@ function ServiceCard({ service }: { service: FamilyServiceHealth }) {
                   </TooltipContent>
                 </Tooltip>
               )}
-              <StatusDot status={service.status} />
+              {service.status !== "skipped" && (
+                <StatusDot status={service.status} />
+              )}
             </div>
           </div>
           <div className="flex items-center gap-1.5">
@@ -141,8 +143,9 @@ export function ServicesGrid({ initialServices }: ServicesGridProps) {
   }, [refresh]);
 
   const totalServices = Object.values(services).flat();
-  const upCount = totalServices.filter((s) => s.status === "up").length;
-  const allUp = upCount === totalServices.length;
+  const monitored = totalServices.filter((s) => s.status !== "skipped");
+  const upCount = monitored.filter((s) => s.status === "up").length;
+  const allUp = upCount === monitored.length;
 
   return (
     <div className="mt-6">
@@ -156,7 +159,7 @@ export function ServicesGrid({ initialServices }: ServicesGridProps) {
                 : "bg-yellow-400/10 text-yellow-400"
             }`}
           >
-            {upCount}/{totalServices.length} Online
+            {upCount}/{monitored.length} Online
           </span>
         </div>
         <div className="flex items-center gap-3">
