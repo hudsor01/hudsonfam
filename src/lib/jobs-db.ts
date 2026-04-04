@@ -16,6 +16,17 @@ if (process.env.NODE_ENV !== "production") {
   globalForPool.jobsPool = pool;
 }
 
+export const JOB_STATUSES = [
+  "new",
+  "interested",
+  "applied",
+  "interview",
+  "offer",
+  "rejected",
+] as const;
+
+export type JobStatus = (typeof JOB_STATUSES)[number] | "dismissed";
+
 export interface Job {
   id: number;
   external_id: string;
@@ -51,24 +62,62 @@ export async function getJobs(opts?: {
   limit?: number;
   offset?: number;
   source?: string;
-  status?: string;
+  statuses?: string[];
+  search?: string;
+  scoreMin?: number;
+  scoreMax?: number;
+  sortBy?: "created_at" | "match_score" | "title";
+  sortDir?: "asc" | "desc";
 }): Promise<Job[]> {
-  const { limit = 100, offset = 0, source, status } = opts || {};
+  const {
+    limit = 100,
+    offset = 0,
+    source,
+    statuses,
+    search,
+    scoreMin,
+    scoreMax,
+    sortBy = "match_score",
+    sortDir = "desc",
+  } = opts || {};
 
   const conditions: string[] = [];
-  const params: (string | number)[] = [];
+  const params: (string | number | string[])[] = [];
   let idx = 1;
 
   if (source) {
     conditions.push(`source = $${idx++}`);
     params.push(source);
   }
-  if (status) {
-    conditions.push(`status = $${idx++}`);
-    params.push(status);
+  if (statuses && statuses.length > 0) {
+    conditions.push(`status = ANY($${idx++})`);
+    params.push(statuses);
+  }
+  if (search) {
+    conditions.push(`(title ILIKE $${idx} OR company ILIKE $${idx})`);
+    idx++;
+    params.push(`%${search}%`);
+  }
+  if (scoreMin !== undefined) {
+    conditions.push(`match_score >= $${idx++}`);
+    params.push(scoreMin);
+  }
+  if (scoreMax !== undefined) {
+    conditions.push(`match_score <= $${idx++}`);
+    params.push(scoreMax);
   }
 
   const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Whitelist sort column and direction to prevent SQL injection
+  const allowedSortBy = ["created_at", "match_score", "title"] as const;
+  const allowedSortDir = ["asc", "desc"] as const;
+  const safeSortBy = allowedSortBy.includes(sortBy as (typeof allowedSortBy)[number])
+    ? sortBy
+    : "match_score";
+  const safeSortDir = allowedSortDir.includes(sortDir as (typeof allowedSortDir)[number])
+    ? sortDir
+    : "desc";
 
   params.push(limit, offset);
   const result = await pool.query(
@@ -77,7 +126,7 @@ export async function getJobs(opts?: {
             posted_date, tags, match_score, status, cover_letter_generated,
             created_at, updated_at
      FROM jobs ${where}
-     ORDER BY created_at DESC
+     ORDER BY ${safeSortBy} ${safeSortDir} NULLS LAST, created_at DESC
      LIMIT $${idx++} OFFSET $${idx}`,
     params
   );
@@ -106,4 +155,45 @@ export async function getJobStats(): Promise<JobStats> {
     newestJob: datesRes.rows[0]?.newest?.toISOString() || null,
     oldestJob: datesRes.rows[0]?.oldest?.toISOString() || null,
   };
+}
+
+export async function getJobsByStatus(): Promise<Record<string, Job[]>> {
+  const result = await pool.query(
+    `SELECT id, external_id, source, title, company, url, location,
+            remote_type, salary_min, salary_max, salary_currency,
+            posted_date, tags, match_score, status, cover_letter_generated,
+            created_at, updated_at
+     FROM jobs
+     WHERE status != 'dismissed'
+     ORDER BY match_score DESC NULLS LAST, created_at DESC`
+  );
+  const grouped: Record<string, Job[]> = {};
+  for (const row of result.rows) {
+    if (!grouped[row.status]) grouped[row.status] = [];
+    grouped[row.status].push(row);
+  }
+  return grouped;
+}
+
+export async function updateJobStatus(
+  jobId: number,
+  newStatus: string
+): Promise<void> {
+  await pool.query(
+    "UPDATE jobs SET status = $1, updated_at = NOW() WHERE id = $2",
+    [newStatus, jobId]
+  );
+}
+
+export async function createApplication(jobId: number): Promise<void> {
+  // Use INSERT ... WHERE NOT EXISTS to avoid duplicates without requiring
+  // a unique constraint on the applications table.
+  await pool.query(
+    `INSERT INTO applications (job_id, applied_date, status)
+     SELECT $1, CURRENT_DATE, 'applied'
+     WHERE NOT EXISTS (
+       SELECT 1 FROM applications WHERE job_id = $1
+     )`,
+    [jobId]
+  );
 }
