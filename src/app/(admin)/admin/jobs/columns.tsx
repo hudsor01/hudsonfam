@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { JOB_STATUSES } from "@/lib/jobs-db";
+import { JOB_STATUSES } from "@/lib/job-constants";
 
 export type JobRow = {
   id: number;

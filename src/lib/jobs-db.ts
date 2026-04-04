@@ -16,16 +16,8 @@ if (process.env.NODE_ENV !== "production") {
   globalForPool.jobsPool = pool;
 }
 
-export const JOB_STATUSES = [
-  "new",
-  "interested",
-  "applied",
-  "interview",
-  "offer",
-  "rejected",
-] as const;
-
-export type JobStatus = (typeof JOB_STATUSES)[number] | "dismissed";
+// Re-export from shared constants (client-safe, no pg import)
+export { JOB_STATUSES, type JobStatus } from "./job-constants";
 
 export interface Job {
   id: number;

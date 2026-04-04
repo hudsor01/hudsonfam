@@ -4,7 +4,8 @@ import { useState, useCallback } from "react";
 import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
 import { Card } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
-import { JOB_STATUSES, type Job } from "@/lib/jobs-db";
+import { JOB_STATUSES } from "@/lib/job-constants";
+import type { Job } from "@/lib/jobs-db";
 
 // Column config — maps to the 6-stage pipeline
 const KANBAN_COLUMNS = JOB_STATUSES; // ["new", "interested", "applied", "interview", "offer", "rejected"]
