@@ -7,6 +7,7 @@ import { DataTable } from "@/components/dashboard/data-table";
 import { getJobColumns, type JobRow } from "./columns";
 import { StatsBar } from "./stats-bar";
 import { FiltersSidebar, type FiltersState } from "./filters-sidebar";
+import { KanbanBoard } from "./kanban-board";
 import type { Job, JobStats } from "@/lib/jobs-db";
 
 interface JobsDashboardProps {
@@ -188,8 +189,11 @@ export function JobsDashboard({
               </div>
             </div>
           ) : (
-            <div className="mt-4 text-sm text-muted-foreground p-8 text-center border border-dashed border-border rounded-lg">
-              Kanban view — coming in Plan 03
+            <div className="mt-4">
+              <KanbanBoard
+                jobs={filteredActive}
+                onStatusChange={handleStatusChange}
+              />
             </div>
           )}
         </TabsContent>
