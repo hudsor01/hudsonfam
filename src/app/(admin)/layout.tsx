@@ -17,8 +17,10 @@ export default async function AdminLayout({
           <span className="text-foreground text-[15px] font-medium">Admin</span>
         </div>
         <div className="flex gap-4 text-sm text-muted-foreground">
-          <a href="/">Site</a>
-          <a href="/dashboard">Dashboard</a>
+          <a href="/admin" className="hover:text-foreground transition-colors">Overview</a>
+          <a href="/admin/jobs" className="hover:text-foreground transition-colors">Jobs</a>
+          <a href="/" className="hover:text-foreground transition-colors">Site</a>
+          <a href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</a>
         </div>
       </nav>
       <main className="p-6">{children}</main>
