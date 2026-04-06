@@ -8,12 +8,14 @@ import { getJobColumns, type JobRow } from "./columns";
 import { StatsBar } from "./stats-bar";
 import { FiltersSidebar, type FiltersState } from "./filters-sidebar";
 import { KanbanBoard } from "./kanban-board";
-import type { Job, JobStats } from "@/lib/jobs-db";
+import { JobDetailSheet } from "./job-detail-sheet";
+import type { Job, JobStats, PipelineStats } from "@/lib/jobs-db";
 
 interface JobsDashboardProps {
   activeJobs: Job[];
   dismissedJobs: Job[];
   stats: JobStats;
+  pipeline: PipelineStats;
   onStatusChange: (jobId: number, newStatus: string) => Promise<void>;
   onDismiss: (jobId: number) => Promise<void>;
   onUndismiss: (jobId: number) => Promise<void>;
@@ -23,12 +25,15 @@ export function JobsDashboard({
   activeJobs,
   dismissedJobs,
   stats,
+  pipeline,
   onStatusChange,
   onDismiss,
   onUndismiss,
 }: JobsDashboardProps) {
   const [isPending, startTransition] = useTransition();
   const [view, setView] = useState<"table" | "kanban">("table");
+  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [filters, setFilters] = useState<FiltersState>({
     search: "",
     sources: [],
@@ -46,6 +51,11 @@ export function JobsDashboard({
   };
   const handleUndismiss = (jobId: number) => {
     startTransition(() => { void onUndismiss(jobId); });
+  };
+
+  const handleRowClick = (jobId: number) => {
+    setSelectedJobId(jobId);
+    setDetailOpen(true);
   };
 
   // Client-side filtering for immediate feedback (all jobs already loaded)
@@ -88,6 +98,7 @@ export function JobsDashboard({
     created_at: job.created_at,
     onStatusChange: statusChange,
     onDismiss: dismiss,
+    onRowClick: handleRowClick,
   });
 
   const activeRows = filteredActive.map((j) => toRow(j, handleDismiss, handleStatusChange));
@@ -152,7 +163,7 @@ export function JobsDashboard({
       </div>
 
       {/* Stats bar (D-01) */}
-      <StatsBar stats={stats} />
+      <StatsBar stats={stats} pipeline={pipeline} />
 
       {/* Pending indicator */}
       {isPending && (
@@ -208,6 +219,13 @@ export function JobsDashboard({
           </div>
         </TabsContent>
       </Tabs>
+
+      <JobDetailSheet
+        jobId={selectedJobId}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        onStatusChange={handleStatusChange}
+      />
     </div>
   );
 }

@@ -27,6 +27,7 @@ export type JobRow = {
   // Action callbacks passed from parent
   onStatusChange: (jobId: number, newStatus: string) => void;
   onDismiss: (jobId: number) => void;
+  onRowClick?: (jobId: number) => void;
 };
 
 function formatSalary(min: number | null, max: number | null, currency: string) {
@@ -68,21 +69,14 @@ export function getJobColumns(): ColumnDef<JobRow>[] {
       header: "Title",
       cell: ({ row }) => (
         <div className="max-w-[280px]">
-          {row.original.url ? (
-            <a
-              href={row.original.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-foreground hover:text-primary transition-colors flex items-center gap-1.5"
-            >
-              <span className="truncate">{row.getValue("title")}</span>
-              <ExternalLink className="size-3 shrink-0 opacity-40" />
-            </a>
-          ) : (
-            <span className="text-sm text-foreground truncate block">
-              {row.getValue("title")}
-            </span>
-          )}
+          <button
+            type="button"
+            onClick={() => row.original.onRowClick?.(row.original.id)}
+            className="text-sm text-foreground hover:text-primary transition-colors flex items-center gap-1.5 text-left"
+          >
+            <span className="truncate">{row.getValue("title")}</span>
+            <ExternalLink className="size-3 shrink-0 opacity-40" />
+          </button>
         </div>
       ),
     },

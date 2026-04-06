@@ -42,6 +42,47 @@ export interface Job {
   updated_at: string;
 }
 
+export interface CoverLetter {
+  id: number;
+  content: string;
+  pdf_data: string | null;
+  quality_score: number | null;
+  generated_at: string;
+  model_used: string;
+}
+
+export interface CompanyResearch {
+  id: number;
+  company_name: string;
+  company_url: string | null;
+  glassdoor_rating: number | null;
+  salary_range_min: number | null;
+  salary_range_max: number | null;
+  salary_currency: string;
+  tech_stack: string[];
+  funding_stage: string | null;
+  employee_count: string | null;
+  recent_news: string | null;
+  ai_summary: string | null;
+  created_at: string;
+}
+
+export interface JobDetail extends Job {
+  description: string | null;
+  company_url: string | null;
+  cover_letter: CoverLetter | null;
+  company_research: CompanyResearch | null;
+}
+
+export interface PipelineStats {
+  collected: number;
+  scored: number;
+  coverLetters: number;
+  packaged: number;
+  applied: number;
+  interviews: number;
+}
+
 export interface JobStats {
   total: number;
   bySource: { source: string; count: number }[];
@@ -188,4 +229,135 @@ export async function createApplication(jobId: number): Promise<void> {
      )`,
     [jobId]
   );
+}
+
+export async function getJob(jobId: number): Promise<Job | null> {
+  const result = await pool.query(
+    `SELECT id, external_id, source, title, company, company_url, url, location,
+            remote_type, salary_min, salary_max, salary_currency,
+            posted_date, tags, match_score, status, cover_letter_generated,
+            created_at, updated_at
+     FROM jobs WHERE id = $1`,
+    [jobId]
+  );
+  return result.rows[0] ?? null;
+}
+
+export async function getJobDetail(jobId: number): Promise<JobDetail | null> {
+  const result = await pool.query(
+    `SELECT
+       j.id, j.external_id, j.source, j.title, j.company, j.company_url,
+       j.description, j.url, j.location, j.remote_type,
+       j.salary_min, j.salary_max, j.salary_currency,
+       j.posted_date, j.tags, j.match_score, j.status,
+       j.cover_letter_generated, j.created_at, j.updated_at,
+       cl.id AS cl_id, cl.content AS cl_content,
+       cl.quality_score AS cl_quality_score,
+       cl.generated_at AS cl_generated_at,
+       cl.model_used AS cl_model_used,
+       cr.id AS cr_id, cr.company_name AS cr_company_name,
+       cr.company_url AS cr_company_url,
+       cr.glassdoor_rating AS cr_glassdoor_rating,
+       cr.salary_range_min AS cr_salary_range_min,
+       cr.salary_range_max AS cr_salary_range_max,
+       cr.salary_currency AS cr_salary_currency,
+       cr.tech_stack AS cr_tech_stack,
+       cr.funding_stage AS cr_funding_stage,
+       cr.employee_count AS cr_employee_count,
+       cr.recent_news AS cr_recent_news,
+       cr.ai_summary AS cr_ai_summary,
+       cr.created_at AS cr_created_at
+     FROM jobs j
+     LEFT JOIN cover_letters cl ON cl.job_id = j.id
+     LEFT JOIN company_research cr ON cr.id = j.company_research_id
+     WHERE j.id = $1`,
+    [jobId]
+  );
+
+  const row = result.rows[0];
+  if (!row) return null;
+
+  const coverLetter: CoverLetter | null = row.cl_id
+    ? {
+        id: row.cl_id,
+        content: row.cl_content,
+        pdf_data: null, // Omit large base64 from detail view
+        quality_score: row.cl_quality_score,
+        generated_at: row.cl_generated_at?.toISOString?.() ?? row.cl_generated_at,
+        model_used: row.cl_model_used,
+      }
+    : null;
+
+  const companyResearch: CompanyResearch | null = row.cr_id
+    ? {
+        id: row.cr_id,
+        company_name: row.cr_company_name,
+        company_url: row.cr_company_url,
+        glassdoor_rating: row.cr_glassdoor_rating,
+        salary_range_min: row.cr_salary_range_min,
+        salary_range_max: row.cr_salary_range_max,
+        salary_currency: row.cr_salary_currency ?? "USD",
+        tech_stack: row.cr_tech_stack ?? [],
+        funding_stage: row.cr_funding_stage,
+        employee_count: row.cr_employee_count,
+        recent_news: row.cr_recent_news,
+        ai_summary: row.cr_ai_summary,
+        created_at: row.cr_created_at?.toISOString?.() ?? row.cr_created_at,
+      }
+    : null;
+
+  return {
+    id: row.id,
+    external_id: row.external_id,
+    source: row.source,
+    title: row.title,
+    company: row.company,
+    company_url: row.company_url,
+    description: row.description,
+    url: row.url,
+    location: row.location,
+    remote_type: row.remote_type,
+    salary_min: row.salary_min,
+    salary_max: row.salary_max,
+    salary_currency: row.salary_currency,
+    posted_date: row.posted_date,
+    tags: row.tags ?? [],
+    match_score: row.match_score,
+    status: row.status,
+    cover_letter_generated: row.cover_letter_generated,
+    created_at: row.created_at?.toISOString?.() ?? row.created_at,
+    updated_at: row.updated_at?.toISOString?.() ?? row.updated_at,
+    cover_letter: coverLetter,
+    company_research: companyResearch,
+  };
+}
+
+export async function getCoverLetterPdf(jobId: number): Promise<string | null> {
+  const result = await pool.query(
+    "SELECT pdf_data FROM cover_letters WHERE job_id = $1",
+    [jobId]
+  );
+  return result.rows[0]?.pdf_data ?? null;
+}
+
+export async function getPipelineStats(): Promise<PipelineStats> {
+  const result = await pool.query(
+    `SELECT
+       COUNT(*)::int AS collected,
+       COUNT(*) FILTER (WHERE match_score >= 5)::int AS scored,
+       COUNT(*) FILTER (WHERE cover_letter_generated = true)::int AS cover_letters,
+       COUNT(*) FILTER (WHERE package_ready = true)::int AS packaged,
+       COUNT(*) FILTER (WHERE status = 'applied')::int AS applied,
+       COUNT(*) FILTER (WHERE status = 'interview')::int AS interviews
+     FROM jobs`
+  );
+  const row = result.rows[0];
+  return {
+    collected: row.collected,
+    scored: row.scored,
+    coverLetters: row.cover_letters,
+    packaged: row.packaged,
+    applied: row.applied,
+    interviews: row.interviews,
+  };
 }
