@@ -70,7 +70,7 @@ export function InviteForm() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-accent text-bg rounded-lg px-4 py-2 text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50"
+          className="bg-accent text-accent-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50"
         >
           {loading ? "Creating..." : "Create Invite"}
         </button>

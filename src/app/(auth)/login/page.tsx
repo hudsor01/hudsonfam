@@ -38,7 +38,7 @@ export default function LoginPage() {
 
       <button
         onClick={handleGoogleSignIn}
-        className="w-full bg-white text-gray-800 rounded-lg py-2.5 px-4 text-sm font-medium hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center gap-2"
+        className="w-full bg-primary-foreground text-background rounded-lg py-2.5 px-4 text-sm font-medium hover:bg-primary-foreground/90 transition-colors mb-4 flex items-center justify-center gap-2"
       >
         <svg className="size-5" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -59,7 +59,7 @@ export default function LoginPage() {
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary" />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary" />
         {error && <p className="text-destructive text-xs">{error}</p>}
-        <button type="submit" disabled={loading} className="w-full bg-primary text-white rounded-lg py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
+        <button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground rounded-lg py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
           {loading ? "Signing in..." : "Sign In"}
         </button>
       </form>

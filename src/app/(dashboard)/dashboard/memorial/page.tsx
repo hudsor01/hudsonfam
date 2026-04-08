@@ -39,10 +39,10 @@ export default async function MemorialAdminPage() {
 
       {/* Pending alert */}
       {pendingMemories > 0 && (
-        <div className="mt-4 bg-amber-500/10 border border-amber-500/20 rounded-xl px-5 py-4 flex items-center justify-between">
+        <div className="mt-4 bg-warning/10 border border-warning/20 rounded-xl px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="size-8 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-              <svg className="size-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <div className="size-8 rounded-full bg-warning/20 flex items-center justify-center shrink-0">
+              <svg className="size-4 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
@@ -57,7 +57,7 @@ export default async function MemorialAdminPage() {
           </div>
           <a
             href="/dashboard/memorial/memories"
-            className="text-sm text-amber-400 hover:text-amber-300 transition-colors font-medium shrink-0"
+            className="text-sm text-warning hover:text-warning/80 transition-colors font-medium shrink-0"
           >
             Review now
           </a>
@@ -68,11 +68,11 @@ export default async function MemorialAdminPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
         {stats.map((stat) => (
           <a key={stat.label} href={stat.href}>
-            <Card hover padding="md" className={`text-center ${stat.highlight ? "border-amber-500/30" : ""}`}>
-              <div className={`text-2xl font-semibold ${stat.highlight ? "text-amber-400" : "text-primary"}`}>
+            <Card hover padding="md" className={`text-center ${stat.highlight ? "border-warning/30" : ""}`}>
+              <div className={`text-2xl font-semibold ${stat.highlight ? "text-warning" : "text-primary"}`}>
                 {stat.value}
                 {stat.highlight && (
-                  <Badge variant="accent" className="ml-2 bg-amber-500/15 text-amber-400 border-amber-500/25 text-[10px]">
+                  <Badge variant="accent" className="ml-2 bg-warning/15 text-warning border-warning/25 text-[10px]">
                     new
                   </Badge>
                 )}
@@ -93,7 +93,7 @@ export default async function MemorialAdminPage() {
         <div className="flex flex-wrap gap-3">
           <a
             href="/dashboard/memorial/memories"
-            className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
           >
             Moderate Memories
           </a>
@@ -122,12 +122,12 @@ export default async function MemorialAdminPage() {
       {/* Recent pending */}
       {recentPending.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-xs font-sans font-semibold tracking-[3px] text-amber-400 uppercase mb-4">
+          <h2 className="text-xs font-sans font-semibold tracking-[3px] text-warning uppercase mb-4">
             Recent Pending Memories
           </h2>
           <div className="space-y-3">
             {recentPending.map((memory) => (
-              <Card key={memory.id} padding="md" className="border-amber-500/15">
+              <Card key={memory.id} padding="md" className="border-warning/15">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">

@@ -5,6 +5,7 @@ import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-p
 import { Card } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
 import { JOB_STATUSES } from "@/lib/job-constants";
+import { sourceColors } from "./columns";
 import type { Job } from "@/lib/jobs-db";
 
 // Column config — maps to the 6-stage pipeline
@@ -17,16 +18,6 @@ const columnColors: Record<string, { header: string; dot: string; count: string 
   interview: { header: "text-status-interview", dot: "bg-status-interview", count: "bg-status-interview/15 text-status-interview" },
   offer: { header: "text-status-offer", dot: "bg-status-offer", count: "bg-status-offer/15 text-status-offer" },
   rejected: { header: "text-destructive/60", dot: "bg-destructive/60", count: "bg-destructive/15 text-destructive/60" },
-};
-
-const sourceColors: Record<string, string> = {
-  jobicy: "bg-source-jobicy/15 text-source-jobicy border-source-jobicy/25",
-  remoteok: "bg-source-remoteok/15 text-source-remoteok border-source-remoteok/25",
-  himalayas: "bg-source-himalayas/15 text-source-himalayas border-source-himalayas/25",
-  arbeitnow: "bg-source-arbeitnow/15 text-source-arbeitnow border-source-arbeitnow/25",
-  workingnomads: "bg-source-workingnomads/15 text-source-workingnomads border-source-workingnomads/25",
-  serpapi_google: "bg-source-serpapi/15 text-source-serpapi border-source-serpapi/25",
-  remotive: "bg-source-remotive/15 text-source-remotive border-source-remotive/25",
 };
 
 interface KanbanBoardProps {
