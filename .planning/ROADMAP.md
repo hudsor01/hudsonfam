@@ -50,7 +50,7 @@
 
 ### Phases
 
-- [ ] **Phase 16: useEffect Audit** — scan every useEffect in the codebase, eliminate unnecessary ones, fix the rest
+- [x] **Phase 16: useEffect Audit** — scan every useEffect in the codebase, eliminate unnecessary ones, fix the rest (completed 2026-04-08)
 - [ ] **Phase 17: Component Structure & State Patterns** — fix nested components, direct state mutation, push "use client" to leaves
 - [ ] **Phase 18: Server/Client Boundaries & Hydration** — fix serialization, data fetching patterns, add loading/error boundaries, fix hydration mismatches
 - [ ] **Phase 19: Verification & Production Deploy** — build, test, lint, deploy, browser UAT
@@ -106,7 +106,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 16. useEffect Audit | 0/? | Not started | - |
+| 16. useEffect Audit | 1/0 | Complete    | 2026-04-08 |
 | 17. Component Structure & State Patterns | 0/? | Not started | - |
 | 18. Server/Client Boundaries & Hydration | 0/? | Not started | - |
 | 19. Verification & Production Deploy | 0/? | Not started | - |
