@@ -48,7 +48,7 @@
 ### Phases
 
 - [x] **Phase 13: Production Deployment** — get the production pod running with all secrets and no startup errors (completed 2026-04-08)
-- [ ] **Phase 14: Functional and Performance Verification** — confirm all jobs dashboard features work correctly in production within performance targets
+- [x] **Phase 14: Functional and Performance Verification** — confirm all jobs dashboard features work correctly in production within performance targets (completed 2026-04-08)
 - [ ] **Phase 15: UAT Automation** — autonomous browser tests prove end-to-end flow from login to kanban render
 
 ### Phase Details
@@ -93,7 +93,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 13. Production Deployment | 1/1 | Complete    | 2026-04-08 |
-| 14. Functional and Performance Verification | 0/? | Not started | - |
+| 14. Functional and Performance Verification | 1/1 | Complete    | 2026-04-08 |
 | 15. UAT Automation | 0/? | Not started | - |
 
 ## v2.0 — AI Integration (Future)
