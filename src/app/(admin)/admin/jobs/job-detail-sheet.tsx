@@ -54,11 +54,15 @@ export function JobDetailSheet({
       setDetail(null);
       return;
     }
+    let stale = false;
     setLoading(true);
     fetchJobDetail(jobId).then((d) => {
-      setDetail(d);
-      setLoading(false);
+      if (!stale) {
+        setDetail(d);
+        setLoading(false);
+      }
     });
+    return () => { stale = true; };
   }, [jobId, open]);
 
   const handleApply = () => {

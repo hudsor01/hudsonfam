@@ -21,7 +21,10 @@ function SignupForm() {
       setValidating(false);
       return;
     }
-    fetch(`/api/invite/validate?token=${encodeURIComponent(token)}`)
+    const controller = new AbortController();
+    fetch(`/api/invite/validate?token=${encodeURIComponent(token)}`, {
+      signal: controller.signal,
+    })
       .then((r) => r.json())
       .then((data) => {
         setTokenValid(data.valid);
@@ -29,10 +32,13 @@ function SignupForm() {
         if (!data.valid) setError(data.error || "Invalid invite");
         setValidating(false);
       })
-      .catch(() => {
-        setError("Could not validate invite");
-        setValidating(false);
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          setError("Could not validate invite");
+          setValidating(false);
+        }
       });
+    return () => controller.abort();
   }, [token]);
 
   if (validating) {
