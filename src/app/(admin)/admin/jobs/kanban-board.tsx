@@ -13,20 +13,20 @@ const KANBAN_COLUMNS = JOB_STATUSES; // ["new", "interested", "applied", "interv
 const columnColors: Record<string, { header: string; dot: string; count: string }> = {
   new: { header: "text-primary", dot: "bg-primary", count: "bg-primary/15 text-primary" },
   interested: { header: "text-accent", dot: "bg-accent", count: "bg-accent/15 text-accent" },
-  applied: { header: "text-green-400", dot: "bg-green-400", count: "bg-green-400/15 text-green-400" },
-  interview: { header: "text-purple-400", dot: "bg-purple-400", count: "bg-purple-400/15 text-purple-400" },
-  offer: { header: "text-emerald-400", dot: "bg-emerald-400", count: "bg-emerald-400/15 text-emerald-400" },
-  rejected: { header: "text-red-400/60", dot: "bg-red-400/60", count: "bg-red-400/15 text-red-400/60" },
+  applied: { header: "text-status-applied", dot: "bg-status-applied", count: "bg-status-applied/15 text-status-applied" },
+  interview: { header: "text-status-interview", dot: "bg-status-interview", count: "bg-status-interview/15 text-status-interview" },
+  offer: { header: "text-status-offer", dot: "bg-status-offer", count: "bg-status-offer/15 text-status-offer" },
+  rejected: { header: "text-destructive/60", dot: "bg-destructive/60", count: "bg-destructive/15 text-destructive/60" },
 };
 
 const sourceColors: Record<string, string> = {
-  jobicy: "bg-blue-500/15 text-blue-400 border-blue-500/25",
-  remoteok: "bg-green-500/15 text-green-400 border-green-500/25",
-  himalayas: "bg-purple-500/15 text-purple-400 border-purple-500/25",
-  arbeitnow: "bg-orange-500/15 text-orange-400 border-orange-500/25",
-  workingnomads: "bg-teal-500/15 text-teal-400 border-teal-500/25",
-  serpapi_google: "bg-red-500/15 text-red-400 border-red-500/25",
-  remotive: "bg-yellow-500/15 text-yellow-400 border-yellow-500/25",
+  jobicy: "bg-source-jobicy/15 text-source-jobicy border-source-jobicy/25",
+  remoteok: "bg-source-remoteok/15 text-source-remoteok border-source-remoteok/25",
+  himalayas: "bg-source-himalayas/15 text-source-himalayas border-source-himalayas/25",
+  arbeitnow: "bg-source-arbeitnow/15 text-source-arbeitnow border-source-arbeitnow/25",
+  workingnomads: "bg-source-workingnomads/15 text-source-workingnomads border-source-workingnomads/25",
+  serpapi_google: "bg-source-serpapi/15 text-source-serpapi border-source-serpapi/25",
+  remotive: "bg-source-remotive/15 text-source-remotive border-source-remotive/25",
 };
 
 interface KanbanBoardProps {
@@ -175,9 +175,9 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
                                   <span
                                     className={`text-xs font-medium ${
                                       job.match_score >= 7
-                                        ? "text-green-400"
+                                        ? "text-score-high"
                                         : job.match_score >= 4
-                                          ? "text-yellow-400"
+                                          ? "text-score-mid"
                                           : "text-muted-foreground"
                                     }`}
                                   >

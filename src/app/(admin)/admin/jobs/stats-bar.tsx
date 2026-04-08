@@ -10,10 +10,10 @@ interface StatsBarProps {
 const statusColors: Record<string, string> = {
   new: "text-primary",
   interested: "text-accent",
-  applied: "text-green-400",
-  interview: "text-purple-400",
-  offer: "text-emerald-400",
-  rejected: "text-red-400/60",
+  applied: "text-status-applied",
+  interview: "text-status-interview",
+  offer: "text-status-offer",
+  rejected: "text-destructive/60",
   dismissed: "text-muted-foreground",
 };
 
