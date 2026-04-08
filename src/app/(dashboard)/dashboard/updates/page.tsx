@@ -70,7 +70,7 @@ export default async function UpdatesPage() {
                   title="Delete update?"
                   description="This will permanently delete this family update. This action cannot be undone."
                   successMessage="Update deleted"
-                  className="text-xs text-red-400 hover:text-red-300 transition-colors shrink-0"
+                  className="text-xs text-destructive hover:text-destructive/80 transition-colors shrink-0"
                 />
               </div>
             </div>

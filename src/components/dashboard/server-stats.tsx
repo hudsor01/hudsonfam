@@ -37,10 +37,10 @@ function StatRow({
 }) {
   const barColor =
     percent > 90
-      ? "bg-red-400"
+      ? "bg-destructive"
       : percent > 75
-        ? "bg-yellow-400"
-        : "bg-emerald-400";
+        ? "bg-warning"
+        : "bg-success";
 
   return (
     <div className="space-y-1.5">

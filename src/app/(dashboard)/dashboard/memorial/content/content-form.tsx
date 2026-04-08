@@ -60,7 +60,7 @@ export function ContentSectionForm({
       />
 
       {error && (
-        <p className="text-red-400 text-xs bg-red-400/5 border border-red-400/10 rounded-lg px-3 py-2 mt-2">
+        <p className="text-destructive text-xs bg-destructive/5 border border-destructive/10 rounded-lg px-3 py-2 mt-2">
           {error}
         </p>
       )}
@@ -75,7 +75,7 @@ export function ContentSectionForm({
         </button>
 
         {saved && (
-          <span className="text-xs text-emerald-400 font-medium">Saved</span>
+          <span className="text-xs text-success font-medium">Saved</span>
         )}
 
         {hasChanges && !saved && (

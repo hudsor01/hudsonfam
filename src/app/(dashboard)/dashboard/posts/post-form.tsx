@@ -84,7 +84,7 @@ export function PostForm({ action, initial }: PostFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5 max-w-2xl">
       {serverError && (
-        <div className="bg-red-400/10 border border-red-400/25 rounded-lg px-4 py-3 text-sm text-red-400">
+        <div className="bg-destructive/10 border border-destructive/25 rounded-lg px-4 py-3 text-sm text-destructive">
           {serverError}
         </div>
       )}

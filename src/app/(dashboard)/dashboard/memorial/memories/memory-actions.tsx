@@ -53,7 +53,7 @@ export function MemoryActions({ memoryId, approved }: MemoryActionsProps) {
         <button
           onClick={handleApprove}
           disabled={loading}
-          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 hover:bg-emerald-500/25 transition-colors disabled:opacity-50"
+          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-success/15 text-success border border-success/25 hover:bg-success/25 transition-colors disabled:opacity-50"
         >
           Approve
         </button>
@@ -62,7 +62,7 @@ export function MemoryActions({ memoryId, approved }: MemoryActionsProps) {
         <AlertDialogTrigger asChild>
           <button
             disabled={loading}
-            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-red-400/10 text-red-400 border border-red-400/20 hover:bg-red-400/20 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 transition-colors disabled:opacity-50"
           >
             {approved ? "Remove" : "Reject"}
           </button>

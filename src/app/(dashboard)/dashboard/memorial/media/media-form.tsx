@@ -106,7 +106,7 @@ export function AddMediaForm() {
       </div>
 
       {error && (
-        <p className="text-red-400 text-xs bg-red-400/5 border border-red-400/10 rounded-lg px-3 py-2">
+        <p className="text-destructive text-xs bg-destructive/5 border border-destructive/10 rounded-lg px-3 py-2">
           {error}
         </p>
       )}
@@ -146,7 +146,7 @@ export function MediaDeleteButton({ mediaId }: MediaDeleteButtonProps) {
       <AlertDialogTrigger asChild>
         <button
           disabled={loading}
-          className="absolute top-2 right-2 size-7 rounded-full bg-background/80 border border-border text-red-400 hover:bg-red-400/20 hover:border-red-400/30 transition-colors flex items-center justify-center disabled:opacity-50"
+          className="absolute top-2 right-2 size-7 rounded-full bg-background/80 border border-border text-destructive hover:bg-destructive/20 hover:border-destructive/30 transition-colors flex items-center justify-center disabled:opacity-50"
           title="Remove"
         >
           <svg className="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

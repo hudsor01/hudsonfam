@@ -20,9 +20,9 @@ const statusLabels: Record<ServiceHealth["status"], string> = {
 
 function StatusDot({ status }: { status: ServiceHealth["status"] }) {
   const colors = {
-    up: "bg-emerald-400",
-    down: "bg-red-400",
-    unknown: "bg-yellow-400",
+    up: "bg-success",
+    down: "bg-destructive",
+    unknown: "bg-warning",
   };
 
   return (
@@ -50,10 +50,10 @@ export function ServiceMonitor({ title, services }: ServiceMonitorProps) {
         <span
           className={`text-xs px-2 py-0.5 rounded-full ${
             allUp
-              ? "bg-emerald-400/10 text-emerald-400"
+              ? "bg-success/10 text-success"
               : anyDown
-                ? "bg-red-400/10 text-red-400"
-                : "bg-yellow-400/10 text-yellow-400"
+                ? "bg-destructive/10 text-destructive"
+                : "bg-warning/10 text-warning"
           }`}
         >
           {allUp ? "All Up" : anyDown ? "Degraded" : "Partial"}

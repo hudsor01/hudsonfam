@@ -31,12 +31,12 @@ function WeatherIcon({ icon }: { icon: string }) {
       </svg>
     ),
     snowflake: (
-      <svg className="size-10 text-blue-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <svg className="size-10 text-primary/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07" />
       </svg>
     ),
     "cloud-lightning": (
-      <svg className="size-10 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <svg className="size-10 text-warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9" />
         <polyline points="13 11 9 17 15 17 11 23" />
       </svg>
