@@ -47,7 +47,7 @@
 
 ### Phases
 
-- [ ] **Phase 13: Production Deployment** — get the production pod running with all secrets and no startup errors
+- [x] **Phase 13: Production Deployment** — get the production pod running with all secrets and no startup errors (completed 2026-04-08)
 - [ ] **Phase 14: Functional and Performance Verification** — confirm all jobs dashboard features work correctly in production within performance targets
 - [ ] **Phase 15: UAT Automation** — autonomous browser tests prove end-to-end flow from login to kanban render
 
@@ -63,7 +63,7 @@
   3. The production pod starts cleanly — no Redis NOAUTH crash, no Prisma connection timeout, no unhandled event handler error in pod logs
 **Plans**: 1 plan
 Plans:
-- [ ] 13-01-PLAN.md — Merge branch, trigger build, reconcile Flux, verify pod health
+- [x] 13-01-PLAN.md — Merge branch, trigger build, reconcile Flux, verify pod health
 
 #### Phase 14: Functional and Performance Verification
 **Goal**: Every jobs dashboard feature the admin relies on works correctly in production and meets latency targets
@@ -92,7 +92,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 13. Production Deployment | 0/1 | Not started | - |
+| 13. Production Deployment | 1/1 | Complete    | 2026-04-08 |
 | 14. Functional and Performance Verification | 0/? | Not started | - |
 | 15. UAT Automation | 0/? | Not started | - |
 
