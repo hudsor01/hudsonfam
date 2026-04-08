@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
 import { Card } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
@@ -34,6 +34,15 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
     }
     return grouped;
   });
+
+  // Sync columns when jobs prop changes (e.g. after server revalidation)
+  useEffect(() => {
+    const grouped: Record<string, Job[]> = {};
+    for (const status of KANBAN_COLUMNS) {
+      grouped[status] = jobs.filter((j) => j.status === status);
+    }
+    setColumns(grouped);
+  }, [jobs]);
 
   const handleDragEnd = useCallback(
     (result: DropResult) => {

@@ -69,6 +69,22 @@ export const auth = betterAuth({
       defaultRole: "member",
     }),
   ],
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          // Promote first user to owner (bootstrap the site admin)
+          const count = await prisma.user.count();
+          if (count === 1) {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { role: "owner" },
+            });
+          }
+        },
+      },
+    },
+  },
   session: {
     cookieCache: {
       enabled: true,
