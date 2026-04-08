@@ -44,7 +44,7 @@ function ResetForm() {
       <form onSubmit={handleSubmit} className="space-y-3">
         <input type="password" placeholder="New password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary" />
         {error && <p className="text-destructive text-xs">{error}</p>}
-        <button type="submit" disabled={loading} className="w-full bg-primary text-white rounded-lg py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
+        <button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground rounded-lg py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
           {loading ? "Resetting..." : "Reset Password"}
         </button>
       </form>

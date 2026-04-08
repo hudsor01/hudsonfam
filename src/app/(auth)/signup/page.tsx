@@ -80,7 +80,7 @@ function SignupForm() {
       <h1 className="text-xl font-serif text-foreground mb-1">Join the Family</h1>
       <p className="text-sm text-muted-foreground mb-6">Create your account to get started</p>
 
-      <button onClick={handleGoogleSignUp} className="w-full bg-white text-gray-800 rounded-lg py-2.5 px-4 text-sm font-medium hover:bg-gray-100 transition-colors mb-4 flex items-center justify-center gap-2">
+      <button onClick={handleGoogleSignUp} className="w-full bg-primary-foreground text-background rounded-lg py-2.5 px-4 text-sm font-medium hover:bg-primary-foreground/90 transition-colors mb-4 flex items-center justify-center gap-2">
         Continue with Google
       </button>
 
@@ -95,7 +95,7 @@ function SignupForm() {
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary" />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary" />
         {error && <p className="text-destructive text-xs">{error}</p>}
-        <button type="submit" disabled={loading} className="w-full bg-primary text-white rounded-lg py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
+        <button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground rounded-lg py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
           {loading ? "Creating account..." : "Create Account"}
         </button>
       </form>

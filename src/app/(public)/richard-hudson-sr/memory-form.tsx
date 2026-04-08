@@ -334,7 +334,7 @@ export function MemoryForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full sm:w-auto bg-accent text-bg font-medium rounded-lg px-6 py-2.5 text-sm hover:bg-accent/90 transition-colors disabled:opacity-50"
+        className="w-full sm:w-auto bg-accent text-accent-foreground font-medium rounded-lg px-6 py-2.5 text-sm hover:bg-accent/90 transition-colors disabled:opacity-50"
       >
         {loading ? "Sharing..." : "Share Memory"}
       </button>

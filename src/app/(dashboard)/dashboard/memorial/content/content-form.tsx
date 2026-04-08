@@ -69,7 +69,7 @@ export function ContentSectionForm({
         <button
           onClick={handleSave}
           disabled={loading || !hasChanges}
-          className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
         >
           {loading ? "Saving..." : "Save"}
         </button>
@@ -79,7 +79,7 @@ export function ContentSectionForm({
         )}
 
         {hasChanges && !saved && (
-          <span className="text-xs text-amber-400">Unsaved changes</span>
+          <span className="text-xs text-warning">Unsaved changes</span>
         )}
       </div>
     </div>

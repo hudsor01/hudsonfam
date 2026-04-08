@@ -52,7 +52,7 @@ export default async function MemoriesModPage() {
               {pending.map((memory) => (
                 <div
                   key={memory.id}
-                  className="bg-card border border-amber-500/15 rounded-xl px-5 py-4"
+                  className="bg-card border border-warning/15 rounded-xl px-5 py-4"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0 flex-1">
@@ -77,7 +77,7 @@ export default async function MemoriesModPage() {
                           })}
                         </span>
                       </div>
-                      <blockquote className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap bg-background/50 rounded-lg px-4 py-3 border-l-2 border-amber-500/30">
+                      <blockquote className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap bg-background/50 rounded-lg px-4 py-3 border-l-2 border-warning/30">
                         {memory.content}
                       </blockquote>
                     </div>
