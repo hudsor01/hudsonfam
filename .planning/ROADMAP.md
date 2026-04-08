@@ -44,7 +44,74 @@
 ## v1.4 — Admin Dashboard Production Readiness (Complete)
 - 3 phases (13-15), 15/15 requirements, completed 2026-04-08 — [archive](milestones/v1.4-ROADMAP.md)
 
-## v2.0 — AI Integration (Future)
+## v2.0 — Code Quality Enhancement
+
+**Goal:** Systematically audit and fix all React/Next.js code smells across the entire codebase using `docs/react-nextjs-code-smells.md` as the reference.
+
+### Phases
+
+- [ ] **Phase 16: useEffect Audit** — scan every useEffect in the codebase, eliminate unnecessary ones, fix the rest
+- [ ] **Phase 17: Component Structure & State Patterns** — fix nested components, direct state mutation, push "use client" to leaves
+- [ ] **Phase 18: Server/Client Boundaries & Hydration** — fix serialization, data fetching patterns, add loading/error boundaries, fix hydration mismatches
+- [ ] **Phase 19: Verification & Production Deploy** — build, test, lint, deploy, browser UAT
+
+### Phase Details
+
+#### Phase 16: useEffect Audit
+**Goal**: Zero unnecessary useEffects remain in the codebase — every remaining useEffect is genuinely synchronizing with an external system
+**Depends on**: Nothing (first phase)
+**Requirements**: EFFECT-01, EFFECT-02, EFFECT-03, EFFECT-04, EFFECT-05, EFFECT-06, EFFECT-07, EFFECT-08
+**Success Criteria** (what must be TRUE):
+  1. No useEffect derives state from props or other state — useMemo or inline calculation used instead
+  2. No useEffect adjusts/resets state on prop change — key prop or render-time adjustment used instead
+  3. No chained useEffects that trigger each other — consolidated into event handlers
+  4. No useEffect for parent notification, POST requests, or shared event logic — moved to event handlers
+  5. Every remaining useEffect has proper cleanup or synchronizes with a genuine external system
+**Plans**: 1 plan
+
+#### Phase 17: Component Structure & State Patterns
+**Goal**: Clean component architecture — no nested definitions, no direct mutation, optimal "use client" placement
+**Depends on**: Phase 16
+**Requirements**: COMP-01, COMP-02, BOUNDARY-01, BOUNDARY-02, BOUNDARY-03, BOUNDARY-04, BOUNDARY-05
+**Success Criteria** (what must be TRUE):
+  1. No component is defined inside another component
+  2. All state updates create new object/array references
+  3. "use client" is at the lowest possible leaf component
+  4. No non-serializable props cross the server/client boundary
+  5. Data fetching happens in server components, not client useEffect/SWR
+**Plans**: 1 plan
+
+#### Phase 18: Server/Client Boundaries & Hydration
+**Goal**: Zero hydration mismatches and full error/loading boundary coverage
+**Depends on**: Phase 17
+**Requirements**: HYDRATION-01, HYDRATION-02, RESILIENCE-01, RESILIENCE-02
+**Success Criteria** (what must be TRUE):
+  1. No browser-dependent rendering that differs between SSR and client
+  2. All date/time formatting uses explicit timezone
+  3. Every route group has loading.tsx
+  4. Every route group has error.tsx
+**Plans**: 1 plan
+
+#### Phase 19: Verification & Production Deploy
+**Goal**: Ship the clean codebase to production and verify nothing broke
+**Depends on**: Phase 18
+**Requirements**: VERIFY-01, VERIFY-02, VERIFY-03
+**Success Criteria** (what must be TRUE):
+  1. `npm run build` passes with zero errors
+  2. All 268+ tests pass
+  3. Production deployment verified with no new console errors
+**Plans**: 1 plan
+
+### Progress
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 16. useEffect Audit | 0/? | Not started | - |
+| 17. Component Structure & State Patterns | 0/? | Not started | - |
+| 18. Server/Client Boundaries & Hydration | 0/? | Not started | - |
+| 19. Verification & Production Deploy | 0/? | Not started | - |
+
+## v3.0 — AI Integration (Future)
 - Qwen 3.5 photo captions + alt text
 - Qdrant + qwen-embed semantic search
 - N8N upload automation

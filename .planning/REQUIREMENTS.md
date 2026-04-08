@@ -57,25 +57,25 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| EFFECT-01 | TBD | Pending |
-| EFFECT-02 | TBD | Pending |
-| EFFECT-03 | TBD | Pending |
-| EFFECT-04 | TBD | Pending |
-| EFFECT-05 | TBD | Pending |
-| EFFECT-06 | TBD | Pending |
-| EFFECT-07 | TBD | Pending |
-| EFFECT-08 | TBD | Pending |
-| COMP-01 | TBD | Pending |
-| COMP-02 | TBD | Pending |
-| BOUNDARY-01 | TBD | Pending |
-| BOUNDARY-02 | TBD | Pending |
-| BOUNDARY-03 | TBD | Pending |
-| BOUNDARY-04 | TBD | Pending |
-| BOUNDARY-05 | TBD | Pending |
-| HYDRATION-01 | TBD | Pending |
-| HYDRATION-02 | TBD | Pending |
-| RESILIENCE-01 | TBD | Pending |
-| RESILIENCE-02 | TBD | Pending |
-| VERIFY-01 | TBD | Pending |
-| VERIFY-02 | TBD | Pending |
-| VERIFY-03 | TBD | Pending |
+| EFFECT-01 | Phase 16 | Pending |
+| EFFECT-02 | Phase 16 | Pending |
+| EFFECT-03 | Phase 16 | Pending |
+| EFFECT-04 | Phase 16 | Pending |
+| EFFECT-05 | Phase 16 | Pending |
+| EFFECT-06 | Phase 16 | Pending |
+| EFFECT-07 | Phase 16 | Pending |
+| EFFECT-08 | Phase 16 | Pending |
+| COMP-01 | Phase 17 | Pending |
+| COMP-02 | Phase 17 | Pending |
+| BOUNDARY-01 | Phase 17 | Pending |
+| BOUNDARY-02 | Phase 17 | Pending |
+| BOUNDARY-03 | Phase 17 | Pending |
+| BOUNDARY-04 | Phase 17 | Pending |
+| BOUNDARY-05 | Phase 17 | Pending |
+| HYDRATION-01 | Phase 18 | Pending |
+| HYDRATION-02 | Phase 18 | Pending |
+| RESILIENCE-01 | Phase 18 | Pending |
+| RESILIENCE-02 | Phase 18 | Pending |
+| VERIFY-01 | Phase 19 | Pending |
+| VERIFY-02 | Phase 19 | Pending |
+| VERIFY-03 | Phase 19 | Pending |
