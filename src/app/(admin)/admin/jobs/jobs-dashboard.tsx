@@ -77,7 +77,6 @@ export function JobsDashboard({
     });
   }, [activeJobs, filters]);
 
-  // Map Job to JobRow for column definitions
   const toRow = (
     job: Job,
     dismiss: (id: number) => void,
@@ -112,7 +111,6 @@ export function JobsDashboard({
 
   return (
     <div className="space-y-4">
-      {/* Header with view switcher */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-serif text-foreground">Job Search</h1>
@@ -134,7 +132,6 @@ export function JobsDashboard({
           </p>
         </div>
 
-        {/* View switcher: Table / Kanban toggle (D-10) */}
         <div className="flex items-center gap-1 rounded-lg border border-border p-1 bg-card/50">
           <button
             type="button"
@@ -163,15 +160,12 @@ export function JobsDashboard({
         </div>
       </div>
 
-      {/* Stats bar (D-01) */}
       <StatsBar stats={stats} pipeline={pipeline} />
 
-      {/* Pending indicator */}
       {isPending && (
         <div className="text-xs text-primary animate-pulse">Updating...</div>
       )}
 
-      {/* Active / Dismissed tabs (D-08) */}
       <Tabs defaultValue="active">
         <TabsList>
           <TabsTrigger value="active">Active ({activeJobs.length})</TabsTrigger>
@@ -183,7 +177,6 @@ export function JobsDashboard({
         <TabsContent value="active">
           {view === "table" ? (
             <div className="flex gap-4 mt-4">
-              {/* Sidebar filters (D-07) — always visible on left */}
               <FiltersSidebar
                 filters={filters}
                 onFiltersChange={setFilters}
@@ -191,7 +184,6 @@ export function JobsDashboard({
                 availableStatuses={availableStatuses}
               />
 
-              {/* Table */}
               <div className="flex-1 min-w-0">
                 <DataTable
                   columns={columns}
