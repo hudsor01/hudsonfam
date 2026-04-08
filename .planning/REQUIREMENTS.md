@@ -58,4 +58,18 @@ Deferred to next milestone.
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| (filled by roadmapper) | | |
+| DEPLOY-01 | Phase 13 | Pending |
+| DEPLOY-02 | Phase 13 | Pending |
+| DEPLOY-03 | Phase 13 | Pending |
+| FUNC-01 | Phase 14 | Pending |
+| FUNC-02 | Phase 14 | Pending |
+| FUNC-03 | Phase 14 | Pending |
+| FUNC-04 | Phase 14 | Pending |
+| FUNC-05 | Phase 14 | Pending |
+| FUNC-06 | Phase 14 | Pending |
+| PERF-01 | Phase 14 | Pending |
+| PERF-02 | Phase 14 | Pending |
+| PERF-03 | Phase 14 | Pending |
+| UAT-01 | Phase 15 | Pending |
+| UAT-02 | Phase 15 | Pending |
+| UAT-03 | Phase 15 | Pending |

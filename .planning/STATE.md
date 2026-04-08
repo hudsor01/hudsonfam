@@ -2,10 +2,10 @@
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 13 — Production Deployment
 Plan: —
-Status: Defining requirements
-Last activity: 2026-04-08 — Milestone v1.4 started
+Status: Not started
+Last activity: 2026-04-08 — Milestone v1.4 roadmap created
 
 ## What's Done
 - v1.0 — Core Site: Complete
@@ -27,26 +27,25 @@ Last activity: 2026-04-08 — Milestone v1.4 started
   - Phase 12: Ecosystem Tooling — unified radix-ui package, Collapsible/HoverCard integration
 - 41 shadcn/ui components installed at src/components/ui/
 - 268 tests passing, build clean
-
-## What's Done (v1.3)
-- Family Services page (/dashboard/services) — 5 services, live health status, LAN badge, auto-refresh
-- Google OAuth redirect fix — callbackURL: "/dashboard" on login and signup
-- Photo auto-compression — originals capped at 2400px wide, WebP q85 on upload
-- "use client" fix — FeaturedPost and PostCard had onClick without directive
-- NAS volume fix — readOnly: false for photo uploads
-- Flux image automation fix — timestamp tags replacing alphabetical SHA ordering
-- Redis auth fix — REDIS_URL added to K8s secrets for authenticated Redis
-- Job Search Dashboard (/admin/jobs) — TanStack Table + Kanban with @hello-pangea/dnd
-  - 6-stage pipeline: new → interested → applied → interview → offer → rejected
-  - Filters sidebar, stats bar, detail sheet, cover letter PDF route
-  - Separate JOBS_DATABASE_URL for external jobs DB
-  - N8N webhook integration for job operations
+- v1.3 — Services, Infra & Job Search: Complete
+  - Family Services page (/dashboard/services) — 5 services, live health status, LAN badge, auto-refresh
+  - Google OAuth redirect fix — callbackURL: "/dashboard" on login and signup
+  - Photo auto-compression — originals capped at 2400px wide, WebP q85 on upload
+  - "use client" fix — FeaturedPost and PostCard had onClick without directive
+  - NAS volume fix — readOnly: false for photo uploads
+  - Flux image automation fix — timestamp tags replacing alphabetical SHA ordering
+  - Redis auth fix — REDIS_URL added to K8s secrets for authenticated Redis
+  - Job Search Dashboard (/admin/jobs) — TanStack Table + Kanban with @hello-pangea/dnd
+    - 6-stage pipeline: new → interested → applied → interview → offer → rejected
+    - Filters sidebar, stats bar, detail sheet, cover letter PDF route
+    - Separate JOBS_DATABASE_URL for external jobs DB
+    - N8N webhook integration for job operations
 
 ## What's Next
-v2.0 — AI Integration (Qwen photo captions, Qdrant search, N8N automation, Resend emails)
+Phase 13: Production Deployment — deploy jobs dashboard to K3s, wire JOBS_DATABASE_URL secret, confirm pod starts clean
 
 ## Last Session
-2026-04-08 — GSD audit, infra hardening (Prisma pooling, Redis error handling)
+2026-04-08 — v1.4 roadmap created (3 phases: 13 Production Deployment, 14 Functional/Perf Verification, 15 UAT Automation)
 
 ## Key Decisions
 - Use TanStack Form (NOT react-hook-form) for form validation — user requirement
