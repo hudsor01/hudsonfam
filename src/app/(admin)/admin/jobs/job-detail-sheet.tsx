@@ -88,9 +88,9 @@ export function JobDetailSheet({
                   <span
                     className={`text-sm font-semibold ${
                       detail.match_score >= 7
-                        ? "text-green-400"
+                        ? "text-score-high"
                         : detail.match_score >= 4
-                          ? "text-yellow-400"
+                          ? "text-score-mid"
                           : "text-muted-foreground"
                     }`}
                   >
@@ -167,7 +167,7 @@ export function JobDetailSheet({
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       {detail.company_research.glassdoor_rating && (
                         <div className="flex items-center gap-1.5">
-                          <Star className="size-3.5 text-yellow-400" />
+                          <Star className="size-3.5 text-score-mid" />
                           <span>
                             {detail.company_research.glassdoor_rating}/5
                             Glassdoor

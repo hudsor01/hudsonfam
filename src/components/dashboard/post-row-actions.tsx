@@ -44,7 +44,7 @@ export function PostRowActions({ postId, deleteAction }: PostRowActionsProps) {
               description="This will permanently delete this blog post. This action cannot be undone."
               successMessage="Post deleted"
               label="Delete"
-              className="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors w-full"
+              className="flex items-center gap-2 text-sm text-destructive hover:text-destructive/80 transition-colors w-full"
             />
           </div>
         </DropdownMenuItem>

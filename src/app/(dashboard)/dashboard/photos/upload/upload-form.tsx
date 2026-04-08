@@ -175,12 +175,12 @@ export function UploadForm({ albums }: { albums: Album[] }) {
       {results.length > 0 && (
         <div className="space-y-3">
           {successCount > 0 && (
-            <div className="bg-emerald-400/10 border border-emerald-400/25 rounded-lg px-4 py-3 text-sm text-emerald-400">
+            <div className="bg-success/10 border border-success/25 rounded-lg px-4 py-3 text-sm text-success">
               {successCount} photo{successCount !== 1 ? "s" : ""} uploaded successfully.
             </div>
           )}
           {errorCount > 0 && (
-            <div className="bg-red-400/10 border border-red-400/25 rounded-lg px-4 py-3 text-sm text-red-400">
+            <div className="bg-destructive/10 border border-destructive/25 rounded-lg px-4 py-3 text-sm text-destructive">
               {errorCount} upload{errorCount !== 1 ? "s" : ""} failed.
               <ul className="mt-1 list-disc pl-4">
                 {results

@@ -93,7 +93,7 @@ export function MemberActions({ userId, currentRole, isBanned }: MemberActionsPr
         <button
           onClick={handleUnban}
           disabled={loading}
-          className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors disabled:opacity-50"
+          className="text-xs text-success hover:text-success/80 transition-colors disabled:opacity-50"
         >
           Unban
         </button>
@@ -102,7 +102,7 @@ export function MemberActions({ userId, currentRole, isBanned }: MemberActionsPr
           <AlertDialogTrigger asChild>
             <button
               disabled={loading}
-              className="text-xs text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
+              className="text-xs text-destructive hover:text-destructive/80 transition-colors disabled:opacity-50"
             >
               Ban
             </button>

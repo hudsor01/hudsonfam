@@ -15,9 +15,9 @@ interface MetricCardProps {
 }
 
 const colorClasses: Record<string, string> = {
-  green: "text-emerald-400",
+  green: "text-success",
   gold: "text-accent",
-  red: "text-red-400",
+  red: "text-destructive",
   blue: "text-primary",
   default: "text-foreground",
 };

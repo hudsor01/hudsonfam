@@ -36,9 +36,9 @@ interface ServicesGridProps {
 
 function StatusDot({ status }: { status: FamilyServiceHealth["status"] }) {
   const colors: Record<string, string> = {
-    up: "bg-emerald-400 shadow-emerald-400/50",
-    down: "bg-red-400 shadow-red-400/50",
-    unknown: "bg-yellow-400 shadow-yellow-400/50",
+    up: "bg-success shadow-success/50",
+    down: "bg-destructive shadow-destructive/50",
+    unknown: "bg-warning shadow-warning/50",
   };
 
   const labels: Record<string, string> = {
@@ -155,8 +155,8 @@ export function ServicesGrid({ initialServices }: ServicesGridProps) {
           <span
             className={`text-xs px-2.5 py-1 rounded-full font-medium ${
               allUp
-                ? "bg-emerald-400/10 text-emerald-400"
-                : "bg-yellow-400/10 text-yellow-400"
+                ? "bg-success/10 text-success"
+                : "bg-warning/10 text-warning"
             }`}
           >
             {upCount}/{monitored.length} Online

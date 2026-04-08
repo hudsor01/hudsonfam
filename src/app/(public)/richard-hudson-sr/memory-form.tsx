@@ -166,7 +166,7 @@ export function MemoryForm() {
                 className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-400 mt-1">
+                <p className="text-xs text-destructive mt-1">
                   {field.state.meta.errors.join(", ")}
                 </p>
               )}
@@ -194,7 +194,7 @@ export function MemoryForm() {
                 className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-400 mt-1">
+                <p className="text-xs text-destructive mt-1">
                   {field.state.meta.errors.join(", ")}
                 </p>
               )}
@@ -225,7 +225,7 @@ export function MemoryForm() {
                 className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors"
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-400 mt-1">
+                <p className="text-xs text-destructive mt-1">
                   {field.state.meta.errors.join(", ")}
                 </p>
               )}
@@ -288,7 +288,7 @@ export function MemoryForm() {
               ))}
             </select>
             {field.state.meta.errors.length > 0 && (
-              <p className="text-xs text-red-400 mt-1">
+              <p className="text-xs text-destructive mt-1">
                 {field.state.meta.errors.join(", ")}
               </p>
             )}
@@ -317,7 +317,7 @@ export function MemoryForm() {
               className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground caret-primary placeholder:text-text-dim focus:outline-none focus:border-accent/50 transition-colors resize-y field-sizing-content min-h-[120px]"
             />
             {field.state.meta.errors.length > 0 && (
-              <p className="text-xs text-red-400 mt-1">
+              <p className="text-xs text-destructive mt-1">
                 {field.state.meta.errors.join(", ")}
               </p>
             )}
@@ -326,7 +326,7 @@ export function MemoryForm() {
       </form.Field>
 
       {serverError && (
-        <p className="text-red-400 text-xs bg-red-400/5 border border-red-400/10 rounded-lg px-3 py-2">
+        <p className="text-destructive text-xs bg-destructive/5 border border-destructive/10 rounded-lg px-3 py-2">
           {serverError}
         </p>
       )}

@@ -43,22 +43,22 @@ function formatSalary(min: number | null, max: number | null, currency: string) 
 }
 
 export const sourceColors: Record<string, string> = {
-  jobicy: "bg-blue-500/15 text-blue-400 border-blue-500/25",
-  remoteok: "bg-green-500/15 text-green-400 border-green-500/25",
-  himalayas: "bg-purple-500/15 text-purple-400 border-purple-500/25",
-  arbeitnow: "bg-orange-500/15 text-orange-400 border-orange-500/25",
-  workingnomads: "bg-teal-500/15 text-teal-400 border-teal-500/25",
-  serpapi_google: "bg-red-500/15 text-red-400 border-red-500/25",
-  remotive: "bg-yellow-500/15 text-yellow-400 border-yellow-500/25",
+  jobicy: "bg-source-jobicy/15 text-source-jobicy border-source-jobicy/25",
+  remoteok: "bg-source-remoteok/15 text-source-remoteok border-source-remoteok/25",
+  himalayas: "bg-source-himalayas/15 text-source-himalayas border-source-himalayas/25",
+  arbeitnow: "bg-source-arbeitnow/15 text-source-arbeitnow border-source-arbeitnow/25",
+  workingnomads: "bg-source-workingnomads/15 text-source-workingnomads border-source-workingnomads/25",
+  serpapi_google: "bg-source-serpapi/15 text-source-serpapi border-source-serpapi/25",
+  remotive: "bg-source-remotive/15 text-source-remotive border-source-remotive/25",
 };
 
 const statusDotColor: Record<string, string> = {
   new: "bg-primary",
   interested: "bg-accent",
-  applied: "bg-green-400",
-  interview: "bg-purple-400",
-  offer: "bg-emerald-400",
-  rejected: "bg-red-400/60",
+  applied: "bg-status-applied",
+  interview: "bg-status-interview",
+  offer: "bg-status-offer",
+  rejected: "bg-destructive/60",
   dismissed: "bg-muted-foreground",
 };
 
@@ -112,9 +112,9 @@ export function getJobColumns(): ColumnDef<JobRow>[] {
         if (!score) return <span className="text-xs text-muted-foreground">—</span>;
         const color =
           score >= 7
-            ? "text-green-400"
+            ? "text-score-high"
             : score >= 4
-              ? "text-yellow-400"
+              ? "text-score-mid"
               : "text-muted-foreground";
         return <span className={`text-sm font-medium ${color}`}>{score}/10</span>;
       },
@@ -178,7 +178,7 @@ export function getJobColumns(): ColumnDef<JobRow>[] {
           <button
             type="button"
             onClick={() => row.original.onDismiss(row.original.id)}
-            className="text-muted-foreground hover:text-red-400 transition-colors p-1"
+            className="text-muted-foreground hover:text-destructive transition-colors p-1"
             title={isDismissed ? "Restore" : "Dismiss"}
           >
             <X className="size-3.5" />

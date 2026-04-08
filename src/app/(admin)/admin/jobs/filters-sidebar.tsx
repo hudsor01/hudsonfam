@@ -20,22 +20,22 @@ interface FiltersSidebarProps {
 }
 
 const sourceColors: Record<string, string> = {
-  jobicy: "text-blue-400",
-  remoteok: "text-green-400",
-  himalayas: "text-purple-400",
-  arbeitnow: "text-orange-400",
-  workingnomads: "text-teal-400",
-  serpapi_google: "text-red-400",
-  remotive: "text-yellow-400",
+  jobicy: "text-source-jobicy",
+  remoteok: "text-source-remoteok",
+  himalayas: "text-source-himalayas",
+  arbeitnow: "text-source-arbeitnow",
+  workingnomads: "text-source-workingnomads",
+  serpapi_google: "text-source-serpapi",
+  remotive: "text-source-remotive",
 };
 
 const statusColors: Record<string, string> = {
   new: "text-primary",
   interested: "text-accent",
-  applied: "text-green-400",
-  interview: "text-purple-400",
-  offer: "text-emerald-400",
-  rejected: "text-red-400/60",
+  applied: "text-status-applied",
+  interview: "text-status-interview",
+  offer: "text-status-offer",
+  rejected: "text-destructive/60",
 };
 
 const defaultFilters: FiltersState = {
@@ -165,23 +165,23 @@ export function FiltersSidebar({
           Score
         </p>
         <div className="flex items-center gap-2">
-          <input
+          <Input
             type="number"
             min={0}
             max={10}
             value={filters.scoreMin}
             onChange={(e) => handleScoreMin(e.target.value)}
-            className="w-14 h-7 rounded-md border border-input bg-transparent px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+            className="w-14 h-7 text-xs"
             placeholder="Min"
           />
           <span className="text-xs text-muted-foreground">–</span>
-          <input
+          <Input
             type="number"
             min={0}
             max={10}
             value={filters.scoreMax}
             onChange={(e) => handleScoreMax(e.target.value)}
-            className="w-14 h-7 rounded-md border border-input bg-transparent px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+            className="w-14 h-7 text-xs"
             placeholder="Max"
           />
         </div>
