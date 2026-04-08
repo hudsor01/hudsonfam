@@ -1,7 +1,11 @@
 # State
 
-## Current Phase
-v1.3 — Services, Infra Hardening & Job Search complete
+## Current Position
+
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-08 — Milestone v1.4 started
 
 ## What's Done
 - v1.0 — Core Site: Complete
