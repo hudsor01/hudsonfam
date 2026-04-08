@@ -61,7 +61,9 @@
   1. A new image tag is deployed to the K3s cluster and the jobs dashboard routes resolve in production
   2. The JOBS_DATABASE_URL secret is mounted in the production pod and the jobs page returns data (not an error)
   3. The production pod starts cleanly — no Redis NOAUTH crash, no Prisma connection timeout, no unhandled event handler error in pod logs
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 13-01-PLAN.md — Merge branch, trigger build, reconcile Flux, verify pod health
 
 #### Phase 14: Functional and Performance Verification
 **Goal**: Every jobs dashboard feature the admin relies on works correctly in production and meets latency targets
@@ -90,7 +92,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 13. Production Deployment | 0/? | Not started | - |
+| 13. Production Deployment | 0/1 | Not started | - |
 | 14. Functional and Performance Verification | 0/? | Not started | - |
 | 15. UAT Automation | 0/? | Not started | - |
 
