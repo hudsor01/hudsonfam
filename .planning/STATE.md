@@ -2,31 +2,28 @@
 
 ## Current Position
 
-Milestone: v1.4 complete
-Status: Ready for v2.0
-Last activity: 2026-04-08 — v1.4 milestone archived
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-08 — Milestone v2.0 started
 
 ## What's Done
 
 - v1.0 — Core Site: Complete
-- v1.1 — UI Enhancement: Complete (5 phases)
-- v1.2 — Integration Solidification: Complete (7 phases, 6-12)
+- v1.1 — UI Enhancement: Complete
+- v1.2 — Integration Solidification: Complete
 - v1.3 — Services, Infra & Job Search: Complete
-- v1.4 — Admin Dashboard Production Readiness: Complete (3 phases, 13-15)
-  - Phase 13: Production Deployment — image 20260408173607 deployed via Flux
-  - Phase 14: Functional/Perf Verification — 9/9 requirements verified
-  - Phase 15: UAT Automation — 30+ browser operations all passed
-  - Audit: 15/15 requirements satisfied, all findings resolved
+- v1.4 — Admin Dashboard Production Readiness: Complete
 - 41 shadcn/ui components, 268 tests passing, build clean
 - Zero hardcoded Tailwind colors in any .tsx file
 
 ## What's Next
 
-v2.0 — define requirements and roadmap
+v2.0 — Code Quality Enhancement: audit and fix all React/Next.js code smells
 
 ## Last Session
 
-2026-04-08 — v1.4 milestone completed and archived. All code fixes applied (dead code removal, kanban useMemo refactor, hydration fix, first-user bootstrap, comment cleanup). Code smells reference created.
+2026-04-08 — v1.4 archived, v2.0 milestone started. Code smells reference created at docs/react-nextjs-code-smells.md.
 
 ## Key Decisions
 

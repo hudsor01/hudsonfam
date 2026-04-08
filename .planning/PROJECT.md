@@ -33,7 +33,7 @@ URL: thehudsonfam.com via Cloudflare Tunnel
 
 **Shipped:** v1.4 (2026-04-08)
 **Production image:** ghcr.io/hudsor01/hudsonfam:20260408173607
-**Next milestone:** v2.0
+**Current milestone:** v2.0 — Code Quality Enhancement
 
 ### Validated (all milestones)
 - v1.0: Core site, auth, CRUD, homelab dashboard, K8s deployment, memorial
@@ -70,4 +70,4 @@ This document evolves at phase transitions and milestone boundaries.
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
-Last updated: 2026-04-08 after v1.4 milestone
+Last updated: 2026-04-08 after v2.0 milestone start
