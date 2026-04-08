@@ -30,6 +30,17 @@
 - Phase 11: Component integration — wire Calendar, Dialog, Drawer, Pagination, Popover, Progress into actual pages ✅
 - Phase 12: Ecosystem tooling — shadcn skills, radix migration, blocks evaluation, additional components ✅
 
+## v1.3 — Services, Infra & Job Search (Complete)
+- Family services page (/dashboard/services) with live health status ✅
+- Google OAuth redirect fix (callbackURL) ✅
+- Photo auto-compression (2400px WebP q85) ✅
+- Production fixes: "use client" directives, NAS write permissions ✅
+- Flux image automation: timestamp tags replacing alphabetical SHA ✅
+- Redis auth: REDIS_URL with password for K8s ✅
+- Prisma connection pooling + Redis error handling ✅
+- Job Search Dashboard (/admin/jobs) — table + kanban views ✅
+- .env.example updated with all required vars ✅
+
 ## v2.0 — AI Integration (Future)
 - Qwen 3.5 photo captions + alt text
 - Qdrant + qwen-embed semantic search
