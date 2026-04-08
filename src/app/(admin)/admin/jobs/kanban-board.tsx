@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
 import { Card } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
@@ -25,22 +25,33 @@ interface KanbanBoardProps {
 }
 
 export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
-  const [columns, setColumns] = useState<Record<string, Job[]>>(() => {
+  // Pending drag tracks an optimistic move before the server round-trip completes
+  const [pendingDrag, setPendingDrag] = useState<{
+    jobId: number;
+    from: string;
+    to: string;
+    index: number;
+  } | null>(null);
+
+  const columns = useMemo(() => {
     const grouped: Record<string, Job[]> = {};
     for (const status of KANBAN_COLUMNS) {
       grouped[status] = jobs.filter((j) => j.status === status);
+    }
+    if (pendingDrag) {
+      const job = grouped[pendingDrag.from]?.find((j) => j.id === pendingDrag.jobId);
+      if (job) {
+        grouped[pendingDrag.from] = grouped[pendingDrag.from].filter((j) => j.id !== pendingDrag.jobId);
+        const dest = [...grouped[pendingDrag.to]];
+        dest.splice(pendingDrag.index, 0, { ...job, status: pendingDrag.to });
+        grouped[pendingDrag.to] = dest;
+      } else {
+        // Server already applied the change — clear the optimistic override
+        setPendingDrag(null);
+      }
     }
     return grouped;
-  });
-
-  // Sync columns when jobs prop changes (e.g. after server revalidation)
-  useEffect(() => {
-    const grouped: Record<string, Job[]> = {};
-    for (const status of KANBAN_COLUMNS) {
-      grouped[status] = jobs.filter((j) => j.status === status);
-    }
-    setColumns(grouped);
-  }, [jobs]);
+  }, [jobs, pendingDrag]);
 
   const handleDragEnd = useCallback(
     (result: DropResult) => {
@@ -53,22 +64,13 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
         return;
 
       const jobId = parseInt(draggableId, 10);
-      const sourceCol = source.droppableId;
       const destCol = destination.droppableId;
 
-      // Optimistic update — move the card immediately before server round-trip
-      setColumns((prev) => {
-        const next = { ...prev };
-        const sourceItems = [...(next[sourceCol] || [])];
-        const [movedJob] = sourceItems.splice(source.index, 1);
-        next[sourceCol] = sourceItems;
-
-        const destItems = [...(next[destCol] || [])];
-        const updatedJob = { ...movedJob, status: destCol };
-        destItems.splice(destination.index, 0, updatedJob);
-        next[destCol] = destItems;
-
-        return next;
+      setPendingDrag({
+        jobId,
+        from: source.droppableId,
+        to: destCol,
+        index: destination.index,
       });
 
       onStatusChange(jobId, destCol);
