@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
 import { Card } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
@@ -35,8 +35,19 @@ export function KanbanBoard({ jobs, jobsByStatus, hasActiveFilters, onStatusChan
     index: number;
   } | null>(null);
 
+  // Clear pending drag when server data catches up
+  useEffect(() => {
+    if (!pendingDrag) return;
+    const fromCol = hasActiveFilters
+      ? jobs.filter((j) => j.status === pendingDrag.from)
+      : jobsByStatus[pendingDrag.from] || [];
+    const stillPending = fromCol.some((j) => j.id === pendingDrag.jobId);
+    if (!stillPending) {
+      setPendingDrag(null);
+    }
+  }, [jobs, jobsByStatus, hasActiveFilters, pendingDrag]);
+
   const columns = useMemo(() => {
-    // Use server-grouped data when no filters are active, client-grouped when filtered
     const grouped: Record<string, Job[]> = {};
     if (hasActiveFilters) {
       for (const status of KANBAN_COLUMNS) {
@@ -55,8 +66,6 @@ export function KanbanBoard({ jobs, jobsByStatus, hasActiveFilters, onStatusChan
         const dest = [...grouped[pendingDrag.to]];
         dest.splice(pendingDrag.index, 0, { ...job, status: pendingDrag.to });
         grouped[pendingDrag.to] = dest;
-      } else {
-        setPendingDrag(null);
       }
     }
     return grouped;

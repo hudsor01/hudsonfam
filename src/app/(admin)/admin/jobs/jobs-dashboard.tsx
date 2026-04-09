@@ -105,6 +105,9 @@ export function JobsDashboard({
   const activeRows = filteredActive.map((j) => toRow(j, handleDismiss, handleStatusChange));
   const dismissedRows = dismissedJobs.map((j) => toRow(j, handleUndismiss, handleStatusChange));
 
+  const hasActiveFilters = filters.search !== "" || filters.sources.length > 0 ||
+    filters.statuses.length > 0 || filters.scoreMin > 0 || filters.scoreMax < 10;
+
   const columns = getJobColumns();
   const availableSources = stats.bySource.map((s) => s.source);
   const availableStatuses = stats.byStatus
@@ -199,7 +202,7 @@ export function JobsDashboard({
               <KanbanBoard
                 jobs={filteredActive}
                 jobsByStatus={jobsByStatus}
-                hasActiveFilters={filters.search !== "" || filters.sources.length > 0 || filters.statuses.length > 0 || filters.scoreMin > 0 || filters.scoreMax < 10}
+                hasActiveFilters={hasActiveFilters}
                 onStatusChange={handleStatusChange}
               />
             </div>

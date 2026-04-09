@@ -362,7 +362,7 @@ export default async function RichardHudsonSrMemorialPage() {
         {videos.length > 0 ? (
           <div className="space-y-6">
             {videos.map((video) => {
-              const isEmbed = /youtube|youtu\.be|vimeo|dailymotion|embed/.test(video.url);
+              const isEmbed = /youtube\.com\/embed|youtu\.be|player\.vimeo\.com|dailymotion\.com\/embed|loom\.com\/embed|wistia\.com\/medias/.test(video.url);
               return (
                 <div key={video.id} className="bg-card border border-border rounded-xl overflow-hidden">
                   <div className="aspect-video">
@@ -371,6 +371,7 @@ export default async function RichardHudsonSrMemorialPage() {
                         src={video.url}
                         title={video.caption || "Video tribute for Richard Hudson Sr."}
                         className="w-full h-full"
+                        sandbox="allow-scripts allow-same-origin allow-presentation"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                       />
