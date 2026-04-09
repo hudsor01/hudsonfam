@@ -18,7 +18,10 @@ async function fetchJson<T>(url: string, headers?: Record<string, string>): Prom
 
     if (!response.ok) return null;
     return await response.json();
-  } catch {
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error(`[dashboard] fetch failed: ${url}`, (err as Error).message);
+    }
     return null;
   }
 }

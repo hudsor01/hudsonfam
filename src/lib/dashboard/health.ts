@@ -200,7 +200,10 @@ async function checkService(service: ServiceDefinition): Promise<ServiceHealth> 
       status: response.ok || response.status === 401 || response.status === 302 ? "up" : "down",
       responseTime,
     };
-  } catch {
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error(`[dashboard] health check failed: ${service.name}`, (err as Error).message);
+    }
     return {
       ...service,
       status: "down",
@@ -270,7 +273,10 @@ async function checkFamilyService(
           : "down",
       responseTime,
     };
-  } catch {
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error(`[dashboard] LAN health check failed: ${service.name}`, (err as Error).message);
+    }
     return {
       ...service,
       status: "down",

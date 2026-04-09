@@ -163,7 +163,7 @@ kubectl scale deployment hudsonfam -n homepage --replicas=1
 ## Environment Variables
 
 ```
-DATABASE_URL          # PgBouncer pooled connection
+DATABASE_URL          # Direct PostgreSQL (CloudNativePG postgres-rw)
 DIRECT_DATABASE_URL   # Direct PostgreSQL (migrations only)
 BETTER_AUTH_SECRET
 BETTER_AUTH_URL
@@ -174,6 +174,7 @@ SONARR_API_KEY
 RADARR_API_KEY
 JELLYFIN_API_KEY
 JOBS_DATABASE_URL     # Separate jobs database
+OWNER_EMAIL           # Email auto-promoted to owner role on signup
 ```
 
 ## Photo Upload Pipeline

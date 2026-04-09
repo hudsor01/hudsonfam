@@ -90,7 +90,10 @@ export async function getWeather(): Promise<WeatherData> {
       windSpeed: Math.round(data.current.wind_speed_10m),
       location: "Dallas, TX",
     };
-  } catch {
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[dashboard] weather fetch failed:", (err as Error).message);
+    }
     return {
       temperature: 0,
       feelsLike: 0,

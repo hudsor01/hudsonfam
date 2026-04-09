@@ -73,9 +73,8 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          // Promote first user to owner (bootstrap the site admin)
-          const count = await prisma.user.count();
-          if (count === 1) {
+          const ownerEmail = process.env.OWNER_EMAIL;
+          if (ownerEmail && user.email === ownerEmail) {
             await prisma.user.update({
               where: { id: user.id },
               data: { role: "owner" },

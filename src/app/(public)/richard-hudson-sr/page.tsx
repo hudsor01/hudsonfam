@@ -361,24 +361,38 @@ export default async function RichardHudsonSrMemorialPage() {
         </p>
         {videos.length > 0 ? (
           <div className="space-y-6">
-            {videos.map((video) => (
-              <div key={video.id} className="bg-card border border-border rounded-xl overflow-hidden">
-                <div className="aspect-video">
-                  <iframe
-                    src={video.url}
-                    title={video.caption || "Video tribute for Richard Hudson Sr."}
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </div>
-                {video.caption && (
-                  <div className="px-4 py-3 border-t border-border">
-                    <p className="text-sm text-muted-foreground">{video.caption}</p>
+            {videos.map((video) => {
+              const isEmbed = /youtube|youtu\.be|vimeo|dailymotion|embed/.test(video.url);
+              return (
+                <div key={video.id} className="bg-card border border-border rounded-xl overflow-hidden">
+                  <div className="aspect-video">
+                    {isEmbed ? (
+                      <iframe
+                        src={video.url}
+                        title={video.caption || "Video tribute for Richard Hudson Sr."}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <video
+                        src={video.url}
+                        controls
+                        preload="metadata"
+                        className="w-full h-full object-contain bg-background"
+                      >
+                        <track kind="captions" />
+                      </video>
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+                  {video.caption && (
+                    <div className="px-4 py-3 border-t border-border">
+                      <p className="text-sm text-muted-foreground">{video.caption}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="bg-card border border-border rounded-xl overflow-hidden">
