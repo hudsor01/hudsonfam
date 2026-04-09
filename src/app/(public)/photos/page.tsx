@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import Image from "next/image";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -46,10 +47,13 @@ export default async function PhotosPage() {
                   {/* Cover image */}
                   <div className="aspect-[4/3] bg-background overflow-hidden">
                     {coverPhoto ? (
-                      <img
+                      <Image
                         src={coverPhoto.thumbnailPath}
                         alt={album.title}
+                        width={800}
+                        height={400}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        unoptimized
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">

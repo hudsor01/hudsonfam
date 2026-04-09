@@ -35,7 +35,7 @@ export function KanbanBoard({ jobs, jobsByStatus, hasActiveFilters, onStatusChan
     index: number;
   } | null>(null);
 
-  // Clear pending drag when server data catches up
+  // Clear pending drag when server data catches up (external system sync)
   useEffect(() => {
     if (!pendingDrag) return;
     const fromCol = hasActiveFilters
@@ -43,6 +43,7 @@ export function KanbanBoard({ jobs, jobsByStatus, hasActiveFilters, onStatusChan
       : jobsByStatus[pendingDrag.from] || [];
     const stillPending = fromCol.some((j) => j.id === pendingDrag.jobId);
     if (!stillPending) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPendingDrag(null);
     }
   }, [jobs, jobsByStatus, hasActiveFilters, pendingDrag]);

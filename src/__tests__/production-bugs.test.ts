@@ -66,11 +66,9 @@ import { prismaMock } from './mocks/prisma';
 
 import {
   createPost,
-  updatePost,
   deletePost,
   createAlbum,
   createEvent,
-  updateEvent,
   deleteEvent,
   createUpdate,
   deleteUpdate,
@@ -94,11 +92,6 @@ import { getClusterMetrics, queryPrometheus } from '@/lib/dashboard/prometheus';
 const fakeOwnerSession = {
   user: { id: 'user-1', name: 'Owner', email: 'owner@test.com', role: 'owner' },
   session: { id: 'session-1', token: 'token' },
-};
-
-const fakeMemberSession = {
-  user: { id: 'user-2', name: 'Member', email: 'member@test.com', role: 'member' },
-  session: { id: 'session-2', token: 'token-2' },
 };
 
 function makeFormData(data: Record<string, string>): FormData {
@@ -629,9 +622,6 @@ describe('Photo upload validation', () => {
 describe('Blog edge cases', () => {
   // These tests use the actual blog module via the existing fs mock
 
-  const mockReaddir = vi.fn();
-  const mockReadFile = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -924,10 +914,8 @@ describe('Concurrent failure scenarios', () => {
   });
 
   it('getClusterMetrics handles mixed success/failure across Prometheus queries', async () => {
-    let callCount = 0;
     server.use(
       http.get('http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/query', ({ request }) => {
-        callCount++;
         const url = new URL(request.url);
         const query = url.searchParams.get('query') || '';
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import Lightbox from "@/components/public/lightbox";
 
@@ -30,11 +31,14 @@ export default function AlbumPhotoGrid({ photos }: AlbumPhotoGridProps) {
             onClick={() => setLightboxIndex(index)}
             className="perspective-midrange max-sm:snap-center max-sm:shrink-0 max-sm:w-[80vw] group relative aspect-square overflow-hidden rounded-lg bg-background border border-border hover:border-primary/40 transition-colors cursor-pointer"
           >
-            <img
+            <Image
               src={photo.thumbnailPath}
               alt={photo.title || photo.caption || "Photo"}
+              width={400}
+              height={300}
               className="w-full h-full object-cover group-hover:scale-105 group-hover:rotate-y-1 hover:brightness-110 hover:saturate-110 transition-all duration-500"
               loading="lazy"
+              unoptimized
             />
             {/* Hover overlay with title */}
             {photo.title && (

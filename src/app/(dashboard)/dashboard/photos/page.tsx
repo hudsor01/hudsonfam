@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import Image from "next/image";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -59,11 +60,14 @@ export default async function PhotosPage() {
               className="group relative bg-card border border-border rounded-lg overflow-hidden"
             >
               <div className="aspect-square overflow-hidden">
-                <img
+                <Image
                   src={`/api/images/${photo.id}?size=thumbnail`}
                   alt={photo.title || "Photo"}
+                  width={400}
+                  height={300}
                   className="w-full h-full object-cover"
                   loading="lazy"
+                  unoptimized
                 />
               </div>
               <div className="p-2">

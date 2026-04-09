@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 interface Photo {
@@ -21,10 +22,13 @@ export function PhotoGridPreview({ photos }: PhotoGridPreviewProps) {
             key={photo.id}
             className="aspect-square rounded-md overflow-hidden bg-background"
           >
-            <img
+            <Image
               src={photo.thumbnailPath}
               alt={photo.title || "Photo"}
+              width={400}
+              height={300}
               className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-80"
+              unoptimized
             />
           </div>
         ))}

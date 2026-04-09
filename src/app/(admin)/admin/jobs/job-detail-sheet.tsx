@@ -52,6 +52,7 @@ export function JobDetailSheet({
   useEffect(() => {
     if (!jobId || !open) return;
     let stale = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     fetchJobDetail(jobId).then((d) => {
       if (!stale) {

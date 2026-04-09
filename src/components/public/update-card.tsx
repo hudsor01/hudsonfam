@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface UpdateCardProps {
@@ -79,11 +80,14 @@ export default function UpdateCard({
                   : "aspect-square"
               }`}
             >
-              <img
+              <Image
                 src={`/api/images/${imageId}?size=medium`}
                 alt={`Image ${index + 1}`}
+                width={400}
+                height={300}
                 className="w-full h-full object-cover"
                 loading="lazy"
+                unoptimized
               />
             </div>
           ))}

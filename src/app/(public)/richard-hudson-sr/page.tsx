@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 import { MemoryForm } from "./memory-form";
@@ -329,13 +330,14 @@ export default async function RichardHudsonSrMemorialPage() {
               className={`relative overflow-hidden rounded-lg group ${photo.span} m-0`}
             >
               <div className="aspect-square">
-                <img
+                <Image
                   src={photo.src}
                   alt={photo.alt}
                   className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 hover:brightness-110 hover:saturate-110"
                   loading={i < 4 ? "eager" : "lazy"}
                   width={i === 0 ? 600 : 400}
                   height={i === 0 ? 600 : 400}
+                  unoptimized
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
