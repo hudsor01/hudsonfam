@@ -149,7 +149,7 @@ export function KanbanBoard({ jobs, jobsByStatus, hasActiveFilters, onStatusChan
                                   : ""
                               }`}
                             >
-                                <div className="flex items-start justify-between gap-1">
+                              <div className="flex items-start justify-between gap-1">
                                 <span className="text-sm font-medium text-foreground line-clamp-2 leading-tight">
                                   {job.title}
                                 </span>
