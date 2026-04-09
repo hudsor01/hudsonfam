@@ -190,6 +190,25 @@ export async function getJobStats(): Promise<JobStats> {
   };
 }
 
+export async function getJobsByStatus(): Promise<Record<string, Job[]>> {
+  const result = await pool.query(
+    `SELECT id, external_id, source, title, company, company_url,
+            description, url, location, remote_type,
+            salary_min, salary_max, salary_currency,
+            posted_date, tags, match_score, status,
+            cover_letter_generated, created_at, updated_at
+     FROM jobs
+     WHERE status != 'dismissed'
+     ORDER BY match_score DESC NULLS LAST, created_at DESC`
+  );
+  const grouped: Record<string, Job[]> = {};
+  for (const row of result.rows) {
+    if (!grouped[row.status]) grouped[row.status] = [];
+    grouped[row.status].push(row);
+  }
+  return grouped;
+}
+
 export async function updateJobStatus(
   jobId: number,
   newStatus: string

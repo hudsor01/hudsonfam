@@ -21,10 +21,12 @@ const columnColors: Record<string, { header: string; dot: string; count: string 
 
 interface KanbanBoardProps {
   jobs: Job[];
+  jobsByStatus: Record<string, Job[]>;
+  hasActiveFilters: boolean;
   onStatusChange: (jobId: number, newStatus: string) => void;
 }
 
-export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
+export function KanbanBoard({ jobs, jobsByStatus, hasActiveFilters, onStatusChange }: KanbanBoardProps) {
   // Pending drag tracks an optimistic move before the server round-trip completes
   const [pendingDrag, setPendingDrag] = useState<{
     jobId: number;
@@ -34,10 +36,18 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
   } | null>(null);
 
   const columns = useMemo(() => {
+    // Use server-grouped data when no filters are active, client-grouped when filtered
     const grouped: Record<string, Job[]> = {};
-    for (const status of KANBAN_COLUMNS) {
-      grouped[status] = jobs.filter((j) => j.status === status);
+    if (hasActiveFilters) {
+      for (const status of KANBAN_COLUMNS) {
+        grouped[status] = jobs.filter((j) => j.status === status);
+      }
+    } else {
+      for (const status of KANBAN_COLUMNS) {
+        grouped[status] = jobsByStatus[status] || [];
+      }
     }
+
     if (pendingDrag) {
       const job = grouped[pendingDrag.from]?.find((j) => j.id === pendingDrag.jobId);
       if (job) {
@@ -46,12 +56,11 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
         dest.splice(pendingDrag.index, 0, { ...job, status: pendingDrag.to });
         grouped[pendingDrag.to] = dest;
       } else {
-        // Server already applied the change — clear the optimistic override
         setPendingDrag(null);
       }
     }
     return grouped;
-  }, [jobs, pendingDrag]);
+  }, [jobs, jobsByStatus, hasActiveFilters, pendingDrag]);
 
   const handleDragEnd = useCallback(
     (result: DropResult) => {

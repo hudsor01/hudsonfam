@@ -1,11 +1,11 @@
 export const dynamic = "force-dynamic";
 
-import { getJobs, getJobStats, getPipelineStats } from "@/lib/jobs-db";
+import { getJobs, getJobsByStatus, getJobStats, getPipelineStats } from "@/lib/jobs-db";
 import { JobsDashboard } from "./jobs-dashboard";
 import { updateJobStatus, dismissJob, undismissJob } from "@/lib/job-actions";
 
 export default async function JobsPage() {
-  const [activeJobs, dismissedJobs, stats, pipeline] = await Promise.all([
+  const [activeJobs, dismissedJobs, jobsByStatus, stats, pipeline] = await Promise.all([
     getJobs({
       limit: 500,
       statuses: ["new", "interested", "applied", "interview", "offer", "rejected"],
@@ -18,6 +18,7 @@ export default async function JobsPage() {
       sortBy: "created_at",
       sortDir: "desc",
     }),
+    getJobsByStatus(),
     getJobStats(),
     getPipelineStats(),
   ]);
@@ -26,6 +27,7 @@ export default async function JobsPage() {
     <JobsDashboard
       activeJobs={activeJobs}
       dismissedJobs={dismissedJobs}
+      jobsByStatus={jobsByStatus}
       stats={stats}
       pipeline={pipeline}
       onStatusChange={updateJobStatus}

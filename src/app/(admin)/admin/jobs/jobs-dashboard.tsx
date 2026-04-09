@@ -14,6 +14,7 @@ import type { Job, JobStats, PipelineStats } from "@/lib/jobs-db";
 interface JobsDashboardProps {
   activeJobs: Job[];
   dismissedJobs: Job[];
+  jobsByStatus: Record<string, Job[]>;
   stats: JobStats;
   pipeline: PipelineStats;
   onStatusChange: (jobId: number, newStatus: string) => Promise<void>;
@@ -24,6 +25,7 @@ interface JobsDashboardProps {
 export function JobsDashboard({
   activeJobs,
   dismissedJobs,
+  jobsByStatus,
   stats,
   pipeline,
   onStatusChange,
@@ -196,6 +198,8 @@ export function JobsDashboard({
             <div className="mt-4">
               <KanbanBoard
                 jobs={filteredActive}
+                jobsByStatus={jobsByStatus}
+                hasActiveFilters={filters.search !== "" || filters.sources.length > 0 || filters.statuses.length > 0 || filters.scoreMin > 0 || filters.scoreMax < 10}
                 onStatusChange={handleStatusChange}
               />
             </div>
