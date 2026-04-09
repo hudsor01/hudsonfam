@@ -200,10 +200,16 @@ function MemorialJsonLd({ memoryCount }: { memoryCount: number }) {
 }
 
 export default async function RichardHudsonSrMemorialPage() {
-  const memories = await prisma.memory.findMany({
-    where: { approved: true },
-    orderBy: { createdAt: "desc" },
-  });
+  const [memories, videos] = await Promise.all([
+    prisma.memory.findMany({
+      where: { approved: true },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.memorialMedia.findMany({
+      where: { type: "video" },
+      orderBy: { sortOrder: "asc" },
+    }),
+  ]);
 
   return (
     <article itemScope itemType="https://schema.org/WebPage">
@@ -353,28 +359,51 @@ export default async function RichardHudsonSrMemorialPage() {
         <p className="text-text-dim text-sm text-center mb-10">
           Watch and share video memories of Richard Hudson Sr.
         </p>
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
-          <div className="aspect-video flex items-center justify-center bg-linear-to-br/oklch from-card to-background">
-            <div className="text-center">
-              <div className="size-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="size-6 text-accent ml-1"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
+        {videos.length > 0 ? (
+          <div className="space-y-6">
+            {videos.map((video) => (
+              <div key={video.id} className="bg-card border border-border rounded-xl overflow-hidden">
+                <div className="aspect-video">
+                  <iframe
+                    src={video.url}
+                    title={video.caption || "Video tribute for Richard Hudson Sr."}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                {video.caption && (
+                  <div className="px-4 py-3 border-t border-border">
+                    <p className="text-sm text-muted-foreground">{video.caption}</p>
+                  </div>
+                )}
               </div>
-              <p className="text-muted-foreground text-sm">
-                Video tributes for Richard Hudson Sr. coming soon
-              </p>
-              <p className="text-text-dim text-xs mt-1">
-                Upload family videos to share here
-              </p>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-card border border-border rounded-xl overflow-hidden">
+            <div className="aspect-video flex items-center justify-center bg-linear-to-br/oklch from-card to-background">
+              <div className="text-center">
+                <div className="size-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="size-6 text-accent ml-1"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+                <p className="text-muted-foreground text-sm">
+                  No video tributes yet
+                </p>
+                <p className="text-text-dim text-xs mt-1">
+                  Upload family videos from the dashboard to share here
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </section>
 
       <Separator />
