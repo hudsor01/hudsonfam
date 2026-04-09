@@ -41,62 +41,77 @@
 - Job Search Dashboard (/admin/jobs) — table + kanban views ✅
 - .env.example updated with all required vars ✅
 
-## v1.4 — Admin Dashboard Production Readiness
+## v1.4 — Admin Dashboard Production Readiness (Complete)
+- 3 phases (13-15), 15/15 requirements, completed 2026-04-08 — [archive](milestones/v1.4-ROADMAP.md)
 
-**Goal:** Ship the jobs dashboard to production, optimize performance, and verify end-to-end via browser automation.
+## v2.0 — Code Quality Enhancement
+
+**Goal:** Systematically audit and fix all React/Next.js code smells across the entire codebase using `docs/react-nextjs-code-smells.md` as the reference.
 
 ### Phases
 
-- [ ] **Phase 13: Production Deployment** — get the production pod running with all secrets and no startup errors
-- [ ] **Phase 14: Functional and Performance Verification** — confirm all jobs dashboard features work correctly in production within performance targets
-- [ ] **Phase 15: UAT Automation** — autonomous browser tests prove end-to-end flow from login to kanban render
+- [x] **Phase 16: useEffect Audit** — scan every useEffect in the codebase, eliminate unnecessary ones, fix the rest (completed 2026-04-08)
+- [x] **Phase 17: Component Structure & State Patterns** — fix nested components, direct state mutation, push "use client" to leaves (completed 2026-04-08)
+- [x] **Phase 18: Server/Client Boundaries & Hydration** — fix serialization, data fetching patterns, add loading/error boundaries, fix hydration mismatches (completed 2026-04-08)
+- [x] **Phase 19: Verification & Production Deploy** — build, test, lint, deploy, browser UAT (completed 2026-04-08)
 
 ### Phase Details
 
-#### Phase 13: Production Deployment
-**Goal**: The jobs dashboard and all v1.3/v1.4 fixes are running in the production K3s cluster with no startup errors
-**Depends on**: Nothing (first phase of milestone)
-**Requirements**: DEPLOY-01, DEPLOY-02, DEPLOY-03
+#### Phase 16: useEffect Audit
+**Goal**: Zero unnecessary useEffects remain in the codebase — every remaining useEffect is genuinely synchronizing with an external system
+**Depends on**: Nothing (first phase)
+**Requirements**: EFFECT-01, EFFECT-02, EFFECT-03, EFFECT-04, EFFECT-05, EFFECT-06, EFFECT-07, EFFECT-08
 **Success Criteria** (what must be TRUE):
-  1. A new image tag is deployed to the K3s cluster and the jobs dashboard routes resolve in production
-  2. The JOBS_DATABASE_URL secret is mounted in the production pod and the jobs page returns data (not an error)
-  3. The production pod starts cleanly — no Redis NOAUTH crash, no Prisma connection timeout, no unhandled event handler error in pod logs
+  1. No useEffect derives state from props or other state — useMemo or inline calculation used instead
+  2. No useEffect adjusts/resets state on prop change — key prop or render-time adjustment used instead
+  3. No chained useEffects that trigger each other — consolidated into event handlers
+  4. No useEffect for parent notification, POST requests, or shared event logic — moved to event handlers
+  5. Every remaining useEffect has proper cleanup or synchronizes with a genuine external system
 **Plans**: 1 plan
-Plans:
-- [ ] 13-01-PLAN.md — Merge branch, trigger build, reconcile Flux, verify pod health
 
-#### Phase 14: Functional and Performance Verification
-**Goal**: Every jobs dashboard feature the admin relies on works correctly in production and meets latency targets
-**Depends on**: Phase 13
-**Requirements**: FUNC-01, FUNC-02, FUNC-03, FUNC-04, FUNC-05, FUNC-06, PERF-01, PERF-02, PERF-03
+#### Phase 17: Component Structure & State Patterns
+**Goal**: Clean component architecture — no nested definitions, no direct mutation, optimal "use client" placement
+**Depends on**: Phase 16
+**Requirements**: COMP-01, COMP-02, BOUNDARY-01, BOUNDARY-02, BOUNDARY-03, BOUNDARY-04, BOUNDARY-05
 **Success Criteria** (what must be TRUE):
-  1. Admin can switch between table view (with column sort, filter, and pagination) and kanban view — both render real job data from the production database
-  2. Admin can drag a job card from one kanban column to another and the new status persists after a full page refresh
-  3. Admin can open a job detail sheet and see the cover letter and company intel without a spinner visible for more than 1 second
-  4. Admin can filter the jobs list by source, status, and score range and the visible results match the applied filters
-  5. Admin can dismiss a job (remove from active view) and restore it — state persists after refresh; the server-side data fetch that drives all of this completes in under 2 seconds
-**Plans**: TBD
-**UI hint**: yes
+  1. No component is defined inside another component
+  2. All state updates create new object/array references
+  3. "use client" is at the lowest possible leaf component
+  4. No non-serializable props cross the server/client boundary
+  5. Data fetching happens in server components, not client useEffect/SWR
+**Plans**: 1 plan
 
-#### Phase 15: UAT Automation
-**Goal**: Automated browser tests independently verify the production login, navigation, and kanban render without human intervention
-**Depends on**: Phase 14
-**Requirements**: UAT-01, UAT-02, UAT-03
+#### Phase 18: Server/Client Boundaries & Hydration
+**Goal**: Zero hydration mismatches and full error/loading boundary coverage
+**Depends on**: Phase 17
+**Requirements**: HYDRATION-01, HYDRATION-02, RESILIENCE-01, RESILIENCE-02
 **Success Criteria** (what must be TRUE):
-  1. An automated browser session completes Google OAuth login and lands on /dashboard without manual steps
-  2. The automated session navigates to /admin/jobs and the page loads without a JavaScript error or HTTP error status
-  3. The automated session asserts that the kanban board is visible and contains at least one job card
-**Plans**: TBD
+  1. No browser-dependent rendering that differs between SSR and client
+  2. All date/time formatting uses explicit timezone
+  3. Every route group has loading.tsx
+  4. Every route group has error.tsx
+**Plans**: 1 plan
+
+#### Phase 19: Verification & Production Deploy
+**Goal**: Ship the clean codebase to production and verify nothing broke
+**Depends on**: Phase 18
+**Requirements**: VERIFY-01, VERIFY-02, VERIFY-03
+**Success Criteria** (what must be TRUE):
+  1. `npm run build` passes with zero errors
+  2. All 268+ tests pass
+  3. Production deployment verified with no new console errors
+**Plans**: 1 plan
 
 ### Progress
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 13. Production Deployment | 0/1 | Not started | - |
-| 14. Functional and Performance Verification | 0/? | Not started | - |
-| 15. UAT Automation | 0/? | Not started | - |
+| 16. useEffect Audit | 1/0 | Complete    | 2026-04-08 |
+| 17. Component Structure & State Patterns | 1/0 | Complete    | 2026-04-08 |
+| 18. Server/Client Boundaries & Hydration | 1/0 | Complete    | 2026-04-08 |
+| 19. Verification & Production Deploy | 1/0 | Complete    | 2026-04-08 |
 
-## v2.0 — AI Integration (Future)
+## v3.0 — AI Integration (Future)
 - Qwen 3.5 photo captions + alt text
 - Qdrant + qwen-embed semantic search
 - N8N upload automation

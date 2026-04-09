@@ -69,6 +69,22 @@ export const auth = betterAuth({
       defaultRole: "member",
     }),
   ],
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          const ownerEmail = process.env.OWNER_EMAIL;
+          if (ownerEmail && user.email === ownerEmail) {
+            console.log(`[auth] Auto-promoting ${user.email} to owner role`);
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { role: "owner" },
+            });
+          }
+        },
+      },
+    },
+  },
   session: {
     cookieCache: {
       enabled: true,

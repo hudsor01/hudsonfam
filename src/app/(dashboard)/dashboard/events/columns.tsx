@@ -56,6 +56,7 @@ export const eventColumns: ColumnDef<EventRow>[] = [
           month: "short",
           day: "numeric",
           year: "numeric",
+          timeZone: "America/Chicago",
         })}
       </span>
     ),

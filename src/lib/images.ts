@@ -71,10 +71,9 @@ export async function processImage(
   buffer: Buffer,
   photoId: string,
   albumId: string,
-  originalFilename: string
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _originalFilename?: string
 ): Promise<ImageMetadata> {
-  const ext = path.extname(originalFilename).toLowerCase() || ".jpg";
-
   // Extract EXIF date before any processing
   const takenAt = await extractExifDate(buffer);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
 import { Card } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
@@ -8,8 +8,7 @@ import { JOB_STATUSES } from "@/lib/job-constants";
 import { sourceColors } from "./columns";
 import type { Job } from "@/lib/jobs-db";
 
-// Column config — maps to the 6-stage pipeline
-const KANBAN_COLUMNS = JOB_STATUSES; // ["new", "interested", "applied", "interview", "offer", "rejected"]
+const KANBAN_COLUMNS = JOB_STATUSES;
 
 const columnColors: Record<string, { header: string; dot: string; count: string }> = {
   new: { header: "text-primary", dot: "bg-primary", count: "bg-primary/15 text-primary" },
@@ -22,18 +21,56 @@ const columnColors: Record<string, { header: string; dot: string; count: string 
 
 interface KanbanBoardProps {
   jobs: Job[];
+  jobsByStatus: Record<string, Job[]>;
+  hasActiveFilters: boolean;
   onStatusChange: (jobId: number, newStatus: string) => void;
 }
 
-export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
-  // Group jobs by status for columns — maintain local state for optimistic drag
-  const [columns, setColumns] = useState<Record<string, Job[]>>(() => {
+export function KanbanBoard({ jobs, jobsByStatus, hasActiveFilters, onStatusChange }: KanbanBoardProps) {
+  // Pending drag tracks an optimistic move before the server round-trip completes
+  const [pendingDrag, setPendingDrag] = useState<{
+    jobId: number;
+    from: string;
+    to: string;
+    index: number;
+  } | null>(null);
+
+  // Clear pending drag when server data catches up (external system sync)
+  useEffect(() => {
+    if (!pendingDrag) return;
+    const fromCol = hasActiveFilters
+      ? jobs.filter((j) => j.status === pendingDrag.from)
+      : jobsByStatus[pendingDrag.from] || [];
+    const stillPending = fromCol.some((j) => j.id === pendingDrag.jobId);
+    if (!stillPending) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPendingDrag(null);
+    }
+  }, [jobs, jobsByStatus, hasActiveFilters, pendingDrag]);
+
+  const columns = useMemo(() => {
     const grouped: Record<string, Job[]> = {};
-    for (const status of KANBAN_COLUMNS) {
-      grouped[status] = jobs.filter((j) => j.status === status);
+    if (hasActiveFilters) {
+      for (const status of KANBAN_COLUMNS) {
+        grouped[status] = jobs.filter((j) => j.status === status);
+      }
+    } else {
+      for (const status of KANBAN_COLUMNS) {
+        grouped[status] = jobsByStatus[status] || [];
+      }
+    }
+
+    if (pendingDrag) {
+      const job = grouped[pendingDrag.from]?.find((j) => j.id === pendingDrag.jobId);
+      if (job) {
+        grouped[pendingDrag.from] = grouped[pendingDrag.from].filter((j) => j.id !== pendingDrag.jobId);
+        const dest = [...grouped[pendingDrag.to]];
+        dest.splice(pendingDrag.index, 0, { ...job, status: pendingDrag.to });
+        grouped[pendingDrag.to] = dest;
+      }
     }
     return grouped;
-  });
+  }, [jobs, jobsByStatus, hasActiveFilters, pendingDrag]);
 
   const handleDragEnd = useCallback(
     (result: DropResult) => {
@@ -46,25 +83,15 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
         return;
 
       const jobId = parseInt(draggableId, 10);
-      const sourceCol = source.droppableId;
       const destCol = destination.droppableId;
 
-      // Optimistic update — move the card immediately before server round-trip
-      setColumns((prev) => {
-        const next = { ...prev };
-        const sourceItems = [...(next[sourceCol] || [])];
-        const [movedJob] = sourceItems.splice(source.index, 1);
-        next[sourceCol] = sourceItems;
-
-        const destItems = [...(next[destCol] || [])];
-        const updatedJob = { ...movedJob, status: destCol };
-        destItems.splice(destination.index, 0, updatedJob);
-        next[destCol] = destItems;
-
-        return next;
+      setPendingDrag({
+        jobId,
+        from: source.droppableId,
+        to: destCol,
+        index: destination.index,
       });
 
-      // Fire server action (D-06: "applied" auto-creates applications entry)
       onStatusChange(jobId, destCol);
     },
     [onStatusChange]
@@ -79,7 +106,6 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
 
           return (
             <div key={status} className="flex-shrink-0 w-64">
-              {/* Column header */}
               <div className="flex items-center gap-2 mb-3 px-1">
                 <span className={`size-2 rounded-full ${colors.dot}`} />
                 <span className={`text-sm font-medium capitalize ${colors.header}`}>
@@ -92,7 +118,6 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
                 </span>
               </div>
 
-              {/* Droppable column */}
               <Droppable droppableId={status}>
                 {(provided, snapshot) => (
                   <div
@@ -125,7 +150,6 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
                                   : ""
                               }`}
                             >
-                              {/* Title with external link */}
                               <div className="flex items-start justify-between gap-1">
                                 <span className="text-sm font-medium text-foreground line-clamp-2 leading-tight">
                                   {job.title}
@@ -143,14 +167,12 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
                                 )}
                               </div>
 
-                              {/* Company */}
                               {job.company && (
                                 <div className="text-xs text-muted-foreground mt-1 truncate">
                                   {job.company}
                                 </div>
                               )}
 
-                              {/* Bottom row: source badge + match score */}
                               <div className="flex items-center justify-between mt-2">
                                 <span
                                   className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium border ${
@@ -183,7 +205,6 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
                     ))}
                     {provided.placeholder}
 
-                    {/* Empty state */}
                     {colJobs.length === 0 && (
                       <div className="text-xs text-muted-foreground text-center py-8">
                         No {status} jobs

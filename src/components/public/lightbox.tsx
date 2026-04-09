@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
 interface LightboxPhoto {
@@ -178,11 +179,15 @@ export default function Lightbox({
         className="max-w-[90vw] max-h-[85vh] flex flex-col items-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <img
+        <Image
           src={photo.originalPath}
           alt={photo.title || photo.caption || "Photo"}
+          width={1200}
+          height={800}
+          sizes="100vw"
           className="max-w-full max-h-[75vh] object-contain rounded"
           draggable={false}
+          unoptimized
         />
 
         {/* Caption */}

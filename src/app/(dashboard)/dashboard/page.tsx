@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -73,30 +74,30 @@ export default async function DashboardPage() {
           Quick Actions
         </h2>
         <div className="flex flex-wrap gap-3">
-          <a
+          <Link
             href="/dashboard/posts/new"
             className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
           >
             New Post
-          </a>
+          </Link>
           <a
             href="/dashboard/photos/upload"
             className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
           >
             Upload Photos
           </a>
-          <a
+          <Link
             href="/dashboard/photos/albums/new"
             className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
           >
             New Album
-          </a>
-          <a
+          </Link>
+          <Link
             href="/dashboard/events/new"
             className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
           >
             New Event
-          </a>
+          </Link>
           <a
             href="/dashboard/updates/new"
             className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"

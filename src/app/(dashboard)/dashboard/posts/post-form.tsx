@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -206,11 +207,11 @@ export function PostForm({ action, initial }: PostFormProps) {
         <Button type="submit" disabled={isPending}>
           {initial ? "Update Post" : "Create Post"}
         </Button>
-        <a href="/dashboard/posts">
+        <Link href="/dashboard/posts">
           <Button type="button" variant="ghost">
             Cancel
           </Button>
-        </a>
+        </Link>
       </div>
     </form>
   );

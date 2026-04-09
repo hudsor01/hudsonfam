@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Card } from "@/components/ui/card";
@@ -23,12 +24,12 @@ export default async function AlbumsPage() {
       {albums.length === 0 ? (
         <Card padding="lg" className="text-center mt-6">
           <p className="text-muted-foreground text-sm">No albums yet.</p>
-          <a
+          <Link
             href="/dashboard/photos/albums/new"
             className="inline-block mt-3 text-sm text-primary hover:text-primary/80 transition-colors"
           >
             Create your first album
-          </a>
+          </Link>
         </Card>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">

@@ -79,6 +79,7 @@ export const memberColumns: ColumnDef<MemberRow>[] = [
                     month: "short",
                     day: "numeric",
                     year: "numeric",
+                    timeZone: "America/Chicago",
                   })}
                 </span>
               </div>
@@ -126,6 +127,7 @@ export const memberColumns: ColumnDef<MemberRow>[] = [
           month: "short",
           day: "numeric",
           year: "numeric",
+          timeZone: "America/Chicago",
         })}
       </span>
     ),

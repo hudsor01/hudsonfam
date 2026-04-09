@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ export function UploadForm({ albums }: { albums: Album[] }) {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [results, setResults] = useState<UploadResult[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -143,10 +144,13 @@ export function UploadForm({ albums }: { albums: Album[] }) {
               key={i}
               className="aspect-square bg-card border border-border rounded-lg overflow-hidden"
             >
-              <img
+              <Image
                 src={URL.createObjectURL(file)}
                 alt={file.name}
+                width={400}
+                height={300}
                 className="w-full h-full object-cover"
+                unoptimized
               />
             </div>
           ))}
@@ -203,10 +207,13 @@ export function UploadForm({ albums }: { albums: Album[] }) {
                     key={r.id}
                     className="aspect-square bg-card border border-border rounded-lg overflow-hidden"
                   >
-                    <img
+                    <Image
                       src={r.thumbnailUrl}
                       alt=""
+                      width={400}
+                      height={300}
                       className="w-full h-full object-cover"
+                      unoptimized
                     />
                   </div>
                 ))}

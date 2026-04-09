@@ -26,7 +26,10 @@ async function queryPrometheus(query: string): Promise<string | null> {
     }
 
     return null;
-  } catch {
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[dashboard] Prometheus query failed:", (err as Error).message);
+    }
     return null;
   }
 }
@@ -57,7 +60,10 @@ export async function getClusterMetrics(): Promise<ClusterMetrics> {
       cpuRequestPercent: cpuReq ? parseInt(cpuReq, 10) : 0,
       memoryUsagePercent: memUsage ? parseInt(memUsage, 10) : 0,
     };
-  } catch {
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[dashboard] cluster metrics fetch failed:", (err as Error).message);
+    }
     return DEFAULT_CLUSTER_METRICS;
   }
 }

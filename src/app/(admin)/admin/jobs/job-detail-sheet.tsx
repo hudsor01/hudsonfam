@@ -50,15 +50,20 @@ export function JobDetailSheet({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!jobId || !open) {
-      setDetail(null);
-      return;
-    }
+    if (!jobId || !open) return;
+    let stale = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     fetchJobDetail(jobId).then((d) => {
-      setDetail(d);
-      setLoading(false);
+      if (!stale) {
+        setDetail(d);
+        setLoading(false);
+      }
     });
+    return () => {
+      stale = true;
+      setDetail(null);
+    };
   }, [jobId, open]);
 
   const handleApply = () => {
@@ -77,7 +82,6 @@ export function JobDetailSheet({
         ) : detail ? (
           <ScrollArea className="h-full">
             <div className="p-6 space-y-6">
-              {/* Header */}
               <SheetHeader className="space-y-3">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span
@@ -122,7 +126,6 @@ export function JobDetailSheet({
                 </div>
               </SheetHeader>
 
-              {/* Apply Button */}
               {detail.url && (
                 <Button onClick={handleApply} className="w-full gap-2">
                   <ExternalLink className="size-4" />
@@ -132,7 +135,6 @@ export function JobDetailSheet({
 
               <Separator />
 
-              {/* Cover Letter */}
               {detail.cover_letter && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -155,7 +157,6 @@ export function JobDetailSheet({
                 </div>
               )}
 
-              {/* Company Research */}
               {detail.company_research && (
                 <>
                   <Separator />
@@ -219,7 +220,6 @@ export function JobDetailSheet({
 
               <Separator />
 
-              {/* Full Description */}
               {detail.description && (
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold">Description</h3>

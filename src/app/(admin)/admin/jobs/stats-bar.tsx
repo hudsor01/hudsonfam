@@ -76,6 +76,7 @@ export function StatsBar({ stats, pipeline }: StatsBarProps) {
               day: "numeric",
               hour: "numeric",
               minute: "2-digit",
+              timeZone: "America/Chicago",
             })}
           </div>
         )}

@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -55,11 +56,14 @@ export default async function MemorialMediaPage() {
                 className="relative group bg-card border border-border rounded-lg overflow-hidden"
               >
                 <div className="aspect-square">
-                  <img
+                  <Image
                     src={photo.url}
                     alt={photo.caption || "Memorial photo"}
+                    width={400}
+                    height={300}
                     className="w-full h-full object-cover"
                     loading="lazy"
+                    unoptimized
                   />
                 </div>
                 <div className="px-3 py-2">

@@ -31,7 +31,6 @@ import {
   createAlbum,
   updateAlbum,
   createEvent,
-  updateEvent,
   deleteEvent,
   createUpdate,
   deleteUpdate,
@@ -471,7 +470,7 @@ describe('dashboard-actions', () => {
         role: 'member',
       });
 
-      const token = await createInvite(formData);
+      await createInvite(formData);
 
       expect(mockRequireRole).toHaveBeenCalledWith(['owner']);
       expect(prismaMock.inviteToken.create).toHaveBeenCalledWith({

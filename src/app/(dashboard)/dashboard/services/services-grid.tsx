@@ -165,9 +165,10 @@ export function ServicesGrid({ initialServices }: ServicesGridProps) {
         <div className="flex items-center gap-3">
           <span className="text-xs text-text-dim">
             Updated{" "}
-            {lastUpdated.toLocaleTimeString([], {
+            {lastUpdated.toLocaleTimeString("en-US", {
               hour: "numeric",
               minute: "2-digit",
+              timeZone: "America/Chicago",
             })}
           </span>
           <button

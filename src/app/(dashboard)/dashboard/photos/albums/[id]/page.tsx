@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -70,11 +71,14 @@ export default async function EditAlbumPage({ params }: Props) {
                 key={photo.id}
                 className="aspect-square bg-card border border-border rounded-lg overflow-hidden"
               >
-                <img
+                <Image
                   src={`/api/images/${photo.id}?size=thumbnail`}
                   alt={photo.title || "Photo"}
+                  width={400}
+                  height={300}
                   className="w-full h-full object-cover hover:brightness-110 hover:saturate-110 transition-all"
                   loading="lazy"
+                  unoptimized
                 />
               </div>
             ))}

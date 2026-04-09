@@ -39,9 +39,8 @@ export async function fetchJobDetail(
 }
 
 /**
- * Generic status changer for a job. When newStatus is "applied", also
- * auto-creates an applications table entry (D-06: zero friction).
- * Fires n8n webhooks for feedback sync and company intel.
+ * Change a job's pipeline status. Auto-creates an applications entry
+ * when moving to "applied" and fires n8n webhooks for sync.
  */
 export async function updateJobStatus(
   jobId: number,
@@ -51,12 +50,10 @@ export async function updateJobStatus(
 
   await dbUpdateStatus(jobId, newStatus);
 
-  // Per D-06: auto-create applications entry when status changes to "applied"
   if (newStatus === "applied") {
     await createApplication(jobId);
   }
 
-  // Fire feedback/intel webhooks
   if (newStatus === "rejected") {
     void fireWebhook("job-feedback-sync", { job_id: jobId, action: "reject" });
   }
@@ -74,10 +71,7 @@ export async function updateJobStatus(
   revalidatePath("/admin/jobs");
 }
 
-/**
- * Mark a job as dismissed — removes it from the active queue without
- * deleting the row from the database (D-05).
- */
+/** Mark a job as dismissed — removes it from the active queue without deleting the row. */
 export async function dismissJob(jobId: number): Promise<void> {
   await requireRole(["owner"]);
   await dbUpdateStatus(jobId, "dismissed");

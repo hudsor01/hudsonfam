@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
@@ -35,10 +36,13 @@ export function FeaturedPost({
 
       {coverImage && (
         <div className="aspect-[21/9] bg-background overflow-hidden perspective-midrange">
-          <img
+          <Image
             src={coverImage}
             alt={title}
+            width={800}
+            height={400}
             className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:rotate-y-1"
+            unoptimized
           />
         </div>
       )}

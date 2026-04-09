@@ -165,6 +165,7 @@ export function getJobColumns(): ColumnDef<JobRow>[] {
           {new Date(row.getValue("created_at")).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
+            timeZone: "America/Chicago",
           })}
         </span>
       ),

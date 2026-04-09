@@ -34,7 +34,10 @@ export async function getUpsStatus(): Promise<UpsStatus> {
         ? Math.round(parseFloat(runtimeSeconds) / 60)
         : 0,
     };
-  } catch {
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[dashboard] UPS fetch failed:", (err as Error).message);
+    }
     return DEFAULT_UPS_STATUS;
   }
 }

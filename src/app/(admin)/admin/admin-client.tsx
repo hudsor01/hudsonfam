@@ -72,6 +72,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
               hour: "numeric",
               minute: "2-digit",
               hour12: true,
+              timeZone: "America/Chicago",
             })}
             {isRefreshing && (
               <span className="ml-2 text-primary">Refreshing...</span>

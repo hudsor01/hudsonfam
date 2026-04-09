@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireRole } from "@/lib/session";
 
 export default async function AdminLayout({
@@ -17,10 +18,10 @@ export default async function AdminLayout({
           <span className="text-foreground text-[15px] font-medium">Admin</span>
         </div>
         <div className="flex gap-4 text-sm text-muted-foreground">
-          <a href="/admin" className="hover:text-foreground transition-colors">Overview</a>
-          <a href="/admin/jobs" className="hover:text-foreground transition-colors">Jobs</a>
-          <a href="/" className="hover:text-foreground transition-colors">Site</a>
-          <a href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</a>
+          <Link href="/admin" className="hover:text-foreground transition-colors">Overview</Link>
+          <Link href="/admin/jobs" className="hover:text-foreground transition-colors">Jobs</Link>
+          <Link href="/" className="hover:text-foreground transition-colors">Site</Link>
+          <Link href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
         </div>
       </nav>
       <main className="p-6">{children}</main>

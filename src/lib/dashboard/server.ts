@@ -56,7 +56,10 @@ export async function getServerStats(): Promise<ServerStats> {
           memTotalGb > 0 ? Math.round((memUsedGb / memTotalGb) * 100) : 0,
       },
     };
-  } catch {
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[dashboard] server stats fetch failed:", (err as Error).message);
+    }
     return DEFAULT_SERVER_STATS;
   }
 }

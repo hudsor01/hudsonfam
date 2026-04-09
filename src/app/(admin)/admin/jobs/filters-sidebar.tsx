@@ -91,7 +91,6 @@ export function FiltersSidebar({
 
   return (
     <div className="w-56 shrink-0 space-y-5 p-4 rounded-lg border border-border bg-card/50">
-      {/* Search */}
       <div className="space-y-2">
         <Input
           placeholder="Search title, company..."
@@ -101,7 +100,6 @@ export function FiltersSidebar({
         />
       </div>
 
-      {/* Sources */}
       {availableSources.length > 0 && (
         <div className="space-y-2">
           <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -130,7 +128,6 @@ export function FiltersSidebar({
         </div>
       )}
 
-      {/* Status */}
       {availableStatuses.length > 0 && (
         <div className="space-y-2">
           <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -159,7 +156,6 @@ export function FiltersSidebar({
         </div>
       )}
 
-      {/* Score range */}
       <div className="space-y-2">
         <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
           Score
@@ -187,7 +183,6 @@ export function FiltersSidebar({
         </div>
       </div>
 
-      {/* Reset */}
       <button
         onClick={handleReset}
         className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"

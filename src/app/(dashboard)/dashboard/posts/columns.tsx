@@ -45,6 +45,7 @@ export const postColumns: ColumnDef<PostRow>[] = [
         {new Date(row.getValue("updatedAt")).toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
+          timeZone: "America/Chicago",
         })}
       </span>
     ),
