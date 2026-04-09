@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -342,11 +343,11 @@ export function EventForm({ action, initial }: EventFormProps) {
         <Button type="submit" disabled={isPending}>
           {initial ? "Update Event" : "Create Event"}
         </Button>
-        <a href="/dashboard/events">
+        <Link href="/dashboard/events">
           <Button type="button" variant="ghost">
             Cancel
           </Button>
-        </a>
+        </Link>
       </div>
     </form>
   );

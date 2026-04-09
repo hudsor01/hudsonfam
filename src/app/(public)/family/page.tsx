@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -80,7 +81,7 @@ export default async function FamilyPage() {
             organized, check out our latest blog posts for what we&apos;ve been
             up to.
           </p>
-          <a
+          <Link
             href="/blog"
             className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium"
           >
@@ -99,7 +100,7 @@ export default async function FamilyPage() {
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="space-y-6 mt-8">

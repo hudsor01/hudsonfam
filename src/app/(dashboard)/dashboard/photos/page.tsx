@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Card } from "@/components/ui/card";
@@ -26,12 +27,12 @@ export default async function PhotosPage() {
       />
 
       <div className="flex gap-3 mt-4 mb-6">
-        <a
+        <Link
           href="/dashboard/photos/albums"
           className="text-sm text-muted-foreground hover:text-foreground bg-card border border-border rounded-lg px-4 py-2 transition-colors"
         >
           Manage Albums
-        </a>
+        </Link>
         <a
           href="/dashboard/photos/upload"
           className="text-sm text-white bg-primary hover:bg-primary/90 rounded-lg px-4 py-2 transition-colors"

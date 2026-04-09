@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -173,11 +174,11 @@ export function AlbumForm({
         <Button type="submit" disabled={isPending}>
           {initial ? "Update Album" : "Create Album"}
         </Button>
-        <a href="/dashboard/photos/albums">
+        <Link href="/dashboard/photos/albums">
           <Button type="button" variant="ghost">
             Cancel
           </Button>
-        </a>
+        </Link>
       </div>
     </form>
   );

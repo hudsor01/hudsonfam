@@ -13,14 +13,11 @@ function SignupForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [validating, setValidating] = useState(true);
+  const [validating, setValidating] = useState(!!token);
   const [tokenValid, setTokenValid] = useState(false);
 
   useEffect(() => {
-    if (!token) {
-      setValidating(false);
-      return;
-    }
+    if (!token) return;
     const controller = new AbortController();
     fetch(`/api/invite/validate?token=${encodeURIComponent(token)}`, {
       signal: controller.signal,

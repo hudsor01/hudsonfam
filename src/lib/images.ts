@@ -73,8 +73,6 @@ export async function processImage(
   albumId: string,
   originalFilename: string
 ): Promise<ImageMetadata> {
-  const ext = path.extname(originalFilename).toLowerCase() || ".jpg";
-
   // Extract EXIF date before any processing
   const takenAt = await extractExifDate(buffer);
 

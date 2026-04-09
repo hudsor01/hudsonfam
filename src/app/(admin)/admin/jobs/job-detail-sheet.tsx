@@ -50,10 +50,7 @@ export function JobDetailSheet({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!jobId || !open) {
-      setDetail(null);
-      return;
-    }
+    if (!jobId || !open) return;
     let stale = false;
     setLoading(true);
     fetchJobDetail(jobId).then((d) => {
@@ -62,7 +59,10 @@ export function JobDetailSheet({
         setLoading(false);
       }
     });
-    return () => { stale = true; };
+    return () => {
+      stale = true;
+      setDetail(null);
+    };
   }, [jobId, open]);
 
   const handleApply = () => {
