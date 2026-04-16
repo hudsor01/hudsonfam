@@ -1,0 +1,46 @@
+# Woodpecker CI pipeline for hudsonfam
+# Builds Docker image and pushes to Forgejo registry (git.homelab)
+# Flux Image Automation watches git.homelab/forgejo-admin/hudsonfam and auto-deploys
+# plugins/docker:20 allowlisted via WOODPECKER_PLUGINS_PRIVILEGED
+---
+when:
+  - event: push
+    branch: main
+  - event: manual
+
+steps:
+  # Generate timestamp tag in YYYYMMDDHHmmss format for Flux numerical policy
+  - name: generate-tag
+    image: alpine:3.21
+    commands:
+      - date -u +%Y%m%d%H%M%S > .tags
+      - echo "Tag:" && cat .tags
+
+  # Build and push Docker image to Forgejo registry
+  - name: build-and-push
+    image: plugins/docker:20
+    depends_on:
+      - generate-tag
+    # Resource limits to avoid OOM during COPY node_modules (4Gi required)
+    backend_options:
+      kubernetes:
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: "1"
+          limits:
+            memory: 4Gi
+            cpu: "2"
+    settings:
+      # IMPORTANT: Must match Flux ImageRepository (git.homelab, not git.thehudsonfam.com)
+      registry: git.homelab
+      repo: forgejo-admin/hudsonfam
+      tags_file: .tags
+      dockerfile: Dockerfile
+      context: .
+      # Flannel VXLAN MTU
+      mtu: 1420
+      username:
+        from_secret: registry_username
+      password:
+        from_secret: registry_password
