@@ -40,7 +40,6 @@ steps:
       context: .
       # Flannel VXLAN MTU
       mtu: 1420
-      username:
-        from_secret: registry_username
-      password:
-        from_secret: registry_password
+      # Credentials injected from K8s secret 'forgejo-registry' via WOODPECKER_BACKEND_K8S_SECRET_NAMES
+      username: ${registry_username}
+      password: ${registry_password}
