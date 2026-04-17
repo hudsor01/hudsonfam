@@ -41,5 +41,7 @@ steps:
       context: .
       # Flannel VXLAN MTU
       mtu: 1420
+      # git.homelab uses Traefik default cert — skip TLS verification
+      insecure: true
     # PLUGIN_USERNAME/PLUGIN_PASSWORD injected from K8s secret 'forgejo-registry'
     # via WOODPECKER_BACKEND_K8S_SECRET_NAMES
