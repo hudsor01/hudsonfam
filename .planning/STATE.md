@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-21T18:37:00Z"
-last_activity: "2026-04-21 — Plan 20-08 complete (schema-drift pre-push hook; verified against live n8n DB + synthetic drift abort + actual push abort)"
+last_updated: "2026-04-21T18:45:24.892Z"
+last_activity: 2026-04-21 — Plan 20-04 complete (FreshnessBadge + SectionErrorBoundary; 11 new Vitest cases; 294/294 tests green; build clean; zero deviations)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 8
-  completed_plans: 4
-  percent: 50
+  completed_plans: 5
+  percent: 63
 ---
 
 # State
@@ -18,11 +18,11 @@ progress:
 ## Current Position
 
 Phase: 20 (Foundation — Freshness + Zod + Tailored Resume) — EXECUTING
-Plan: 4 of 8 remaining (20-01, 20-02, 20-03, 20-08 COMPLETE); next is 20-04 (FreshnessBadge + SectionErrorBoundary)
+Plan: 5 of 8 complete (20-01, 20-02, 20-03, 20-04, 20-08); next is 20-05 (TailoredResumeSection + XSS test)
 Status: Executing Phase 20
-Last activity: 2026-04-21 — Plan 20-08 complete (schema-drift pre-push hook; native git hook + bun runtime, zero new deps; verified on live n8n DB + synthetic drift abort + actual push abort)
+Last activity: 2026-04-21 — Plan 20-04 complete (FreshnessBadge + SectionErrorBoundary; 11 new Vitest cases; 294/294 tests green; build clean; zero deviations)
 
-Progress: [####                ] 4/8 plans in phase 20 (50%)
+Progress: [######    ] 5/8 plans in phase 20 (63%)
 
 ## What's Done
 
@@ -40,7 +40,7 @@ Progress: [####                ] 4/8 plans in phase 20 (50%)
 
 ## What's Next
 
-v3.0 — AI Integration Phase 20 (Foundation) — Plan 20-02: implement pure `isStale()` util (hydration-safe, server-computed freshness). Then 20-03 (Zod safeParse at jobs-db boundary), 20-04 (FreshnessBadge + ErrorBoundary), 20-05 (TailoredResumeSection + XSS test), 20-06 (job-detail-sheet integration), 20-07 (proxy.ts CSP), 20-08 (schema-drift CI guardrail).
+v3.0 — AI Integration Phase 20 (Foundation) — Plan 20-05 next: TailoredResumeSection (renders detail.tailored_resume via Streamdown into the job detail sheet) + XSS test fixture (AI-SAFETY-01). Then 20-06 (attach freshness in fetchJobDetail + wire FreshnessBadge + SectionErrorBoundary into job-detail-sheet.tsx), 20-07 (proxy.ts CSP header on /admin/*).
 
 Phase order:
 
@@ -51,6 +51,8 @@ Phase order:
 - Phase 24: Regenerate Expansion — depends on Phases 22 + 23
 
 ## Last Session
+
+2026-04-21 18:43 UTC — Plan 20-04 executed. Two reusable client components shipped for Phase 20 AI artifact sections: `FreshnessBadge` (src/app/(admin)/admin/jobs/freshness-badge.tsx, 87 lines) renders `Generated {relativeTime} · {modelUsed}` with optional amber stale-dot (bg-warning) + shadcn Tooltip on stale state, and `SectionErrorBoundary` (src/app/(admin)/admin/jobs/section-error-boundary.tsx, 79 lines) is a hand-rolled React class boundary with getDerivedStateFromError + componentDidCatch that logs `[ai-section]` payloads server-side only + renders a muted italic fallback per UI-SPEC §3 ("Couldn't render this section — the data may have changed shape."). TDD RED→GREEN for both tasks (no REFACTOR needed). 11 new Vitest cases: 5 for FreshnessBadge (fresh+model, no-model, stale-dot+ARIA, null-when-empty, typography classes) + 6 for SectionErrorBoundary (happy path, fallback copy, server-log payload, boundary isolation, muted-not-destructive classes, per-section labels). Full suite 294/294 green (283 baseline + 11 new). Production build clean. Zero deviations. Zero new deps. AI-RENDER-02 complete. Next: plan 20-05 (TailoredResumeSection + XSS test). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-04-SUMMARY.md.
 
 2026-04-21 18:37 UTC — Plan 20-08 executed. Schema-drift pre-push hook shipped. `scripts/check-jobs-schema.ts` (104 lines) queries `information_schema.columns` against an EXPECTED map of 6 tables × 62 columns audited from `src/lib/jobs-db.ts`. Exits 1 with `Expected column '<col>' on table '<table>' (referenced in jobs-db.ts); not found in n8n database.` on drift, exits 0 with skip warning when `JOBS_DATABASE_URL` unset. `scripts/install-hooks.sh` (29 lines) installs `.git/hooks/pre-push` (`npm run test:schema || exit 1`); idempotent, self-chmods. `package.json` gets `"test:schema": "bun scripts/check-jobs-schema.ts"`; CLAUDE.md §Commands documents the one-time install. Zero new npm deps (no husky per CONTEXT.md D-07). Human-verify checkpoint passed with 4 scenarios: baseline OK (6 tables / 62 columns), synthetic drift → exit 1 with correct error line, `git hook run pre-push` → exit 1, actual `git push origin HEAD:refs/heads/drift-test` → ABORTED client-side before any ref reached origin. No deviations. AI-DATA-04 complete. Next: plan 20-04 (FreshnessBadge + SectionErrorBoundary). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-08-SUMMARY.md.
 
@@ -119,6 +121,15 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 20-08: Hook bypass via `git push --no-verify` explicitly accepted per threat T-20-08-02 (solo-dev assumption A3). CI enforcement is the documented escalation path if bypasses occur
 - v3.0 Plan 20-08: Host-only connection-string logging — `JOBS_DATABASE_URL.split('@')[1]` prints `host:port/db`, never the password in the prefix (T-20-08-03 mitigation)
 - v3.0 Plan 20-08: Phase 22 (salary_intelligence) must extend the EXPECTED map at `scripts/check-jobs-schema.ts` when it lands — otherwise silent-drift false-negative for that table. Tracked as forward reminder in 20-08-SUMMARY.md.
+- v3.0 Plan 20-04: FreshnessBadge is pure-display — never calls `new Date()` client-side. All date math (relativeTime + isStale + ageDays) is server-computed and passed through as primitives. Hydration-safe per UI-SPEC §Pattern 2
+- v3.0 Plan 20-04: Hand-rolled React class SectionErrorBoundary over react-error-boundary dep per CONTEXT.md D-09. 4 boundaries total in the codebase; 30-LoC class is plenty
+- v3.0 Plan 20-04: Both new components require `"use client"` — FreshnessBadge needs Radix Tooltip state; SectionErrorBoundary is a class component (cannot SSR in Next.js 16 App Router)
+- v3.0 Plan 20-04: TooltipProvider wrapped INSIDE FreshnessBadge's stale branch, not in the caller — badge is drop-in; caller never has to know whether an artifact is stale
+- v3.0 Plan 20-04: Separator is U+00B7 middle-dot (not hyphen, not pipe) with `aria-hidden="true"` — visual-only; screen readers read "Stale artifact Generated 3 days ago gpt-4o-mini" without the dot glyph
+- v3.0 Plan 20-04: Fallback UI uses `text-muted-foreground italic` NOT `text-destructive`. Stale-data and render-shape drift are informational; `text-destructive` stays reserved for Phase 23 regenerate failures (actionable)
+- v3.0 Plan 20-04: Fallback is terminal for Phase 20 (no "Retry" button). Retry belongs with regenerate in Phase 23; coupling display to action UI that doesn't exist yet would be premature
+- v3.0 Plan 20-04: Log prefix `[ai-section]` on componentDidCatch's `console.error` + structured payload `{ section, jobId, error, stack, componentStack }` — greppable in kubectl logs and JSON-parseable by downstream log tooling. Error detail never leaves the server
+- v3.0 Plan 20-04: Curly apostrophe + em-dash encoded as `&rsquo;`/`&mdash;` HTML entities in JSX; renders as the correct Unicode glyph in the DOM; Vitest assertions match the Unicode form (not the entity)
 
 ## Blockers
 
@@ -132,5 +143,6 @@ None.
 | 20    | 20-02 | 1m 19s   | 1     | 2     | 2026-04-21T18:09:57Z |
 | 20    | 20-03 | ~4m      | 2     | 3     | 2026-04-21T18:24:00Z |
 | 20    | 20-08 | ~10m     | 1     | 4     | 2026-04-21T18:37:00Z |
+| 20    | 20-04 | ~3m      | 2     | 4     | 2026-04-21T18:43:30Z |
 
 **Planned Phase:** 20 (Foundation (Freshness + Zod + Tailored Resume)) — 8 plans — 2026-04-21T17:09:58.121Z
