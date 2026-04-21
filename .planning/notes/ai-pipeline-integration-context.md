@@ -47,10 +47,22 @@ The SQL in `jobs-db.ts` (lines 271-398) already LEFT JOINs `cover_letters`, `com
 **Maybe later (captured as seed):**
 - Pipeline health / aggregate AI insights dashboard (cross-cutting view: scored last 7d, cover letters generated, workflow error rate). See `.planning/seeds/SEED-001-ai-pipeline-health-dashboard.md`.
 
-## Upstream dependencies (tracked elsewhere)
+## Upstream findings (investigated 2026-04-21)
 
-- **Task #11** (homelab backlog) — Fix Salary Intel n8n workflow's batch-INSERT parameter-limit bug. Prerequisite for salary_intelligence having data to render.
-- Workflow-side diagnostics for why `company_research` produces zero rows — likely a workflow-config issue, not a schema issue.
+### company_research gap — it's a TRIGGER problem, not a broken workflow
+- Workflow `Job Search: Company Intel` (ID `HQaq1aTSnA5TbTaS`) is **manual/webhook triggered only** (no Schedule Trigger node)
+- Has 2 `production_success` events in workflow_statistics (latest Apr 8, 2026 — manual test runs)
+- Has never run since, so the table is empty
+- Nodes include `Insert Research`, `Parse and Insert Research`, `Link Research to Job` — writes to `company_research` + a linking column on `jobs` correctly when triggered
+- **Implication:** v3.0 needs a "Research this company" action in the UI that POSTs to the n8n webhook. Do NOT auto-schedule across all 467 jobs (token waste on uninteresting jobs)
+
+### salary_intelligence gap — Postgres parameter-pattern collision in n8n's inline interpolation
+- Workflow `Job Search: Salary Intelligence` (ID `09AnUpkwujo91wFF`) has `Save Report` node using `executeQuery` mode
+- SQL inlines LLM JSON via `'={{ JSON.stringify(...) }}'::jsonb` directly into the query text
+- The JSON contains salary figures as text like `"$128,663"` — n8n/pg scans the resulting query for `$N` placeholders and treats every dollar amount as a parameter ref
+- Hence the error `Variable $128663 exceeds supported maximum of $100000` — not a batch-INSERT batch-size issue at all
+- **Fix:** switch the node to n8n's structured "Insert" operation (let the node parameterize safely), OR use named `$1, $2` params with JSON passed via the node's Parameters array. Also fixes a secondary schema bug: `raw_results` column (text) currently receives `result_count` (number)
+- **Audit risk:** any other workflow using `executeQuery` mode with inline JSON that might contain dollar figures has the same latent bug
 
 ## Why this note exists
 
