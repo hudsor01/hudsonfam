@@ -84,8 +84,8 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| AI-RENDER-01 | Phase 20 (20-01) | Complete (2026-04-21) |
-| AI-RENDER-02 | Phase 20 (20-04) | Complete (2026-04-21) |
+| AI-RENDER-01 | Phase 20 (20-01, 20-05, 20-06) | Complete (2026-04-21) |
+| AI-RENDER-02 | Phase 20 (20-04, 20-06) | Complete (2026-04-21) |
 | AI-RENDER-03 | Phase 22 | Pending |
 | AI-RENDER-04 | Phase 21 | Pending |
 | AI-RENDER-05 | Phase 21 | Pending |
@@ -123,4 +123,4 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 
 ---
 *Requirements defined: 2026-04-21*
-*Last updated: 2026-04-21 — AI-SAFETY-05 marked Complete (Phase 20 / Plan 20-07 — CSP middleware on /admin/*)*
+*Last updated: 2026-04-21 — AI-RENDER-01 + AI-RENDER-02 traceability extended to Plan 20-06 (end-to-end wire-up in job-detail-sheet.tsx); Phase 20 complete (8/8 plans)*

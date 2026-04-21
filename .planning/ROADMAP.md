@@ -123,7 +123,7 @@
 
 ### Phases
 
-- [ ] **Phase 20: Foundation (Freshness + Zod + Tailored Resume)** — pure isStale util, Zod safeParse at jobs-db boundary, CSP on /admin/*, tailored resume rendered with Streamdown + generated_at/model badges, schema-drift CI guardrail
+- [x] **Phase 20: Foundation (Freshness + Zod + Tailored Resume)** — pure isStale util, Zod safeParse at jobs-db boundary, CSP on /admin/*, tailored resume rendered with Streamdown + generated_at/model badges, schema-drift CI guardrail — 2026-04-21
 - [ ] **Phase 21: Polish (Copy + PDF + Empty States + Link-out)** — copy-to-clipboard, tailored-resume PDF download, empty-state messaging distinguishing never-generated vs empty, company-website link-out, cover-letter quality-score badge
 - [ ] **Phase 22: Salary Intelligence (Defensive Render)** — SalaryIntelligence Zod + TS type, LEFT JOIN LATERAL tolerating both job_id and company_name keying, llm_analysis + structured headline render, per-figure provenance tags (scraped / LLM / research)
 - [ ] **Phase 23: Owner-Triggered Workflows (Pattern Setter)** — "Research this company" manual trigger, regenerate cover letter, HMAC-SHA256 + X-Idempotency-Key + sentinel-error scrubbing pattern established and retrofit to existing fireWebhook
@@ -148,7 +148,7 @@ Plans:
 - [x] 20-03-PLAN.md — Zod schemas (jobs-schemas.ts) + parseOrLog fail-open wrapper at jobs-db.ts return boundary + Vitest (AI-SAFETY-06) — 2026-04-21
 - [x] 20-04-PLAN.md — FreshnessBadge + SectionErrorBoundary client components + Vitest (AI-RENDER-02) — 2026-04-21
 - [x] 20-05-PLAN.md — TailoredResumeSection + Streamdown XSS regression fixture + Vitest (AI-RENDER-01, AI-SAFETY-01) — 2026-04-21
-- [ ] 20-06-PLAN.md — Wire fetchJobDetail freshness + mount sections/boundaries in job-detail-sheet.tsx (AI-RENDER-01, AI-RENDER-02)
+- [x] 20-06-PLAN.md — Wire fetchJobDetail freshness + mount sections/boundaries in job-detail-sheet.tsx (AI-RENDER-01, AI-RENDER-02) — 2026-04-21
 - [x] 20-07-PLAN.md — Next.js 16 middleware.ts (renamed from proxy.ts — 16.2.1 compat) with per-request CSP nonce scoped to /admin/* (AI-SAFETY-05) — 2026-04-21
 - [x] 20-08-PLAN.md — scripts/check-jobs-schema.ts + pre-push hook + install-hooks.sh (AI-DATA-04) — 2026-04-21
 
@@ -203,7 +203,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 20. Foundation (Freshness + Zod + Tailored Resume) | 7/8 | In progress | - |
+| 20. Foundation (Freshness + Zod + Tailored Resume) | 8/8 | Complete | 2026-04-21 |
 | 21. Polish (Copy + PDF + Empty States + Link-out) | 0/0 | Not started | - |
 | 22. Salary Intelligence (Defensive Render) | 0/0 | Not started | - |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |

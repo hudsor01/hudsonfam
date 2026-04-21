@@ -3,26 +3,26 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-21T19:07:39Z"
-last_activity: 2026-04-21 — Plan 20-07 complete (middleware.ts CSP + per-request nonce on /admin/*; AI-SAFETY-05 closed; Rule 1 deviation: proxy.ts → middleware.ts because Next.js 16.2.1 doesn't recognize the new proxy convention)
+last_updated: "2026-04-21T19:17:49.357Z"
+last_activity: 2026-04-21 — Plan 20-06 complete (fetchJobDetail returns FreshJobDetail with server-computed freshness on all 3 LLM artifacts; job-detail-sheet.tsx mounts TailoredResumeSection + FreshnessBadge wrapped in per-section SectionErrorBoundary; AI-RENDER-01 + AI-RENDER-02 delivered end-to-end; Phase 20 now 8/8 complete)
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 8
-  completed_plans: 7
-  percent: 88
+  completed_plans: 8
+  percent: 100
 ---
 
 # State
 
 ## Current Position
 
-Phase: 20 (Foundation — Freshness + Zod + Tailored Resume) — EXECUTING
-Plan: 7 of 8 complete (20-01, 20-02, 20-03, 20-04, 20-05, 20-07, 20-08); next is 20-06 (attach freshness + wire TailoredResumeSection into job-detail-sheet.tsx)
-Status: Executing Phase 20
-Last activity: 2026-04-21 — Plan 20-07 complete (middleware.ts CSP + per-request nonce on /admin/*; AI-SAFETY-05 closed; Rule 1 deviation: proxy.ts → middleware.ts because Next.js 16.2.1 doesn't recognize the new proxy convention)
+Phase: 20 (Foundation — Freshness + Zod + Tailored Resume) — COMPLETE (8/8 plans)
+Plan: All plans complete (20-01, 20-02, 20-03, 20-04, 20-05, 20-06, 20-07, 20-08)
+Status: Phase 20 complete — ready to begin Phase 21 (Polish) or Phase 22 (Salary Intelligence — parallel-safe with Phase 21)
+Last activity: 2026-04-21 — Plan 20-06 complete (end-to-end wire-up of freshness + TailoredResumeSection in job-detail-sheet.tsx)
 
-Progress: [######### ] 7/8 plans in phase 20 (88%)
+Progress: [██████████] 100% — Phase 20 (8/8 plans)
 
 ## What's Done
 
@@ -40,17 +40,21 @@ Progress: [######### ] 7/8 plans in phase 20 (88%)
 
 ## What's Next
 
-v3.0 — AI Integration Phase 20 (Foundation) — Plan 20-06 next: attach freshness in fetchJobDetail (pre-compute relativeTime + isStale + ageDays server-side via attachFreshness helper) and wire FreshnessBadge + SectionErrorBoundary + TailoredResumeSection into job-detail-sheet.tsx. This is the last remaining plan in Phase 20 (7/8 complete).
+v3.0 Phase 20 is COMPLETE. All 8 plans shipped (20-01 through 20-08). All Phase 20 requirements delivered: AI-RENDER-01, AI-RENDER-02, AI-SAFETY-01, AI-SAFETY-05, AI-SAFETY-06, AI-DATA-03, AI-DATA-04.
+
+Next up: Phase 21 (Polish — copy-to-clipboard, PDF download, empty states, link-out, quality-score badge) OR Phase 22 (Salary Intelligence defensive render) — the two are parallel-safe and both depend only on Phase 20.
 
 Phase order:
 
-- Phase 20: Foundation (Freshness + Zod + Tailored Resume) — no dependencies
+- Phase 20: Foundation (Freshness + Zod + Tailored Resume) — COMPLETE (2026-04-21)
 - Phase 21: Polish (Copy + PDF + Empty States + Link-out) — depends on Phase 20; parallel-safe with Phase 22
 - Phase 22: Salary Intelligence (Defensive Render) — depends on Phase 20; ships before homelab task #11
 - Phase 23: Owner-Triggered Workflows (Pattern Setter) — depends on Phase 20
 - Phase 24: Regenerate Expansion — depends on Phases 22 + 23
 
 ## Last Session
+
+2026-04-21 19:15 UTC — Plan 20-06 executed. Phase 20 now COMPLETE (8/8 plans). `fetchJobDetail` Server Action in `src/lib/job-actions.ts` now returns `FreshJobDetail` with server-side freshness attached to every LLM artifact via the new `attachFreshness<T>` helper — the helper dispatches on `'generated_at' in artifact` type-narrowing to handle both `generated_at` (cover_letter, tailored_resume) and `created_at` (company_research) without a schema-level transform (resolves RESEARCH.md §Open Question 2). `FreshJobDetail` is additive (`extends Omit<JobDetail, "cover_letter" | "tailored_resume" | "company_research">` + three freshness-wrapped fields), leaving `JobDetail` intact for any non-freshness consumer. `src/app/(admin)/admin/jobs/job-detail-sheet.tsx` now mounts `TailoredResumeSection` between Cover Letter and Company Intel per UI-SPEC §1, wraps all three LLM sections in `SectionErrorBoundary` with the correct `section` prop (cover_letter / tailored_resume / company_research), and places `FreshnessBadge` externally on Cover Letter (14d threshold, model shown) and Company Intel (60d threshold, `modelUsed={null}` because the table has no `model_used` column). Tailored Resume's badge is internal to `TailoredResumeSection` (Plan 20-05 wired it), so `grep -c '<FreshnessBadge'` returns exactly 2, not 3. Zero deviations. Zero auto-fixes. 305/305 tests green; production build clean; no hardcoded Tailwind colors introduced. Two task commits: `74ff97c` (feat: attach server-side freshness) + `670961e` (feat: wire sections into detail sheet). AI-RENDER-01 + AI-RENDER-02 delivered end-to-end. See `.planning/phases/20-foundation-freshness-zod-tailored-resume/20-06-SUMMARY.md`.
 
 2026-04-21 19:07 UTC — Plan 20-07 executed. CSP middleware shipped at `/home/dev-server/hudsonfam/middleware.ts` (77 lines) with per-request base64 nonce (`Buffer.from(crypto.randomUUID()).toString('base64')`), full CSP shape per D-04 (`default-src 'self'`, `script-src 'self' 'nonce-{n}' 'strict-dynamic'` + dev-mode `'unsafe-eval'`, `style-src 'self' 'unsafe-inline'`, `object-src 'none'`, `frame-ancestors 'none'`, `base-uri 'self'`, `form-action 'self'`), dual-written to both `request.headers` (for Server Components via `next/headers`) and `response.headers` (for browser enforcement). matcher scoped strictly to `['/admin/:path*']` per D-05 — public site / blog MDX unaffected. `src/app/(admin)/layout.tsx` updated with `const nonce = (await headers()).get('x-nonce'); void nonce;` — latent plumbing, retrofit-ready for any future `<Script nonce={nonce}>`. One Rule 1 deviation during the human-verify checkpoint: plan specified `proxy.ts` + `export function proxy` per Next.js 16 docs (via Context7 /vercel/next.js), but empirical testing in Next.js 16.2.1 showed the middleware-manifest stays empty and no header is served. Renamed `proxy.ts` → `middleware.ts` and `export function proxy` → `export function middleware` (commit 97a60c5); production mode then served the CSP correctly on first attempt. Known issue: Turbopack dev mode (`npm run dev`) does not invoke middleware despite correct compilation — upstream Turbopack limitation, NOT our code; production (`next build && next start`) works. Verified via `curl -sI http://localhost:3002/admin/jobs | grep -i content-security-policy` → full CSP with random per-request nonce; `curl -sI http://localhost:3002/` → no CSP (matcher correctly excludes). AI-SAFETY-05 complete. Three task commits (f91707f, dfa95a3, 97a60c5). Next: plan 20-06 (last remaining in Phase 20 — wire freshness + TailoredResumeSection into job-detail-sheet.tsx). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-07-SUMMARY.md.
 
@@ -145,6 +149,12 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 20-07: `'strict-dynamic'` in script-src is load-bearing — lets Next.js's `_next/static/chunks/*.js` webpack runtime (loaded by nonce-allowed script) work without per-chunk nonce plumbing
 - v3.0 Plan 20-07: Known issue — Turbopack dev mode (`npm run dev`) does not invoke middleware despite correct compilation; upstream Turbopack limitation, NOT our code. Production (`next build && next start`) works correctly. Local-dev CSP testing requires production mode. No impact on deployed container (K3s runs production)
 - v3.0 Plan 20-07: Real CSP from day one, NOT Report-Only — tailored resume (Plan 20-05) is the first markdown-rendered surface, so block now and iterate later if a false positive appears
+- v3.0 Plan 20-06: `attachFreshness<T>` dispatches on `'generated_at' in artifact` type-narrowing to handle both `generated_at` (cover_letter, tailored_resume) and `created_at` (company_research) — single helper, no schema-level transform. Resolves RESEARCH.md §Open Question 2 inline
+- v3.0 Plan 20-06: `FreshJobDetail extends Omit<JobDetail, "cover_letter" | "tailored_resume" | "company_research">` + three replaced fields — JobDetail stays intact for any consumer that doesn't need freshness (backward-compat; additive only)
+- v3.0 Plan 20-06: Company Intel `FreshnessBadge` gets `modelUsed={null}` because `company_research` has no `model_used` column — the badge's null branch correctly drops the separator glyph and model-name text without caller awareness
+- v3.0 Plan 20-06: Exactly 2 external `<FreshnessBadge>` mounts in `job-detail-sheet.tsx` (Cover Letter + Company Intel). Tailored Resume's badge is mounted INSIDE `TailoredResumeSection` by Plan 20-05 — grep -c must be 2, not 3
+- v3.0 Plan 20-06: `attachFreshness` zeroes freshness on `Number.isNaN(generated.getTime())` rather than throwing — fail-open alignment with parseOrLog (D-11): a malformed DB timestamp degrades to "no badge" instead of blanking the section
+- v3.0 Plan 20-06: PDF download link stays a SIBLING of `FreshnessBadge` (not nested) inside the Cover Letter meta row — badge is pure-display per Plan 20-04 contract
 
 ## Blockers
 
@@ -161,5 +171,6 @@ None.
 | 20    | 20-04 | ~3m      | 2     | 4     | 2026-04-21T18:43:30Z |
 | 20    | 20-05 | 4m       | 1     | 3     | 2026-04-21T18:53:07Z |
 | 20    | 20-07 | ~30m     | 3     | 2     | 2026-04-21T19:07:00Z |
+| 20    | 20-06 | 2m 35s   | 2     | 3     | 2026-04-21T19:15:48Z |
 
 **Planned Phase:** 20 (Foundation (Freshness + Zod + Tailored Resume)) — 8 plans — 2026-04-21T17:09:58.121Z
