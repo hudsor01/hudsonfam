@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-21T18:09:57Z"
-last_activity: "2026-04-21 — Plan 20-02 complete (pure isStale util + STALE_THRESHOLDS; 275/275 tests pass)"
+last_updated: "2026-04-21T18:25:50.165Z"
+last_activity: "2026-04-21 — Plan 20-03 complete (Zod safeParse fail-open at jobs-db boundary; 283/283 tests pass)"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 8
-  completed_plans: 2
-  percent: 25
+  completed_plans: 3
+  percent: 38
 ---
 
 # State
@@ -18,11 +18,11 @@ progress:
 ## Current Position
 
 Phase: 20 (Foundation — Freshness + Zod + Tailored Resume) — EXECUTING
-Plan: 2 of 8 — Plan 20-02 COMPLETE; next is 20-03 (Zod safeParse at jobs-db boundary)
+Plan: 4 of 8 — Plan 20-03 COMPLETE; next is 20-04 (FreshnessBadge + SectionErrorBoundary)
 Status: Executing Phase 20
-Last activity: 2026-04-21 — Plan 20-02 complete (pure isStale util + STALE_THRESHOLDS constants + ArtifactKind type; 7 new Vitest cases; 275/275 tests pass)
+Last activity: 2026-04-21 — Plan 20-03 complete (Zod parseOrLog fail-open wraps cover_letter/company_research/tailored_resume at jobs-db boundary; +8 Vitest cases; 283/283 tests pass)
 
-Progress: [#####               ] 2/8 plans in phase 20 (25%)
+Progress: [###                 ] 3/8 plans in phase 20 (38%)
 
 ## What's Done
 
@@ -51,6 +51,8 @@ Phase order:
 - Phase 24: Regenerate Expansion — depends on Phases 22 + 23
 
 ## Last Session
+
+2026-04-21 18:24 UTC — Plan 20-03 executed. Zod safeParse fail-open wrapper (`parseOrLog<T>`) shipped in `src/lib/jobs-schemas.ts` with CoverLetter/CompanyResearch/TailoredResume schemas. `getJobDetail()` now validates all three LLM artifacts INDEPENDENTLY at the return boundary — drift on one does not null out the others. One Rule 3 auto-fix: added the missing `tailored_resume` LEFT JOIN + `TailoredResume` interface + `JobDetail.tailored_resume` field to `jobs-db.ts` (plan 20-06 depends on this being present; plan 20-03 implicitly required it via the 3-parseOrLog acceptance criterion). 8 new Vitest cases in `src/__tests__/lib/jobs-db-zod.test.ts` (valid / missing-field / wrong-type / null / undefined / pathological / tailored_resume-null-model / company_research-nullable). Full suite: 283/283 (275 baseline + 8 new). Build clean. AI-SAFETY-06 complete. Next: plan 20-04 (FreshnessBadge + SectionErrorBoundary). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-03-SUMMARY.md.
 
 2026-04-21 18:09 UTC — Plan 20-02 executed. Pure `isStale(timestamp, thresholdDays, now?)` util + `STALE_THRESHOLDS` constants + `ArtifactKind` type shipped in `src/lib/job-freshness.ts` with 7 Vitest cases in `src/__tests__/lib/job-freshness.test.ts`. TDD RED→GREEN, no deviations, no auto-fixes. Full suite: 275/275 (268 baseline + 7 new). AI-DATA-03 complete. Next: plan 20-03 (Zod schemas + parseOrLog at jobs-db.ts boundary). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-02-SUMMARY.md.
 
@@ -103,6 +105,12 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 20-02: Inclusive staleness boundary (`ageDays >= thresholdDays`) — at exactly 14 days, a cover letter IS stale; test 4 enforces this to prevent off-by-one drift
 - v3.0 Plan 20-02: Silent-fail on both `null` and unparseable timestamps — badge is informational (D-03), so a bad DB row degrades to "no badge" rather than crashing the detail sheet
 - v3.0 Plan 20-02: `STALE_THRESHOLDS` colocated with `isStale` in the same file — one import for callers, avoids orphan constants file
+- v3.0 Plan 20-03: `parseOrLog<T>(schema, raw, label, jobId)` is the project convention for runtime row validation at DB boundaries — null/undefined passthrough, `[jobs-db] <label> schema drift` with `{ jobId, issues }` on drift, returns `null` so the outer JobDetail survives
+- v3.0 Plan 20-03: Each nested LLM artifact validated INDEPENDENTLY at the `getJobDetail` return boundary — cover_letter / company_research / tailored_resume each get their own `parseOrLog` call so a drift on one does not null out the others (matches D-11 fail-open invariant)
+- v3.0 Plan 20-03: `parseOrLog` signature uses `z.ZodType<T>` (the stable public Zod v4 generic), NOT `z.ZodSchema<T>` from the RESEARCH.md snippet — ZodType is the recommended generic supertype
+- v3.0 Plan 20-03: Both `null` AND `undefined` raw inputs pass through `parseOrLog` silently — defensive against LEFT JOIN miss edge cases across callers
+- v3.0 Plan 20-03: Added `tailored_resume` LEFT JOIN + `TailoredResume` interface + `JobDetail.tailored_resume` field to jobs-db.ts (Rule 3 deviation) — plan 20-06 depends on detail.tailored_resume being on JobDetail, plan 20-03's 3-parseOrLog acceptance criterion implicitly required this plumbing
+- v3.0 Plan 20-03: `row.cr_salary_currency ?? "USD"` default preserved — its removal is scoped to Phase 22 (salary intelligence defensive render) per CONTEXT.md
 
 ## Blockers
 
@@ -114,5 +122,6 @@ None.
 |-------|-------|----------|-------|-------|----------------------|
 | 20    | 20-01 | 3m 10s   | 2     | 3     | 2026-04-21T18:04:12Z |
 | 20    | 20-02 | 1m 19s   | 1     | 2     | 2026-04-21T18:09:57Z |
+| 20    | 20-03 | ~4m      | 2     | 3     | 2026-04-21T18:24:00Z |
 
 **Planned Phase:** 20 (Foundation (Freshness + Zod + Tailored Resume)) — 8 plans — 2026-04-21T17:09:58.121Z

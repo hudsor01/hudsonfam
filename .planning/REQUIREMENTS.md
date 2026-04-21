@@ -35,7 +35,8 @@ Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified obse
 - [ ] **AI-SAFETY-03**: Every n8n webhook call includes an `X-Idempotency-Key` header; replaying the same call does not re-run the underlying workflow twice
 - [ ] **AI-SAFETY-04**: Server Action errors returned to the client are drawn from a sentinel set ("timeout", "auth", "rate limit", "unavailable") — raw `e.message` or stack traces are never returned
 - [ ] **AI-SAFETY-05**: `/admin/*` routes serve a Content-Security-Policy header that blocks inline scripts, object embeds, and framing
-- [ ] **AI-SAFETY-06**: Every row read from an LLM artifact table (cover_letters, company_research, tailored_resumes, salary_intelligence) is validated via Zod `safeParse` at the `jobs-db.ts` boundary; malformed rows fail-open with a logged warning and an error-boundary-rendered section, never crash the page
+- [x] **AI-SAFETY-06
+**: Every row read from an LLM artifact table (cover_letters, company_research, tailored_resumes, salary_intelligence) is validated via Zod `safeParse` at the `jobs-db.ts` boundary; malformed rows fail-open with a logged warning and an error-boundary-rendered section, never crash the page
 
 ### Data Layer
 
@@ -101,7 +102,7 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 | AI-SAFETY-03 | Phase 23 | Pending |
 | AI-SAFETY-04 | Phase 23 | Pending |
 | AI-SAFETY-05 | Phase 20 | Pending |
-| AI-SAFETY-06 | Phase 20 | Pending |
+| AI-SAFETY-06 | Phase 20 (20-03) | Complete (2026-04-21) |
 | AI-DATA-01 | Phase 22 | Pending |
 | AI-DATA-02 | Phase 22 | Pending |
 | AI-DATA-03 | Phase 20 (20-02) | Complete (2026-04-21) |

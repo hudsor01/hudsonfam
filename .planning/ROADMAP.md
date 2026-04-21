@@ -145,7 +145,7 @@
 Plans:
 - [x] 20-01-PLAN.md — Install streamdown + Tailwind v4 @source directive (foundation; unblocks Plans 02, 04, 05) — 2026-04-21
 - [x] 20-02-PLAN.md — Pure isStale util + STALE_THRESHOLDS constants + Vitest coverage (AI-DATA-03) — 2026-04-21
-- [ ] 20-03-PLAN.md — Zod schemas (jobs-schemas.ts) + parseOrLog fail-open wrapper at jobs-db.ts return boundary + Vitest (AI-SAFETY-06)
+- [x] 20-03-PLAN.md — Zod schemas (jobs-schemas.ts) + parseOrLog fail-open wrapper at jobs-db.ts return boundary + Vitest (AI-SAFETY-06) — 2026-04-21
 - [ ] 20-04-PLAN.md — FreshnessBadge + SectionErrorBoundary client components + Vitest (AI-RENDER-02)
 - [ ] 20-05-PLAN.md — TailoredResumeSection + Streamdown XSS regression fixture + Vitest (AI-RENDER-01, AI-SAFETY-01)
 - [ ] 20-06-PLAN.md — Wire fetchJobDetail freshness + mount sections/boundaries in job-detail-sheet.tsx (AI-RENDER-01, AI-RENDER-02)
