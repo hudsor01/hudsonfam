@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
-status: executing
-last_updated: "2026-04-21T19:17:49.357Z"
-last_activity: 2026-04-21 — Plan 20-06 complete (fetchJobDetail returns FreshJobDetail with server-computed freshness on all 3 LLM artifacts; job-detail-sheet.tsx mounts TailoredResumeSection + FreshnessBadge wrapped in per-section SectionErrorBoundary; AI-RENDER-01 + AI-RENDER-02 delivered end-to-end; Phase 20 now 8/8 complete)
+status: completed
+last_updated: "2026-04-21T19:40:00.000Z"
+last_activity: 2026-04-21 — Phase 21 CONTEXT.md gathered (5 REQs; scope expanded to include n8n pipeline work + migration for PDF; Phase 20 revision commit queued ahead of Phase 21 planning)
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 1
   total_plans: 8
-  completed_plans: 8
+  completed_plans: 12
   percent: 100
 ---
 
@@ -17,10 +17,10 @@ progress:
 
 ## Current Position
 
-Phase: 20 (Foundation — Freshness + Zod + Tailored Resume) — COMPLETE (8/8 plans)
-Plan: All plans complete (20-01, 20-02, 20-03, 20-04, 20-05, 20-06, 20-07, 20-08)
-Status: Phase 20 complete — ready to begin Phase 21 (Polish) or Phase 22 (Salary Intelligence — parallel-safe with Phase 21)
-Last activity: 2026-04-21 — Plan 20-06 complete (end-to-end wire-up of freshness + TailoredResumeSection in job-detail-sheet.tsx)
+Phase: 21 (Polish — Copy + PDF + Empty States + Link-out) — context gathered, ready to plan
+Plan: 21-CONTEXT.md written; next step /gsd-plan-phase 21
+Status: Phase 21 scope locked with owner override (PDF-only, no .md fallback) and scope expansion (n8n pipeline + migration work folded in). Phase 20 revision commit (FreshnessBadge date format) queued before Phase 21 planning begins.
+Last activity: 2026-04-21 — /gsd-discuss-phase 21 complete; 4 gray areas discussed, 23 decisions locked
 
 Progress: [██████████] 100% — Phase 20 (8/8 plans)
 
@@ -40,9 +40,12 @@ Progress: [██████████] 100% — Phase 20 (8/8 plans)
 
 ## What's Next
 
-v3.0 Phase 20 is COMPLETE. All 8 plans shipped (20-01 through 20-08). All Phase 20 requirements delivered: AI-RENDER-01, AI-RENDER-02, AI-SAFETY-01, AI-SAFETY-05, AI-SAFETY-06, AI-DATA-03, AI-DATA-04.
+Phase 21 CONTEXT.md locked. Next: `/gsd-plan-phase 21` — plan must account for two non-trivial items the context introduced:
 
-Next up: Phase 21 (Polish — copy-to-clipboard, PDF download, empty states, link-out, quality-score badge) OR Phase 22 (Salary Intelligence defensive render) — the two are parallel-safe and both depend only on Phase 20.
+1. **Phase 20 revision** (queued before Phase 21 begins) — `FreshnessBadge` swaps `relativeTime` ("3 days ago") for `generatedDate` (`4/21/26`, America/Chicago). Amber stale dot + 14d/60d thresholds unchanged. Single commit amending Plan 20-04 summary, Phase 20 still 8/8 complete.
+2. **Phase 21 scope expansion** — AI-ACTION-02 (PDF-only, no .md fallback per owner override) requires the n8n `Job Search: Tailored Resume` workflow to emit `pdf_data` base64. Phase 21 plan now includes: n8n workflow edit + `ALTER TABLE tailored_resumes ADD COLUMN pdf_data TEXT` migration + `scripts/check-jobs-schema.ts` EXPECTED map update + Zod schema field + `getTailoredResumePdf` helper + `/api/jobs/[id]/tailored-resume-pdf` API route. ROADMAP.md SC #2 wording (".md fallback") needs a planner-driven update to match.
+
+Parallel-safe: Phase 22 (Salary Intelligence) still depends only on Phase 20 and can be worked in parallel.
 
 Phase order:
 
@@ -53,6 +56,8 @@ Phase order:
 - Phase 24: Regenerate Expansion — depends on Phases 22 + 23
 
 ## Last Session
+
+2026-04-21 19:40 UTC — `/gsd-discuss-phase 21` executed. Four gray areas discussed interactively (Resume actions, Empty-state messaging, Quality-score badge, Company link-out source); 23 decisions locked in `21-CONTEXT.md` + `21-DISCUSSION-LOG.md`. Two owner overrides drove scope changes: (1) PDF-only with no `.md` fallback — overrode ROADMAP Phase 21 SC #2 and expanded Phase 21 scope to include the n8n workflow edit + `tailored_resumes.pdf_data` column migration + schema-drift EXPECTED map update + Zod schema field + `getTailoredResumePdf` helper + new `/api/jobs/[id]/tailored-resume-pdf` route; (2) Replace FreshnessBadge `relativeTime` ("3 days ago") with formal `M/D/YY` date ("4/21/26", America/Chicago) — queued as a Phase 20 revision commit ahead of Phase 21 planning. Also locked: icon-only ghost copy button with sonner toast + raw-markdown clipboard; empty-state blocks on all three LLM sections with state-only direct copy (no CTAs referencing Phase 23 triggers); quality-score scale verification deferred to plan Task 0 (don't guess — read n8n grader node + sample live `cover_letters.quality_score` values); `destructive`/`warning`/`success` tokens for quality badge; company link-out on sheet-header company name with `company_research.company_url ?? jobs.company_url` resolution and URL normalization helper. Single commit (`8bdcac3`). Next: /gsd-plan-phase 21 (plan should include the Phase 20 revision task + the ROADMAP/REQUIREMENTS update tasks).
 
 2026-04-21 19:15 UTC — Plan 20-06 executed. Phase 20 now COMPLETE (8/8 plans). `fetchJobDetail` Server Action in `src/lib/job-actions.ts` now returns `FreshJobDetail` with server-side freshness attached to every LLM artifact via the new `attachFreshness<T>` helper — the helper dispatches on `'generated_at' in artifact` type-narrowing to handle both `generated_at` (cover_letter, tailored_resume) and `created_at` (company_research) without a schema-level transform (resolves RESEARCH.md §Open Question 2). `FreshJobDetail` is additive (`extends Omit<JobDetail, "cover_letter" | "tailored_resume" | "company_research">` + three freshness-wrapped fields), leaving `JobDetail` intact for any non-freshness consumer. `src/app/(admin)/admin/jobs/job-detail-sheet.tsx` now mounts `TailoredResumeSection` between Cover Letter and Company Intel per UI-SPEC §1, wraps all three LLM sections in `SectionErrorBoundary` with the correct `section` prop (cover_letter / tailored_resume / company_research), and places `FreshnessBadge` externally on Cover Letter (14d threshold, model shown) and Company Intel (60d threshold, `modelUsed={null}` because the table has no `model_used` column). Tailored Resume's badge is internal to `TailoredResumeSection` (Plan 20-05 wired it), so `grep -c '<FreshnessBadge'` returns exactly 2, not 3. Zero deviations. Zero auto-fixes. 305/305 tests green; production build clean; no hardcoded Tailwind colors introduced. Two task commits: `74ff97c` (feat: attach server-side freshness) + `670961e` (feat: wire sections into detail sheet). AI-RENDER-01 + AI-RENDER-02 delivered end-to-end. See `.planning/phases/20-foundation-freshness-zod-tailored-resume/20-06-SUMMARY.md`.
 
