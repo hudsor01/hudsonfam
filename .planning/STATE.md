@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-21T18:25:50.165Z"
-last_activity: "2026-04-21 — Plan 20-03 complete (Zod safeParse fail-open at jobs-db boundary; 283/283 tests pass)"
+last_updated: "2026-04-21T18:37:00Z"
+last_activity: "2026-04-21 — Plan 20-08 complete (schema-drift pre-push hook; verified against live n8n DB + synthetic drift abort + actual push abort)"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 8
-  completed_plans: 3
-  percent: 38
+  completed_plans: 4
+  percent: 50
 ---
 
 # State
@@ -18,11 +18,11 @@ progress:
 ## Current Position
 
 Phase: 20 (Foundation — Freshness + Zod + Tailored Resume) — EXECUTING
-Plan: 4 of 8 — Plan 20-03 COMPLETE; next is 20-04 (FreshnessBadge + SectionErrorBoundary)
+Plan: 4 of 8 remaining (20-01, 20-02, 20-03, 20-08 COMPLETE); next is 20-04 (FreshnessBadge + SectionErrorBoundary)
 Status: Executing Phase 20
-Last activity: 2026-04-21 — Plan 20-03 complete (Zod parseOrLog fail-open wraps cover_letter/company_research/tailored_resume at jobs-db boundary; +8 Vitest cases; 283/283 tests pass)
+Last activity: 2026-04-21 — Plan 20-08 complete (schema-drift pre-push hook; native git hook + bun runtime, zero new deps; verified on live n8n DB + synthetic drift abort + actual push abort)
 
-Progress: [###                 ] 3/8 plans in phase 20 (38%)
+Progress: [####                ] 4/8 plans in phase 20 (50%)
 
 ## What's Done
 
@@ -51,6 +51,8 @@ Phase order:
 - Phase 24: Regenerate Expansion — depends on Phases 22 + 23
 
 ## Last Session
+
+2026-04-21 18:37 UTC — Plan 20-08 executed. Schema-drift pre-push hook shipped. `scripts/check-jobs-schema.ts` (104 lines) queries `information_schema.columns` against an EXPECTED map of 6 tables × 62 columns audited from `src/lib/jobs-db.ts`. Exits 1 with `Expected column '<col>' on table '<table>' (referenced in jobs-db.ts); not found in n8n database.` on drift, exits 0 with skip warning when `JOBS_DATABASE_URL` unset. `scripts/install-hooks.sh` (29 lines) installs `.git/hooks/pre-push` (`npm run test:schema || exit 1`); idempotent, self-chmods. `package.json` gets `"test:schema": "bun scripts/check-jobs-schema.ts"`; CLAUDE.md §Commands documents the one-time install. Zero new npm deps (no husky per CONTEXT.md D-07). Human-verify checkpoint passed with 4 scenarios: baseline OK (6 tables / 62 columns), synthetic drift → exit 1 with correct error line, `git hook run pre-push` → exit 1, actual `git push origin HEAD:refs/heads/drift-test` → ABORTED client-side before any ref reached origin. No deviations. AI-DATA-04 complete. Next: plan 20-04 (FreshnessBadge + SectionErrorBoundary). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-08-SUMMARY.md.
 
 2026-04-21 18:24 UTC — Plan 20-03 executed. Zod safeParse fail-open wrapper (`parseOrLog<T>`) shipped in `src/lib/jobs-schemas.ts` with CoverLetter/CompanyResearch/TailoredResume schemas. `getJobDetail()` now validates all three LLM artifacts INDEPENDENTLY at the return boundary — drift on one does not null out the others. One Rule 3 auto-fix: added the missing `tailored_resume` LEFT JOIN + `TailoredResume` interface + `JobDetail.tailored_resume` field to `jobs-db.ts` (plan 20-06 depends on this being present; plan 20-03 implicitly required it via the 3-parseOrLog acceptance criterion). 8 new Vitest cases in `src/__tests__/lib/jobs-db-zod.test.ts` (valid / missing-field / wrong-type / null / undefined / pathological / tailored_resume-null-model / company_research-nullable). Full suite: 283/283 (275 baseline + 8 new). Build clean. AI-SAFETY-06 complete. Next: plan 20-04 (FreshnessBadge + SectionErrorBoundary). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-03-SUMMARY.md.
 
@@ -111,6 +113,12 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 20-03: Both `null` AND `undefined` raw inputs pass through `parseOrLog` silently — defensive against LEFT JOIN miss edge cases across callers
 - v3.0 Plan 20-03: Added `tailored_resume` LEFT JOIN + `TailoredResume` interface + `JobDetail.tailored_resume` field to jobs-db.ts (Rule 3 deviation) — plan 20-06 depends on detail.tailored_resume being on JobDetail, plan 20-03's 3-parseOrLog acceptance criterion implicitly required this plumbing
 - v3.0 Plan 20-03: `row.cr_salary_currency ?? "USD"` default preserved — its removal is scoped to Phase 22 (salary intelligence defensive render) per CONTEXT.md
+- v3.0 Plan 20-08: Native git hooks over husky for this repo — CONTEXT.md D-07 anti-dep stance locks in "zero new deps for a single hook"; husky's cross-platform indirection is unjustified for a solo-dev project
+- v3.0 Plan 20-08: Schema-drift audit scope is narrow — EXPECTED map covers only columns `jobs-db.ts` actually SELECTs/INSERTs. n8n schema additions during its own upgrade cadence are not drift from this app's perspective (CONTEXT.md D-08)
+- v3.0 Plan 20-08: `JOBS_DATABASE_URL` unset → graceful skip with exit 0 — lets fresh clones push without provisioning the jobs DB locally; maintainer's machine runs the real guard
+- v3.0 Plan 20-08: Hook bypass via `git push --no-verify` explicitly accepted per threat T-20-08-02 (solo-dev assumption A3). CI enforcement is the documented escalation path if bypasses occur
+- v3.0 Plan 20-08: Host-only connection-string logging — `JOBS_DATABASE_URL.split('@')[1]` prints `host:port/db`, never the password in the prefix (T-20-08-03 mitigation)
+- v3.0 Plan 20-08: Phase 22 (salary_intelligence) must extend the EXPECTED map at `scripts/check-jobs-schema.ts` when it lands — otherwise silent-drift false-negative for that table. Tracked as forward reminder in 20-08-SUMMARY.md.
 
 ## Blockers
 
@@ -123,5 +131,6 @@ None.
 | 20    | 20-01 | 3m 10s   | 2     | 3     | 2026-04-21T18:04:12Z |
 | 20    | 20-02 | 1m 19s   | 1     | 2     | 2026-04-21T18:09:57Z |
 | 20    | 20-03 | ~4m      | 2     | 3     | 2026-04-21T18:24:00Z |
+| 20    | 20-08 | ~10m     | 1     | 4     | 2026-04-21T18:37:00Z |
 
 **Planned Phase:** 20 (Foundation (Freshness + Zod + Tailored Resume)) — 8 plans — 2026-04-21T17:09:58.121Z
