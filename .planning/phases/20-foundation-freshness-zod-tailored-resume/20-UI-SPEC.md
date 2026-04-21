@@ -1,10 +1,11 @@
 ---
 phase: 20
 slug: foundation-freshness-zod-tailored-resume
-status: draft
+status: approved
 shadcn_initialized: true
 preset: none (manual init — new-york style, zinc base, lucide icons)
 created: 2026-04-21
+reviewed_at: 2026-04-21
 ---
 
 # Phase 20 — UI Design Contract
