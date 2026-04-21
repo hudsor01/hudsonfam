@@ -141,7 +141,16 @@
   3. Every existing AI section (cover letter, company research, tailored resume) shows a "Generated {relative time} ago · {model_used}" badge under its heading (mitigates Pitfall 6 — stale cache mistaken for fresh)
   4. Owner loads /admin/jobs with a database row that is missing a column `jobs-db.ts` expects; the page does not crash, the affected section shows an error-boundary fallback, and `console.error` logs the Zod parse failure with jobId (mitigates Pitfall 4 — schema drift)
   5. Browser DevTools shows a `Content-Security-Policy` response header on `/admin/*` including `object-src 'none'` and `frame-ancestors 'none'`; `npm test` includes a passing test that calls `information_schema.columns` and fails loudly if a column `jobs-db.ts` reads has been removed upstream
-**Plans**: TBD
+**Plans:** 8 plans
+Plans:
+- [ ] 20-01-PLAN.md — Install streamdown + Tailwind v4 @source directive (foundation; unblocks Plans 02, 04, 05)
+- [ ] 20-02-PLAN.md — Pure isStale util + STALE_THRESHOLDS constants + Vitest coverage (AI-DATA-03)
+- [ ] 20-03-PLAN.md — Zod schemas (jobs-schemas.ts) + parseOrLog fail-open wrapper at jobs-db.ts return boundary + Vitest (AI-SAFETY-06)
+- [ ] 20-04-PLAN.md — FreshnessBadge + SectionErrorBoundary client components + Vitest (AI-RENDER-02)
+- [ ] 20-05-PLAN.md — TailoredResumeSection + Streamdown XSS regression fixture + Vitest (AI-RENDER-01, AI-SAFETY-01)
+- [ ] 20-06-PLAN.md — Wire fetchJobDetail freshness + mount sections/boundaries in job-detail-sheet.tsx (AI-RENDER-01, AI-RENDER-02)
+- [ ] 20-07-PLAN.md — Next.js 16 proxy.ts with per-request CSP nonce scoped to /admin/* (AI-SAFETY-05)
+- [ ] 20-08-PLAN.md — scripts/check-jobs-schema.ts + pre-push hook + install-hooks.sh (AI-DATA-04)
 
 #### Phase 21: Polish (Copy + PDF + Empty States + Link-out)
 **Goal**: Owner can act on a tailored resume (copy, download) in one click, and every missing AI artifact shows a distinct, explanatory empty state instead of a silent blank section.
@@ -194,7 +203,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 20. Foundation (Freshness + Zod + Tailored Resume) | 0/0 | Not started | - |
+| 20. Foundation (Freshness + Zod + Tailored Resume) | 0/8 | Planned | - |
 | 21. Polish (Copy + PDF + Empty States + Link-out) | 0/0 | Not started | - |
 | 22. Salary Intelligence (Defensive Render) | 0/0 | Not started | - |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |

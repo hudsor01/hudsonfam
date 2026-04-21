@@ -1,15 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0
-milestone_name: AI Integration
-status: active
-last_updated: "2026-04-21T00:00:00.000Z"
-last_activity: 2026-04-21
+milestone: v1.0
+milestone_name: — Core Site
+status: planning
+last_updated: "2026-04-21T17:09:58.125Z"
+last_activity: 2026-04-21 — v3.0 roadmap committed (5 phases, 24/24 requirements mapped)
 progress:
-  total_phases: 5
+  total_phases: 9
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 8
+  completed_plans: 4
+  percent: 50
 ---
 
 # State
@@ -42,6 +43,7 @@ Progress: [                    ] 0/5 phases (0%)
 v3.0 — AI Integration Phase 20 (Foundation): isStale util + Zod safeParse + tailored resume render + CSP + schema-drift CI guardrail
 
 Phase order:
+
 - Phase 20: Foundation (Freshness + Zod + Tailored Resume) — no dependencies
 - Phase 21: Polish (Copy + PDF + Empty States + Link-out) — depends on Phase 20; parallel-safe with Phase 22
 - Phase 22: Salary Intelligence (Defensive Render) — depends on Phase 20; ships before homelab task #11
@@ -51,6 +53,7 @@ Phase order:
 ## Last Session
 
 2026-04-21 — v3.0 AI Integration roadmap created. 5 phases derived from the 24 v1 REQs:
+
   - Phase 20 (Foundation): 7 REQs — AI-RENDER-01/02, AI-SAFETY-01/05/06, AI-DATA-03/04
   - Phase 21 (Polish): 5 REQs — AI-ACTION-01/02, AI-RENDER-04/05/06
   - Phase 22 (Salary Intel defensive): 4 REQs — AI-RENDER-03/07, AI-DATA-01/02
@@ -58,6 +61,7 @@ Phase order:
   - Phase 24 (Regenerate expansion): 3 REQs — AI-ACTION-05/06/07
 
 Top-5 pitfalls mapped to phases:
+
   - Pitfall 1 (LLM-text XSS) → Phase 20 (AI-SAFETY-01/05/06)
   - Pitfall 4 (schema drift) → Phase 20 + Phase 22 (AI-DATA-01/02/04 + AI-SAFETY-06)
   - Pitfall 6 (stale cache) → Phase 20 (timestamps) + Phase 23 (polling) + Phase 24 (silent-success)
@@ -88,3 +92,5 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0: Pure isStale() util; freshness computed in server fetch layer, not SQL, not client (hydration-safe)
 - v3.0: CSP header on /admin/* (default-src 'self'; object-src 'none'; frame-ancestors 'none')
 - v3.0: Phase 22 (Salary Intel render) ships BEFORE homelab task #11 — defensive LEFT JOIN LATERAL tolerates empty data via AI-RENDER-04 empty state
+
+**Planned Phase:** 20 (Foundation (Freshness + Zod + Tailored Resume)) — 8 plans — 2026-04-21T17:09:58.121Z
