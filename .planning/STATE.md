@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-21T18:45:24.892Z"
-last_activity: 2026-04-21 — Plan 20-04 complete (FreshnessBadge + SectionErrorBoundary; 11 new Vitest cases; 294/294 tests green; build clean; zero deviations)
+last_updated: "2026-04-21T18:54:34.415Z"
+last_activity: 2026-04-21 — Plan 20-05 complete (TailoredResumeSection + Streamdown XSS regression fixture; 11 new Vitest cases; 305/305 tests green; build clean; two Rule 1 auto-fixes in test assertions)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 8
-  completed_plans: 5
-  percent: 63
+  completed_plans: 6
+  percent: 75
 ---
 
 # State
@@ -18,11 +18,11 @@ progress:
 ## Current Position
 
 Phase: 20 (Foundation — Freshness + Zod + Tailored Resume) — EXECUTING
-Plan: 5 of 8 complete (20-01, 20-02, 20-03, 20-04, 20-08); next is 20-05 (TailoredResumeSection + XSS test)
+Plan: 6 of 8 complete (20-01, 20-02, 20-03, 20-04, 20-05, 20-08); next is 20-06 (attach freshness + wire TailoredResumeSection into job-detail-sheet.tsx)
 Status: Executing Phase 20
-Last activity: 2026-04-21 — Plan 20-04 complete (FreshnessBadge + SectionErrorBoundary; 11 new Vitest cases; 294/294 tests green; build clean; zero deviations)
+Last activity: 2026-04-21 — Plan 20-05 complete (TailoredResumeSection + Streamdown XSS regression fixture; 11 new Vitest cases; 305/305 tests green; build clean; two Rule 1 auto-fixes in test assertions)
 
-Progress: [######    ] 5/8 plans in phase 20 (63%)
+Progress: [########  ] 6/8 plans in phase 20 (75%)
 
 ## What's Done
 
@@ -40,7 +40,7 @@ Progress: [######    ] 5/8 plans in phase 20 (63%)
 
 ## What's Next
 
-v3.0 — AI Integration Phase 20 (Foundation) — Plan 20-05 next: TailoredResumeSection (renders detail.tailored_resume via Streamdown into the job detail sheet) + XSS test fixture (AI-SAFETY-01). Then 20-06 (attach freshness in fetchJobDetail + wire FreshnessBadge + SectionErrorBoundary into job-detail-sheet.tsx), 20-07 (proxy.ts CSP header on /admin/*).
+v3.0 — AI Integration Phase 20 (Foundation) — Plan 20-06 next: attach freshness in fetchJobDetail (pre-compute relativeTime + isStale + ageDays server-side via attachFreshness helper) and wire FreshnessBadge + SectionErrorBoundary + TailoredResumeSection into job-detail-sheet.tsx. Then 20-07 (proxy.ts CSP header on /admin/*).
 
 Phase order:
 
@@ -51,6 +51,8 @@ Phase order:
 - Phase 24: Regenerate Expansion — depends on Phases 22 + 23
 
 ## Last Session
+
+2026-04-21 18:53 UTC — Plan 20-05 executed. `TailoredResumeSection` client component shipped at `src/app/(admin)/admin/jobs/tailored-resume-section.tsx` (80 lines) — renders `detail.tailored_resume.content` as formatted markdown via `<Streamdown skipHtml linkSafety={{ enabled: false }}>`, matching UI-SPEC §1 render tree exactly (FileText size-4 heading, FreshnessBadge meta, bg-card/50 rounded-lg p-4 border border-border max-h-96 overflow-y-auto body). Returns null when artifact absent (Phase 21 adds empty-state copy). Exports `TailoredResumeView` + `ResumeFreshness` types for Plan 20-06 server-side plumbing. 11 new Vitest cases across two files: 5 XSS regression assertions in `tailored-resume-xss.test.tsx` (3 payloads × no-<script>/no-<iframe>/no-onerror/no-on*-attrs + safe-markdown happy path + javascript:-URI href-stripping) + 6 render-shape tests in `tailored-resume-section.test.tsx` (heading+icon, Streamdown output via data-streamdown="strong" selector, null-returns-null, stale amber dot aria-label, model in meta line, no whitespace-pre-wrap). Two Rule 1 auto-fixes caught in TDD RED phase: (1) Streamdown's `skipHtml` is STRONGER than plan assumed — it strips `<script>/<iframe>` entirely (empty output) and replaces `<img onerror>` with a "[Image blocked]" placeholder span; tests updated to assert the stronger "no executable DOM emitted" invariant plus "no on* handler on any element". (2) Streamdown emits `<span data-streamdown="strong">` not `<strong>` for bold markdown; selector updated. Zero changes to production component code — both fixes were in test assertions only. Full suite 305/305 green (294 baseline + 11 new). Production build clean (only pre-existing env-var warnings). AI-RENDER-01 + AI-SAFETY-01 complete. Next: plan 20-06 (attach freshness in fetchJobDetail + mount TailoredResumeSection inside SectionErrorBoundary in job-detail-sheet.tsx). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-05-SUMMARY.md.
 
 2026-04-21 18:43 UTC — Plan 20-04 executed. Two reusable client components shipped for Phase 20 AI artifact sections: `FreshnessBadge` (src/app/(admin)/admin/jobs/freshness-badge.tsx, 87 lines) renders `Generated {relativeTime} · {modelUsed}` with optional amber stale-dot (bg-warning) + shadcn Tooltip on stale state, and `SectionErrorBoundary` (src/app/(admin)/admin/jobs/section-error-boundary.tsx, 79 lines) is a hand-rolled React class boundary with getDerivedStateFromError + componentDidCatch that logs `[ai-section]` payloads server-side only + renders a muted italic fallback per UI-SPEC §3 ("Couldn't render this section — the data may have changed shape."). TDD RED→GREEN for both tasks (no REFACTOR needed). 11 new Vitest cases: 5 for FreshnessBadge (fresh+model, no-model, stale-dot+ARIA, null-when-empty, typography classes) + 6 for SectionErrorBoundary (happy path, fallback copy, server-log payload, boundary isolation, muted-not-destructive classes, per-section labels). Full suite 294/294 green (283 baseline + 11 new). Production build clean. Zero deviations. Zero new deps. AI-RENDER-02 complete. Next: plan 20-05 (TailoredResumeSection + XSS test). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-04-SUMMARY.md.
 
@@ -130,6 +132,11 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 20-04: Fallback is terminal for Phase 20 (no "Retry" button). Retry belongs with regenerate in Phase 23; coupling display to action UI that doesn't exist yet would be premature
 - v3.0 Plan 20-04: Log prefix `[ai-section]` on componentDidCatch's `console.error` + structured payload `{ section, jobId, error, stack, componentStack }` — greppable in kubectl logs and JSON-parseable by downstream log tooling. Error detail never leaves the server
 - v3.0 Plan 20-04: Curly apostrophe + em-dash encoded as `&rsquo;`/`&mdash;` HTML entities in JSX; renders as the correct Unicode glyph in the DOM; Vitest assertions match the Unicode form (not the entity)
+- v3.0 Plan 20-05: Streamdown posture for this repo — ALWAYS pass BOTH `skipHtml` AND `linkSafety={{ enabled: false }}`. Omitting `skipHtml` lets `rehype-raw` parse LLM HTML (default pipeline); omitting `linkSafety` defaults to the modal-confirmation flow that's friction on an owner-only surface. CONTEXT.md D-12's "default pipeline is safe" wording is misleading and RESEARCH.md §Q2 is the authoritative correction
+- v3.0 Plan 20-05: Streamdown's `skipHtml` behavior is stronger than the plan assumed — `<script>` and `<iframe>` are stripped entirely (empty output), `<img onerror>` is replaced with an "[Image blocked]" placeholder span. XSS tests assert the stronger "no executable DOM / no on* attrs anywhere" invariant, not the weaker "payload visible as literal text" form
+- v3.0 Plan 20-05: Streamdown emits `<span class="font-semibold" data-streamdown="strong">` for `**bold**` markdown, NOT a `<strong>` element — tests use `[data-streamdown="strong"]` selector. Same marker pattern applies to other semantic roles (headings get classed `<hN>` but em/strong/code get data-streamdown markers on styled spans)
+- v3.0 Plan 20-05: `TailoredResumeView` + `ResumeFreshness` types colocated with the component (exported from `tailored-resume-section.tsx`), not lifted to `src/lib/types.ts` — matches `freshness-badge.tsx` cadence; Plan 20-06 imports from `@/app/(admin)/admin/jobs/tailored-resume-section` cleanly
+- v3.0 Plan 20-05: `javascript:`-URI href-stripping is covered as a bonus test — rehype-harden (bundled with Streamdown) filters the scheme independent of `skipHtml`, so this guard is free and catches a realistic XSS path (malicious markdown link, not raw HTML)
 
 ## Blockers
 
@@ -144,5 +151,6 @@ None.
 | 20    | 20-03 | ~4m      | 2     | 3     | 2026-04-21T18:24:00Z |
 | 20    | 20-08 | ~10m     | 1     | 4     | 2026-04-21T18:37:00Z |
 | 20    | 20-04 | ~3m      | 2     | 4     | 2026-04-21T18:43:30Z |
+| 20    | 20-05 | 4m       | 1     | 3     | 2026-04-21T18:53:07Z |
 
 **Planned Phase:** 20 (Foundation (Freshness + Zod + Tailored Resume)) — 8 plans — 2026-04-21T17:09:58.121Z
