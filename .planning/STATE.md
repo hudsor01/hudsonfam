@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-21T18:04:12Z"
-last_activity: "2026-04-21 — Plan 20-01 complete (streamdown install + Tailwind v4 @source directive)"
+last_updated: "2026-04-21T18:09:57Z"
+last_activity: "2026-04-21 — Plan 20-02 complete (pure isStale util + STALE_THRESHOLDS; 275/275 tests pass)"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 8
-  completed_plans: 1
-  percent: 12
+  completed_plans: 2
+  percent: 25
 ---
 
 # State
@@ -18,11 +18,11 @@ progress:
 ## Current Position
 
 Phase: 20 (Foundation — Freshness + Zod + Tailored Resume) — EXECUTING
-Plan: 1 of 8 — Plan 20-01 COMPLETE; next is 20-02 (isStale util)
+Plan: 2 of 8 — Plan 20-02 COMPLETE; next is 20-03 (Zod safeParse at jobs-db boundary)
 Status: Executing Phase 20
-Last activity: 2026-04-21 — Plan 20-01 complete (streamdown@^2.5.0 installed + Tailwind v4 @source directive wired in globals.css)
+Last activity: 2026-04-21 — Plan 20-02 complete (pure isStale util + STALE_THRESHOLDS constants + ArtifactKind type; 7 new Vitest cases; 275/275 tests pass)
 
-Progress: [##                  ] 1/8 plans in phase 20 (12%)
+Progress: [#####               ] 2/8 plans in phase 20 (25%)
 
 ## What's Done
 
@@ -51,6 +51,8 @@ Phase order:
 - Phase 24: Regenerate Expansion — depends on Phases 22 + 23
 
 ## Last Session
+
+2026-04-21 18:09 UTC — Plan 20-02 executed. Pure `isStale(timestamp, thresholdDays, now?)` util + `STALE_THRESHOLDS` constants + `ArtifactKind` type shipped in `src/lib/job-freshness.ts` with 7 Vitest cases in `src/__tests__/lib/job-freshness.test.ts`. TDD RED→GREEN, no deviations, no auto-fixes. Full suite: 275/275 (268 baseline + 7 new). AI-DATA-03 complete. Next: plan 20-03 (Zod schemas + parseOrLog at jobs-db.ts boundary). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-02-SUMMARY.md.
 
 2026-04-21 18:04 UTC — Plan 20-01 executed. streamdown@^2.5.0 installed as runtime dep; `@source "../../node_modules/streamdown/dist/*.js"` added at line 3 of globals.css. Build + tests green (268/268). Two Rule 3 auto-fixes: --legacy-peer-deps required (pre-existing zod conflict), @testing-library/dom pinned as explicit devDep. AI-RENDER-01 complete. Next: plan 20-02 (isStale util). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-01-SUMMARY.md.
 
@@ -97,6 +99,10 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 20-01: `--legacy-peer-deps` is now required for ALL npm installs in this repo (pre-existing @tanstack/zod-form-adapter zod@^3 vs project zod@^4.3.6 conflict) — tracked as tech-debt to resolve by migrating off zod-form-adapter
 - v3.0 Plan 20-01: Tailwind v4 `@source` directive uses single-asterisk glob `dist/*.js` (verified against Vercel's official streamdown docs), NOT the double-asterisk form in CONTEXT.md D-14
 - v3.0 Plan 20-01: `@testing-library/dom` pinned as explicit devDep to survive future `--legacy-peer-deps` prunes
+- v3.0 Plan 20-02: `isStale` is a zero-dep pure util (no date-fns) — epoch-ms subtraction is one line; date-fns is deferred to Plan 04 for user-facing `formatDistanceToNow`
+- v3.0 Plan 20-02: Inclusive staleness boundary (`ageDays >= thresholdDays`) — at exactly 14 days, a cover letter IS stale; test 4 enforces this to prevent off-by-one drift
+- v3.0 Plan 20-02: Silent-fail on both `null` and unparseable timestamps — badge is informational (D-03), so a bad DB row degrades to "no badge" rather than crashing the detail sheet
+- v3.0 Plan 20-02: `STALE_THRESHOLDS` colocated with `isStale` in the same file — one import for callers, avoids orphan constants file
 
 ## Blockers
 
@@ -107,5 +113,6 @@ None.
 | Phase | Plan  | Duration | Tasks | Files | Completed            |
 |-------|-------|----------|-------|-------|----------------------|
 | 20    | 20-01 | 3m 10s   | 2     | 3     | 2026-04-21T18:04:12Z |
+| 20    | 20-02 | 1m 19s   | 1     | 2     | 2026-04-21T18:09:57Z |
 
 **Planned Phase:** 20 (Foundation (Freshness + Zod + Tailored Resume)) — 8 plans — 2026-04-21T17:09:58.121Z

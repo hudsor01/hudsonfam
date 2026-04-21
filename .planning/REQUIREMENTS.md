@@ -41,7 +41,7 @@ Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified obse
 
 - [ ] **AI-DATA-01**: `getJobDetail()` returns salary intelligence joined to the job via a defensive `LEFT JOIN LATERAL` that tolerates both `job_id` and `company_name` keying in the `salary_intelligence` table
 - [ ] **AI-DATA-02**: `src/lib/jobs-db.ts` exports a `SalaryIntelligence` TypeScript type + matching Zod schema derived from the actual `salary_intelligence` schema once task #11 has produced at least one row
-- [ ] **AI-DATA-03**: A pure `isStale(timestamp, thresholdDays)` util exists in `src/lib/job-freshness.ts` with Vitest coverage and is used to drive every freshness badge
+- [x] **AI-DATA-03**: A pure `isStale(timestamp, thresholdDays)` util exists in `src/lib/job-freshness.ts` with Vitest coverage and is used to drive every freshness badge
 - [ ] **AI-DATA-04**: A Vitest integration test verifies each column referenced in `jobs-db.ts` exists in the live `n8n` database via `information_schema.columns`; the test fails with a clear message if any column is missing
 
 ## v2 Requirements
@@ -104,7 +104,7 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 | AI-SAFETY-06 | Phase 20 | Pending |
 | AI-DATA-01 | Phase 22 | Pending |
 | AI-DATA-02 | Phase 22 | Pending |
-| AI-DATA-03 | Phase 20 | Pending |
+| AI-DATA-03 | Phase 20 (20-02) | Complete (2026-04-21) |
 | AI-DATA-04 | Phase 20 | Pending |
 
 **Coverage:**
