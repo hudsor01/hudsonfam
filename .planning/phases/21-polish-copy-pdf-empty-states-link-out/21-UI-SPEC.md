@@ -51,10 +51,10 @@ Declared values (multiples of 4). Phase 21 adds no new spacing tokens — it inh
 
 **Exceptions:** none. Every new element in Phase 21 sits inside an existing `space-y-3` / `flex items-center gap-3` / `flex items-center gap-1` wrapper from Phase 20.
 
-**Icon-button target size:** `size-7` (28×28px) via `Button size="icon-sm"` OR inline `size-4` icon wrapped in a `size-7` ghost button (CONTEXT.md D-01 says "icon-only ghost Button"). Phase 21 SELECTS `Button variant="ghost" size="icon-sm"` because:
+**Icon-button target size:** `size-8` (32×32px) via `Button size="icon-sm"` — verified in `src/components/ui/button.tsx:30` (`"icon-sm": "size-8"`). Phase 21 SELECTS `Button variant="ghost" size="icon-sm"` because:
 - Matches Phase 20's `size-3.5` inline meta-icon rhythm when combined with `[&_svg]:size-4`
-- 28×28 is the tightest shadcn icon-button WCAG 2.5.5-acceptable target (the smaller `icon-xs` at 24×24 is below the 24px minimum target for inline meta rows)
-- Fits comfortably inside the `flex items-center gap-3` meta row without wrap at 512px sheet width
+- 32×32 comfortably exceeds the WCAG 2.5.5 AAA 24×24 minimum target for inline meta-row controls
+- Fits comfortably inside the `flex items-center gap-3` meta row without wrap at 512px sheet width (budget: FreshnessBadge ~180px + gap-3 + Button 32px + gap-3 + Download link ~110px ≈ 344px inside a 512px sheet)
 
 ---
 
@@ -727,7 +727,7 @@ Use `focus-visible` (NOT `focus`) to match shadcn convention — focus rings app
 - [ ] Dimension 2 Visuals: PASS — every new element composes with Phase 20 `job-detail-sheet.tsx` cadence (same section-shell shape, same `flex items-center justify-between` heading row, same meta-row `flex items-center gap-3` rhythm); empty-state body uses `text-sm text-muted-foreground italic`; error-fallback is visually distinct from empty-state (dimmed heading vs full-contrast heading)
 - [ ] Dimension 3 Color: PASS — zero new color tokens; quality badge uses `text-destructive` / `text-warning` / `text-success` via `scoreColor()`; Copy button uses ghost-variant accent hover; ExternalLink uses `opacity-60`; zero hardcoded Tailwind color names (enforced by CLAUDE.md + call-out list in Cross-cutting §Color Tokens)
 - [ ] Dimension 4 Typography: PASS — zero new sizes/weights; `text-sm`, `text-xs`, `text-[11px]` + `font-semibold` / `font-medium` only — all already present in the file
-- [ ] Dimension 5 Spacing: PASS — all spacing via Tailwind multiples-of-4 (`gap-1`, `gap-1.5`, `gap-2`, `gap-3`, `space-y-3`, `space-y-6`, `p-4`, `px-2.5`, `py-0.5`); `size-3`, `size-3.5`, `size-4` icon sizes all carry-forward from Phase 20; `size-7` icon-sm button is a 7×4 multiple (28px)
+- [ ] Dimension 5 Spacing: PASS — all spacing via Tailwind multiples-of-4 (`gap-1`, `gap-1.5`, `gap-2`, `gap-3`, `space-y-3`, `space-y-6`, `p-4`, `px-2.5`, `py-0.5`); `size-3`, `size-3.5`, `size-4` icon sizes all carry-forward from Phase 20; `size-8` icon-sm button is a 8×4 multiple (32px)
 - [ ] Dimension 6 Registry Safety: PASS — shadcn-official primitives only; zero new shadcn installs; zero new npm deps in the UI diff; n8n pipeline work is out of UI-SPEC scope
 
 **Approval:** pending
@@ -750,7 +750,7 @@ Three Researcher Notes are embedded above. Summarized for the owner's review:
 
 - `Copy`, `Check`, `ExternalLink`, `Download`, `Building2`, `FileText` icons all exist in the installed `lucide-react` package (verified via `node_modules/lucide-react/dist/esm/icons/`).
 - `Badge variant="outline"` accepts `className` override via `cn()` — custom text color class will win over the variant's default `text-muted-foreground` due to Tailwind merge semantics.
-- `Button size="icon-sm"` exists in the project's shadcn Button (28×28px) — verified in `src/components/ui/button.tsx:30`.
+- `Button size="icon-sm"` exists in the project's shadcn Button (32×32px — `"icon-sm": "size-8"`) — verified in `src/components/ui/button.tsx:30`.
 - `sonner` `toast.success` is the project convention (18+ call sites); root `<Toaster position="bottom-right" />` is mounted in `providers.tsx:12`.
 - All required color tokens exist: `--color-destructive`, `--color-warning`, `--color-success`, `--color-muted-foreground`, `--color-primary`, `--color-border`, `--color-ring`, `--color-accent`, `--color-foreground` (verified in `src/styles/globals.css:9-32`).
 - No new shadcn installs needed. No new npm deps needed. No new color tokens needed. No new typography sizes needed. No new spacing tokens needed.
