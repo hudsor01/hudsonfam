@@ -1,81 +1,117 @@
-# Requirements: v2.0 — Code Quality Enhancement
+# Requirements: v3.0 — AI Integration
 
-**Defined:** 2026-04-08
-**Reference:** `docs/react-nextjs-code-smells.md` (20 official React/Next.js anti-patterns)
-**Core Value:** Eliminate every code smell from the codebase so the app follows official React and Next.js best practices.
+**Defined:** 2026-04-21
+**Reference:** `.planning/research/SUMMARY.md`, `.planning/notes/ai-pipeline-integration-context.md`
+**Core Value:** Close the rendering gap between the n8n Job Search pipeline's LLM output and the /admin/jobs dashboard so the owner can actually use what the pipeline produces.
 
-## useEffect Audit
+## v1 Requirements
 
-- [ ] **EFFECT-01**: No useEffect is used to derive state from props or other state (smells 1, 6, 11)
-- [ ] **EFFECT-02**: No useEffect is used to adjust or reset state when props change (smells 2, 3)
-- [ ] **EFFECT-03**: No chained useEffects that trigger each other via state updates (smell 4)
-- [ ] **EFFECT-04**: No useEffect is used to notify parent components of state changes (smell 5)
-- [ ] **EFFECT-05**: No useEffect is used for POST requests or user-triggered actions (smell 7)
-- [ ] **EFFECT-06**: Every data-fetching useEffect has proper cleanup (AbortController) or uses server components (smell 8)
-- [ ] **EFFECT-07**: No useEffect sets state without a dependency array (smell 9)
-- [ ] **EFFECT-08**: No useEffect is used to share logic between event handlers (smell 12)
+Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified observationally.
 
-## Component Structure
+### AI Artifact Rendering
 
-- [ ] **COMP-01**: No component is defined inside another component (smell 10)
-- [ ] **COMP-02**: No state is mutated directly — all updates use new object/array references (smell 20)
+- [ ] **AI-RENDER-01**: Owner sees tailored resume content rendered as formatted markdown in the job detail sheet
+- [ ] **AI-RENDER-02**: Owner sees `generated_at` timestamp and `model_used` label on every AI artifact section (cover letter, company research, tailored resume, salary intelligence)
+- [ ] **AI-RENDER-03**: Owner sees salary intelligence — LLM analysis prose + structured headline figures — in the job detail sheet
+- [ ] **AI-RENDER-04**: Owner sees distinct empty-state messaging distinguishing "never generated" from "generated but currently empty" for each AI artifact section
+- [ ] **AI-RENDER-05**: Owner sees a quality-score badge on cover letters when `cover_letters.quality_score` is populated
+- [ ] **AI-RENDER-06**: Owner sees a company-website link-out (with external-link icon) from the company research section
+- [ ] **AI-RENDER-07**: Owner sees provenance tags ("scraped", "LLM estimate", "company research") on every salary figure displayed; no single "$X" appears without a source label
 
-## Server/Client Boundary
+### Owner-Triggered Actions
 
-- [ ] **BOUNDARY-01**: No non-serializable props (functions, class instances) are passed from Server to Client Components (smell 13)
-- [ ] **BOUNDARY-02**: "use client" directive is pushed to the lowest possible component in the tree (smell 14)
-- [ ] **BOUNDARY-03**: No client-side data fetching (useEffect/SWR) where server components can fetch instead (smell 15)
-- [ ] **BOUNDARY-04**: No event handlers or React hooks used in Server Components (smell 16)
-- [ ] **BOUNDARY-05**: No server-only imports (database, fs, secrets) in Client Components (smell 17)
+- [ ] **AI-ACTION-01**: Owner can copy tailored resume content to the clipboard via a button that confirms success via toast
+- [ ] **AI-ACTION-02**: Owner can download the tailored resume as a PDF file via a button
+- [ ] **AI-ACTION-03**: Owner can trigger "Research this company" for a job whose `company_research` is empty; the UI reflects in-progress state and updates when the row appears
+- [ ] **AI-ACTION-04**: Owner can regenerate the cover letter for a specific job; the UI shows a pessimistic spinner, poll-refreshes on completion, and displays the new `generated_at` timestamp
+- [ ] **AI-ACTION-05**: Owner can regenerate the tailored resume for a specific job with the same pattern as AI-ACTION-04
+- [ ] **AI-ACTION-06**: Owner can regenerate salary intelligence for a specific job with the same pattern as AI-ACTION-04
+- [ ] **AI-ACTION-07**: Owner sees a "workflow returned success but no data changed" warning state when a regenerate completes without updating the artifact's timestamp
 
-## SSR & Hydration
+### Safety & Hardening
 
-- [ ] **HYDRATION-01**: No browser-dependent rendering that causes hydration mismatches (smell 19)
-- [ ] **HYDRATION-02**: All date/time formatting uses explicit timezone or suppressHydrationWarning
+- [ ] **AI-SAFETY-01**: Markdown rendered from LLM output cannot execute JavaScript — a `<script>alert(1)</script>` payload in any artifact content renders as literal text
+- [ ] **AI-SAFETY-02**: Every n8n webhook call from the app is signed with HMAC-SHA256 using a shared secret (`N8N_WEBHOOK_SECRET`); n8n rejects unsigned calls
+- [ ] **AI-SAFETY-03**: Every n8n webhook call includes an `X-Idempotency-Key` header; replaying the same call does not re-run the underlying workflow twice
+- [ ] **AI-SAFETY-04**: Server Action errors returned to the client are drawn from a sentinel set ("timeout", "auth", "rate limit", "unavailable") — raw `e.message` or stack traces are never returned
+- [ ] **AI-SAFETY-05**: `/admin/*` routes serve a Content-Security-Policy header that blocks inline scripts, object embeds, and framing
+- [ ] **AI-SAFETY-06**: Every row read from an LLM artifact table (cover_letters, company_research, tailored_resumes, salary_intelligence) is validated via Zod `safeParse` at the `jobs-db.ts` boundary; malformed rows fail-open with a logged warning and an error-boundary-rendered section, never crash the page
 
-## Resilience
+### Data Layer
 
-- [ ] **RESILIENCE-01**: Every route group has loading.tsx for Suspense boundaries (smell 18)
-- [ ] **RESILIENCE-02**: Every route group has error.tsx for error boundaries (smell 18)
+- [ ] **AI-DATA-01**: `getJobDetail()` returns salary intelligence joined to the job via a defensive `LEFT JOIN LATERAL` that tolerates both `job_id` and `company_name` keying in the `salary_intelligence` table
+- [ ] **AI-DATA-02**: `src/lib/jobs-db.ts` exports a `SalaryIntelligence` TypeScript type + matching Zod schema derived from the actual `salary_intelligence` schema once task #11 has produced at least one row
+- [ ] **AI-DATA-03**: A pure `isStale(timestamp, thresholdDays)` util exists in `src/lib/job-freshness.ts` with Vitest coverage and is used to drive every freshness badge
+- [ ] **AI-DATA-04**: A Vitest integration test verifies each column referenced in `jobs-db.ts` exists in the live `n8n` database via `information_schema.columns`; the test fails with a clear message if any column is missing
 
-## Verification
+## v2 Requirements
 
-- [ ] **VERIFY-01**: Build passes with zero errors after all fixes
-- [ ] **VERIFY-02**: All 268+ tests pass after all fixes
-- [ ] **VERIFY-03**: Production deployment verified — no new console errors
+Deferred to v3.1 (gated on owner feedback after v3.0 ships and is used for ~2 weeks).
+
+### Inline Editing
+
+- **EDIT-01**: Owner can inline-edit the tailored resume content; edits persist to a new `edited_at` column without overwriting the LLM-generated `original_content`
+- **EDIT-02**: Owner can inline-edit the cover letter content with the same pattern as EDIT-01
+- **EDIT-03**: Owner can revert an edited artifact back to its `original_content`
+
+### Cross-Cutting Visibility
+
+- **DASH-01** (SEED-001): Owner sees an aggregate pipeline-health view (scored-last-7d, cover-letters-generated, per-workflow error rate) on a `/admin/jobs/pipeline` sub-tab or equivalent surface
 
 ## Out of Scope
 
+Explicitly excluded — do not add to v3.0 scope.
+
 | Feature | Reason |
 |---------|--------|
-| New user-facing features | v2.0 is internal quality only |
-| Performance optimization | Addressed in v1.4, not re-scoped |
-| New tests for existing features | Focus is fixing smells, not expanding coverage |
-| Refactoring non-React code (Prisma, API routes) | Code smells doc targets React/Next.js patterns only |
+| Interview prep rendering | Owner does not care (explicit scope decision, 2026-04-21) |
+| Recruiter outreach rendering | Owner does not care (explicit scope decision, 2026-04-21) |
+| Streaming token output during regenerate | Solo user, infrequent action, 30s spinner is acceptable |
+| Inline PDF preview in detail sheet | Attack surface (data:/blob: URIs, iframe CSP) exceeds owner-visible benefit — download-only is preferred (Pitfall 2) |
+| Collaboration, comments, sharing, mentions | Solo-user application; no collaboration surface exists |
+| Audit log of artifact edits | Git-like versioning is over-engineered for v3.0 — `edited_at`/`original_content` (v3.1) is sufficient history |
+| In-app chat with LLM | Duplicates Claude.ai / ChatGPT; no product value add |
+| Bulk regenerate across many jobs | Pipeline-cost explosion risk + no owner-requested use case |
+| Configurable LLM prompts from UI | Pipeline-config concern; belongs in n8n workflow editing, not the admin dashboard |
+| Email-from-admin for cover letters | Already works better in the owner's existing email client |
+| Auto-scheduled `company_research` across all 467 jobs | Token waste; owner-triggered only per context note |
 
 ## Traceability
 
+Filled in by `gsd-roadmapper` during step 10 of the milestone workflow.
+
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| EFFECT-01 | Phase 16 | Pending |
-| EFFECT-02 | Phase 16 | Pending |
-| EFFECT-03 | Phase 16 | Pending |
-| EFFECT-04 | Phase 16 | Pending |
-| EFFECT-05 | Phase 16 | Pending |
-| EFFECT-06 | Phase 16 | Pending |
-| EFFECT-07 | Phase 16 | Pending |
-| EFFECT-08 | Phase 16 | Pending |
-| COMP-01 | Phase 17 | Pending |
-| COMP-02 | Phase 17 | Pending |
-| BOUNDARY-01 | Phase 17 | Pending |
-| BOUNDARY-02 | Phase 17 | Pending |
-| BOUNDARY-03 | Phase 17 | Pending |
-| BOUNDARY-04 | Phase 17 | Pending |
-| BOUNDARY-05 | Phase 17 | Pending |
-| HYDRATION-01 | Phase 18 | Pending |
-| HYDRATION-02 | Phase 18 | Pending |
-| RESILIENCE-01 | Phase 18 | Pending |
-| RESILIENCE-02 | Phase 18 | Pending |
-| VERIFY-01 | Phase 19 | Pending |
-| VERIFY-02 | Phase 19 | Pending |
-| VERIFY-03 | Phase 19 | Pending |
+| AI-RENDER-01 | TBD | Pending |
+| AI-RENDER-02 | TBD | Pending |
+| AI-RENDER-03 | TBD | Pending |
+| AI-RENDER-04 | TBD | Pending |
+| AI-RENDER-05 | TBD | Pending |
+| AI-RENDER-06 | TBD | Pending |
+| AI-RENDER-07 | TBD | Pending |
+| AI-ACTION-01 | TBD | Pending |
+| AI-ACTION-02 | TBD | Pending |
+| AI-ACTION-03 | TBD | Pending |
+| AI-ACTION-04 | TBD | Pending |
+| AI-ACTION-05 | TBD | Pending |
+| AI-ACTION-06 | TBD | Pending |
+| AI-ACTION-07 | TBD | Pending |
+| AI-SAFETY-01 | TBD | Pending |
+| AI-SAFETY-02 | TBD | Pending |
+| AI-SAFETY-03 | TBD | Pending |
+| AI-SAFETY-04 | TBD | Pending |
+| AI-SAFETY-05 | TBD | Pending |
+| AI-SAFETY-06 | TBD | Pending |
+| AI-DATA-01 | TBD | Pending |
+| AI-DATA-02 | TBD | Pending |
+| AI-DATA-03 | TBD | Pending |
+| AI-DATA-04 | TBD | Pending |
+
+**Coverage:**
+- v1 requirements: 24 total
+- Mapped to phases: 0 (pending roadmap)
+- Unmapped: 24 ⚠️ (will resolve at step 10)
+
+---
+*Requirements defined: 2026-04-21*
+*Last updated: 2026-04-21 — v3.0 AI Integration milestone scoping*
