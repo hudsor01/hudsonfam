@@ -31,9 +31,9 @@ URL: thehudsonfam.com via Cloudflare Tunnel
 
 ## Current State
 
-**Shipped:** v1.4 (2026-04-08)
+**Shipped:** v2.0 Code Quality Enhancement (2026-04-08)
 **Production image:** ghcr.io/hudsor01/hudsonfam:20260408173607
-**Current milestone:** v2.0 — Code Quality Enhancement
+**Current milestone:** v3.0 — AI Integration
 
 ### Validated (all milestones)
 - v1.0: Core site, auth, CRUD, homelab dashboard, K8s deployment, memorial
@@ -41,6 +41,19 @@ URL: thehudsonfam.com via Cloudflare Tunnel
 - v1.2: Theme alignment, TW4 features, sidebar, TanStack Form/Table, component integration
 - v1.3: Services page, infra hardening, job search dashboard, photo compression, color consolidation
 - v1.4: Jobs dashboard production deployment, 15/15 requirements verified, exhaustive browser UAT
+- v2.0: useEffect audit, component structure cleanup, server/client boundaries, hydration fixes
+
+## Current Milestone: v3.0 AI Integration
+
+**Goal:** Surface the existing n8n Job Search pipeline's AI output in /admin/jobs and fix the upstream data gaps that leave the UI blank.
+
+**Target features:**
+- Render `tailored_resumes` in the job detail sheet (data exists, query exists, UI missing)
+- Make `company_research` actually populate (UI renders it; upstream workflow produces nothing)
+- Model + render `salary_intelligence` in the app, plus fix the workflow's batch-INSERT parameter-limit bug
+
+**Out of scope (explicit):** `interview_prep`, `recruiter_outreach` — owner direction.
+**Deferred (SEED-001):** aggregate pipeline-health dashboard — revisit after detail-sheet gaps close.
 
 ## Key Decisions
 - TanStack Form (NOT react-hook-form) for all forms
@@ -70,4 +83,4 @@ This document evolves at phase transitions and milestone boundaries.
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
-Last updated: 2026-04-08 after v2.0 milestone start
+Last updated: 2026-04-21 — v3.0 AI Integration milestone started
