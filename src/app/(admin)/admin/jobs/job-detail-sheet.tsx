@@ -23,7 +23,10 @@ import {
 } from "lucide-react";
 import { sourceColors } from "./columns";
 import { fetchJobDetail } from "@/lib/job-actions";
-import type { JobDetail } from "@/lib/jobs-db";
+import type { FreshJobDetail } from "@/lib/jobs-db";
+import { FreshnessBadge } from "./freshness-badge";
+import { SectionErrorBoundary } from "./section-error-boundary";
+import { TailoredResumeSection } from "./tailored-resume-section";
 
 interface JobDetailSheetProps {
   jobId: number | null;
@@ -46,7 +49,7 @@ export function JobDetailSheet({
   onOpenChange,
   onStatusChange,
 }: JobDetailSheetProps) {
-  const [detail, setDetail] = useState<JobDetail | null>(null);
+  const [detail, setDetail] = useState<FreshJobDetail | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -136,85 +139,126 @@ export function JobDetailSheet({
               <Separator />
 
               {detail.cover_letter && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold flex items-center gap-1.5">
-                      <FileText className="size-4" />
-                      Cover Letter
-                    </h3>
-                    <a
-                      href={`/api/jobs/${detail.id}/cover-letter-pdf`}
-                      download
-                      className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                    >
-                      <Download className="size-3" />
-                      Download PDF
-                    </a>
+                <SectionErrorBoundary section="cover_letter" jobId={detail.id}>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-semibold flex items-center gap-1.5">
+                        <FileText className="size-4" />
+                        Cover Letter
+                      </h3>
+                      <div className="flex items-center gap-3">
+                        <FreshnessBadge
+                          relativeTime={detail.cover_letter.freshness.relativeTime}
+                          modelUsed={detail.cover_letter.model_used}
+                          isStale={detail.cover_letter.freshness.isStale}
+                          ageDays={detail.cover_letter.freshness.ageDays}
+                        />
+                        <a
+                          href={`/api/jobs/${detail.id}/cover-letter-pdf`}
+                          download
+                          className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                        >
+                          <Download className="size-3" />
+                          Download PDF
+                        </a>
+                      </div>
+                    </div>
+                    <div className="text-sm text-muted-foreground whitespace-pre-wrap bg-card/50 rounded-lg p-4 border border-border max-h-64 overflow-y-auto">
+                      {detail.cover_letter.content}
+                    </div>
                   </div>
-                  <div className="text-sm text-muted-foreground whitespace-pre-wrap bg-card/50 rounded-lg p-4 border border-border max-h-64 overflow-y-auto">
-                    {detail.cover_letter.content}
-                  </div>
-                </div>
+                </SectionErrorBoundary>
+              )}
+
+              {detail.tailored_resume && (
+                <>
+                  <Separator />
+                  <SectionErrorBoundary
+                    section="tailored_resume"
+                    jobId={detail.id}
+                  >
+                    <TailoredResumeSection
+                      resume={{
+                        content: detail.tailored_resume.content,
+                        model_used: detail.tailored_resume.model_used,
+                        freshness: detail.tailored_resume.freshness,
+                      }}
+                    />
+                  </SectionErrorBoundary>
+                </>
               )}
 
               {detail.company_research && (
                 <>
                   <Separator />
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-semibold flex items-center gap-1.5">
-                      <Building2 className="size-4" />
-                      Company Intel
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      {detail.company_research.glassdoor_rating && (
-                        <div className="flex items-center gap-1.5">
-                          <Star className="size-3.5 text-score-mid" />
-                          <span>
-                            {detail.company_research.glassdoor_rating}/5
-                            Glassdoor
-                          </span>
+                  <SectionErrorBoundary
+                    section="company_research"
+                    jobId={detail.id}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-semibold flex items-center gap-1.5">
+                          <Building2 className="size-4" />
+                          Company Intel
+                        </h3>
+                        <FreshnessBadge
+                          relativeTime={detail.company_research.freshness.relativeTime}
+                          modelUsed={null}
+                          isStale={detail.company_research.freshness.isStale}
+                          ageDays={detail.company_research.freshness.ageDays}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        {detail.company_research.glassdoor_rating && (
+                          <div className="flex items-center gap-1.5">
+                            <Star className="size-3.5 text-score-mid" />
+                            <span>
+                              {detail.company_research.glassdoor_rating}/5
+                              Glassdoor
+                            </span>
+                          </div>
+                        )}
+                        {detail.company_research.employee_count && (
+                          <div className="text-muted-foreground">
+                            {detail.company_research.employee_count} employees
+                          </div>
+                        )}
+                        {detail.company_research.funding_stage && (
+                          <div className="text-muted-foreground capitalize">
+                            {detail.company_research.funding_stage}
+                          </div>
+                        )}
+                        {(detail.company_research.salary_range_min ||
+                          detail.company_research.salary_range_max) && (
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="size-3.5" />
+                            {formatSalary(
+                              detail.company_research.salary_range_min,
+                              detail.company_research.salary_range_max
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {detail.company_research.tech_stack?.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {detail.company_research.tech_stack.map((tech) => (
+                            <Badge
+                              key={tech}
+                              variant="outline"
+                              className="text-[11px]"
+                            >
+                              {tech}
+                            </Badge>
+                          ))}
                         </div>
                       )}
-                      {detail.company_research.employee_count && (
-                        <div className="text-muted-foreground">
-                          {detail.company_research.employee_count} employees
-                        </div>
-                      )}
-                      {detail.company_research.funding_stage && (
-                        <div className="text-muted-foreground capitalize">
-                          {detail.company_research.funding_stage}
-                        </div>
-                      )}
-                      {(detail.company_research.salary_range_min ||
-                        detail.company_research.salary_range_max) && (
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="size-3.5" />
-                          {formatSalary(
-                            detail.company_research.salary_range_min,
-                            detail.company_research.salary_range_max
-                          )}
-                        </div>
+                      {detail.company_research.ai_summary && (
+                        <p className="text-sm text-muted-foreground">
+                          {detail.company_research.ai_summary}
+                        </p>
                       )}
                     </div>
-                    {detail.company_research.tech_stack?.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {detail.company_research.tech_stack.map((tech) => (
-                          <Badge
-                            key={tech}
-                            variant="outline"
-                            className="text-[11px]"
-                          >
-                            {tech}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                    {detail.company_research.ai_summary && (
-                      <p className="text-sm text-muted-foreground">
-                        {detail.company_research.ai_summary}
-                      </p>
-                    )}
-                  </div>
+                  </SectionErrorBoundary>
                 </>
               )}
 
