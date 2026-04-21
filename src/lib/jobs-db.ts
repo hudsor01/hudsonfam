@@ -88,6 +88,25 @@ export interface JobDetail extends Job {
   tailored_resume: TailoredResume | null;
 }
 
+/** Freshness metadata computed server-side and attached by fetchJobDetail. */
+export interface ArtifactFreshness {
+  relativeTime: string;
+  isStale: boolean;
+  ageDays: number;
+}
+
+/**
+ * Enriched JobDetail returned from fetchJobDetail (server action).
+ * Each nested LLM artifact carries a pre-computed freshness field so the
+ * client never runs `new Date()` during render (hydration-safe).
+ */
+export interface FreshJobDetail
+  extends Omit<JobDetail, "cover_letter" | "tailored_resume" | "company_research"> {
+  cover_letter: (CoverLetter & { freshness: ArtifactFreshness }) | null;
+  tailored_resume: (TailoredResume & { freshness: ArtifactFreshness }) | null;
+  company_research: (CompanyResearch & { freshness: ArtifactFreshness }) | null;
+}
+
 export interface PipelineStats {
   collected: number;
   scored: number;
