@@ -17,6 +17,8 @@ npm run test:watch   # Vitest watch mode
 npm run lint         # ESLint 9
 npx prisma generate  # Regenerate client after schema changes
 npx prisma migrate dev  # Run migrations (uses DIRECT_DATABASE_URL via prisma.config.ts)
+./scripts/install-hooks.sh    # One-time per clone: install pre-push hook (schema drift guard)
+npm run test:schema           # On demand: verify n8n DB columns match jobs-db.ts queries
 ```
 
 ## Tech Stack
