@@ -143,7 +143,7 @@
   5. Browser DevTools shows a `Content-Security-Policy` response header on `/admin/*` including `object-src 'none'` and `frame-ancestors 'none'`; `npm test` includes a passing test that calls `information_schema.columns` and fails loudly if a column `jobs-db.ts` reads has been removed upstream
 **Plans:** 8 plans
 Plans:
-- [ ] 20-01-PLAN.md — Install streamdown + Tailwind v4 @source directive (foundation; unblocks Plans 02, 04, 05)
+- [x] 20-01-PLAN.md — Install streamdown + Tailwind v4 @source directive (foundation; unblocks Plans 02, 04, 05) — 2026-04-21
 - [ ] 20-02-PLAN.md — Pure isStale util + STALE_THRESHOLDS constants + Vitest coverage (AI-DATA-03)
 - [ ] 20-03-PLAN.md — Zod schemas (jobs-schemas.ts) + parseOrLog fail-open wrapper at jobs-db.ts return boundary + Vitest (AI-SAFETY-06)
 - [ ] 20-04-PLAN.md — FreshnessBadge + SectionErrorBoundary client components + Vitest (AI-RENDER-02)
@@ -203,7 +203,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 20. Foundation (Freshness + Zod + Tailored Resume) | 0/8 | Planned | - |
+| 20. Foundation (Freshness + Zod + Tailored Resume) | 1/8 | In progress | - |
 | 21. Polish (Copy + PDF + Empty States + Link-out) | 0/0 | Not started | - |
 | 22. Salary Intelligence (Defensive Render) | 0/0 | Not started | - |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |

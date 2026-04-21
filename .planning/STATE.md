@@ -2,27 +2,27 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
-status: planning
-last_updated: "2026-04-21T17:09:58.125Z"
-last_activity: 2026-04-21 — v3.0 roadmap committed (5 phases, 24/24 requirements mapped)
+status: executing
+last_updated: "2026-04-21T18:04:12Z"
+last_activity: "2026-04-21 — Plan 20-01 complete (streamdown install + Tailwind v4 @source directive)"
 progress:
-  total_phases: 9
+  total_phases: 5
   completed_phases: 0
   total_plans: 8
-  completed_plans: 4
-  percent: 50
+  completed_plans: 1
+  percent: 12
 ---
 
 # State
 
 ## Current Position
 
-Phase: 20 (Foundation — Freshness + Zod + Tailored Resume)
-Plan: —
-Status: Roadmap created; awaiting phase planning
-Last activity: 2026-04-21 — v3.0 roadmap committed (5 phases, 24/24 requirements mapped)
+Phase: 20 (Foundation — Freshness + Zod + Tailored Resume) — EXECUTING
+Plan: 1 of 8 — Plan 20-01 COMPLETE; next is 20-02 (isStale util)
+Status: Executing Phase 20
+Last activity: 2026-04-21 — Plan 20-01 complete (streamdown@^2.5.0 installed + Tailwind v4 @source directive wired in globals.css)
 
-Progress: [                    ] 0/5 phases (0%)
+Progress: [##                  ] 1/8 plans in phase 20 (12%)
 
 ## What's Done
 
@@ -40,7 +40,7 @@ Progress: [                    ] 0/5 phases (0%)
 
 ## What's Next
 
-v3.0 — AI Integration Phase 20 (Foundation): isStale util + Zod safeParse + tailored resume render + CSP + schema-drift CI guardrail
+v3.0 — AI Integration Phase 20 (Foundation) — Plan 20-02: implement pure `isStale()` util (hydration-safe, server-computed freshness). Then 20-03 (Zod safeParse at jobs-db boundary), 20-04 (FreshnessBadge + ErrorBoundary), 20-05 (TailoredResumeSection + XSS test), 20-06 (job-detail-sheet integration), 20-07 (proxy.ts CSP), 20-08 (schema-drift CI guardrail).
 
 Phase order:
 
@@ -51,6 +51,8 @@ Phase order:
 - Phase 24: Regenerate Expansion — depends on Phases 22 + 23
 
 ## Last Session
+
+2026-04-21 18:04 UTC — Plan 20-01 executed. streamdown@^2.5.0 installed as runtime dep; `@source "../../node_modules/streamdown/dist/*.js"` added at line 3 of globals.css. Build + tests green (268/268). Two Rule 3 auto-fixes: --legacy-peer-deps required (pre-existing zod conflict), @testing-library/dom pinned as explicit devDep. AI-RENDER-01 complete. Next: plan 20-02 (isStale util). See .planning/phases/20-foundation-freshness-zod-tailored-resume/20-01-SUMMARY.md.
 
 2026-04-21 — v3.0 AI Integration roadmap created. 5 phases derived from the 24 v1 REQs:
 
@@ -92,5 +94,18 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0: Pure isStale() util; freshness computed in server fetch layer, not SQL, not client (hydration-safe)
 - v3.0: CSP header on /admin/* (default-src 'self'; object-src 'none'; frame-ancestors 'none')
 - v3.0: Phase 22 (Salary Intel render) ships BEFORE homelab task #11 — defensive LEFT JOIN LATERAL tolerates empty data via AI-RENDER-04 empty state
+- v3.0 Plan 20-01: `--legacy-peer-deps` is now required for ALL npm installs in this repo (pre-existing @tanstack/zod-form-adapter zod@^3 vs project zod@^4.3.6 conflict) — tracked as tech-debt to resolve by migrating off zod-form-adapter
+- v3.0 Plan 20-01: Tailwind v4 `@source` directive uses single-asterisk glob `dist/*.js` (verified against Vercel's official streamdown docs), NOT the double-asterisk form in CONTEXT.md D-14
+- v3.0 Plan 20-01: `@testing-library/dom` pinned as explicit devDep to survive future `--legacy-peer-deps` prunes
+
+## Blockers
+
+None.
+
+## Performance Metrics
+
+| Phase | Plan  | Duration | Tasks | Files | Completed            |
+|-------|-------|----------|-------|-------|----------------------|
+| 20    | 20-01 | 3m 10s   | 2     | 3     | 2026-04-21T18:04:12Z |
 
 **Planned Phase:** 20 (Foundation (Freshness + Zod + Tailored Resume)) — 8 plans — 2026-04-21T17:09:58.121Z
