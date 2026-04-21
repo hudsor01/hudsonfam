@@ -1,4 +1,10 @@
 import pg from "pg";
+import {
+  CoverLetterSchema,
+  CompanyResearchSchema,
+  TailoredResumeSchema,
+  parseOrLog,
+} from "./jobs-schemas";
 
 const globalForPool = globalThis as unknown as { jobsPool: pg.Pool };
 
@@ -67,11 +73,19 @@ export interface CompanyResearch {
   created_at: string;
 }
 
+export interface TailoredResume {
+  id: number;
+  content: string;
+  model_used: string | null;
+  generated_at: string;
+}
+
 export interface JobDetail extends Job {
   description: string | null;
   company_url: string | null;
   cover_letter: CoverLetter | null;
   company_research: CompanyResearch | null;
+  tailored_resume: TailoredResume | null;
 }
 
 export interface PipelineStats {
@@ -269,10 +283,14 @@ export async function getJobDetail(jobId: number): Promise<JobDetail | null> {
        cr.employee_count AS cr_employee_count,
        cr.recent_news AS cr_recent_news,
        cr.ai_summary AS cr_ai_summary,
-       cr.created_at AS cr_created_at
+       cr.created_at AS cr_created_at,
+       tr.id AS tr_id, tr.content AS tr_content,
+       tr.model_used AS tr_model_used,
+       tr.generated_at AS tr_generated_at
      FROM jobs j
      LEFT JOIN cover_letters cl ON cl.job_id = j.id
      LEFT JOIN company_research cr ON cr.id = j.company_research_id
+     LEFT JOIN tailored_resumes tr ON tr.job_id = j.id
      WHERE j.id = $1`,
     [jobId]
   );
@@ -280,34 +298,60 @@ export async function getJobDetail(jobId: number): Promise<JobDetail | null> {
   const row = result.rows[0];
   if (!row) return null;
 
-  const coverLetter: CoverLetter | null = row.cl_id
-    ? {
-        id: row.cl_id,
-        content: row.cl_content,
-        pdf_data: null, // Omit large base64 from detail view
-        quality_score: row.cl_quality_score,
-        generated_at: row.cl_generated_at?.toISOString?.() ?? row.cl_generated_at,
-        model_used: row.cl_model_used,
-      }
-    : null;
+  const coverLetter = parseOrLog(
+    CoverLetterSchema,
+    row.cl_id
+      ? {
+          id: row.cl_id,
+          content: row.cl_content,
+          pdf_data: null, // Omit large base64 from detail view
+          quality_score: row.cl_quality_score,
+          generated_at:
+            row.cl_generated_at?.toISOString?.() ?? row.cl_generated_at,
+          model_used: row.cl_model_used,
+        }
+      : null,
+    "cover_letter",
+    jobId
+  );
 
-  const companyResearch: CompanyResearch | null = row.cr_id
-    ? {
-        id: row.cr_id,
-        company_name: row.cr_company_name,
-        company_url: row.cr_company_url,
-        glassdoor_rating: row.cr_glassdoor_rating,
-        salary_range_min: row.cr_salary_range_min,
-        salary_range_max: row.cr_salary_range_max,
-        salary_currency: row.cr_salary_currency ?? "USD",
-        tech_stack: row.cr_tech_stack ?? [],
-        funding_stage: row.cr_funding_stage,
-        employee_count: row.cr_employee_count,
-        recent_news: row.cr_recent_news,
-        ai_summary: row.cr_ai_summary,
-        created_at: row.cr_created_at?.toISOString?.() ?? row.cr_created_at,
-      }
-    : null;
+  const companyResearch = parseOrLog(
+    CompanyResearchSchema,
+    row.cr_id
+      ? {
+          id: row.cr_id,
+          company_name: row.cr_company_name,
+          company_url: row.cr_company_url,
+          glassdoor_rating: row.cr_glassdoor_rating,
+          salary_range_min: row.cr_salary_range_min,
+          salary_range_max: row.cr_salary_range_max,
+          salary_currency: row.cr_salary_currency ?? "USD",
+          tech_stack: row.cr_tech_stack ?? [],
+          funding_stage: row.cr_funding_stage,
+          employee_count: row.cr_employee_count,
+          recent_news: row.cr_recent_news,
+          ai_summary: row.cr_ai_summary,
+          created_at: row.cr_created_at?.toISOString?.() ?? row.cr_created_at,
+        }
+      : null,
+    "company_research",
+    jobId
+  );
+
+  const tailoredResume = parseOrLog(
+    TailoredResumeSchema,
+    row.tr_id
+      ? {
+          id: row.tr_id,
+          content: row.tr_content,
+          model_used: row.tr_model_used,
+          generated_at:
+            row.tr_generated_at?.toISOString?.() ?? row.tr_generated_at,
+        }
+      : null,
+    "tailored_resume",
+    jobId
+  );
 
   return {
     id: row.id,
@@ -332,6 +376,7 @@ export async function getJobDetail(jobId: number): Promise<JobDetail | null> {
     updated_at: row.updated_at?.toISOString?.() ?? row.updated_at,
     cover_letter: coverLetter,
     company_research: companyResearch,
+    tailored_resume: tailoredResume,
   };
 }
 
