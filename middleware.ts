@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 /**
- * Next.js 16 proxy (renamed from middleware.ts in Next.js 16 — per
- * official docs "Migrate Middleware Convention to Proxy"). Generates a
- * per-request CSP nonce and attaches a Content-Security-Policy header
- * scoped to /admin/* per CONTEXT.md D-04, D-05, D-06.
+ * Next.js middleware — attempted `proxy.ts` naming per Next.js 16 docs, but
+ * 16.2.1's middleware-manifest only recognizes `middleware.ts` / `middleware`
+ * function name. Proxy convention may be active in 16.3+; until then this
+ * file uses the traditional naming. Generates a per-request CSP nonce and
+ * attaches a Content-Security-Policy header scoped to /admin/* per CONTEXT.md
+ * D-04, D-05, D-06.
  *
  * CSP shape (D-04 pragmatic, not strict-nonce-for-styles):
  *   default-src 'self'
@@ -22,7 +24,7 @@ import type { NextRequest } from "next/server";
  * Enforcement: real CSP from day one, NOT Report-Only (D-06). Tailored resume
  * is the first markdown-rendered surface — block XSS now, iterate later.
  */
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const isDev = process.env.NODE_ENV === "development";
 
