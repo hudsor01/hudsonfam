@@ -78,40 +78,47 @@ Explicitly excluded — do not add to v3.0 scope.
 
 ## Traceability
 
-Filled in by `gsd-roadmapper` during step 10 of the milestone workflow.
+Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| AI-RENDER-01 | TBD | Pending |
-| AI-RENDER-02 | TBD | Pending |
-| AI-RENDER-03 | TBD | Pending |
-| AI-RENDER-04 | TBD | Pending |
-| AI-RENDER-05 | TBD | Pending |
-| AI-RENDER-06 | TBD | Pending |
-| AI-RENDER-07 | TBD | Pending |
-| AI-ACTION-01 | TBD | Pending |
-| AI-ACTION-02 | TBD | Pending |
-| AI-ACTION-03 | TBD | Pending |
-| AI-ACTION-04 | TBD | Pending |
-| AI-ACTION-05 | TBD | Pending |
-| AI-ACTION-06 | TBD | Pending |
-| AI-ACTION-07 | TBD | Pending |
-| AI-SAFETY-01 | TBD | Pending |
-| AI-SAFETY-02 | TBD | Pending |
-| AI-SAFETY-03 | TBD | Pending |
-| AI-SAFETY-04 | TBD | Pending |
-| AI-SAFETY-05 | TBD | Pending |
-| AI-SAFETY-06 | TBD | Pending |
-| AI-DATA-01 | TBD | Pending |
-| AI-DATA-02 | TBD | Pending |
-| AI-DATA-03 | TBD | Pending |
-| AI-DATA-04 | TBD | Pending |
+| AI-RENDER-01 | Phase 20 | Pending |
+| AI-RENDER-02 | Phase 20 | Pending |
+| AI-RENDER-03 | Phase 22 | Pending |
+| AI-RENDER-04 | Phase 21 | Pending |
+| AI-RENDER-05 | Phase 21 | Pending |
+| AI-RENDER-06 | Phase 21 | Pending |
+| AI-RENDER-07 | Phase 22 | Pending |
+| AI-ACTION-01 | Phase 21 | Pending |
+| AI-ACTION-02 | Phase 21 | Pending |
+| AI-ACTION-03 | Phase 23 | Pending |
+| AI-ACTION-04 | Phase 23 | Pending |
+| AI-ACTION-05 | Phase 24 | Pending |
+| AI-ACTION-06 | Phase 24 | Pending |
+| AI-ACTION-07 | Phase 24 | Pending |
+| AI-SAFETY-01 | Phase 20 | Pending |
+| AI-SAFETY-02 | Phase 23 | Pending |
+| AI-SAFETY-03 | Phase 23 | Pending |
+| AI-SAFETY-04 | Phase 23 | Pending |
+| AI-SAFETY-05 | Phase 20 | Pending |
+| AI-SAFETY-06 | Phase 20 | Pending |
+| AI-DATA-01 | Phase 22 | Pending |
+| AI-DATA-02 | Phase 22 | Pending |
+| AI-DATA-03 | Phase 20 | Pending |
+| AI-DATA-04 | Phase 20 | Pending |
 
 **Coverage:**
 - v1 requirements: 24 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 24 ⚠️ (will resolve at step 10)
+- Mapped to phases: 24 ✅
+- Unmapped: 0
+
+**Per-phase counts:**
+- Phase 20 (Foundation): 7 REQs — AI-RENDER-01, AI-RENDER-02, AI-SAFETY-01, AI-SAFETY-05, AI-SAFETY-06, AI-DATA-03, AI-DATA-04
+- Phase 21 (Polish): 5 REQs — AI-ACTION-01, AI-ACTION-02, AI-RENDER-04, AI-RENDER-05, AI-RENDER-06
+- Phase 22 (Salary Intel defensive): 4 REQs — AI-RENDER-03, AI-RENDER-07, AI-DATA-01, AI-DATA-02
+- Phase 23 (Owner-triggered pattern-setter): 5 REQs — AI-ACTION-03, AI-ACTION-04, AI-SAFETY-02, AI-SAFETY-03, AI-SAFETY-04
+- Phase 24 (Regenerate expansion): 3 REQs — AI-ACTION-05, AI-ACTION-06, AI-ACTION-07
 
 ---
 *Requirements defined: 2026-04-21*
-*Last updated: 2026-04-21 — v3.0 AI Integration milestone scoping*
+*Last updated: 2026-04-21 — traceability mapped to phases 20–24 by gsd-roadmapper*

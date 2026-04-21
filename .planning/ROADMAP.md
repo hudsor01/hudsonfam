@@ -111,10 +111,91 @@
 | 18. Server/Client Boundaries & Hydration | 1/0 | Complete    | 2026-04-08 |
 | 19. Verification & Production Deploy | 1/0 | Complete    | 2026-04-08 |
 
-## v3.0 — AI Integration (Future)
-- Qwen 3.5 photo captions + alt text
-- Qdrant + qwen-embed semantic search
-- N8N upload automation
-- Resend email notifications
-- Tdarr video transcoding
-- Jellyfin media embeds
+## v3.0 — AI Integration
+
+**Goal:** Close the rendering gap between the n8n Job Search pipeline's LLM output and the /admin/jobs dashboard so the owner can actually use what the pipeline produces. Render tailored resumes, model + fix salary intelligence, add manual company-research trigger, and introduce regenerate + freshness + safety scaffolding.
+
+**Reference:** `.planning/research/SUMMARY.md`, `.planning/notes/ai-pipeline-integration-context.md`, `.planning/REQUIREMENTS.md`
+
+**Out of scope (explicit):** interview_prep rendering, recruiter_outreach rendering, streaming regenerate, inline PDF preview, collaboration/sharing/comments, audit log of edits, in-app chat, bulk regenerate, configurable prompts, email-from-admin, auto-scheduled company_research.
+
+**Deferred to v3.1+:** SEED-001 aggregate pipeline-health dashboard (DASH-01), inline editing (EDIT-01/02/03).
+
+### Phases
+
+- [ ] **Phase 20: Foundation (Freshness + Zod + Tailored Resume)** — pure isStale util, Zod safeParse at jobs-db boundary, CSP on /admin/*, tailored resume rendered with Streamdown + generated_at/model badges, schema-drift CI guardrail
+- [ ] **Phase 21: Polish (Copy + PDF + Empty States + Link-out)** — copy-to-clipboard, tailored-resume PDF download, empty-state messaging distinguishing never-generated vs empty, company-website link-out, cover-letter quality-score badge
+- [ ] **Phase 22: Salary Intelligence (Defensive Render)** — SalaryIntelligence Zod + TS type, LEFT JOIN LATERAL tolerating both job_id and company_name keying, llm_analysis + structured headline render, per-figure provenance tags (scraped / LLM / research)
+- [ ] **Phase 23: Owner-Triggered Workflows (Pattern Setter)** — "Research this company" manual trigger, regenerate cover letter, HMAC-SHA256 + X-Idempotency-Key + sentinel-error scrubbing pattern established and retrofit to existing fireWebhook
+- [ ] **Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)** — regenerate tailored resume, regenerate salary intelligence, silent-success warning state when workflow returns OK without updating timestamp
+
+### Phase Details
+
+#### Phase 20: Foundation (Freshness + Zod + Tailored Resume)
+**Goal**: Owner can read the 6 existing tailored resumes rendered as sanitized markdown with a trustworthy generated-at/model badge, and every LLM artifact row is runtime-validated at the DB boundary so schema drift never crashes the page.
+**Depends on**: Nothing (first phase of milestone; builds on v2.0 baseline)
+**Requirements**: AI-RENDER-01, AI-RENDER-02, AI-SAFETY-01, AI-SAFETY-05, AI-SAFETY-06, AI-DATA-03, AI-DATA-04
+**Success Criteria** (what must be TRUE):
+  1. Owner opens the job detail sheet for a job with a tailored resume and sees the markdown content rendered with headings, lists, and bold — not `whitespace-pre-wrap` plaintext
+  2. A `<script>alert(1)</script>` payload pasted into any artifact's content field renders as literal visible text in the browser (mitigates Pitfall 1 — LLM output XSS)
+  3. Every existing AI section (cover letter, company research, tailored resume) shows a "Generated {relative time} ago · {model_used}" badge under its heading (mitigates Pitfall 6 — stale cache mistaken for fresh)
+  4. Owner loads /admin/jobs with a database row that is missing a column `jobs-db.ts` expects; the page does not crash, the affected section shows an error-boundary fallback, and `console.error` logs the Zod parse failure with jobId (mitigates Pitfall 4 — schema drift)
+  5. Browser DevTools shows a `Content-Security-Policy` response header on `/admin/*` including `object-src 'none'` and `frame-ancestors 'none'`; `npm test` includes a passing test that calls `information_schema.columns` and fails loudly if a column `jobs-db.ts` reads has been removed upstream
+**Plans**: TBD
+
+#### Phase 21: Polish (Copy + PDF + Empty States + Link-out)
+**Goal**: Owner can act on a tailored resume (copy, download) in one click, and every missing AI artifact shows a distinct, explanatory empty state instead of a silent blank section.
+**Depends on**: Phase 20
+**Requirements**: AI-ACTION-01, AI-ACTION-02, AI-RENDER-04, AI-RENDER-05, AI-RENDER-06
+**Success Criteria** (what must be TRUE):
+  1. Owner clicks the copy-icon button next to the tailored resume heading, sees a sonner toast confirming success, and finds the resume markdown on their clipboard ready to paste into an ATS
+  2. Owner clicks "Download PDF" on the tailored resume and receives a `.pdf` file (or a `.md` fallback with `Content-Disposition: attachment` if the n8n pipeline has not yet emitted `pdf_data`)
+  3. Owner opens a job whose `company_research` is empty and sees "No company research yet — click Research to generate" (distinct from a row where research was attempted but returned an empty body, which shows "Company research was generated but is currently empty" — AI-RENDER-04)
+  4. Owner sees a quality-score badge (color-coded red/amber/green via theme tokens) on any cover letter whose `quality_score` column is populated
+  5. Owner clicks the company name in Company Intel and is taken to the company's website in a new tab (with `rel="noopener noreferrer"` and an ExternalLink icon)
+**Plans**: TBD
+
+#### Phase 22: Salary Intelligence (Defensive Render)
+**Goal**: Owner sees salary intelligence rendered in the job detail sheet with every figure source-tagged, and the data layer tolerates both the `job_id`-keyed and `company_name`-keyed shapes the upstream workflow may produce — the section ships before homelab task #11 lands.
+**Depends on**: Phase 20
+**Requirements**: AI-RENDER-03, AI-RENDER-07, AI-DATA-01, AI-DATA-02
+**Success Criteria** (what must be TRUE):
+  1. Once a `salary_intelligence` row exists for a job, owner opens the detail sheet and sees a Salary Intelligence section with the LLM analysis prose (rendered via Streamdown) plus structured headline figures (min/median/max or p25/p50/p75 — whichever the row provides)
+  2. Every dollar figure rendered anywhere in the detail sheet (base salary, salary range, salary-intel headline, company_research salary range) carries a source tag — "scraped (jobicy)", "LLM estimate", "company research" — and no figure appears without a label (mitigates Pitfall 5 — scraped numbers displayed as authoritative)
+  3. When zero `salary_intelligence` rows exist for a job, the detail sheet shows the AI-RENDER-04 empty-state messaging for that section and does NOT crash — the defensive `LEFT JOIN LATERAL` returns null cleanly for both `job_id` and `company_name` keying
+  4. `src/lib/jobs-db.ts` exports both a `SalaryIntelligence` TypeScript type and a matching Zod schema; a Vitest test constructs a malformed row and asserts the Zod parse returns a fail-open result with a logged warning rather than throwing
+  5. The `?? "USD"` currency default at `jobs-db.ts:328` is removed; when `salary_currency` is null the salary block hides entirely rather than mislabeling a GBP/EUR figure with `$`
+**Plans**: TBD
+
+#### Phase 23: Owner-Triggered Workflows (Pattern Setter)
+**Goal**: Owner can manually trigger the company-research workflow and regenerate a cover letter for any job; every webhook leaving the app is HMAC-signed, idempotency-keyed, and returns only sanitized error sentinels — establishing the pattern Phase 24 will copy.
+**Depends on**: Phase 20
+**Requirements**: AI-ACTION-03, AI-ACTION-04, AI-SAFETY-02, AI-SAFETY-03, AI-SAFETY-04
+**Success Criteria** (what must be TRUE):
+  1. Owner opens a job with no company research, clicks "Research this company", sees an in-progress spinner + disabled button, and after the n8n workflow completes (poll every 3s, cap 60) the Company Intel section populates with the new row — closing the company_research TRIGGER gap without auto-scheduling across 467 jobs
+  2. Owner clicks "Regenerate cover letter" on a job; button shows pessimistic spinner, polling waits for `cover_letters.generated_at` to advance past the click timestamp, then sheet re-renders with the new content and a fresh timestamp badge (mitigates Pitfall 6 — stale cache)
+  3. An inspector capturing the POST from `hudsonfam` to `n8n.cloud.svc.cluster.local` sees an `X-Hudsonfam-Signature` HMAC-SHA256 header and an `X-Hudsonfam-Timestamp`; replaying the same body with the same `X-Idempotency-Key` does not produce a second LLM run in n8n execution history (mitigates Pitfall 3 — webhook unsigned + replayable)
+  4. When an n8n call fails (network error, 500, connect-refused), the owner sees one of four fixed strings — "timeout", "auth", "rate limit", or "unavailable" — and the server-side log captures the full error with stack (no raw `e.message`, no internal cluster IPs, leak to the browser)
+  5. Existing `fireWebhook` callsites (`job-feedback-sync`, `job-company-intel`, `job-outreach`) are retrofit to the new signed + idempotency-keyed helper in the same PR; a CI grep rule asserts every exported function in `src/lib/job-actions.ts` contains `requireRole(["owner"])` (mitigates Pitfall 9)
+**Plans**: TBD
+
+#### Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)
+**Goal**: Owner can regenerate every AI artifact the app renders, and any regenerate that completes "successfully" without actually updating the artifact produces a visible warning instead of silent failure.
+**Depends on**: Phase 22, Phase 23
+**Requirements**: AI-ACTION-05, AI-ACTION-06, AI-ACTION-07
+**Success Criteria** (what must be TRUE):
+  1. Owner clicks "Regenerate" on the tailored resume section; follows the Phase 23 pattern (pessimistic spinner → poll for `tailored_resumes.generated_at` advance → re-render with new timestamp badge)
+  2. Owner clicks "Regenerate" on the salary intelligence section; same pattern — polls `salary_intelligence.generated_at` until it advances or the 60-poll cap expires
+  3. When a regenerate webhook returns 200 but the artifact's `generated_at` timestamp does not advance within the polling window, owner sees a distinct warning banner — "Regeneration reported success but no new content was written — check n8n logs" — not a silent revert to pre-click state (AI-ACTION-07)
+  4. All three regenerate actions (cover letter from Phase 23, tailored resume, salary intelligence) share the same `regenerate-button.tsx` component and the same signed-webhook helper; adding a fourth regenerate action in the future requires one Server Action + one button prop, not a new pattern
+**Plans**: TBD
+
+### Progress
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 20. Foundation (Freshness + Zod + Tailored Resume) | 0/0 | Not started | - |
+| 21. Polish (Copy + PDF + Empty States + Link-out) | 0/0 | Not started | - |
+| 22. Salary Intelligence (Defensive Render) | 0/0 | Not started | - |
+| 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |
+| 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 0/0 | Not started | - |
