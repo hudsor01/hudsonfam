@@ -171,7 +171,7 @@ Plans:
 - [x] 21-04-PLAN.md — Copy button + Download anchor in TailoredResumeSection (AI-ACTION-01, AI-ACTION-02) — 2026-04-22
 - [x] 21-05-PLAN.md — scoreColor/scoreLabel helpers + Quality badge in cover-letter meta row (AI-RENDER-05) — 2026-04-22
 - [ ] 21-06-PLAN.md — EMPTY_STATE_COPY constant + isCompanyResearchEmpty predicate + empty-state branches on all 3 LLM sections (AI-RENDER-04)
-- [ ] 21-07-PLAN.md — normalizeUrl helper + conditional company anchor in sheet header (AI-RENDER-06)
+- [x] 21-07-PLAN.md — normalizeUrl helper + conditional company anchor in sheet header (AI-RENDER-06) — 2026-04-22
 - [ ] 21-08-PLAN.md — End-to-end UAT checkpoint on deployed app (AI-ACTION-01, AI-ACTION-02, AI-RENDER-04; autonomous=false)
 - [ ] 21-09-PLAN.md — Meta-doc finalization (ROADMAP + REQUIREMENTS + STATE updates)
 
@@ -215,7 +215,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 20. Foundation (Freshness + Zod + Tailored Resume) | 8/8 | Complete | 2026-04-21 |
-| 21. Polish (Copy + PDF + Empty States + Link-out) | 6/10 | In progress | - |
+| 21. Polish (Copy + PDF + Empty States + Link-out) | 7/10 | In progress | - |
 | 22. Salary Intelligence (Defensive Render) | 0/0 | Not started | - |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 0/0 | Not started | - |

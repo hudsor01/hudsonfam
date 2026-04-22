@@ -16,7 +16,7 @@ Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified obse
 - [ ] **AI-RENDER-04**: Owner sees distinct empty-state messaging distinguishing "never generated" from "generated but currently empty" for each AI artifact section
 - [x] **AI-RENDER-05
 **: Owner sees a quality-score badge on cover letters when `cover_letters.quality_score` is populated
-- [ ] **AI-RENDER-06**: Owner sees a company-website link-out (with external-link icon) from the company research section
+- [x] **AI-RENDER-06**: Owner sees a company-website link-out (with external-link icon) from the company research section
 - [ ] **AI-RENDER-07**: Owner sees provenance tags ("scraped", "LLM estimate", "company research") on every salary figure displayed; no single "$X" appears without a source label
 
 ### Owner-Triggered Actions
@@ -90,7 +90,7 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 | AI-RENDER-03 | Phase 22 | Pending |
 | AI-RENDER-04 | Phase 21 | Pending |
 | AI-RENDER-05 | Phase 21 (21-05) | Complete (2026-04-22) |
-| AI-RENDER-06 | Phase 21 | Pending |
+| AI-RENDER-06 | Phase 21 / Plan 21-07 | Complete |
 | AI-RENDER-07 | Phase 22 | Pending |
 | AI-ACTION-01 | Phase 21 (21-04) | Complete |
 | AI-ACTION-02 | Phase 21 (21-01 pipeline, 21-02 schema, 21-03 server, 21-04 UI) | Complete |
