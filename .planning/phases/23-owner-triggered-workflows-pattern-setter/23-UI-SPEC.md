@@ -1,11 +1,12 @@
 ---
 phase: 23
 slug: owner-triggered-workflows-pattern-setter
-status: draft
+status: approved
 shadcn_initialized: true
 preset: none (manual init — new-york style, zinc base, lucide icons; inherited from Phase 20)
 created: 2026-04-22
 reviewed_at: 2026-04-22
+review_result: APPROVED (5 PASS + 1 FLAG on Dimension 5 Spacing — shadcn-primitive-internal gap-1.5/px-2.5 documented for transparency, no new non-multiple-of-4 spacing introduced at phase level)
 ---
 
 # Phase 23 — UI Design Contract
