@@ -23,8 +23,6 @@ const TOOLTIPS: Record<ProvenanceSource, string> = {
     "Source: LLM estimate generated from external market data. Not a verified figure.",
   company_research:
     "Source: estimated during company research against public signals.",
-  original_posting:
-    "Source: directly quoted from the job posting description.",
 };
 
 interface ProvenanceTagProps {

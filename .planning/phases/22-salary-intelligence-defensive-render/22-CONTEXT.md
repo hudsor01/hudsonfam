@@ -63,11 +63,11 @@ Ship defensive rendering for `salary_intelligence` data in the job detail sheet.
 
 ### Provenance tags (AI-RENDER-07)
 
-- **D-09:** Every dollar figure in the detail sheet gets a provenance tag. Four provenance sources:
+- **D-09:** Every dollar figure in the detail sheet gets a provenance tag. Three provenance sources:
   - **"scraped"** — from `jobs.salary_min` / `jobs.salary_max` (source = whichever feed provided the job: jobicy/remoteok/himalayas/arbeitnow/workingnomads/serpapi/remotive)
   - **"LLM estimate"** — from `salary_intelligence.report_json` figures
   - **"company research"** — from `company_research.salary_range_min` / `company_research.salary_range_max`
-  - **"original posting"** — reserved for cases where a figure is directly quoted from the job posting description; not implemented Phase 22 unless trivial
+- **D-09 amendment (post-implementation, 2026-04-22):** a 4th reserved source (`original_posting` — figures quoted verbatim from `jobs.description`) was initially shipped as a primitive stub per the "reserved… not implemented Phase 22 unless trivial" clause. Dropped during Phase 22 closure per YAGNI review — no pipeline extracts salaries from `jobs.description` today, no roadmap phase renders it, and the color/label/tooltip decisions were explicitly marked provisional in UI-SPEC. The phase that eventually ships "quoted from posting" figures should re-add the source with real context rather than inheriting a speculative stub.
 - **D-10:** Tag component: shadcn `<Badge variant="outline">` with `text-[10px]` typography (one size smaller than the quality badge from Plan 21-05) and semantic color tokens: `scraped` uses `text-muted-foreground` (lowest trust), `LLM estimate` uses `text-warning` (estimate, not verified), `company research` uses `text-success` (higher-trust, LLM-researched from company sources). Exact color mapping finalized during planning; the principle is "color ≈ confidence."
 - **D-11:** Tag placement: inline immediately AFTER the figure, separated by a thin space. E.g., `$120K - $180K [scraped]`. Tooltip on the tag explains the source. Grep-verifiable acceptance: every occurrence of `{formatSalary(` in `job-detail-sheet.tsx` must be followed within 5 lines by a `<Badge variant="outline"` render, OR the figure is inside a component that itself has provenance tagging.
 
