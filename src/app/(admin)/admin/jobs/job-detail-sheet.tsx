@@ -30,6 +30,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { scoreColor, scoreLabel } from "@/lib/score-color";
+import { normalizeUrl } from "@/lib/url-helpers";
 import { FreshnessBadge } from "./freshness-badge";
 import { SectionErrorBoundary } from "./section-error-boundary";
 import { TailoredResumeSection } from "./tailored-resume-section";
@@ -114,12 +115,38 @@ export function JobDetailSheet({
                   {detail.title}
                 </SheetTitle>
                 <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                  {detail.company && (
-                    <span className="flex items-center gap-1">
-                      <Building2 className="size-3.5" />
-                      {detail.company}
-                    </span>
-                  )}
+                  {detail.company &&
+                    (() => {
+                      const companyUrl = normalizeUrl(
+                        detail.company_research?.company_url ??
+                          detail.company_url ??
+                          null
+                      );
+                      const inner = (
+                        <>
+                          <Building2 className="size-3.5" />
+                          {detail.company}
+                          {companyUrl && (
+                            <ExternalLink
+                              className="size-3 opacity-60"
+                              aria-hidden="true"
+                            />
+                          )}
+                        </>
+                      );
+                      return companyUrl ? (
+                        <a
+                          href={companyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm"
+                        >
+                          {inner}
+                        </a>
+                      ) : (
+                        <span className="flex items-center gap-1">{inner}</span>
+                      );
+                    })()}
                   {detail.location && (
                     <span className="flex items-center gap-1">
                       <MapPin className="size-3.5" />
