@@ -36,6 +36,8 @@ import { isCompanyResearchEmpty } from "@/lib/is-company-research-empty";
 import { FreshnessBadge } from "./freshness-badge";
 import { SectionErrorBoundary } from "./section-error-boundary";
 import { TailoredResumeSection } from "./tailored-resume-section";
+import { SalaryIntelligenceSection } from "./salary-intelligence-section";
+import { ProvenanceTag } from "./provenance-tag";
 
 interface JobDetailSheetProps {
   jobId: number | null;
@@ -155,12 +157,14 @@ export function JobDetailSheet({
                       {detail.location}
                     </span>
                   )}
-                  {formatSalary(detail.salary_min, detail.salary_max) && (
-                    <span className="flex items-center gap-1">
-                      <DollarSign className="size-3.5" />
-                      {formatSalary(detail.salary_min, detail.salary_max)}
-                    </span>
-                  )}
+                  {formatSalary(detail.salary_min, detail.salary_max) &&
+                    detail.salary_currency && (
+                      <span className="flex items-center gap-1">
+                        <DollarSign className="size-3.5" />
+                        {formatSalary(detail.salary_min, detail.salary_max)}
+                        <ProvenanceTag source="scraped" />
+                      </span>
+                    )}
                 </div>
               </SheetHeader>
 
@@ -261,6 +265,24 @@ export function JobDetailSheet({
 
               <Separator />
               <SectionErrorBoundary
+                section="salary_intelligence"
+                jobId={detail.id}
+              >
+                <SalaryIntelligenceSection
+                  salary={
+                    detail.salary_intelligence
+                      ? {
+                          report_json: detail.salary_intelligence.report_json,
+                          llm_analysis: detail.salary_intelligence.llm_analysis,
+                          freshness: detail.salary_intelligence.freshness,
+                        }
+                      : null
+                  }
+                />
+              </SectionErrorBoundary>
+
+              <Separator />
+              <SectionErrorBoundary
                 section="company_research"
                 jobId={detail.id}
               >
@@ -319,15 +341,17 @@ export function JobDetailSheet({
                         </div>
                       )}
                       {(detail.company_research.salary_range_min ||
-                        detail.company_research.salary_range_max) && (
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="size-3.5" />
-                          {formatSalary(
-                            detail.company_research.salary_range_min,
-                            detail.company_research.salary_range_max
-                          )}
-                        </div>
-                      )}
+                        detail.company_research.salary_range_max) &&
+                        detail.company_research.salary_currency && (
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="size-3.5" />
+                            {formatSalary(
+                              detail.company_research.salary_range_min,
+                              detail.company_research.salary_range_max
+                            )}
+                            <ProvenanceTag source="company_research" />
+                          </div>
+                        )}
                     </div>
                     {detail.company_research.tech_stack?.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
