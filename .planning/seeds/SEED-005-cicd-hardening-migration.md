@@ -34,16 +34,23 @@ Full investigation documented in `.planning/notes/ci-cd-fragility-analysis.md`.
 
 ## When to Surface
 
-**Primary trigger (imminent):** Whenever owner is ready to unblock Phase 21's production UAT (Plan 21-08 is marked DEFERRED-until-v3.5 in its SUMMARY). Can be after v3.0 milestone completes, OR inserted between any two v3.0 phases if production deployment becomes urgent.
+**Decision locked 2026-04-22:** Owner explicitly chose to batch all v3.0 code-complete work behind a single v3.5 deploy rather than insert v3.5 between v3.0 phases. Rationale: continue building the AI-integration feature surface (Phases 22, 23, 24) without a context-switch to infra work, then do v3.5 once as a dedicated sprint that releases the accumulated v3.0 backlog.
 
-**Secondary trigger (opportunistic):** If Phase 22 or 23 is about to land AI-ACTION-03/04/05 user-visible features and the broken pipeline is keeping those from reaching prod.
+**Primary trigger:** v3.0 milestone closes (all 5 phases — 20, 21, 22, 23, 24 — are code-complete). Activate v3.5 via `/gsd-new-milestone v3.5` on that day.
 
-**Lazy trigger (ignore until forced):** If the owner is content with code-complete-but-not-deployed for the rest of v3.0 and plans to batch-deploy everything at v3.0 close, v3.5 can wait until then. Not recommended but valid.
+**Emergency trigger:** If any v3.0 phase discovers a production bug that's observable ONLY in the deployed environment (e.g., CSP violation, NFS mount issue, session-cookie edge case), pull v3.5 forward to unblock investigation. Unlikely per current Plan 21-01..07 coverage, but worth naming.
+
+**Accumulated deferred work queued for v3.5-P4 retroactive UAT:**
+- Phase 21 Plan 21-08 (AI-ACTION-01 + AI-ACTION-02 + AI-RENDER-04 + AI-RENDER-05 + AI-RENDER-06)
+- Phase 22 Plan NN (Salary Intelligence UAT — pending Phase 22 planning)
+- Phase 23 Plan NN (Owner-Triggered Workflows UAT — pending Phase 23 planning)
+- Phase 24 Plan NN (Regenerate Expansion UAT — pending Phase 24 planning)
+
+This means v3.5-P4's retroactive UAT scope grows as v3.0 proceeds. Budget accordingly — expect the UAT portion of v3.5-P4 to take 30-45 min (5+ features across multiple sections) rather than 10-15 min for Phase 21 alone.
 
 Present this seed during:
-- `/gsd-new-milestone` if owner proposes v3.5 explicitly
-- `/gsd-plan-phase` if owner tries to start Phase 22 and wants to know if prod deployment works again first
-- `/gsd-progress` output when checking milestone status
+- `/gsd-new-milestone` when owner advances past v3.0 completion
+- `/gsd-progress` output when v3.0 hits 4/5 phases so owner can stage v3.5 activation
 
 ## Scope Estimate
 

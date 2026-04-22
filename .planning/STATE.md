@@ -40,27 +40,22 @@ Progress: [██████████] 100%
 
 ## What's Next
 
-**Phase 21 closed code-complete on 2026-04-22.** Plan 21-08 (production UAT) deferred to v3.5 because the Forgejo+Woodpecker deploy pipeline is broken. Two orthogonal paths forward:
+**Phase 21 closed code-complete on 2026-04-22.** Plan 21-08 (production UAT) deferred to v3.5. **Owner decision 2026-04-22:** continue the v3.0 Job Dashboard feature track (Phases 22 → 23 → 24), then do v3.5 CI/CD hardening as a dedicated sprint after v3.0 closes. All v3.0 phases ship code-complete + prod-UAT-deferred; v3.5-P4 executes the accumulated retroactive UAT in one pass.
 
-### Path A — continue v3.0 AI work (most likely next step)
+### Immediate next step
 
-- **`/gsd-discuss-phase 22`** — start Phase 22 (Salary Intelligence defensive render). Phase 22 depends on Phase 20 (complete) and is parallel-safe with Phase 21 (code-complete). Phase 22 code will also queue behind the same deploy block — unless v3.5 is inserted first, Phase 22 ships code-complete + prod-UAT-deferred like Phase 21.
-- Phase 23 (Owner-Triggered Workflows) and Phase 24 (Regenerate Expansion) follow per existing roadmap.
+**`/gsd-discuss-phase 22`** — Salary Intelligence (Defensive Render). 4 REQs: AI-RENDER-03 + AI-RENDER-07 + AI-DATA-01 + AI-DATA-02. Depends only on Phase 20. The `salary_intelligence` table has 0 rows today per `.planning/notes/ai-pipeline-integration-context.md` — Phase 22 ships the defensive `LEFT JOIN LATERAL` so the UI doesn't crash when data is missing, plus the Zod schema ready for when n8n task #11 fills the table.
 
-### Path B — unblock deploys via v3.5 CI/CD hardening
+### Sequenced milestone order (locked 2026-04-22)
 
-- **`/gsd-new-milestone v3.5`** — create the 4-phase CI/CD hardening milestone scoped in `.planning/seeds/SEED-005-cicd-hardening-migration.md`. ~4 hours focused infra sprint. After v3.5 lands, retroactively execute Plan 21-08 UAT against the freshly-deployed Phase 21 code, then resume v3.0 with a working deploy pipeline for Phases 22-24.
-- Owner's judgment call: "do v3.5 now or batch all v3.0 code-complete work through a single v3.5 deploy at the end of v3.0." Either is defensible; owner's anti-fragility concern favors v3.5-now to avoid a 4-phase-deep queue forming behind a single broken pipeline.
-
-### Milestone order
-
-- **v3.0 AI Integration:**
-  - Phase 20: Foundation (Freshness + Zod + Tailored Resume) — COMPLETE (2026-04-21)
-  - Phase 21: Polish (Copy + PDF + Empty States + Link-out) — **CODE COMPLETE (2026-04-22), prod UAT deferred to v3.5**
-  - Phase 22: Salary Intelligence (Defensive Render) — not started; depends only on Phase 20
-  - Phase 23: Owner-Triggered Workflows (Pattern Setter) — not started; depends on Phase 20
-  - Phase 24: Regenerate Expansion — not started; depends on Phase 22 + 23
-- **v3.5 CI/CD Hardening** (seeded 2026-04-22, SEED-005): migrate hudsonfam deploy to GitHub Actions + GHCR per CLAUDE.md's original intent. Unblocks Phase 21 (and subsequent v3.0 phases) production UAT. 4 phases, ~4 hours total.
+- **v3.0 AI Integration** (in progress, 2/5 phases code-complete):
+  - Phase 20: Foundation — COMPLETE (2026-04-21)
+  - Phase 21: Polish — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5-P4
+  - **Phase 22: Salary Intelligence — NEXT**
+  - Phase 23: Owner-Triggered Workflows — follows Phase 22
+  - Phase 24: Regenerate Expansion — depends on Phase 22 + 23
+- **v3.5 CI/CD Hardening** (seeded 2026-04-22, SEED-005): activates AFTER v3.0 closes. 4 phases (~4 hours + accumulated UAT). Migrates hudsonfam deploy to GitHub Actions + GHCR per CLAUDE.md's original intent. v3.5-P4 retroactively executes deferred UAT for Phases 21 + 22 + 23 + 24 in one pass.
+- **v3.0 "shipped" milestone marker** requires BOTH code-complete (all 5 phases) AND v3.5 executed (pipeline rebuilt + all UAT signed off). Until v3.5 ships, v3.0 is "code-complete, deploy-blocked."
 
 ## Last Session
 
