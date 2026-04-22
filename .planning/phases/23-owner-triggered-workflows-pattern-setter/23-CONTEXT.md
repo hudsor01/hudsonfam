@@ -50,11 +50,11 @@ Ship the pattern Phase 24 will copy: two owner-triggered buttons (`Research this
 
 - **D-05 [--auto]:** Polling cadence: 3-second intervals, hard cap at 60 polls = 180s timeout. On timeout, surface `"unavailable"` sentinel to the user. Rationale: ROADMAP SC #1 locks "poll every 3s, cap 60"; this carries forward verbatim. 180s is generous — LLM runs typically complete in 15-60s; exceeding 3 minutes indicates an upstream stall or crash. Timeout path does NOT silently reset — button stays disabled, sentinel shown, owner can refresh the sheet to retry.
 
-- **D-06 [--auto]:** "Done-ness" predicate differs per artifact:
-  - `triggerCompanyResearch`: polls `fetchJobDetail(jobId)` until `detail.company_research !== null` (INSERT wait — row didn't exist before click)
-  - `regenerateCoverLetter`: captures `clickTimestamp = Date.now()` before firing; polls until `detail.cover_letter?.generated_at > clickTimestamp` (UPDATE wait — `generated_at` advances past click)
-  - Pattern extends cleanly to Phase 24: `regenerateTailoredResume` polls `detail.tailored_resume.generated_at > clickTimestamp`; `regenerateSalaryIntelligence` polls `detail.salary_intelligence.search_date > clickDate` (note: search_date semantics per Phase 22 D-03)
-  The two button components each accept a `isDone: (detail) => boolean` predicate prop; Phase 24 reuses the same component shape with a different predicate.
+- **D-06 [--auto; amended post-research]:** "Done-ness" predicate differs per artifact, keyed on SERVER-SIDE baseline (not client clock):
+  - `triggerCompanyResearch`: polls `fetchJobDetail(jobId)` until `detail.company_research !== null` (INSERT wait — row didn't exist pre-click; no clock-domain issue)
+  - `regenerateCoverLetter`: Server Action reads pre-webhook `cover_letters.generated_at` from DB and returns it as `{ ok: true, baseline: <ISO> }` alongside firing the webhook; button stores the returned baseline and polls until `detail.cover_letter?.generated_at > baseline`. Client NEVER captures `Date.now()` for the predicate — all clock reads stay server-side. (Research §Pitfall 4 flagged the original client-clock wording as a latent bug — browser clock skew can defeat the `generated_at > clickTimestamp` predicate; server-side baseline eliminates the clock-domain mixing.)
+  - Pattern extends cleanly to Phase 24: `regenerateTailoredResume` + `regenerateSalaryIntelligence` Server Actions both return `{ ok: true, baseline }` reading the respective artifact's freshness field; button generic over the baseline-vs-current comparison. Phase 24 inherits the same contract.
+  The two button components each accept an `isDone: (detail, baseline) => boolean` predicate prop; `triggerCompanyResearch` baseline is irrelevant (passes `null`); `regenerateCoverLetter` baseline is the server-returned pre-webhook timestamp.
 
 ### Error sentinel mapping (AI-SAFETY-04)
 
