@@ -190,7 +190,7 @@ Plans:
 - [x] 22-01-PLAN.md — SalaryIntelligenceSchema + CompanyResearchSchema nullable cascade (AI-DATA-02; D-01 + D-12 prep) — 2026-04-22
 - [ ] 22-02-PLAN.md — LEFT JOIN LATERAL + SalaryIntelligence type + tri-field attachFreshness (AI-DATA-01 + AI-DATA-02)
 - [ ] 22-03-PLAN.md — Remove `?? "USD"` + flip CompanyResearch.salary_currency nullable (D-12 cascade; grep gate G-6)
-- [ ] 22-04-PLAN.md — Schema-drift EXPECTED map gains salary_intelligence (D-04)
+- [x] 22-04-PLAN.md — Schema-drift EXPECTED map gains salary_intelligence (D-04) — 2026-04-22
 - [ ] 22-05-PLAN.md — ProvenanceTag primitives (provenanceColor/Label + component) (AI-RENDER-07 foundation)
 - [ ] 22-06-PLAN.md — SalaryIntelligenceSection + EMPTY_STATE_COPY + parseSalaryHeadline + formatSingleSalary (AI-RENDER-03)
 - [ ] 22-07-PLAN.md — Mount in job-detail-sheet + provenance retrofits + D-12 currency guards (AI-RENDER-03 + AI-RENDER-07)

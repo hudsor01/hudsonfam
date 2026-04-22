@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-22T19:57:18.058Z"
+last_updated: "2026-04-22T20:03:01.568Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 26
-  completed_plans: 23
-  percent: 88
+  completed_plans: 24
+  percent: 92
 ---
 
 # State
@@ -18,11 +18,11 @@ progress:
 ## Current Position
 
 Phase: 22 (salary-intelligence-defensive-render) — EXECUTING
-Plan: 2 of 8
+Plan: 2 of 8 (next in serial order; 22-04 completed out-of-sequence as parallel-safe wave per phase planning — 2/8 plans complete: 22-01, 22-04)
 Status: Ready to execute
 Last activity: 2026-04-22
 
-Progress: [█████████░] 88%
+Progress: [█████████░] 92%
 
 ## What's Done
 
@@ -58,6 +58,8 @@ Progress: [█████████░] 88%
 - **v3.0 "shipped" milestone marker** requires BOTH code-complete (all 5 phases) AND v3.5 executed (pipeline rebuilt + all UAT signed off). Until v3.5 ships, v3.0 is "code-complete, deploy-blocked."
 
 ## Last Session
+
+2026-04-22 20:01 UTC — Plan 22-04 executed (parallel-safe with 22-02 and 22-03 per phase planning wave). Single-file 4-line diff to `scripts/check-jobs-schema.ts`: the EXPECTED map grows from 6 tables to 7 by inserting `salary_intelligence: ["id", "search_date", "report_json", "raw_results", "llm_analysis", "created_at", "updated_at"]` between `tailored_resumes` (Plan 21-02) and `recruiter_outreach`. Pipeline-chronological ordering (resume → salary → recruiter → application) mirrors CONTEXT.md §Phase Boundary and the jobs-db.ts read path. `npm run test:schema` verified BOTH modes end-to-end: Mode B (default local dev, no JOBS_DATABASE_URL) → exit 0 with graceful skip; Mode A (via `kubectl port-forward -n homelab svc/postgres-rw 5433:5432` + credential from `kubectl get secret -n homelab postgres-app`) → `[test:schema] OK — verified 7 tables, 70 columns.` exit 0. Side-channel paranoia check via `kubectl exec -n homelab postgres-1 -c postgres -- psql -U postgres -d n8n` returned all 7 salary_intelligence columns in declared order with zero drift. Pre-push hook (Plan 20-08's `.git/hooks/pre-push`) continues to work without re-install — the hook reads EXPECTED at invocation time, so the new 7 columns are transitively guarded on the next `git push`. Zero deviations, zero Rule 1/2/3 auto-fixes, zero architectural escalation. CONTEXT.md D-04 satisfied. Single atomic commit: `8aedff6` (feat(22-04): add salary_intelligence to schema-drift EXPECTED map). Duration 1m 16s. 2/8 Phase 22 plans complete (22-01, 22-04). Next parallel-track plans still open: 22-02 (LEFT JOIN LATERAL + JobDetail extension — the load-bearing getJobDetail SELECT edit), 22-03 (`?? "USD"` default removal cascade — unblocked by Plan 22-01's salary_currency nullable flip). Plan 22-04's guardrail means: if the n8n workflow renames or drops any of the 7 salary_intelligence columns while Plans 22-02/22-05/22-06 are being written, the pre-push hook fails loudly instead of silently producing null SalaryIntelligence objects at the renderer boundary. See `.planning/phases/22-salary-intelligence-defensive-render/22-04-SUMMARY.md`.
 
 2026-04-22 19:55 UTC — Plan 22-01 executed. First Phase 22 plan delivered: `SalaryIntelligenceSchema` Zod schema added to `src/lib/jobs-schemas.ts` (appended between `TailoredResumeSchema` and `parseOrLog`) with permissive `report_json: z.unknown()` per CONTEXT.md D-01 — `salary_intelligence` table has 0 live rows today (n8n task #11 `$N`-collision bug pending), so the loose shape accepts whatever upstream eventually produces. Schema fields: `id: z.number(), search_date: z.string(), report_json: z.unknown(), raw_results: z.string().nullable(), llm_analysis: z.string().nullable(), created_at: z.string(), updated_at: z.string().nullable()`. Separately: `CompanyResearchSchema.salary_currency` flipped from `z.string()` to `z.string().nullable()` per D-12 — unblocks Plan 22-03's `?? "USD"` default removal cascade so that null currency hides the salary block entirely rather than mislabeling non-USD figures with `$`. One Rule 1 auto-fix during the `npm run build` verification gate: `CompanyResearch` TS interface in `src/lib/jobs-db.ts:67` still declared `salary_currency: string` and TypeScript rejected the new `string | null` return value — flipped to `salary_currency: string | null` to match the now-authoritative Zod schema (Plan 20-03 source-of-truth convention). `?? "USD"` default at line 349 intentionally left intact (Plan 22-03 scope removes it). TDD RED→GREEN: 15 new tests added FIRST (2 new describe blocks: `SalaryIntelligenceSchema — fail-open validation at DB boundary` with 13 cases including 8-way `it.each` permissive report_json matrix, plus `CompanyResearchSchema — salary_currency nullable cascade (D-12)` with 2 cases) → 13 failed for the right reasons (schema undefined + nullable not yet applied) → all 15 green after schema edits. Full suite 395 → 410 green. `npm run build` exits 0 (only pre-existing Redis / Better Auth / NFT warnings). `parseOrLog<T>` function body byte-identical (existing generic signature handles the new schema natively — zero infrastructure change). One atomic commit: `e6b2d82` (feat(22-01): add SalaryIntelligenceSchema + flip CompanyResearch.salary_currency to nullable). Duration ~4m. 1/8 Phase 22 plans complete. AI-DATA-02 partially satisfied (schema done; Plan 22-02 wires the LEFT JOIN LATERAL + JobDetail extension). Deviation note: commit touches 3 files (schema + interface + test), not the plan's stated "exactly 2" — the TS interface fix is the minimal Rule 1 auto-fix required to keep the tree green per this plan's own success criteria. See `.planning/phases/22-salary-intelligence-defensive-render/22-01-SUMMARY.md`.
 
@@ -258,3 +260,4 @@ None.
 
 **Planned Phase:** 22 (salary-intelligence-defensive-render) — 8 plans — 2026-04-22T19:49:06.860Z
 | Phase 22 P01 | ~4 minutes | 3 tasks | 3 files |
+| Phase 22 P04 | 1m 16s | 3 tasks | 1 files |
