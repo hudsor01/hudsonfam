@@ -25,4 +25,8 @@ export const EMPTY_STATE_COPY = {
     missing: "No company research yet.",
     empty: "Company research was generated but is empty.",
   },
+  salary_intelligence: {
+    missing: "No salary intelligence yet.",
+    empty: "Salary intelligence was generated but is empty.",
+  },
 } as const;
