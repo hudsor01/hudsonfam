@@ -90,7 +90,7 @@ export interface JobDetail extends Job {
 
 /** Freshness metadata computed server-side and attached by fetchJobDetail. */
 export interface ArtifactFreshness {
-  relativeTime: string;
+  generatedDate: string;
   isStale: boolean;
   ageDays: number;
 }

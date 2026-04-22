@@ -2,7 +2,6 @@
 
 import { requireRole } from "@/lib/session";
 import { revalidatePath } from "next/cache";
-import { formatDistanceToNowStrict } from "date-fns";
 import {
   updateJobStatus as dbUpdateStatus,
   createApplication,
@@ -17,6 +16,13 @@ import type {
   FreshJobDetail,
 } from "@/lib/jobs-db";
 import { isStale, STALE_THRESHOLDS } from "@/lib/job-freshness";
+
+const DATE_FMT = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/Chicago",
+  month: "numeric",
+  day: "numeric",
+  year: "2-digit",
+});
 
 const N8N_WEBHOOK_BASE =
   process.env.N8N_WEBHOOK_URL || "http://n8n.cloud.svc.cluster.local:5678";
@@ -37,15 +43,19 @@ async function fireWebhook(
 }
 
 /**
- * Attach pre-computed freshness (relativeTime, isStale, ageDays) to an
+ * Attach pre-computed freshness (generatedDate, isStale, ageDays) to an
  * artifact server-side. Handles both field names — `generated_at` (cover
  * letter, tailored resume) and `created_at` (company research) — without a
  * schema-level transform (per RESEARCH.md §Open Question 2).
  *
+ * Formats `generatedDate` as M/D/YY via Intl.DateTimeFormat with the
+ * America/Chicago timezone (CLAUDE.md §Key Decisions). Exported for unit
+ * testing; fetchJobDetail is the sole production caller.
+ *
  * Silent on malformed input: an unparseable ISO string yields zeroed
  * freshness rather than throwing, so a malformed row never blows up render.
  */
-function attachFreshness<T extends { generated_at: string } | { created_at: string }>(
+export function attachFreshness<T extends { generated_at: string } | { created_at: string }>(
   artifact: T | null,
   thresholdDays: number
 ): (T & { freshness: ArtifactFreshness }) | null {
@@ -59,7 +69,7 @@ function attachFreshness<T extends { generated_at: string } | { created_at: stri
   if (Number.isNaN(generated.getTime())) {
     return {
       ...artifact,
-      freshness: { relativeTime: "", isStale: false, ageDays: 0 },
+      freshness: { generatedDate: "", isStale: false, ageDays: 0 },
     } as T & { freshness: ArtifactFreshness };
   }
   const ageDays = Math.max(
@@ -69,7 +79,7 @@ function attachFreshness<T extends { generated_at: string } | { created_at: stri
   return {
     ...artifact,
     freshness: {
-      relativeTime: formatDistanceToNowStrict(generated, { addSuffix: true }),
+      generatedDate: DATE_FMT.format(generated),
       isStale: isStale(iso, thresholdDays),
       ageDays,
     },
