@@ -2,25 +2,25 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
-status: completed
-last_updated: "2026-04-21T19:40:00.000Z"
-last_activity: 2026-04-21 — Phase 21 CONTEXT.md gathered (5 REQs; scope expanded to include n8n pipeline work + migration for PDF; Phase 20 revision commit queued ahead of Phase 21 planning)
+status: planning
+last_updated: "2026-04-22T00:51:28.369Z"
+last_activity: 2026-04-21 — /gsd-discuss-phase 21 complete; 4 gray areas discussed, 23 decisions locked
 progress:
   total_phases: 6
   completed_phases: 1
-  total_plans: 8
+  total_plans: 18
   completed_plans: 12
-  percent: 100
+  percent: 67
 ---
 
 # State
 
 ## Current Position
 
-Phase: 21 (Polish — Copy + PDF + Empty States + Link-out) — context gathered, ready to plan
-Plan: 21-CONTEXT.md written; next step /gsd-plan-phase 21
-Status: Phase 21 scope locked with owner override (PDF-only, no .md fallback) and scope expansion (n8n pipeline + migration work folded in). Phase 20 revision commit (FreshnessBadge date format) queued before Phase 21 planning begins.
-Last activity: 2026-04-21 — /gsd-discuss-phase 21 complete; 4 gray areas discussed, 23 decisions locked
+Phase: 21 (Polish — Copy + PDF + Empty States + Link-out) — PLANNED (10 plans, 5 waves), ready to execute
+Plan: 10 PLAN.md files written, 0 blockers / 4 non-blocking warnings from plan-checker, 2 addressed inline; next step /gsd-execute-phase 21
+Status: Phase 21 plans cover all 5 REQs + Phase 20 revision (Plan 21-00) + n8n pipeline work (Plan 21-01, autonomous=false) + UAT checkpoint (Plan 21-08). VALIDATION.md approved, 0 hardcoded colors, threat models included.
+Last activity: 2026-04-22 — /gsd-plan-phase 21 complete; 10 PLAN.md files, research + UI-SPEC + VALIDATION approved
 
 Progress: [██████████] 100% — Phase 20 (8/8 plans)
 
@@ -56,6 +56,8 @@ Phase order:
 - Phase 24: Regenerate Expansion — depends on Phases 22 + 23
 
 ## Last Session
+
+2026-04-22 00:55 UTC — `/gsd-ui-phase 21` + `/gsd-plan-phase 21` executed. UI-SPEC.md written (756 lines, 6/6 dimensions verified by gsd-ui-checker with 4 non-blocking Researcher Notes; icon-sm size-8 factual patch applied). RESEARCH.md written (1173 lines, HIGH confidence) with pivotal live-DB findings: cover-letter PDF actually comes from the separate `Job Search: Application Packager` workflow (id broLYdNkyX7y11TK) via Stirling-PDF — NOT the cover-letter workflow — so Plan 21-01 extends that existing pattern instead of reinventing; `cover_letters.quality_score` is 100% NULL across 12 rows (badge is dead UI until a grader ships — ships anyway with industry-default 0.6/0.8 thresholds on 0-1 scale); `jobs.company_url` is 100% NULL across 636 rows and `company_research` has 0 rows (company link-out ships but only fires post-Phase-23). VALIDATION.md approved (Nyquist-compliant, 345-350 target test count). 10 PLAN.md files written across 5 waves: Wave 1 = 21-00 (Phase 20 revision, standalone) + 21-01 (homelab n8n + ALTER TABLE, autonomous=false); Wave 2 = 21-02 (Zod + EXPECTED map) → 21-03 (jobs-db + route); Wave 3 = 21-04 (copy+download) + 21-05 (quality badge) + 21-06 (empty states, serializes after 21-04/05) + 21-07 (company link-out); Wave 4 = 21-08 (end-to-end UAT, autonomous=false); Wave 5 = 21-09 (ROADMAP/REQUIREMENTS/STATE finalization). Plan-checker returned 0 blockers + 4 non-blocking warnings; 2 addressed inline (Plan 21-08 requirements_addressed now lists all 5 REQs; VALIDATION.md signoff flags flipped to approved). Research-sourced decisions locked: PDF filename `tailored-resume-job-{id}.pdf`, `scoreColor`/`scoreLabel` extracted to `src/lib/score-color.ts`, `normalizeUrl` in `src/lib/url-helpers.ts` (inline regex, no psl dep). Commits: `3b7f0bc` UI-SPEC initial, `11c7a2d` UI-SPEC icon-sm fix, `6afc048` VALIDATION.md, `719aa18` RESEARCH.md, `9e1367d` 10 PLAN.md files, `174d27d` checker-warning fixes. Next: /gsd-execute-phase 21 (Wave 1 runs 21-00 autonomously + 21-01 as human-action gate).
 
 2026-04-21 19:40 UTC — `/gsd-discuss-phase 21` executed. Four gray areas discussed interactively (Resume actions, Empty-state messaging, Quality-score badge, Company link-out source); 23 decisions locked in `21-CONTEXT.md` + `21-DISCUSSION-LOG.md`. Two owner overrides drove scope changes: (1) PDF-only with no `.md` fallback — overrode ROADMAP Phase 21 SC #2 and expanded Phase 21 scope to include the n8n workflow edit + `tailored_resumes.pdf_data` column migration + schema-drift EXPECTED map update + Zod schema field + `getTailoredResumePdf` helper + new `/api/jobs/[id]/tailored-resume-pdf` route; (2) Replace FreshnessBadge `relativeTime` ("3 days ago") with formal `M/D/YY` date ("4/21/26", America/Chicago) — queued as a Phase 20 revision commit ahead of Phase 21 planning. Also locked: icon-only ghost copy button with sonner toast + raw-markdown clipboard; empty-state blocks on all three LLM sections with state-only direct copy (no CTAs referencing Phase 23 triggers); quality-score scale verification deferred to plan Task 0 (don't guess — read n8n grader node + sample live `cover_letters.quality_score` values); `destructive`/`warning`/`success` tokens for quality badge; company link-out on sheet-header company name with `company_research.company_url ?? jobs.company_url` resolution and URL normalization helper. Single commit (`8bdcac3`). Next: /gsd-plan-phase 21 (plan should include the Phase 20 revision task + the ROADMAP/REQUIREMENTS update tasks).
 
@@ -178,4 +180,4 @@ None.
 | 20    | 20-07 | ~30m     | 3     | 2     | 2026-04-21T19:07:00Z |
 | 20    | 20-06 | 2m 35s   | 2     | 3     | 2026-04-21T19:15:48Z |
 
-**Planned Phase:** 20 (Foundation (Freshness + Zod + Tailored Resume)) — 8 plans — 2026-04-21T17:09:58.121Z
+**Planned Phase:** 21 (Polish (Copy + PDF + Empty States + Link-out)) — 10 plans — 2026-04-22T00:51:28.364Z
