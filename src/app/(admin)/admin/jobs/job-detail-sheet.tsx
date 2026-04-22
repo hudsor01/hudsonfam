@@ -148,7 +148,7 @@ export function JobDetailSheet({
                       </h3>
                       <div className="flex items-center gap-3">
                         <FreshnessBadge
-                          relativeTime={detail.cover_letter.freshness.relativeTime}
+                          generatedDate={detail.cover_letter.freshness.generatedDate}
                           modelUsed={detail.cover_letter.model_used}
                           isStale={detail.cover_letter.freshness.isStale}
                           ageDays={detail.cover_letter.freshness.ageDays}
@@ -202,7 +202,7 @@ export function JobDetailSheet({
                           Company Intel
                         </h3>
                         <FreshnessBadge
-                          relativeTime={detail.company_research.freshness.relativeTime}
+                          generatedDate={detail.company_research.freshness.generatedDate}
                           modelUsed={null}
                           isStale={detail.company_research.freshness.isStale}
                           ageDays={detail.company_research.freshness.ageDays}

@@ -5,8 +5,8 @@ import { Streamdown } from "streamdown";
 import { FreshnessBadge } from "./freshness-badge";
 
 export interface ResumeFreshness {
-  /** Pre-computed server-side relative-time string, e.g. "3 days ago". */
-  relativeTime: string;
+  /** Pre-computed server-side formatted date string, e.g. "4/21/26" (America/Chicago). */
+  generatedDate: string;
   /** Pre-computed boolean from isStale() on the server. */
   isStale: boolean;
   /** Integer days since generation (for the tooltip text). */
@@ -32,7 +32,7 @@ interface Props {
  * UI-SPEC §1 (exact render tree):
  *   - Heading: "Tailored Resume" + FileText icon (size-4), matches Cover
  *     Letter cadence
- *   - Meta row: FreshnessBadge (Generated {relativeTime} · {model_used}),
+ *   - Meta row: FreshnessBadge (Generated {generatedDate} · {model_used}),
  *     right-aligned
  *   - Body: Streamdown-rendered markdown inside
  *     `bg-card/50 rounded-lg p-4 border border-border max-h-96 overflow-y-auto`
@@ -63,7 +63,7 @@ export function TailoredResumeSection({ resume }: Props) {
           Tailored Resume
         </h3>
         <FreshnessBadge
-          relativeTime={resume.freshness.relativeTime}
+          generatedDate={resume.freshness.generatedDate}
           modelUsed={resume.model_used}
           isStale={resume.freshness.isStale}
           ageDays={resume.freshness.ageDays}

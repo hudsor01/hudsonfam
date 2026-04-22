@@ -8,13 +8,13 @@ import {
 const freshView: TailoredResumeView = {
   content: "# Richard Hudson\n\n**Senior Engineer**\n\n- item",
   model_used: "gpt-4o-mini",
-  freshness: { relativeTime: "3 hours ago", isStale: false, ageDays: 0 },
+  freshness: { generatedDate: "4/21/26", isStale: false, ageDays: 0 },
 };
 
 const staleView: TailoredResumeView = {
   content: "# Resume",
   model_used: "gpt-4o-mini",
-  freshness: { relativeTime: "20 days ago", isStale: true, ageDays: 20 },
+  freshness: { generatedDate: "4/1/26", isStale: true, ageDays: 20 },
 };
 
 describe("TailoredResumeSection", () => {
@@ -54,9 +54,9 @@ describe("TailoredResumeSection", () => {
     expect(dot?.getAttribute("aria-label")).toBe("Stale artifact");
   });
 
-  it("renders model_used next to the relative time when present", () => {
+  it("renders model_used next to the formatted date when present", () => {
     const { container } = render(<TailoredResumeSection resume={freshView} />);
-    expect(container.textContent).toContain("Generated 3 hours ago");
+    expect(container.textContent).toContain("Generated 4/21/26");
     expect(container.textContent).toContain("gpt-4o-mini");
   });
 
