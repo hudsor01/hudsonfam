@@ -164,7 +164,7 @@ Plans:
   5. Owner clicks the company name in the sheet header and is taken to the company's website in a new tab (with `rel="noopener noreferrer"` and an ExternalLink icon)
 **Plans:** 10 plans
 Plans:
-- [ ] 21-00-PLAN.md — Phase 20 revision: FreshnessBadge relativeTime → generatedDate + attachFreshness Intl.DateTimeFormat(America/Chicago)
+- [x] 21-00-PLAN.md — Phase 20 revision: FreshnessBadge relativeTime → generatedDate + attachFreshness Intl.DateTimeFormat(America/Chicago) — 2026-04-22
 - [ ] 21-01-PLAN.md — Homelab: ALTER TABLE tailored_resumes ADD COLUMN pdf_data + n8n Application Packager workflow extension (AI-ACTION-02 pipeline, autonomous=false)
 - [ ] 21-02-PLAN.md — Zod TailoredResumeSchema.pdf_data + schema-drift EXPECTED map (AI-ACTION-02)
 - [ ] 21-03-PLAN.md — getJobDetail SELECT tr.pdf_data + getTailoredResumePdf helper + /api/jobs/[id]/tailored-resume-pdf route (AI-ACTION-02)
@@ -215,7 +215,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 20. Foundation (Freshness + Zod + Tailored Resume) | 8/8 | Complete | 2026-04-21 |
-| 21. Polish (Copy + PDF + Empty States + Link-out) | 0/10 | In planning | - |
+| 21. Polish (Copy + PDF + Empty States + Link-out) | 1/10 | In progress | - |
 | 22. Salary Intelligence (Defensive Render) | 0/0 | Not started | - |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 0/0 | Not started | - |

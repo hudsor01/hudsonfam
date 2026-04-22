@@ -2,25 +2,25 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
-status: planning
-last_updated: "2026-04-22T00:51:28.369Z"
-last_activity: 2026-04-21 — /gsd-discuss-phase 21 complete; 4 gray areas discussed, 23 decisions locked
+status: executing
+last_updated: "2026-04-22T02:02:00.000Z"
+last_activity: 2026-04-22 — Plan 21-00 complete (Phase 20 revision: FreshnessBadge date-format swap)
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 18
-  completed_plans: 12
-  percent: 67
+  completed_plans: 13
+  percent: 72
 ---
 
 # State
 
 ## Current Position
 
-Phase: 21 (Polish — Copy + PDF + Empty States + Link-out) — PLANNED (10 plans, 5 waves), ready to execute
-Plan: 10 PLAN.md files written, 0 blockers / 4 non-blocking warnings from plan-checker, 2 addressed inline; next step /gsd-execute-phase 21
-Status: Phase 21 plans cover all 5 REQs + Phase 20 revision (Plan 21-00) + n8n pipeline work (Plan 21-01, autonomous=false) + UAT checkpoint (Plan 21-08). VALIDATION.md approved, 0 hardcoded colors, threat models included.
-Last activity: 2026-04-22 — /gsd-plan-phase 21 complete; 10 PLAN.md files, research + UI-SPEC + VALIDATION approved
+Phase: 21 (Polish — Copy + PDF + Empty States + Link-out) — EXECUTING
+Plan: Wave 1 — 21-00 COMPLETE (Phase 20 revision shipped); 21-01 complete (n8n pipeline prep, commit 9911af3). Next: Wave 2 (21-02 Zod schema + 21-03 jobs-db + route) can start.
+Status: Plan 21-00 (date-format revision) shipped with one Rule 3 deviation (attachFreshness extracted to own module to satisfy Next.js 16 Server Actions async-only export constraint). Full suite 310/310 green; production build exits 0. 2/10 Phase 21 plans complete.
+Last activity: 2026-04-22 — Plan 21-00 executed; 3 tasks + 1 Rule 3 fix committed atomically (cb23ac9, 431e1a5, 6bfc6da, d2c8df7)
 
 Progress: [██████████] 100% — Phase 20 (8/8 plans)
 
@@ -56,6 +56,8 @@ Phase order:
 - Phase 24: Regenerate Expansion — depends on Phases 22 + 23
 
 ## Last Session
+
+2026-04-22 02:02 UTC — Plan 21-00 executed (bundled Phase 20 revision). FreshnessBadge's prop renamed `relativeTime: string` → `generatedDate: string`; display text changed from `Generated 3 days ago · gpt-4o-mini` to `Generated 4/21/26 · gpt-4o-mini`. Server-side formatter swapped from date-fns `formatDistanceToNowStrict` to `Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", month: "numeric", day: "numeric", year: "2-digit" })` per CLAUDE.md §Key Decisions (explicit timezone mandate). `ArtifactFreshness` interface + `ResumeFreshness` type field renamed to match; `FreshJobDetail`'s nested freshness shape is now `{ generatedDate, isStale, ageDays }`. All 3 FreshnessBadge mounts updated (Cover Letter + Company Intel in `job-detail-sheet.tsx`, internal mount in `tailored-resume-section.tsx`). One Rule 3 auto-fix during the `npm run build` verification gate: Next.js 16 / Turbopack rejected production compilation of `"use server"` files with non-async exports (`x Only async functions are allowed to be exported in a "use server" file`). Fix: extracted `attachFreshness` + `DATE_FMT` from `job-actions.ts` (marked `"use server"`) into a new dedicated module `src/lib/attach-freshness.ts`; `job-actions.ts` imports it for the `fetchJobDetail` call site; the test imports it directly. Behavior preserved bit-for-bit — same dual-field dispatch (`"generated_at" in artifact` → cover_letter/tailored_resume, else `created_at` → company_research), same NaN fail-open (`Number.isNaN(generated.getTime())` → `{ generatedDate: "", isStale: false, ageDays: 0 }`), same `Intl.DateTimeFormat(America/Chicago)` output. Amber stale dot (`size-1.5 rounded-full bg-warning`), `aria-label="Stale artifact"`, middle-dot separator, stale tooltip copy (`Generated {ageDays} days ago; may need regeneration`), typography classes all pixel-identical to Plan 20-04. Retroactive revision annotation (`## Revision 2026-04-22 — Date-format swap (Phase 21 Plan 00)`) appended to both `.planning/phases/20-foundation-freshness-zod-tailored-resume/20-04-SUMMARY.md` and `20-06-SUMMARY.md`. 5 new frozen-clock vitest cases in `src/__tests__/lib/attach-freshness.test.ts` covering: generated_at happy path (→ `"4/18/26"`), null passthrough, NaN fail-open, created_at dispatch with Chicago DST edge (`2026-04-21T05:00Z = 00:00 Chicago → "4/21/26"`), stale threshold boundary (20 days, 14-day threshold → `isStale: true`). Full suite 310/310 green (305 baseline + 5 new); `npm run build` exits 0; only pre-existing warnings (Redis ENOTFOUND, Better Auth env-not-set, next.config.ts NFT) — none introduced by this plan. 4 atomic commits: `cb23ac9` (Task 1: attachFreshness Intl.DateTimeFormat swap + ArtifactFreshness rename) + `431e1a5` (Task 2: FreshnessBadge prop rename across callers + test fixtures) + `6bfc6da` (Task 3: Phase 20 SUMMARY revision annotations) + `d2c8df7` (Rule 3 fix: extract attachFreshness to own module). Duration ~22m. 2/10 Phase 21 plans complete (21-00 this session + 21-01 from prior n8n pipeline work). Next: Wave 2 (21-02 Zod + EXPECTED map → 21-03 jobs-db + route). See `.planning/phases/21-polish-copy-pdf-empty-states-link-out/21-00-SUMMARY.md`.
 
 2026-04-22 00:55 UTC — `/gsd-ui-phase 21` + `/gsd-plan-phase 21` executed. UI-SPEC.md written (756 lines, 6/6 dimensions verified by gsd-ui-checker with 4 non-blocking Researcher Notes; icon-sm size-8 factual patch applied). RESEARCH.md written (1173 lines, HIGH confidence) with pivotal live-DB findings: cover-letter PDF actually comes from the separate `Job Search: Application Packager` workflow (id broLYdNkyX7y11TK) via Stirling-PDF — NOT the cover-letter workflow — so Plan 21-01 extends that existing pattern instead of reinventing; `cover_letters.quality_score` is 100% NULL across 12 rows (badge is dead UI until a grader ships — ships anyway with industry-default 0.6/0.8 thresholds on 0-1 scale); `jobs.company_url` is 100% NULL across 636 rows and `company_research` has 0 rows (company link-out ships but only fires post-Phase-23). VALIDATION.md approved (Nyquist-compliant, 345-350 target test count). 10 PLAN.md files written across 5 waves: Wave 1 = 21-00 (Phase 20 revision, standalone) + 21-01 (homelab n8n + ALTER TABLE, autonomous=false); Wave 2 = 21-02 (Zod + EXPECTED map) → 21-03 (jobs-db + route); Wave 3 = 21-04 (copy+download) + 21-05 (quality badge) + 21-06 (empty states, serializes after 21-04/05) + 21-07 (company link-out); Wave 4 = 21-08 (end-to-end UAT, autonomous=false); Wave 5 = 21-09 (ROADMAP/REQUIREMENTS/STATE finalization). Plan-checker returned 0 blockers + 4 non-blocking warnings; 2 addressed inline (Plan 21-08 requirements_addressed now lists all 5 REQs; VALIDATION.md signoff flags flipped to approved). Research-sourced decisions locked: PDF filename `tailored-resume-job-{id}.pdf`, `scoreColor`/`scoreLabel` extracted to `src/lib/score-color.ts`, `normalizeUrl` in `src/lib/url-helpers.ts` (inline regex, no psl dep). Commits: `3b7f0bc` UI-SPEC initial, `11c7a2d` UI-SPEC icon-sm fix, `6afc048` VALIDATION.md, `719aa18` RESEARCH.md, `9e1367d` 10 PLAN.md files, `174d27d` checker-warning fixes. Next: /gsd-execute-phase 21 (Wave 1 runs 21-00 autonomously + 21-01 as human-action gate).
 
@@ -162,6 +164,11 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 20-06: Exactly 2 external `<FreshnessBadge>` mounts in `job-detail-sheet.tsx` (Cover Letter + Company Intel). Tailored Resume's badge is mounted INSIDE `TailoredResumeSection` by Plan 20-05 — grep -c must be 2, not 3
 - v3.0 Plan 20-06: `attachFreshness` zeroes freshness on `Number.isNaN(generated.getTime())` rather than throwing — fail-open alignment with parseOrLog (D-11): a malformed DB timestamp degrades to "no badge" instead of blanking the section
 - v3.0 Plan 20-06: PDF download link stays a SIBLING of `FreshnessBadge` (not nested) inside the Cover Letter meta row — badge is pure-display per Plan 20-04 contract
+- v3.0 Plan 21-00: `attachFreshness` + `DATE_FMT` must live OUTSIDE `job-actions.ts` — Next.js 16 rejects non-async exports from `"use server"` files at build time (Turbopack `x Only async functions are allowed to be exported in a "use server" file`). Dedicated module at `src/lib/attach-freshness.ts` is the compile-safe home; `job-actions.ts` imports it for `fetchJobDetail`; the vitest suite imports it directly. Same behavior, different module address. Applies to any future sync helper we want to test standalone.
+- v3.0 Plan 21-00: `FreshnessBadge` display text = `Generated {generatedDate} · {modelUsed}` where `generatedDate` is the pre-computed `M/D/YY` string from `Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", ... })`. The `ageDays` prop continues to drive the stale-tooltip copy (`Generated {ageDays} days ago; may need regeneration`) — the tooltip does NOT re-use `generatedDate`. Two separate props, two separate display paths: formal date for the badge text (factual provenance), integer age for the stale tooltip (human-friendly "how old is this?")
+- v3.0 Plan 21-00: Chicago DST edge verified by the `created_at: "2026-04-21T05:00:00.000Z"` test case → `generatedDate === "4/21/26"` (CDT is UTC-5 in late April, so 05:00 UTC is 00:00 Chicago, still the civil-calendar "4/21"). Future date-format tests should use frozen `vi.setSystemTime(...)` timestamps with timezone awareness; never assume UTC date == Chicago date
+- v3.0 Plan 21-00: Empty-formatted-date (`generatedDate === ""`) is the FreshnessBadge hide signal — preserves Plan 20-04 cadence (empty relativeTime was the old hide signal). NaN ISO → attachFreshness returns `{ generatedDate: "", ... }` → badge returns `null`. Defensive double-guard: the NaN branch never surfaces a "Generated " with no date to the user
+- v3.0 Plan 21-00: Revision annotation pattern — `## Revision YYYY-MM-DD — <title> (Phase XX Plan YY)` H2 footer appended to prior-phase SUMMARY files. Makes retroactive behavioral changes greppable (`grep -c "Revision 2026-"`) without overwriting delivery context. Apply this pattern for any future cross-phase prop rename or behavioral revision
 
 ## Blockers
 
@@ -179,5 +186,6 @@ None.
 | 20    | 20-05 | 4m       | 1     | 3     | 2026-04-21T18:53:07Z |
 | 20    | 20-07 | ~30m     | 3     | 2     | 2026-04-21T19:07:00Z |
 | 20    | 20-06 | 2m 35s   | 2     | 3     | 2026-04-21T19:15:48Z |
+| 21    | 21-00 | ~22m     | 3     | 9     | 2026-04-22T02:02:00Z |
 
 **Planned Phase:** 21 (Polish (Copy + PDF + Empty States + Link-out)) — 10 plans — 2026-04-22T00:51:28.364Z
