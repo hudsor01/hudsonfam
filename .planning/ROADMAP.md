@@ -124,7 +124,7 @@
 ### Phases
 
 - [x] **Phase 20: Foundation (Freshness + Zod + Tailored Resume)** — pure isStale util, Zod safeParse at jobs-db boundary, CSP on /admin/*, tailored resume rendered with Streamdown + generated_at/model badges, schema-drift CI guardrail — 2026-04-21
-- [ ] **Phase 21: Polish (Copy + PDF + Empty States + Link-out)** — copy-to-clipboard, tailored-resume PDF download, empty-state messaging distinguishing never-generated vs empty, company-website link-out, cover-letter quality-score badge
+- [ ] **Phase 21: Polish (Copy + PDF + Empty States + Link-out)** — copy-to-clipboard, tailored-resume PDF download (pipeline-extended end-to-end via n8n Application Packager + tailored_resumes.pdf_data migration), 3 empty-state blocks, company-website link-out, cover-letter quality-score badge, bundled Phase 20 FreshnessBadge date-format revision
 - [ ] **Phase 22: Salary Intelligence (Defensive Render)** — SalaryIntelligence Zod + TS type, LEFT JOIN LATERAL tolerating both job_id and company_name keying, llm_analysis + structured headline render, per-figure provenance tags (scraped / LLM / research)
 - [ ] **Phase 23: Owner-Triggered Workflows (Pattern Setter)** — "Research this company" manual trigger, regenerate cover letter, HMAC-SHA256 + X-Idempotency-Key + sentinel-error scrubbing pattern established and retrofit to existing fireWebhook
 - [ ] **Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)** — regenerate tailored resume, regenerate salary intelligence, silent-success warning state when workflow returns OK without updating timestamp
@@ -153,16 +153,27 @@ Plans:
 - [x] 20-08-PLAN.md — scripts/check-jobs-schema.ts + pre-push hook + install-hooks.sh (AI-DATA-04) — 2026-04-21
 
 #### Phase 21: Polish (Copy + PDF + Empty States + Link-out)
-**Goal**: Owner can act on a tailored resume (copy, download) in one click, and every missing AI artifact shows a distinct, explanatory empty state instead of a silent blank section.
+**Goal**: Owner can act on a tailored resume (copy, download PDF) in one click, and every missing AI artifact shows a distinct, explanatory empty state instead of a silent blank section. Scope includes an end-to-end PDF pipeline extension (n8n `Job Search: Application Packager` extended with a parallel resume-PDF branch + `ALTER TABLE tailored_resumes ADD COLUMN pdf_data TEXT` migration), a company-website link-out on the sheet header, a color-coded quality-score badge on cover letters, and a bundled Phase 20 revision replacing FreshnessBadge relative-time with a formal America/Chicago M/D/YY date.
 **Depends on**: Phase 20
 **Requirements**: AI-ACTION-01, AI-ACTION-02, AI-RENDER-04, AI-RENDER-05, AI-RENDER-06
 **Success Criteria** (what must be TRUE):
   1. Owner clicks the copy-icon button next to the tailored resume heading, sees a sonner toast confirming success, and finds the resume markdown on their clipboard ready to paste into an ATS
-  2. Owner clicks "Download PDF" on the tailored resume and receives a `.pdf` file (or a `.md` fallback with `Content-Disposition: attachment` if the n8n pipeline has not yet emitted `pdf_data`)
-  3. Owner opens a job whose `company_research` is empty and sees "No company research yet — click Research to generate" (distinct from a row where research was attempted but returned an empty body, which shows "Company research was generated but is currently empty" — AI-RENDER-04)
-  4. Owner sees a quality-score badge (color-coded red/amber/green via theme tokens) on any cover letter whose `quality_score` column is populated
-  5. Owner clicks the company name in Company Intel and is taken to the company's website in a new tab (with `rel="noopener noreferrer"` and an ExternalLink icon)
-**Plans**: TBD
+  2. Owner clicks "Download PDF" on the tailored resume and receives a `.pdf` file named `tailored-resume-job-<id>.pdf` (served by the new `/api/jobs/[id]/tailored-resume-pdf` route handler; the `tailored_resumes.pdf_data` column is populated by the extended n8n Application Packager workflow — PDF-only per owner override, no `.md` fallback)
+  3. Owner opens a job whose `company_research` is empty and sees "No company research yet." (distinct from a row where research was attempted but returned an empty body, which shows "Company research was generated but is empty." — AI-RENDER-04)
+  4. Owner sees a quality-score badge (color-coded destructive/warning/success via theme tokens) on any cover letter whose `quality_score` column is populated
+  5. Owner clicks the company name in the sheet header and is taken to the company's website in a new tab (with `rel="noopener noreferrer"` and an ExternalLink icon)
+**Plans:** 10 plans
+Plans:
+- [ ] 21-00-PLAN.md — Phase 20 revision: FreshnessBadge relativeTime → generatedDate + attachFreshness Intl.DateTimeFormat(America/Chicago)
+- [ ] 21-01-PLAN.md — Homelab: ALTER TABLE tailored_resumes ADD COLUMN pdf_data + n8n Application Packager workflow extension (AI-ACTION-02 pipeline, autonomous=false)
+- [ ] 21-02-PLAN.md — Zod TailoredResumeSchema.pdf_data + schema-drift EXPECTED map (AI-ACTION-02)
+- [ ] 21-03-PLAN.md — getJobDetail SELECT tr.pdf_data + getTailoredResumePdf helper + /api/jobs/[id]/tailored-resume-pdf route (AI-ACTION-02)
+- [ ] 21-04-PLAN.md — Copy button + Download anchor in TailoredResumeSection (AI-ACTION-01, AI-ACTION-02)
+- [ ] 21-05-PLAN.md — scoreColor/scoreLabel helpers + Quality badge in cover-letter meta row (AI-RENDER-05)
+- [ ] 21-06-PLAN.md — EMPTY_STATE_COPY constant + isCompanyResearchEmpty predicate + empty-state branches on all 3 LLM sections (AI-RENDER-04)
+- [ ] 21-07-PLAN.md — normalizeUrl helper + conditional company anchor in sheet header (AI-RENDER-06)
+- [ ] 21-08-PLAN.md — End-to-end UAT checkpoint on deployed app (AI-ACTION-01, AI-ACTION-02, AI-RENDER-04; autonomous=false)
+- [ ] 21-09-PLAN.md — Meta-doc finalization (ROADMAP + REQUIREMENTS + STATE updates)
 
 #### Phase 22: Salary Intelligence (Defensive Render)
 **Goal**: Owner sees salary intelligence rendered in the job detail sheet with every figure source-tagged, and the data layer tolerates both the `job_id`-keyed and `company_name`-keyed shapes the upstream workflow may produce — the section ships before homelab task #11 lands.
@@ -204,7 +215,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 20. Foundation (Freshness + Zod + Tailored Resume) | 8/8 | Complete | 2026-04-21 |
-| 21. Polish (Copy + PDF + Empty States + Link-out) | 0/0 | Not started | - |
+| 21. Polish (Copy + PDF + Empty States + Link-out) | 0/10 | In planning | - |
 | 22. Salary Intelligence (Defensive Render) | 0/0 | Not started | - |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 0/0 | Not started | - |
