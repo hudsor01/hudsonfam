@@ -76,6 +76,7 @@ export interface CompanyResearch {
 export interface TailoredResume {
   id: number;
   content: string;
+  pdf_data: string | null;
   model_used: string | null;
   generated_at: string;
 }
@@ -304,6 +305,7 @@ export async function getJobDetail(jobId: number): Promise<JobDetail | null> {
        cr.ai_summary AS cr_ai_summary,
        cr.created_at AS cr_created_at,
        tr.id AS tr_id, tr.content AS tr_content,
+       tr.pdf_data AS tr_pdf_data,
        tr.model_used AS tr_model_used,
        tr.generated_at AS tr_generated_at
      FROM jobs j
@@ -363,6 +365,7 @@ export async function getJobDetail(jobId: number): Promise<JobDetail | null> {
       ? {
           id: row.tr_id,
           content: row.tr_content,
+          pdf_data: null, // Omit large base64 from detail view — matches cover-letter pattern at line 326
           model_used: row.tr_model_used,
           generated_at:
             row.tr_generated_at?.toISOString?.() ?? row.tr_generated_at,
@@ -402,6 +405,14 @@ export async function getJobDetail(jobId: number): Promise<JobDetail | null> {
 export async function getCoverLetterPdf(jobId: number): Promise<string | null> {
   const result = await pool.query(
     "SELECT pdf_data FROM cover_letters WHERE job_id = $1",
+    [jobId]
+  );
+  return result.rows[0]?.pdf_data ?? null;
+}
+
+export async function getTailoredResumePdf(jobId: number): Promise<string | null> {
+  const result = await pool.query(
+    "SELECT pdf_data FROM tailored_resumes WHERE job_id = $1",
     [jobId]
   );
   return result.rows[0]?.pdf_data ?? null;
