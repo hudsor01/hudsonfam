@@ -172,8 +172,8 @@ Plans:
 - [x] 21-05-PLAN.md — scoreColor/scoreLabel helpers + Quality badge in cover-letter meta row (AI-RENDER-05) — 2026-04-22
 - [x] 21-06-PLAN.md — EMPTY_STATE_COPY constant + isCompanyResearchEmpty predicate + empty-state branches on all 3 LLM sections (AI-RENDER-04) — 2026-04-22
 - [x] 21-07-PLAN.md — normalizeUrl helper + conditional company anchor in sheet header (AI-RENDER-06) — 2026-04-22
-- [ ] 21-08-PLAN.md — End-to-end UAT checkpoint on deployed app (AI-ACTION-01, AI-ACTION-02, AI-RENDER-04; autonomous=false)
-- [ ] 21-09-PLAN.md — Meta-doc finalization (ROADMAP + REQUIREMENTS + STATE updates)
+- [⏳] 21-08-PLAN.md — **DEFERRED-to-v3.5**: End-to-end production UAT checkpoint blocked by broken Forgejo+Woodpecker CI/CD pipeline (see `.planning/notes/ci-cd-fragility-analysis.md`); will execute retroactively once GitHub Actions + GHCR migration lands (SEED-005). Code itself is complete + 395/395 tests green.
+- [x] 21-09-PLAN.md — Meta-doc finalization + v3.5 deferral capture (ROADMAP + REQUIREMENTS + STATE + notes + seed updates) — 2026-04-22
 
 #### Phase 22: Salary Intelligence (Defensive Render)
 **Goal**: Owner sees salary intelligence rendered in the job detail sheet with every figure source-tagged, and the data layer tolerates both the `job_id`-keyed and `company_name`-keyed shapes the upstream workflow may produce — the section ships before homelab task #11 lands.
@@ -215,7 +215,30 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 20. Foundation (Freshness + Zod + Tailored Resume) | 8/8 | Complete | 2026-04-21 |
-| 21. Polish (Copy + PDF + Empty States + Link-out) | 8/10 | In progress | - |
+| 21. Polish (Copy + PDF + Empty States + Link-out) | 9/10 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
 | 22. Salary Intelligence (Defensive Render) | 0/0 | Not started | - |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 0/0 | Not started | - |
+
+### Deferred production UAT
+
+- **Plan 21-08** — end-to-end UAT on `https://thehudsonfam.com/admin/jobs` is gated on v3.5 rebuilding the deploy pipeline (Forgejo+Woodpecker is broken; `forgejo-admin/hudsonfam` repo no longer exists on Forgejo). After v3.5 lands, execute 21-08 retroactively against the freshly-deployed code. See `.planning/phases/21-polish-copy-pdf-empty-states-link-out/21-08-SUMMARY.md` for the retroactive execution path.
+
+## v3.5 — CI/CD Hardening (planned)
+
+**Goal:** Eliminate the "CI breaks every time" DX pattern by migrating hudsonfam deploy from self-hosted Forgejo+Woodpecker to the CLAUDE.md-intended GitHub Actions + GHCR pattern. Preserve Flux-driven K3s rollout; keep Forgejo for homelab-manifests-repo concerns only.
+
+**Context:** During Phase 21 production UAT (2026-04-22), investigation found 6 moving parts in the deploy path (5 self-hosted), with `forgejo-admin/hudsonfam` Forgejo repo missing + `default/imagerepository/hudsonfam` Flux resource in persistent failed state. CLAUDE.md described a GitHub Actions + GHCR pipeline that was never actually implemented. Full analysis: `.planning/notes/ci-cd-fragility-analysis.md`. Seed: `SEED-005-cicd-hardening-migration.md`.
+
+**Proposed phases** (4 phases, ~4 hours total):
+
+| Phase | Proposed goal |
+|---|---|
+| v3.5-P1 | `.github/workflows/build-and-push.yml` — build + push to ghcr.io/hudsor01/hudsonfam with YYYYMMDDHHmmss tags |
+| v3.5-P2 | Flux reconfiguration — imagerepository + imagepolicy watch GHCR; GHCR pull secret via ExternalSecret |
+| v3.5-P3 | Decommission old pipeline — Woodpecker repo registration + broken default/imagerepository + orphaned git.homelab registry entries |
+| v3.5-P4 | End-to-end smoke test + CLAUDE.md docs + retroactive Plan 21-08 UAT against newly-deployed Phase 21 code |
+
+**Trigger:** v3.0 Phase 22+23+24 can execute without v3.5 landing first (their code will also queue up behind the same deploy block). Optimal sequencing: complete v3.0 AI work through Phase 24, then v3.5 unblocks production rollout of the accumulated v3.0 backlog in a single deploy. Alternative: insert v3.5 between any two v3.0 phases if deployment becomes urgent.
+
+**Not yet started.** Planning artifacts will be created via `/gsd-new-milestone` when owner decides to activate.

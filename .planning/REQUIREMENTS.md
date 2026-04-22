@@ -88,12 +88,12 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 | AI-RENDER-01 | Phase 20 (20-01, 20-05, 20-06) | Complete (2026-04-21) |
 | AI-RENDER-02 | Phase 20 (20-04, 20-06) | Complete (2026-04-21) |
 | AI-RENDER-03 | Phase 22 | Pending |
-| AI-RENDER-04 | Phase 21 / Plan 21-06 | Complete (2026-04-22) |
-| AI-RENDER-05 | Phase 21 (21-05) | Complete (2026-04-22) |
-| AI-RENDER-06 | Phase 21 / Plan 21-07 | Complete |
+| AI-RENDER-04 | Phase 21 / Plan 21-06 | Code complete (2026-04-22) — prod UAT deferred to v3.5 (see 21-08-SUMMARY.md) |
+| AI-RENDER-05 | Phase 21 (21-05) | Code complete (2026-04-22) — prod UAT deferred to v3.5; runtime dead-UI today (0/12 cover_letters have quality_score) |
+| AI-RENDER-06 | Phase 21 / Plan 21-07 | Code complete (2026-04-22) — prod UAT deferred to v3.5; runtime dead-UI today (0/636 jobs have company_url) |
 | AI-RENDER-07 | Phase 22 | Pending |
-| AI-ACTION-01 | Phase 21 (21-04) | Complete |
-| AI-ACTION-02 | Phase 21 (21-01 pipeline, 21-02 schema, 21-03 server, 21-04 UI) | Complete |
+| AI-ACTION-01 | Phase 21 (21-04) | Code complete (2026-04-22) — prod UAT deferred to v3.5 (see 21-08-SUMMARY.md) |
+| AI-ACTION-02 | Phase 21 (21-01 pipeline, 21-02 schema, 21-03 server, 21-04 UI) | Code complete (2026-04-22) — prod UAT deferred to v3.5; n8n `TailoredResume01` workflow live + 8/8 rows have real pdf_data |
 | AI-ACTION-03 | Phase 23 | Pending |
 | AI-ACTION-04 | Phase 23 | Pending |
 | AI-ACTION-05 | Phase 24 | Pending |
@@ -124,4 +124,4 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 
 ---
 *Requirements defined: 2026-04-21*
-*Last updated: 2026-04-21 — AI-RENDER-01 + AI-RENDER-02 traceability extended to Plan 20-06 (end-to-end wire-up in job-detail-sheet.tsx); Phase 20 complete (8/8 plans)*
+*Last updated: 2026-04-22 — Phase 21 (5 REQs) marked "Code complete, prod UAT deferred to v3.5" after CI/CD pipeline investigation revealed Forgejo+Woodpecker deploy path is broken (`forgejo-admin/hudsonfam` repo missing on Forgejo). Full context: `.planning/notes/ci-cd-fragility-analysis.md`; forward-looking seed: `SEED-005-cicd-hardening-migration.md`. Phase 21 code is 395/395 tests green; production verification happens retroactively after v3.5 lands.*
