@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-22T02:02:00.000Z"
-last_activity: 2026-04-22 — Plan 21-00 complete (Phase 20 revision: FreshnessBadge date-format swap)
+last_updated: "2026-04-22T13:35:00.000Z"
+last_activity: 2026-04-22 — Plan 21-02 executed; TailoredResumeSchema + schema-drift EXPECTED map extended for pdf_data (commit 586c238)
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 18
-  completed_plans: 13
-  percent: 72
+  completed_plans: 15
+  percent: 83
 ---
 
 # State
@@ -18,11 +18,11 @@ progress:
 ## Current Position
 
 Phase: 21 (Polish — Copy + PDF + Empty States + Link-out) — EXECUTING
-Plan: Wave 1 — 21-00 COMPLETE (Phase 20 revision shipped); 21-01 complete (n8n pipeline prep, commit 9911af3). Next: Wave 2 (21-02 Zod schema + 21-03 jobs-db + route) can start.
-Status: Plan 21-00 (date-format revision) shipped with one Rule 3 deviation (attachFreshness extracted to own module to satisfy Next.js 16 Server Actions async-only export constraint). Full suite 310/310 green; production build exits 0. 2/10 Phase 21 plans complete.
-Last activity: 2026-04-22 — Plan 21-00 executed; 3 tasks + 1 Rule 3 fix committed atomically (cb23ac9, 431e1a5, 6bfc6da, d2c8df7)
+Plan: Wave 2 — 21-02 COMPLETE (Zod TailoredResumeSchema + schema-drift EXPECTED-map extended for pdf_data). Next: 21-03 (jobs-db getTailoredResumePdf helper + /api/jobs/[id]/tailored-resume-pdf Route Handler) — serializes after 21-02.
+Status: Plan 21-02 shipped exactly as planned; zero deviations; zero auto-fixes. TDD RED→GREEN gate sequence followed (RED via focused vitest run showed 3 expected failures before schema edit; GREEN after schema + EXPECTED-map edits). Full suite 314/314 green (310 baseline + 4 new); production build exits 0. Schema-drift guard agrees with live n8n DB (verified directly via kubectl exec). 3/10 Phase 21 plans complete.
+Last activity: 2026-04-22 — Plan 21-02 executed; 1 task committed atomically (586c238)
 
-Progress: [██████████] 100% — Phase 20 (8/8 plans)
+Progress: [████████░░] 83%
 
 ## What's Done
 
@@ -56,6 +56,8 @@ Phase order:
 - Phase 24: Regenerate Expansion — depends on Phases 22 + 23
 
 ## Last Session
+
+2026-04-22 13:35 UTC — Plan 21-02 executed. `TailoredResumeSchema` in `src/lib/jobs-schemas.ts` extended with `pdf_data: z.string().nullable()` (line 49) — required not optional, matches `CoverLetterSchema.pdf_data` cadence (Plan 20-03 precedent). Schema-drift EXPECTED map in `scripts/check-jobs-schema.ts` extended: `tailored_resumes` array gained `"pdf_data"` as 4th element (6 columns total: `id, job_id, content, pdf_data, model_used, generated_at`). Zod test suite in `src/__tests__/lib/jobs-db-zod.test.ts` gained 4 new cases covering null / base64-string / wrong-type(123) / missing-field branches; existing `"accepts a valid tailored_resume with null model_used"` test updated in-place to include `pdf_data: null` (schema change would have broken it otherwise — Zod strips unknown keys by default so the `row` no longer round-tripped). TDD RED→GREEN gate sequence followed: focused `vitest run src/__tests__/lib/jobs-db-zod.test.ts` first showed 3 expected failures (existing test no longer round-trips + 2 "rejects" cases that couldn't prove rejection because the unknown key was silently stripped), then green after the schema extension. Full suite 310 → 314 green (single-file test count 8 → 12). `npm run build` exits 0 with only pre-existing warnings. `npm run test:schema` skips gracefully locally because `JOBS_DATABASE_URL` unset (per Plan 20-08 graceful-skip decision) — paranoia-validated the EXPECTED-map edit against the live n8n DB directly via `kubectl exec -n homelab postgres-1 -c postgres -- psql -U postgres -d n8n`: `tailored_resumes` contains `id, job_id, content, model_used, generated_at, created_at, pdf_data` (7 cols); the 6-col EXPECTED subset is consistent (CONTEXT.md D-08 scope intentionally excludes `created_at` which jobs-db.ts doesn't SELECT). Zero deviations, zero auto-fixes, zero architectural escalation. One atomic commit: `586c238` (feat(21-02): add pdf_data to TailoredResumeSchema + EXPECTED map). Duration ~3m. 3/10 Phase 21 plans complete (21-00, 21-01, 21-02). Next: Plan 21-03 (jobs-db.ts extension — `getTailoredResumePdf(jobId): Promise<string | null>` helper + `/api/jobs/[id]/tailored-resume-pdf` Route Handler; the `pdf_data: null` population in the raw object built inside `getJobDetail` is the load-bearing wiring that makes the 21-02 schema change safe under fail-open). See `.planning/phases/21-polish-copy-pdf-empty-states-link-out/21-02-SUMMARY.md`.
 
 2026-04-22 02:02 UTC — Plan 21-00 executed (bundled Phase 20 revision). FreshnessBadge's prop renamed `relativeTime: string` → `generatedDate: string`; display text changed from `Generated 3 days ago · gpt-4o-mini` to `Generated 4/21/26 · gpt-4o-mini`. Server-side formatter swapped from date-fns `formatDistanceToNowStrict` to `Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", month: "numeric", day: "numeric", year: "2-digit" })` per CLAUDE.md §Key Decisions (explicit timezone mandate). `ArtifactFreshness` interface + `ResumeFreshness` type field renamed to match; `FreshJobDetail`'s nested freshness shape is now `{ generatedDate, isStale, ageDays }`. All 3 FreshnessBadge mounts updated (Cover Letter + Company Intel in `job-detail-sheet.tsx`, internal mount in `tailored-resume-section.tsx`). One Rule 3 auto-fix during the `npm run build` verification gate: Next.js 16 / Turbopack rejected production compilation of `"use server"` files with non-async exports (`x Only async functions are allowed to be exported in a "use server" file`). Fix: extracted `attachFreshness` + `DATE_FMT` from `job-actions.ts` (marked `"use server"`) into a new dedicated module `src/lib/attach-freshness.ts`; `job-actions.ts` imports it for the `fetchJobDetail` call site; the test imports it directly. Behavior preserved bit-for-bit — same dual-field dispatch (`"generated_at" in artifact` → cover_letter/tailored_resume, else `created_at` → company_research), same NaN fail-open (`Number.isNaN(generated.getTime())` → `{ generatedDate: "", isStale: false, ageDays: 0 }`), same `Intl.DateTimeFormat(America/Chicago)` output. Amber stale dot (`size-1.5 rounded-full bg-warning`), `aria-label="Stale artifact"`, middle-dot separator, stale tooltip copy (`Generated {ageDays} days ago; may need regeneration`), typography classes all pixel-identical to Plan 20-04. Retroactive revision annotation (`## Revision 2026-04-22 — Date-format swap (Phase 21 Plan 00)`) appended to both `.planning/phases/20-foundation-freshness-zod-tailored-resume/20-04-SUMMARY.md` and `20-06-SUMMARY.md`. 5 new frozen-clock vitest cases in `src/__tests__/lib/attach-freshness.test.ts` covering: generated_at happy path (→ `"4/18/26"`), null passthrough, NaN fail-open, created_at dispatch with Chicago DST edge (`2026-04-21T05:00Z = 00:00 Chicago → "4/21/26"`), stale threshold boundary (20 days, 14-day threshold → `isStale: true`). Full suite 310/310 green (305 baseline + 5 new); `npm run build` exits 0; only pre-existing warnings (Redis ENOTFOUND, Better Auth env-not-set, next.config.ts NFT) — none introduced by this plan. 4 atomic commits: `cb23ac9` (Task 1: attachFreshness Intl.DateTimeFormat swap + ArtifactFreshness rename) + `431e1a5` (Task 2: FreshnessBadge prop rename across callers + test fixtures) + `6bfc6da` (Task 3: Phase 20 SUMMARY revision annotations) + `d2c8df7` (Rule 3 fix: extract attachFreshness to own module). Duration ~22m. 2/10 Phase 21 plans complete (21-00 this session + 21-01 from prior n8n pipeline work). Next: Wave 2 (21-02 Zod + EXPECTED map → 21-03 jobs-db + route). See `.planning/phases/21-polish-copy-pdf-empty-states-link-out/21-00-SUMMARY.md`.
 
@@ -169,6 +171,9 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 21-00: Chicago DST edge verified by the `created_at: "2026-04-21T05:00:00.000Z"` test case → `generatedDate === "4/21/26"` (CDT is UTC-5 in late April, so 05:00 UTC is 00:00 Chicago, still the civil-calendar "4/21"). Future date-format tests should use frozen `vi.setSystemTime(...)` timestamps with timezone awareness; never assume UTC date == Chicago date
 - v3.0 Plan 21-00: Empty-formatted-date (`generatedDate === ""`) is the FreshnessBadge hide signal — preserves Plan 20-04 cadence (empty relativeTime was the old hide signal). NaN ISO → attachFreshness returns `{ generatedDate: "", ... }` → badge returns `null`. Defensive double-guard: the NaN branch never surfaces a "Generated " with no date to the user
 - v3.0 Plan 21-00: Revision annotation pattern — `## Revision YYYY-MM-DD — <title> (Phase XX Plan YY)` H2 footer appended to prior-phase SUMMARY files. Makes retroactive behavioral changes greppable (`grep -c "Revision 2026-"`) without overwriting delivery context. Apply this pattern for any future cross-phase prop rename or behavioral revision
+- v3.0 Plan 21-02: `TailoredResumeSchema.pdf_data` is `.nullable()` NOT `.nullable().optional()` — matches `CoverLetterSchema.pdf_data` (Plan 20-03 precedent). The practical effect is that Plan 21-03 MUST populate `pdf_data: null` in the raw object built inside `getJobDetail`, otherwise `parseOrLog` nulls out the whole tailored_resume field under fail-open. This is intentional: catches wiring bugs at runtime, not at build time. The 4 new Zod test cases explicitly lock in the missing-field branch as a rejection (not a silent pass-through)
+- v3.0 Plan 21-02: Updated the existing `"accepts a valid tailored_resume with null model_used"` test in-place (added `pdf_data: null`) rather than removing it — preserves the null-model-used branch coverage while extending the row shape to the new schema. Zod's default behavior (strip unknown keys) would have made the old test fail the `.toEqual(row)` assertion otherwise because the parsed result would omit `pdf_data` that the input row had. Extend-in-place, never delete
+- v3.0 Plan 21-02: Local schema-drift paranoia-check pattern — when `JOBS_DATABASE_URL` isn't reachable from the dev host (cluster-internal service name), validate the EXPECTED-map edit against the live DB directly via `kubectl exec -n homelab postgres-1 -c postgres -- psql -U postgres -d n8n -c "SELECT column_name FROM information_schema.columns WHERE table_schema='public' AND table_name='<table>' ORDER BY ordinal_position"`. Not a replacement for the guard, but catches EXPECTED-map-vs-live-schema disagreement at commit time for single-column additions
 
 ## Blockers
 
@@ -187,5 +192,6 @@ None.
 | 20    | 20-07 | ~30m     | 3     | 2     | 2026-04-21T19:07:00Z |
 | 20    | 20-06 | 2m 35s   | 2     | 3     | 2026-04-21T19:15:48Z |
 | 21    | 21-00 | ~22m     | 3     | 9     | 2026-04-22T02:02:00Z |
+| 21    | 21-02 | ~3m      | 1     | 3     | 2026-04-22T13:35:00Z |
 
 **Planned Phase:** 21 (Polish (Copy + PDF + Empty States + Link-out)) — 10 plans — 2026-04-22T00:51:28.364Z
