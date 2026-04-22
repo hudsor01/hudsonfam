@@ -1,10 +1,11 @@
 ---
 phase: 22
 slug: salary-intelligence-defensive-render
-status: draft
+status: approved
 shadcn_initialized: true
 preset: none (manual init — new-york style, zinc base, lucide icons; inherited from Phase 20)
 created: 2026-04-22
+reviewed_at: 2026-04-22
 ---
 
 # Phase 22 — UI Design Contract
