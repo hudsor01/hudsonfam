@@ -22,10 +22,14 @@ Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified obse
 
 - [x] **AI-ACTION-01**: Owner can copy tailored resume content to the clipboard via a button that confirms success via toast
 - [x] **AI-ACTION-02**: Owner can download the tailored resume as a PDF file via a button
-- [ ] **AI-ACTION-03**: Owner can trigger "Research this company" for a job whose `company_research` is empty; the UI reflects in-progress state and updates when the row appears
-- [ ] **AI-ACTION-04**: Owner can regenerate the cover letter for a specific job; the UI shows a pessimistic spinner, poll-refreshes on completion, and displays the new `generated_at` timestamp
-- [ ] **AI-ACTION-05**: Owner can regenerate the tailored resume for a specific job with the same pattern as AI-ACTION-04
-- [ ] **AI-ACTION-06**: Owner can regenerate salary intelligence for a specific job with the same pattern as AI-ACTION-04
+- [x] **AI-ACTION-03
+**: Owner can trigger "Research this company" for a job whose `company_research` is empty; the UI reflects in-progress state and updates when the row appears
+- [x] **AI-ACTION-04
+**: Owner can regenerate the cover letter for a specific job; the UI shows a pessimistic spinner, poll-refreshes on completion, and displays the new `generated_at` timestamp
+- [x] **AI-ACTION-05**: Owner can regenerate the tailored resume for a specific job with the same pattern as AI-ACTION-04
+
+- [x] **AI-ACTION-06**: Owner can regenerate salary intelligence for a specific job with the same pattern as AI-ACTION-04
+
 - [ ] **AI-ACTION-07**: Owner sees a "workflow returned success but no data changed" warning state when a regenerate completes without updating the artifact's timestamp
 
 ### Safety & Hardening
@@ -91,8 +95,8 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 | AI-RENDER-07 | Phase 22 / Plan 22-05 (primitive); Plan 22-07 (call-site adjacency) | Code complete (2026-04-22) — prod UAT deferred to v3.5; `<ProvenanceTag>` + pure `provenanceColor`/`provenanceLabel` helpers shipped (Plan 22-05); 2 retrofit call sites landed in Plan 22-07 (header `source="scraped"`, Company Intel `source="company_research"`; SalaryIntelligenceSection's headline `source="llm"` already wired by Plan 22-06); grep-gate G-1 adjacency to `$X` figures test-enforced via source-text assertion in job-detail-sheet.test.tsx |
 | AI-ACTION-01 | Phase 21 (21-04) | Code complete (2026-04-22) — prod UAT deferred to v3.5 (see 21-08-SUMMARY.md) |
 | AI-ACTION-02 | Phase 21 (21-01 pipeline, 21-02 schema, 21-03 server, 21-04 UI) | Code complete (2026-04-22) — prod UAT deferred to v3.5; n8n `TailoredResume01` workflow live + 8/8 rows have real pdf_data |
-| AI-ACTION-03 | Phase 23 | Pending |
-| AI-ACTION-04 | Phase 23 | Pending |
+| AI-ACTION-03 | Phase 23 (23-04 CI grep gate — Pitfall 9 enforcement layer; feature-layer pending 23-02 triggerCompanyResearch Server Action + 23-05 button + 23-07 mount) | In progress (2026-04-22) — CI gate locked via requireRole adjacency + fireWebhook absence test (job-actions.requireRole.test.ts); Server Action + UI trigger pending |
+| AI-ACTION-04 | Phase 23 (23-04 CI grep gate — Pitfall 9 enforcement layer; feature-layer pending 23-02 regenerateCoverLetter Server Action + 23-06 button + 23-07 mount) | In progress (2026-04-22) — CI gate locked via requireRole adjacency + fireWebhook absence test (job-actions.requireRole.test.ts); Server Action + UI trigger pending |
 | AI-ACTION-05 | Phase 24 | Pending |
 | AI-ACTION-06 | Phase 24 | Pending |
 | AI-ACTION-07 | Phase 24 | Pending |
