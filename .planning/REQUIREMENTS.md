@@ -89,11 +89,11 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 |--------|-------|--------|
 | AI-RENDER-01 | Phase 20 (20-01, 20-05, 20-06) | Complete (2026-04-21) |
 | AI-RENDER-02 | Phase 20 (20-04, 20-06) | Complete (2026-04-21) |
-| AI-RENDER-03 | Phase 22 | Pending |
+| AI-RENDER-03 | Phase 22 (22-06 component; 22-07 mount + SectionErrorBoundary wrap) | Complete (2026-04-22) — SalaryIntelligenceSection mounted in job-detail-sheet.tsx between Tailored Resume and Company Intel, wrapped in SectionErrorBoundary section="salary_intelligence"; dead-UI today (0 salary_intelligence rows pending n8n task #11) but all 3 render branches fully test-covered |
 | AI-RENDER-04 | Phase 21 / Plan 21-06 | Code complete (2026-04-22) — prod UAT deferred to v3.5 (see 21-08-SUMMARY.md) |
 | AI-RENDER-05 | Phase 21 (21-05) | Code complete (2026-04-22) — prod UAT deferred to v3.5; runtime dead-UI today (0/12 cover_letters have quality_score) |
 | AI-RENDER-06 | Phase 21 / Plan 21-07 | Code complete (2026-04-22) — prod UAT deferred to v3.5; runtime dead-UI today (0/636 jobs have company_url) |
-| AI-RENDER-07 | Phase 22 / Plan 22-05 (primitive); Plan 22-07 (call-site adjacency) | Primitive complete (2026-04-22) — `<ProvenanceTag>` + pure `provenanceColor`/`provenanceLabel` helpers shipped; grep-gate G-1 adjacency to `$X` figures enforced by Plan 22-07 |
+| AI-RENDER-07 | Phase 22 / Plan 22-05 (primitive); Plan 22-07 (call-site adjacency) | Complete (2026-04-22) — `<ProvenanceTag>` + pure `provenanceColor`/`provenanceLabel` helpers shipped (Plan 22-05); 2 retrofit call sites landed in Plan 22-07 (header `source="scraped"`, Company Intel `source="company_research"`; SalaryIntelligenceSection's headline `source="llm"` already wired by Plan 22-06); grep-gate G-1 adjacency to `$X` figures test-enforced via source-text assertion in job-detail-sheet.test.tsx |
 | AI-ACTION-01 | Phase 21 (21-04) | Code complete (2026-04-22) — prod UAT deferred to v3.5 (see 21-08-SUMMARY.md) |
 | AI-ACTION-02 | Phase 21 (21-01 pipeline, 21-02 schema, 21-03 server, 21-04 UI) | Code complete (2026-04-22) — prod UAT deferred to v3.5; n8n `TailoredResume01` workflow live + 8/8 rows have real pdf_data |
 | AI-ACTION-03 | Phase 23 | Pending |

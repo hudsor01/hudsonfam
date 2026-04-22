@@ -193,7 +193,7 @@ Plans:
 - [x] 22-04-PLAN.md — Schema-drift EXPECTED map gains salary_intelligence (D-04) — 2026-04-22
 - [x] 22-05-PLAN.md — ProvenanceTag primitives (provenanceColor/Label + component) (AI-RENDER-07 foundation) — 2026-04-22
 - [x] 22-06-PLAN.md — SalaryIntelligenceSection + EMPTY_STATE_COPY + parseSalaryHeadline + formatSingleSalary (AI-RENDER-03) — 2026-04-22
-- [ ] 22-07-PLAN.md — Mount in job-detail-sheet + provenance retrofits + D-12 currency guards (AI-RENDER-03 + AI-RENDER-07)
+- [x] 22-07-PLAN.md — Mount in job-detail-sheet + provenance retrofits + D-12 currency guards (AI-RENDER-03 + AI-RENDER-07) — 2026-04-22
 - [ ] 22-08-PLAN.md — Meta-doc finalization (ROADMAP SC #3 wording + SC #5 line 328→349 + REQUIREMENTS traceability + STATE + SUMMARY)
 
 #### Phase 23: Owner-Triggered Workflows (Pattern Setter)
@@ -225,7 +225,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 20. Foundation (Freshness + Zod + Tailored Resume) | 8/8 | Complete | 2026-04-21 |
 | 21. Polish (Copy + PDF + Empty States + Link-out) | 9/10 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
-| 22. Salary Intelligence (Defensive Render) | 6/8 | Executing | - |
+| 22. Salary Intelligence (Defensive Render) | 7/8 | Executing | - |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 0/0 | Not started | - |
 
