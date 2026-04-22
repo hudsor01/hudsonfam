@@ -239,5 +239,17 @@ describe("jobs-schemas parseOrLog (fail-open)", () => {
       const result = CompanyResearchSchema.safeParse(validCompanyResearch);
       expect(result.success).toBe(true);
     });
+
+    it("parseOrLog passes null salary_currency through without coercing to USD (D-12 server-side)", () => {
+      const result = parseOrLog(
+        CompanyResearchSchema,
+        { ...validCompanyResearch, salary_currency: null },
+        "company_research",
+        99
+      );
+      expect(result).not.toBeNull();
+      expect(result!.salary_currency).toBeNull();
+      expect(result!.salary_currency).not.toBe("USD");
+    });
   });
 });

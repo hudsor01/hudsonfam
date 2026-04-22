@@ -376,7 +376,7 @@ export async function getJobDetail(jobId: number): Promise<JobDetail | null> {
           glassdoor_rating: row.cr_glassdoor_rating,
           salary_range_min: row.cr_salary_range_min,
           salary_range_max: row.cr_salary_range_max,
-          salary_currency: row.cr_salary_currency ?? "USD",
+          salary_currency: row.cr_salary_currency,
           tech_stack: row.cr_tech_stack ?? [],
           funding_stage: row.cr_funding_stage,
           employee_count: row.cr_employee_count,
