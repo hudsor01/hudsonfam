@@ -31,9 +31,9 @@ Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified obse
 ### Safety & Hardening
 
 - [x] **AI-SAFETY-01**: Markdown rendered from LLM output cannot execute JavaScript — a `<script>alert(1)</script>` payload in any artifact content renders as literal text
-- [ ] **AI-SAFETY-02**: Every n8n webhook call from the app is signed with HMAC-SHA256 using a shared secret (`N8N_WEBHOOK_SECRET`); n8n rejects unsigned calls
-- [ ] **AI-SAFETY-03**: Every n8n webhook call includes an `X-Idempotency-Key` header; replaying the same call does not re-run the underlying workflow twice
-- [ ] **AI-SAFETY-04**: Server Action errors returned to the client are drawn from a sentinel set ("timeout", "auth", "rate limit", "unavailable") — raw `e.message` or stack traces are never returned
+- [x] **AI-SAFETY-02**: Every n8n webhook call from the app is signed with HMAC-SHA256 using a shared secret (`N8N_WEBHOOK_SECRET`); n8n rejects unsigned calls
+- [x] **AI-SAFETY-03**: Every n8n webhook call includes an `X-Idempotency-Key` header; replaying the same call does not re-run the underlying workflow twice
+- [x] **AI-SAFETY-04**: Server Action errors returned to the client are drawn from a sentinel set ("timeout", "auth", "rate limit", "unavailable") — raw `e.message` or stack traces are never returned
 - [x] **AI-SAFETY-05**: `/admin/*` routes serve a Content-Security-Policy header that blocks inline scripts, object embeds, and framing
 - [x] **AI-SAFETY-06**: Every row read from an LLM artifact table (cover_letters, company_research, tailored_resumes, salary_intelligence) is validated via Zod `safeParse` at the `jobs-db.ts` boundary; malformed rows fail-open with a logged warning and an error-boundary-rendered section, never crash the page
 
@@ -97,9 +97,9 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 | AI-ACTION-06 | Phase 24 | Pending |
 | AI-ACTION-07 | Phase 24 | Pending |
 | AI-SAFETY-01 | Phase 20 (20-05) | Complete (2026-04-21) |
-| AI-SAFETY-02 | Phase 23 | Pending |
-| AI-SAFETY-03 | Phase 23 | Pending |
-| AI-SAFETY-04 | Phase 23 | Pending |
+| AI-SAFETY-02 | Phase 23 (23-01 sendSignedWebhook primitive — HMAC helper contract) | Code complete (2026-04-22) — prod UAT deferred to v3.5; callers in 23-02/03/05/06 consume the primitive |
+| AI-SAFETY-03 | Phase 23 (23-01 sendSignedWebhook primitive — X-Idempotency-Key helper contract) | Code complete (2026-04-22) — prod UAT deferred to v3.5; callers in 23-02/03/05/06 pass crypto.randomUUID() per click |
+| AI-SAFETY-04 | Phase 23 (23-01 sendSignedWebhook primitive — ErrorSentinel bounded union + D-08 no-raw-leak) | Code complete (2026-04-22) — prod UAT deferred to v3.5; callers render on sentinel match |
 | AI-SAFETY-05 | Phase 20 (20-07) | Complete (2026-04-21) |
 | AI-SAFETY-06 | Phase 20 (20-03) | Complete (2026-04-21) |
 | AI-DATA-01 | Phase 22 (22-02 LEFT JOIN LATERAL + WHERE FALSE skeleton) | Code complete (2026-04-22) — prod UAT deferred to v3.5; WHERE FALSE skeleton pending n8n task #11 upstream fix for real rows |

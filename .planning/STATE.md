@@ -3,26 +3,26 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-22T22:00:00.000Z"
-last_activity: 2026-04-22 — Phase 22 closed code-complete (prod UAT deferred to v3.5-P4)
+last_updated: "2026-04-22T23:27:11.210Z"
+last_activity: 2026-04-22
 progress:
-  total_phases: 7
-  completed_phases: 2
-  total_plans: 26
-  completed_plans: 30
-  percent: 100
+  total_phases: 8
+  completed_phases: 3
+  total_plans: 34
+  completed_plans: 31
+  percent: 91
 ---
 
 # State
 
 ## Current Position
 
-Phase: 22 (Salary Intelligence — Defensive Render) — **CODE COMPLETE; prod UAT DEFERRED-to-v3.5**
-Plan: 8/8 plans complete (22-01 through 22-08). Phase 22 closes code-complete; production UAT is deferred to v3.5-P4 per the v3.0 sequencing decision (same CI/CD pipeline block as Phase 21).
-Status: 4/4 Phase 22 REQs (AI-RENDER-03, AI-RENDER-07, AI-DATA-01, AI-DATA-02) code-complete; full suite 450/450 green; zero hardcoded Tailwind colors; grep gates G-1/G-2/G-3/G-4/G-5/G-6/G-7 all enforced by tests or CI. Defensive LEFT JOIN LATERAL skeleton (WHERE FALSE predicate) in getJobDetail tolerates zero rows today (pending n8n task #11 upstream fix) + future column shape via 1-line predicate edit. Phase 22 new artifacts: src/lib/provenance.ts + src/lib/parse-salary-report.ts + src/lib/format-salary.ts + src/app/(admin)/admin/jobs/salary-intelligence-section.tsx + src/app/(admin)/admin/jobs/provenance-tag.tsx (plus existing-file edits to jobs-db.ts, jobs-schemas.ts, empty-state-copy.ts, attach-freshness.ts, job-actions.ts, check-jobs-schema.ts, job-detail-sheet.tsx). D-12 currency cascade complete: `?? "USD"` removed at jobs-db.ts:379; CompanyResearch.salary_currency is now `string | null`; header + Company Intel salary blocks guard on `&& detail.*.salary_currency` to hide cleanly when null.
-Last activity: 2026-04-22 — Phase 22 closed code-complete; 4 REQs shipped; meta-docs finalized
+Phase: 23 (owner-triggered-workflows-pattern-setter) — EXECUTING
+Plan: 2 of 8
+Status: Ready to execute
+Last activity: 2026-04-22
 
-Progress: [██████████] 100%
+Progress: [█████████░] 91%
 
 ## What's Done
 
@@ -52,7 +52,7 @@ Progress: [██████████] 100%
   - Phase 20: Foundation — COMPLETE (2026-04-21)
   - Phase 21: Polish — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5-P4
   - Phase 22: Salary Intelligence — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5-P4
-  - **Phase 23: Owner-Triggered Workflows — NEXT**
+  - **Phase 23: Owner-Triggered Workflows — EXECUTING (1/8 plans as of 2026-04-22; Plan 23-01 sendSignedWebhook primitive landed in 2m 9s, +17 tests green, AI-SAFETY-02/03/04 closed at helper boundary)**
   - Phase 24: Regenerate Expansion — depends on Phase 22 + 23
 - **v3.5 CI/CD Hardening** (seeded 2026-04-22, SEED-005): activates AFTER v3.0 closes. 4 phases (~4 hours + accumulated UAT). Migrates hudsonfam deploy to GitHub Actions + GHCR per CLAUDE.md's original intent. v3.5-P4 retroactively executes deferred UAT for Phases 21 + 22 + 23 + 24 in one pass.
 - **v3.0 "shipped" milestone marker** requires BOTH code-complete (all 5 phases) AND v3.5 executed (pipeline rebuilt + all UAT signed off). Until v3.5 ships, v3.0 is "code-complete, deploy-blocked."
@@ -262,6 +262,10 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 22-02: `?? "USD"` at `src/lib/jobs-db.ts:379` explicitly UNTOUCHED this plan — its removal is Plan 22-03's scope (D-12 cascade; same file different line; serialized wave). Attempting to remove it here would collide with Plan 22-03's planned edit and create a merge-conflict scenario in the serialized wave. Plan-boundary discipline: if two plans edit the same file on non-overlapping lines, keep the line ownership clean.
 - v3.0 Plan 22-02: `STALE_THRESHOLDS.salary_intelligence = 30` already declared in job-freshness.ts:22 (Phase 20 D-01 pre-declared all 4 thresholds including the Phase 22 artifact). Plan 22-02 CONSUMES but does NOT ADD the threshold — zero `STALE_THRESHOLDS` edits. Pattern: forward-declaring future artifact thresholds in the Plan 20 constant map means later plans pick them up without touching the shared constant. The `30` value matches the `salary data mid-velocity` rationale in that file's docstring.
 - v3.0 Plan 22-02: Test fixture Rule 1 auto-fix — plan text specified `expect(...generatedDate).toBe("4/21/26")` for the salary_intelligence search_date dispatch case, but 2026-04-21T00:00:00Z renders as "4/20/26" in America/Chicago (CDT UTC-5 means 2026-04-21 00:00 UTC = 2026-04-20 19:00 Chicago). Corrected the expected value to "4/20/26" (precedent: Plan 20-06's existing "created_at for company_research" test at attach-freshness.test.ts:66 handles the same TZ edge identically, using `2026-04-21T05:00:00.000Z` which DOES render as "4/21/26" because 05:00 UTC is past midnight Chicago — the boundary is at 05:00 UTC in CDT). Zero production-logic change; fixture-text fix only.
+- v3.0 Plan 23-01: `sendSignedWebhook` HMAC canonical is `${timestamp}.${path}.${rawBody}` (D-02) — literal Stripe/GitHub/Slack convention. `rawBody` is serialized ONCE via `JSON.stringify(body)` and used identity-equal for both `createHmac("sha256", SECRET).update(canonical)` and `fetch({ body: rawBody })`. Pitfall 1 (signature-mismatch from silent re-serialization between sign-step and send-step) is locked by the `signs the EXACT string that gets POSTed` test, which reconstructs the canonical from the sent body + sent timestamp header and verifies byte-equality with the sent signature. Any future refactor that introduces a second `JSON.stringify` between signing and sending will fail this test.
+- v3.0 Plan 23-01: `ErrorSentinel` is a bounded 4-value union (`"timeout" | "auth" | "rate limit" | "unavailable"`); `WebhookResult` is a discriminated union (`{ ok: true } | { ok: false; sentinel: ErrorSentinel }`). Zero `throw` statements in `sendSignedWebhook`; every failure routes through a private `sentinel()` helper that `console.error`s the full diagnostics server-side and returns only the bounded sentinel string. D-08 "no-raw-error-leak" is enforced by construction — the test asserts `JSON.stringify(res)` does NOT match `/internal-host/`, `/10\.0\.5\.2/`, or `/SECRET/`, making cluster IPs and secret-prefixed error text unreachable from callers.
+- v3.0 Plan 23-01: D-07 sentinel cascade order (locked by `it.each` truth table): `401 | 403 → "auth"` (checked first, before generic !r.ok) → `429 → "rate limit"` (checked second) → any remaining `!r.ok → "unavailable"` (5xx / 4xx-other). Catch block splits `err.name === "AbortError" || "TimeoutError" → "timeout"` (Node version variance — both names handled) from everything else `→ "unavailable"`. Missing `N8N_WEBHOOK_SECRET` guard at function entry returns `"unavailable"` (T-23-01-06 graceful degrade, not throw-at-module-load).
+- v3.0 Plan 23-01: `process.env.N8N_WEBHOOK_SECRET` + `process.env.N8N_WEBHOOK_URL` read at CALL time (inside function body), not at module scope — three load-bearing consequences: (1) Vitest can `process.env.X = "..."` in beforeEach without re-importing, (2) a missing secret degrades gracefully to sentinel instead of throwing at module import, (3) `N8N_WEBHOOK_URL` defaults to cluster-internal homelab DNS `http://n8n.cloud.svc.cluster.local:5678` when unset. `AbortSignal.timeout(5000)` caps per-call elapsed time, mitigating T-23-01-04 DoS from runaway outbound holds regardless of n8n state.
 
 ## Blockers
 
@@ -293,7 +297,7 @@ None.
 | 22    | 22-06 | ~5m      | 5     | 5     | 2026-04-22T20:27:00Z |
 | 22    | 22-03 | ~3m      | 3     | 2     | 2026-04-22T20:33:37Z |
 
-**Planned Phase:** 22 (salary-intelligence-defensive-render) — 8 plans — 2026-04-22T19:49:06.860Z
+**Planned Phase:** 23 (owner-triggered-workflows-pattern-setter) — 8 plans — 2026-04-22T23:20:04.361Z
 | Phase 22 P01 | ~4 minutes | 3 tasks | 3 files |
 | Phase 22 P04 | 1m 16s | 3 tasks | 1 files |
 | Phase 22 P05 | 2m 51s | 4 tasks | 3 files |
@@ -301,3 +305,4 @@ None.
 | Phase 22 P06 | 5m | 5 tasks | 5 files |
 | Phase 22 P03 | 3m | 3 tasks | 2 files |
 | Phase 22 P07 | 2m 52s | 2 tasks | 2 files |
+| Phase 23 P01 | 2m 9s | 3 tasks | 2 files |
