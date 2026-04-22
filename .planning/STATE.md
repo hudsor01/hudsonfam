@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-22T20:43:36.642Z"
-last_activity: 2026-04-22
+last_updated: "2026-04-22T22:00:00.000Z"
+last_activity: 2026-04-22 — Phase 22 closed code-complete (prod UAT deferred to v3.5-P4)
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 26
-  completed_plans: 29
+  completed_plans: 30
   percent: 100
 ---
 
@@ -17,10 +17,10 @@ progress:
 
 ## Current Position
 
-Phase: 22 (salary-intelligence-defensive-render) — EXECUTING
-Plan: 22-07 complete; 22-08 remaining (7/8 plans complete: 22-01, 22-02, 22-03, 22-04, 22-05, 22-06, 22-07)
-Status: Ready to execute Plan 22-08 (Phase 22 meta-doc finalization — mirror the Phase 21 closure pattern: REQUIREMENTS.md traceability, ROADMAP.md Phase 22 row, STATE.md phase closure marker). AI-RENDER-03 + AI-RENDER-07 + AI-DATA-01 + AI-DATA-02 all closed end-to-end; Phase 22 code-complete pending UAT deferral to v3.5 per Phase 21's precedent.
-Last activity: 2026-04-22
+Phase: 22 (Salary Intelligence — Defensive Render) — **CODE COMPLETE; prod UAT DEFERRED-to-v3.5**
+Plan: 8/8 plans complete (22-01 through 22-08). Phase 22 closes code-complete; production UAT is deferred to v3.5-P4 per the v3.0 sequencing decision (same CI/CD pipeline block as Phase 21).
+Status: 4/4 Phase 22 REQs (AI-RENDER-03, AI-RENDER-07, AI-DATA-01, AI-DATA-02) code-complete; full suite 450/450 green; zero hardcoded Tailwind colors; grep gates G-1/G-2/G-3/G-4/G-5/G-6/G-7 all enforced by tests or CI. Defensive LEFT JOIN LATERAL skeleton (WHERE FALSE predicate) in getJobDetail tolerates zero rows today (pending n8n task #11 upstream fix) + future column shape via 1-line predicate edit. Phase 22 new artifacts: src/lib/provenance.ts + src/lib/parse-salary-report.ts + src/lib/format-salary.ts + src/app/(admin)/admin/jobs/salary-intelligence-section.tsx + src/app/(admin)/admin/jobs/provenance-tag.tsx (plus existing-file edits to jobs-db.ts, jobs-schemas.ts, empty-state-copy.ts, attach-freshness.ts, job-actions.ts, check-jobs-schema.ts, job-detail-sheet.tsx). D-12 currency cascade complete: `?? "USD"` removed at jobs-db.ts:379; CompanyResearch.salary_currency is now `string | null`; header + Company Intel salary blocks guard on `&& detail.*.salary_currency` to hide cleanly when null.
+Last activity: 2026-04-22 — Phase 22 closed code-complete; 4 REQs shipped; meta-docs finalized
 
 Progress: [██████████] 100%
 
@@ -44,20 +44,22 @@ Progress: [██████████] 100%
 
 ### Immediate next step
 
-**`/gsd-discuss-phase 22`** — Salary Intelligence (Defensive Render). 4 REQs: AI-RENDER-03 + AI-RENDER-07 + AI-DATA-01 + AI-DATA-02. Depends only on Phase 20. The `salary_intelligence` table has 0 rows today per `.planning/notes/ai-pipeline-integration-context.md` — Phase 22 ships the defensive `LEFT JOIN LATERAL` so the UI doesn't crash when data is missing, plus the Zod schema ready for when n8n task #11 fills the table.
+**`/gsd-discuss-phase 23`** — Owner-Triggered Workflows (Pattern Setter). 5 REQs: AI-ACTION-03 + AI-ACTION-04 + AI-SAFETY-02 + AI-SAFETY-03 + AI-SAFETY-04. Depends only on Phase 20. Establishes the HMAC-SHA256 + X-Idempotency-Key + sentinel-error scrubbing pattern that Phase 24 then copies to salary/resume regenerate.
 
 ### Sequenced milestone order (locked 2026-04-22)
 
-- **v3.0 AI Integration** (in progress, 2/5 phases code-complete):
+- **v3.0 AI Integration** (in progress, 3/5 phases code-complete):
   - Phase 20: Foundation — COMPLETE (2026-04-21)
   - Phase 21: Polish — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5-P4
-  - **Phase 22: Salary Intelligence — NEXT**
-  - Phase 23: Owner-Triggered Workflows — follows Phase 22
+  - Phase 22: Salary Intelligence — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5-P4
+  - **Phase 23: Owner-Triggered Workflows — NEXT**
   - Phase 24: Regenerate Expansion — depends on Phase 22 + 23
 - **v3.5 CI/CD Hardening** (seeded 2026-04-22, SEED-005): activates AFTER v3.0 closes. 4 phases (~4 hours + accumulated UAT). Migrates hudsonfam deploy to GitHub Actions + GHCR per CLAUDE.md's original intent. v3.5-P4 retroactively executes deferred UAT for Phases 21 + 22 + 23 + 24 in one pass.
 - **v3.0 "shipped" milestone marker** requires BOTH code-complete (all 5 phases) AND v3.5 executed (pipeline rebuilt + all UAT signed off). Until v3.5 ships, v3.0 is "code-complete, deploy-blocked."
 
 ## Last Session
+
+2026-04-22 22:00 UTC — Plan 22-08 executed. Phase 22 meta-doc finalization landed: ROADMAP.md SC #3 wording corrected (stale `job_id and company_name keying` → accurate `WHERE FALSE skeleton + 1-line predicate edit` tolerating the live-DB reality that `salary_intelligence` is keyed on `search_date` with no `job_id` / `company_name` columns); SC #5 line number updated `328` → `349` (plan-stated target; actual live line in jobs-db.ts is irrelevant today because Plan 22-03 removed the token entirely — the SC retains the historical line for the deferred-UAT paper trail); Phase 22 top-level bullet flipped `[ ]` → `[x]`; Progress table row flipped `7/8 Executing` → `8/8 Code complete (prod UAT deferred to v3.5)`; Phase 22 Plans block now lists all 8 plans as `[x]`. REQUIREMENTS.md: 4 Phase 22 REQ traceability rows reframed `Complete` → `Code complete (2026-04-22) — prod UAT deferred to v3.5` matching Phase 21 precedent; AI-DATA-01 row extended with `WHERE FALSE skeleton pending n8n task #11 upstream fix for real rows` explanatory note; AI-SAFETY-01 traceability row fixed from stale `Pending` → `Complete (2026-04-21)` with Plan 20-05 citation (latent bug — this REQ was always complete but the table never flipped); footer timestamp updated with Phase 22 context; 5 stray line-breaks inside checklist `**REQ-ID**` strings (AI-RENDER-03/05/07/SAFETY-01/06) cleaned up for grep hygiene. STATE.md: Current Position block advances to Phase 22 CODE COMPLETE; What's Next → `/gsd-discuss-phase 23`; Sequenced milestone order shows 3/5 v3.0 phases code-complete; frontmatter `last_updated` refreshed + `completed_plans` incremented `29 → 30`. 22-SUMMARY.md created at `.planning/phases/22-salary-intelligence-defensive-render/22-SUMMARY.md` — phase-level rollup of 8 plan deliverables, test-count delta (410→450, +40 across Phase 22), 8 commits listed, 7 grep gates documented, deferred-to-v3.5-P4 UAT section, awaiting-upstream n8n task #11 section, Phase 23 planner handoff notes. Four doc files touched in a single atomic `docs(22-08)` commit. Zero deviations. Phase 22 closes code-complete; Phase 23 is the next milestone. See `.planning/phases/22-salary-intelligence-defensive-render/22-SUMMARY.md`.
 
 2026-04-22 20:44 UTC — Plan 22-07 executed. AI-RENDER-03 + AI-RENDER-07 delivered end-to-end at the render layer. Four edits in `src/app/(admin)/admin/jobs/job-detail-sheet.tsx`: (1) imports `SalaryIntelligenceSection` (Plan 22-06) + `ProvenanceTag` (Plan 22-05); (2) header salary block (lines 160-167) — added `&& detail.salary_currency` D-12 guard + `<ProvenanceTag source="scraped" />` as third child of the `gap-1` flex row; (3) new `<SectionErrorBoundary section="salary_intelligence" jobId={detail.id}>` mount at lines 266-282 wrapping `<SalaryIntelligenceSection salary={detail.salary_intelligence ? {report_json, llm_analysis, freshness} : null} />` — preceded by a NEW `<Separator />` at line 266 so the visual rhythm becomes Tailored Resume → sep → Salary Intel → existing-sep → Company Intel; (4) Company Intel salary-range block (lines 343-354) — added `&& detail.company_research.salary_currency` D-12 guard + `<ProvenanceTag source="company_research" />` as third child of the `gap-1` flex row. New test file `src/__tests__/components/job-detail-sheet.test.tsx` (122 lines, 3 describe blocks, 8 cases): **G-1 grep gate** iteration test walks sheet source and asserts every `formatSalary(` line (excluding the function declaration) has a `<ProvenanceTag` or `<Badge variant="outline"` within 5 lines — produces unmatched-line-list for diagnostic clarity; **G-4 grep gate** multi-line regex test confirms SectionErrorBoundary with `section="salary_intelligence"` precedes `<SalaryIntelligenceSection`; two D-12 source-text assertions lock the header + Company Intel guard expressions into the file; two ProvenanceTag smoke tests (`scraped` → `.text-muted-foreground` + textContent "scraped"; `company_research` → `.text-success` + textContent "company research") guard against provenance-color regression at the actual consumer boundary. Zero deviations — no Rule 1/2/3 auto-fixes, no Rule 4 architectural escalation. Single atomic commit `1504a61` covering both files per plan Task 22-07-03 spec. Full suite 442 → 450 green (+8 Plan 22-07 cases). `npm run build` exits 0. **G-6** (`?? "USD"` in jobs-db.ts) still holds from Plan 22-03 — 0 matches. All 3 Phase 22 render-layer grep gates (G-1 adjacency / G-4 boundary wrap / G-6 no-coalesce) now test-enforced end-to-end. Dead UI today: 100% of the 636 live `jobs` rows have `salary_currency = NULL` so the header D-12 guard hides the whole span; 0 live `company_research` rows and 0 live `salary_intelligence` rows (n8n task #11 pending upstream) so both other render paths fire their `null` branches — all populated / empty / retrofit branches are fully test-covered so the features come online regression-safe the day upstream data lands. Duration 2m 52s. **7/8 Phase 22 plans complete** (22-01, 22-02, 22-03, 22-04, 22-05, 22-06, 22-07). AI-RENDER-03 + AI-RENDER-07 checked off in REQUIREMENTS.md. Next: Plan 22-08 (Phase 22 meta-doc finalization, mirrors Phase 21's 21-09 pattern) — only remaining Phase 22 plan; code-complete from this point forward. See `.planning/phases/22-salary-intelligence-defensive-render/22-07-SUMMARY.md`.
 

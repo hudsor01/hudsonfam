@@ -125,7 +125,7 @@
 
 - [x] **Phase 20: Foundation (Freshness + Zod + Tailored Resume)** — pure isStale util, Zod safeParse at jobs-db boundary, CSP on /admin/*, tailored resume rendered with Streamdown + generated_at/model badges, schema-drift CI guardrail — 2026-04-21
 - [ ] **Phase 21: Polish (Copy + PDF + Empty States + Link-out)** — copy-to-clipboard, tailored-resume PDF download (pipeline-extended end-to-end via n8n Application Packager + tailored_resumes.pdf_data migration), 3 empty-state blocks, company-website link-out, cover-letter quality-score badge, bundled Phase 20 FreshnessBadge date-format revision
-- [ ] **Phase 22: Salary Intelligence (Defensive Render)** — SalaryIntelligence Zod + TS type, LEFT JOIN LATERAL tolerating both job_id and company_name keying, llm_analysis + structured headline render, per-figure provenance tags (scraped / LLM / research)
+- [x] **Phase 22: Salary Intelligence (Defensive Render)** — SalaryIntelligence Zod + TS type, defensive LEFT JOIN LATERAL (WHERE FALSE skeleton tolerating future schema shape via 1-line predicate edit), llm_analysis + structured headline render, per-figure provenance tags (scraped / LLM / research) — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5
 - [ ] **Phase 23: Owner-Triggered Workflows (Pattern Setter)** — "Research this company" manual trigger, regenerate cover letter, HMAC-SHA256 + X-Idempotency-Key + sentinel-error scrubbing pattern established and retrofit to existing fireWebhook
 - [ ] **Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)** — regenerate tailored resume, regenerate salary intelligence, silent-success warning state when workflow returns OK without updating timestamp
 
@@ -182,9 +182,9 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Once a `salary_intelligence` row exists for a job, owner opens the detail sheet and sees a Salary Intelligence section with the LLM analysis prose (rendered via Streamdown) plus structured headline figures (min/median/max or p25/p50/p75 — whichever the row provides)
   2. Every dollar figure rendered anywhere in the detail sheet (base salary, salary range, salary-intel headline, company_research salary range) carries a source tag — "scraped (jobicy)", "LLM estimate", "company research" — and no figure appears without a label (mitigates Pitfall 5 — scraped numbers displayed as authoritative)
-  3. When zero `salary_intelligence` rows exist for a job, the detail sheet shows the AI-RENDER-04 empty-state messaging for that section and does NOT crash — the defensive `LEFT JOIN LATERAL` returns null cleanly for both `job_id` and `company_name` keying
+  3. When zero `salary_intelligence` rows exist for a job, the detail sheet shows the AI-RENDER-04 empty-state messaging for that section and does NOT crash — the defensive `LEFT JOIN LATERAL` skeleton (WHERE FALSE) returns null cleanly today, and tolerates any future schema shape the n8n workflow produces via a 1-line predicate edit (the live `salary_intelligence` table is keyed on `search_date` with no `job_id` / `company_name` columns; the original SC wording was based on a pre-CONTEXT.md assumption about upstream — corrected 2026-04-22 during Phase 22 planning per `.planning/phases/22-salary-intelligence-defensive-render/22-CONTEXT.md` §Phase Boundary)
   4. `src/lib/jobs-db.ts` exports both a `SalaryIntelligence` TypeScript type and a matching Zod schema; a Vitest test constructs a malformed row and asserts the Zod parse returns a fail-open result with a logged warning rather than throwing
-  5. The `?? "USD"` currency default at `jobs-db.ts:328` is removed; when `salary_currency` is null the salary block hides entirely rather than mislabeling a GBP/EUR figure with `$`
+  5. The `?? "USD"` currency default at `jobs-db.ts:349` is removed; when `salary_currency` is null the salary block hides entirely rather than mislabeling a GBP/EUR figure with `$`
 **Plans:** 8 plans
 Plans:
 - [x] 22-01-PLAN.md — SalaryIntelligenceSchema + CompanyResearchSchema nullable cascade (AI-DATA-02; D-01 + D-12 prep) — 2026-04-22
@@ -194,7 +194,7 @@ Plans:
 - [x] 22-05-PLAN.md — ProvenanceTag primitives (provenanceColor/Label + component) (AI-RENDER-07 foundation) — 2026-04-22
 - [x] 22-06-PLAN.md — SalaryIntelligenceSection + EMPTY_STATE_COPY + parseSalaryHeadline + formatSingleSalary (AI-RENDER-03) — 2026-04-22
 - [x] 22-07-PLAN.md — Mount in job-detail-sheet + provenance retrofits + D-12 currency guards (AI-RENDER-03 + AI-RENDER-07) — 2026-04-22
-- [ ] 22-08-PLAN.md — Meta-doc finalization (ROADMAP SC #3 wording + SC #5 line 328→349 + REQUIREMENTS traceability + STATE + SUMMARY)
+- [x] 22-08-PLAN.md — Meta-doc finalization (ROADMAP SC #3 wording + SC #5 line 328→349 + REQUIREMENTS traceability + STATE + SUMMARY) — 2026-04-22
 
 #### Phase 23: Owner-Triggered Workflows (Pattern Setter)
 **Goal**: Owner can manually trigger the company-research workflow and regenerate a cover letter for any job; every webhook leaving the app is HMAC-signed, idempotency-keyed, and returns only sanitized error sentinels — establishing the pattern Phase 24 will copy.
@@ -225,7 +225,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 20. Foundation (Freshness + Zod + Tailored Resume) | 8/8 | Complete | 2026-04-21 |
 | 21. Polish (Copy + PDF + Empty States + Link-out) | 9/10 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
-| 22. Salary Intelligence (Defensive Render) | 7/8 | Executing | - |
+| 22. Salary Intelligence (Defensive Render) | 8/8 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 0/0 | Not started | - |
 

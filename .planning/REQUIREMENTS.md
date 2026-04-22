@@ -12,14 +12,11 @@ Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified obse
 
 - [x] **AI-RENDER-01**: Owner sees tailored resume content rendered as formatted markdown in the job detail sheet
 - [x] **AI-RENDER-02**: Owner sees `generated_at` timestamp and `model_used` label on every AI artifact section (cover letter, company research, tailored resume, salary intelligence)
-- [x] **AI-RENDER-03
-**: Owner sees salary intelligence — LLM analysis prose + structured headline figures — in the job detail sheet
+- [x] **AI-RENDER-03**: Owner sees salary intelligence — LLM analysis prose + structured headline figures — in the job detail sheet
 - [x] **AI-RENDER-04**: Owner sees distinct empty-state messaging distinguishing "never generated" from "generated but currently empty" for each AI artifact section
-- [x] **AI-RENDER-05
-**: Owner sees a quality-score badge on cover letters when `cover_letters.quality_score` is populated
+- [x] **AI-RENDER-05**: Owner sees a quality-score badge on cover letters when `cover_letters.quality_score` is populated
 - [x] **AI-RENDER-06**: Owner sees a company-website link-out (with external-link icon) from the company research section
-- [x] **AI-RENDER-07
-**: Owner sees provenance tags ("scraped", "LLM estimate", "company research") on every salary figure displayed; no single "$X" appears without a source label
+- [x] **AI-RENDER-07**: Owner sees provenance tags ("scraped", "LLM estimate", "company research") on every salary figure displayed; no single "$X" appears without a source label
 
 ### Owner-Triggered Actions
 
@@ -33,14 +30,12 @@ Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified obse
 
 ### Safety & Hardening
 
-- [x] **AI-SAFETY-01
-**: Markdown rendered from LLM output cannot execute JavaScript — a `<script>alert(1)</script>` payload in any artifact content renders as literal text
+- [x] **AI-SAFETY-01**: Markdown rendered from LLM output cannot execute JavaScript — a `<script>alert(1)</script>` payload in any artifact content renders as literal text
 - [ ] **AI-SAFETY-02**: Every n8n webhook call from the app is signed with HMAC-SHA256 using a shared secret (`N8N_WEBHOOK_SECRET`); n8n rejects unsigned calls
 - [ ] **AI-SAFETY-03**: Every n8n webhook call includes an `X-Idempotency-Key` header; replaying the same call does not re-run the underlying workflow twice
 - [ ] **AI-SAFETY-04**: Server Action errors returned to the client are drawn from a sentinel set ("timeout", "auth", "rate limit", "unavailable") — raw `e.message` or stack traces are never returned
 - [x] **AI-SAFETY-05**: `/admin/*` routes serve a Content-Security-Policy header that blocks inline scripts, object embeds, and framing
-- [x] **AI-SAFETY-06
-**: Every row read from an LLM artifact table (cover_letters, company_research, tailored_resumes, salary_intelligence) is validated via Zod `safeParse` at the `jobs-db.ts` boundary; malformed rows fail-open with a logged warning and an error-boundary-rendered section, never crash the page
+- [x] **AI-SAFETY-06**: Every row read from an LLM artifact table (cover_letters, company_research, tailored_resumes, salary_intelligence) is validated via Zod `safeParse` at the `jobs-db.ts` boundary; malformed rows fail-open with a logged warning and an error-boundary-rendered section, never crash the page
 
 ### Data Layer
 
@@ -89,11 +84,11 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 |--------|-------|--------|
 | AI-RENDER-01 | Phase 20 (20-01, 20-05, 20-06) | Complete (2026-04-21) |
 | AI-RENDER-02 | Phase 20 (20-04, 20-06) | Complete (2026-04-21) |
-| AI-RENDER-03 | Phase 22 (22-06 component; 22-07 mount + SectionErrorBoundary wrap) | Complete (2026-04-22) — SalaryIntelligenceSection mounted in job-detail-sheet.tsx between Tailored Resume and Company Intel, wrapped in SectionErrorBoundary section="salary_intelligence"; dead-UI today (0 salary_intelligence rows pending n8n task #11) but all 3 render branches fully test-covered |
+| AI-RENDER-03 | Phase 22 (22-06 component; 22-07 mount + SectionErrorBoundary wrap) | Code complete (2026-04-22) — prod UAT deferred to v3.5; SalaryIntelligenceSection mounted in job-detail-sheet.tsx between Tailored Resume and Company Intel, wrapped in SectionErrorBoundary section="salary_intelligence"; dead-UI today (0 salary_intelligence rows pending n8n task #11) but all 3 render branches fully test-covered |
 | AI-RENDER-04 | Phase 21 / Plan 21-06 | Code complete (2026-04-22) — prod UAT deferred to v3.5 (see 21-08-SUMMARY.md) |
 | AI-RENDER-05 | Phase 21 (21-05) | Code complete (2026-04-22) — prod UAT deferred to v3.5; runtime dead-UI today (0/12 cover_letters have quality_score) |
 | AI-RENDER-06 | Phase 21 / Plan 21-07 | Code complete (2026-04-22) — prod UAT deferred to v3.5; runtime dead-UI today (0/636 jobs have company_url) |
-| AI-RENDER-07 | Phase 22 / Plan 22-05 (primitive); Plan 22-07 (call-site adjacency) | Complete (2026-04-22) — `<ProvenanceTag>` + pure `provenanceColor`/`provenanceLabel` helpers shipped (Plan 22-05); 2 retrofit call sites landed in Plan 22-07 (header `source="scraped"`, Company Intel `source="company_research"`; SalaryIntelligenceSection's headline `source="llm"` already wired by Plan 22-06); grep-gate G-1 adjacency to `$X` figures test-enforced via source-text assertion in job-detail-sheet.test.tsx |
+| AI-RENDER-07 | Phase 22 / Plan 22-05 (primitive); Plan 22-07 (call-site adjacency) | Code complete (2026-04-22) — prod UAT deferred to v3.5; `<ProvenanceTag>` + pure `provenanceColor`/`provenanceLabel` helpers shipped (Plan 22-05); 2 retrofit call sites landed in Plan 22-07 (header `source="scraped"`, Company Intel `source="company_research"`; SalaryIntelligenceSection's headline `source="llm"` already wired by Plan 22-06); grep-gate G-1 adjacency to `$X` figures test-enforced via source-text assertion in job-detail-sheet.test.tsx |
 | AI-ACTION-01 | Phase 21 (21-04) | Code complete (2026-04-22) — prod UAT deferred to v3.5 (see 21-08-SUMMARY.md) |
 | AI-ACTION-02 | Phase 21 (21-01 pipeline, 21-02 schema, 21-03 server, 21-04 UI) | Code complete (2026-04-22) — prod UAT deferred to v3.5; n8n `TailoredResume01` workflow live + 8/8 rows have real pdf_data |
 | AI-ACTION-03 | Phase 23 | Pending |
@@ -101,14 +96,14 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 | AI-ACTION-05 | Phase 24 | Pending |
 | AI-ACTION-06 | Phase 24 | Pending |
 | AI-ACTION-07 | Phase 24 | Pending |
-| AI-SAFETY-01 | Phase 20 | Pending |
+| AI-SAFETY-01 | Phase 20 (20-05) | Complete (2026-04-21) |
 | AI-SAFETY-02 | Phase 23 | Pending |
 | AI-SAFETY-03 | Phase 23 | Pending |
 | AI-SAFETY-04 | Phase 23 | Pending |
 | AI-SAFETY-05 | Phase 20 (20-07) | Complete (2026-04-21) |
 | AI-SAFETY-06 | Phase 20 (20-03) | Complete (2026-04-21) |
-| AI-DATA-01 | Phase 22 (22-02 LEFT JOIN LATERAL + WHERE FALSE skeleton) | Complete |
-| AI-DATA-02 | Phase 22 (22-01 schema + CompanyResearch cascade; 22-02 SalaryIntelligence TS interface + JobDetail/FreshJobDetail extensions + parseOrLog wiring; 22-03 `?? "USD"` default removal server-side D-12 cascade) | Complete |
+| AI-DATA-01 | Phase 22 (22-02 LEFT JOIN LATERAL + WHERE FALSE skeleton) | Code complete (2026-04-22) — prod UAT deferred to v3.5; WHERE FALSE skeleton pending n8n task #11 upstream fix for real rows |
+| AI-DATA-02 | Phase 22 (22-01 schema + CompanyResearch cascade; 22-02 SalaryIntelligence TS interface + JobDetail/FreshJobDetail extensions + parseOrLog wiring; 22-03 `?? "USD"` default removal server-side D-12 cascade) | Code complete (2026-04-22) — prod UAT deferred to v3.5 |
 | AI-DATA-03 | Phase 20 (20-02) | Complete (2026-04-21) |
 | AI-DATA-04 | Phase 20 (20-08) | Complete (2026-04-21) |
 
@@ -126,4 +121,4 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 
 ---
 *Requirements defined: 2026-04-21*
-*Last updated: 2026-04-22 — Phase 21 (5 REQs) marked "Code complete, prod UAT deferred to v3.5" after CI/CD pipeline investigation revealed Forgejo+Woodpecker deploy path is broken (`forgejo-admin/hudsonfam` repo missing on Forgejo). Full context: `.planning/notes/ci-cd-fragility-analysis.md`; forward-looking seed: `SEED-005-cicd-hardening-migration.md`. Phase 21 code is 395/395 tests green; production verification happens retroactively after v3.5 lands.*
+*Last updated: 2026-04-22 — Phase 22 (4 REQs: AI-RENDER-03, AI-RENDER-07, AI-DATA-01, AI-DATA-02) marked "Code complete — prod UAT deferred to v3.5" per the same CI/CD pipeline block documented in `.planning/notes/ci-cd-fragility-analysis.md`. Phase 22 ships defensive LEFT JOIN LATERAL skeleton (WHERE FALSE today; 1-line predicate edit when n8n task #11 lands) + SalaryIntelligence Zod schema + SalaryIntelligenceSection renderer + ProvenanceTag primitives + D-12 currency cascade complete. All 4 REQs code-complete + full suite 450/450 green. Prior Phase 21 footer preserved in git history.*
