@@ -46,6 +46,7 @@ export const CompanyResearchSchema = z.object({
 export const TailoredResumeSchema = z.object({
   id: z.number(),
   content: z.string(),
+  pdf_data: z.string().nullable(),
   model_used: z.string().nullable(),
   generated_at: z.string(),
 });

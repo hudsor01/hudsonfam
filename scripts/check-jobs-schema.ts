@@ -35,7 +35,7 @@ const EXPECTED: Record<string, string[]> = {
     "recent_news", "ai_summary", "created_at",
   ],
   tailored_resumes: [
-    "id", "job_id", "content", "model_used", "generated_at",
+    "id", "job_id", "content", "pdf_data", "model_used", "generated_at",
   ],
   recruiter_outreach: [
     "id", "job_id", "contact_name", "contact_role", "context",

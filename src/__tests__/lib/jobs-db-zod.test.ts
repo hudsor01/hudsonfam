@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import type { ZodIssue } from "zod";
 import {
   CoverLetterSchema,
   CompanyResearchSchema,
@@ -78,11 +79,59 @@ describe("jobs-schemas parseOrLog (fail-open)", () => {
     const row = {
       id: 7,
       content: "# Resume",
+      pdf_data: null,
       model_used: null,
       generated_at: "2026-04-21T10:00:00.000Z",
     };
     const result = parseOrLog(TailoredResumeSchema, row, "tailored_resume", 7);
     expect(result).toEqual(row);
+  });
+
+  it("accepts a tailored_resume with pdf_data as null", () => {
+    const result = TailoredResumeSchema.safeParse({
+      id: 1,
+      content: "resume",
+      pdf_data: null,
+      model_used: "gpt-4o-mini",
+      generated_at: "2026-04-21T00:00:00.000Z",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a tailored_resume with pdf_data as a base64 string", () => {
+    const result = TailoredResumeSchema.safeParse({
+      id: 1,
+      content: "resume",
+      pdf_data: "JVBERi0xLjQKJeLjz9M=", // "%PDF-1.4" base64 prefix
+      model_used: "gpt-4o-mini",
+      generated_at: "2026-04-21T00:00:00.000Z",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a tailored_resume with pdf_data as a non-string non-null value", () => {
+    const result = TailoredResumeSchema.safeParse({
+      id: 1,
+      content: "resume",
+      pdf_data: 123,
+      model_used: "gpt-4o-mini",
+      generated_at: "2026-04-21T00:00:00.000Z",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a tailored_resume when pdf_data is missing (schema is required, not optional)", () => {
+    const result = TailoredResumeSchema.safeParse({
+      id: 1,
+      content: "resume",
+      model_used: "gpt-4o-mini",
+      generated_at: "2026-04-21T00:00:00.000Z",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const pdfIssue = result.error.issues.find((i: ZodIssue) => i.path.includes("pdf_data"));
+      expect(pdfIssue).toBeDefined();
+    }
   });
 
   it("accepts a valid company_research row with typical nullable fields", () => {
