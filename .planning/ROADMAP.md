@@ -187,7 +187,7 @@ Plans:
   5. The `?? "USD"` currency default at `jobs-db.ts:328` is removed; when `salary_currency` is null the salary block hides entirely rather than mislabeling a GBP/EUR figure with `$`
 **Plans:** 8 plans
 Plans:
-- [ ] 22-01-PLAN.md — SalaryIntelligenceSchema + CompanyResearchSchema nullable cascade (AI-DATA-02; D-01 + D-12 prep)
+- [x] 22-01-PLAN.md — SalaryIntelligenceSchema + CompanyResearchSchema nullable cascade (AI-DATA-02; D-01 + D-12 prep) — 2026-04-22
 - [ ] 22-02-PLAN.md — LEFT JOIN LATERAL + SalaryIntelligence type + tri-field attachFreshness (AI-DATA-01 + AI-DATA-02)
 - [ ] 22-03-PLAN.md — Remove `?? "USD"` + flip CompanyResearch.salary_currency nullable (D-12 cascade; grep gate G-6)
 - [ ] 22-04-PLAN.md — Schema-drift EXPECTED map gains salary_intelligence (D-04)
@@ -225,7 +225,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 20. Foundation (Freshness + Zod + Tailored Resume) | 8/8 | Complete | 2026-04-21 |
 | 21. Polish (Copy + PDF + Empty States + Link-out) | 9/10 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
-| 22. Salary Intelligence (Defensive Render) | 0/0 | Not started | - |
+| 22. Salary Intelligence (Defensive Render) | 1/8 | Executing | - |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 0/0 | Not started | - |
 

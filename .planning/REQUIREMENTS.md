@@ -106,7 +106,7 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 | AI-SAFETY-05 | Phase 20 (20-07) | Complete (2026-04-21) |
 | AI-SAFETY-06 | Phase 20 (20-03) | Complete (2026-04-21) |
 | AI-DATA-01 | Phase 22 | Pending |
-| AI-DATA-02 | Phase 22 | Pending |
+| AI-DATA-02 | Phase 22 (22-01 schema; 22-02 TS type + JobDetail field pending) | Pending |
 | AI-DATA-03 | Phase 20 (20-02) | Complete (2026-04-21) |
 | AI-DATA-04 | Phase 20 (20-08) | Complete (2026-04-21) |
 
