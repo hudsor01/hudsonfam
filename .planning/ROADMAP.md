@@ -168,7 +168,7 @@ Plans:
 - [x] 21-01-PLAN.md — Homelab: ALTER TABLE tailored_resumes ADD COLUMN pdf_data + n8n Application Packager workflow extension (AI-ACTION-02 pipeline, autonomous=false) — 2026-04-22
 - [x] 21-02-PLAN.md — Zod TailoredResumeSchema.pdf_data + schema-drift EXPECTED map (AI-ACTION-02) — 2026-04-22
 - [x] 21-03-PLAN.md — getJobDetail SELECT tr.pdf_data + getTailoredResumePdf helper + /api/jobs/[id]/tailored-resume-pdf route (AI-ACTION-02) — 2026-04-22
-- [ ] 21-04-PLAN.md — Copy button + Download anchor in TailoredResumeSection (AI-ACTION-01, AI-ACTION-02)
+- [x] 21-04-PLAN.md — Copy button + Download anchor in TailoredResumeSection (AI-ACTION-01, AI-ACTION-02) — 2026-04-22
 - [ ] 21-05-PLAN.md — scoreColor/scoreLabel helpers + Quality badge in cover-letter meta row (AI-RENDER-05)
 - [ ] 21-06-PLAN.md — EMPTY_STATE_COPY constant + isCompanyResearchEmpty predicate + empty-state branches on all 3 LLM sections (AI-RENDER-04)
 - [ ] 21-07-PLAN.md — normalizeUrl helper + conditional company anchor in sheet header (AI-RENDER-06)
@@ -215,7 +215,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 20. Foundation (Freshness + Zod + Tailored Resume) | 8/8 | Complete | 2026-04-21 |
-| 21. Polish (Copy + PDF + Empty States + Link-out) | 4/10 | In progress | - |
+| 21. Polish (Copy + PDF + Empty States + Link-out) | 5/10 | In progress | - |
 | 22. Salary Intelligence (Defensive Render) | 0/0 | Not started | - |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 0/0 | Not started | - |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 0/0 | Not started | - |
