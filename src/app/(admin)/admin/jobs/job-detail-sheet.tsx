@@ -24,6 +24,12 @@ import {
 import { sourceColors } from "./columns";
 import { fetchJobDetail } from "@/lib/job-actions";
 import type { FreshJobDetail } from "@/lib/jobs-db";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { scoreColor, scoreLabel } from "@/lib/score-color";
 import { FreshnessBadge } from "./freshness-badge";
 import { SectionErrorBoundary } from "./section-error-boundary";
 import { TailoredResumeSection } from "./tailored-resume-section";
@@ -146,7 +152,22 @@ export function JobDetailSheet({
                         <FileText className="size-4" />
                         Cover Letter
                       </h3>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        {detail.cover_letter.quality_score !== null && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Badge
+                                variant="outline"
+                                className={`text-[11px] ${scoreColor(detail.cover_letter.quality_score)} cursor-default`}
+                              >
+                                Quality {detail.cover_letter.quality_score}
+                              </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="text-xs max-w-[220px]">
+                              Cover letter quality score: {detail.cover_letter.quality_score} ({scoreLabel(detail.cover_letter.quality_score)})
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
                         <FreshnessBadge
                           generatedDate={detail.cover_letter.freshness.generatedDate}
                           modelUsed={detail.cover_letter.model_used}
