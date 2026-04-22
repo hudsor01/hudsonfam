@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-22T20:03:01.568Z"
+last_updated: "2026-04-22T20:12:30.321Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 26
-  completed_plans: 24
-  percent: 92
+  completed_plans: 25
+  percent: 96
 ---
 
 # State
@@ -18,11 +18,11 @@ progress:
 ## Current Position
 
 Phase: 22 (salary-intelligence-defensive-render) — EXECUTING
-Plan: 2 of 8 (next in serial order; 22-04 completed out-of-sequence as parallel-safe wave per phase planning — 2/8 plans complete: 22-01, 22-04)
-Status: Ready to execute
+Plan: 22-05 complete; 22-02 / 22-03 / 22-06 / 22-07 / 22-08 remaining (Wave-1 parallel-safe 22-05 completed out-of-sequence per phase planning — 3/8 plans complete: 22-01, 22-04, 22-05)
+Status: Ready to execute next Wave-1 plan (22-02 / 22-03) or Wave-2 consumers (22-06 / 22-07) once their dependencies land
 Last activity: 2026-04-22
 
-Progress: [█████████░] 92%
+Progress: [██████████] 96%
 
 ## What's Done
 
@@ -233,6 +233,13 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 22-01: `CompanyResearchSchema.salary_currency: z.string()` → `z.string().nullable()` per CONTEXT.md D-12 cascade. Zod schema is now authoritative source-of-truth (Plan 20-03 posture). This unblocks Plan 22-03's `?? "USD"` default removal — when `salary_currency` is null, the salary block will hide entirely rather than mislabel GBP/EUR as `$`. Cleaner semantics: no figure beats wrong-currency figure
 - v3.0 Plan 22-01: `CompanyResearch` TS interface in `src/lib/jobs-db.ts:67` flipped `salary_currency: string` → `string | null` as a Rule 1 auto-fix to keep `npm run build` green (plan's own success criteria demands zero TS errors). This deviates from the plan's "exactly 2 files" acceptance criterion (commit now touches 3 files: schema + interface + test). The alternative — leaving the build broken for Plan 22-02 to fix — would violate the GSD rule that each plan leaves the tree green. `?? "USD"` default at line 349 remains intact (Plan 22-03 removes it). TS interface follows Zod schema; never leads
 - v3.0 Plan 22-01: `parseOrLog<T>` function body byte-identical to before this plan — its existing generic `z.ZodType<T>` signature handles `SalaryIntelligenceSchema` natively with zero infrastructure changes. Plan 20-03 shipped the extensible fail-open boundary; Phase 22 just adds a third call site. Grep-verifiable: `grep -c "export function parseOrLog<T>" src/lib/jobs-schemas.ts` returns 1, function body unchanged
+- v3.0 Plan 22-05: `ProvenanceTag` primitive shipped as reusable Badge+Tooltip wrapper (D-10 color≈confidence + D-11 inline tag placement) — exact mirror of Plan 21-05 `scoreColor`+quality-badge pattern. 4-source → 3-semantic-token mapping: `company_research` → `text-success`, `llm` → `text-warning`, `scraped` + `original_posting` → `text-muted-foreground`. Plans 22-06 and 22-07 will consume the component directly.
+- v3.0 Plan 22-05: `TOOLTIPS` const map lives inside `src/app/(admin)/admin/jobs/provenance-tag.tsx` (not `src/lib/provenance.ts`) — keeps provenance.ts zero-import-pure (Server Component safe), colocates 4 verbatim UI-SPEC tooltip strings with their only renderer. Future i18n / copy swap is a single-file change at the component, not a cross-layer refactor.
+- v3.0 Plan 22-05: Exhaustive `switch` (no `default` branch) over the 4-source `ProvenanceSource` union in both `provenanceColor` and `provenanceLabel`. TypeScript's exhaustiveness check is the tripwire for a future 5th source being added without the color/label maps being extended — NOT a runtime default fallback. This mirrors the Plan 21-05 `scoreColor` / `scoreLabel` shape except switch-based rather than if-chain because the union is discrete (4 string literals) not a continuous scale (0–1 float).
+- v3.0 Plan 22-05: `text-[10px]` Badge sizing (one step smaller than Plan 21-05's `text-[11px]` quality badge) locks D-10's "provenance is metadata, not primary" hierarchy — the salary figure dominates visually, the provenance tag whispers. Future plans that want a more prominent provenance treatment (e.g., Phase 24 regenerate-quality-delta badges) should pick a DIFFERENT semantic token / size class rather than bumping up text-[10px] — the whisper is load-bearing for Phase 22's owner UX.
+- v3.0 Plan 22-05: `original_posting` source reuses `text-muted-foreground` (same as `scraped`) — 4 sources collapse to 3 tokens intentionally. Both are low-trust feed data; no Phase-22 visual disambiguation needed. The union keeps 4 entries because the LABEL text differs ("posted" vs "scraped") and callers may pass either; the color layer doesn't need to distinguish. Lower-trust-parity is asserted by a dedicated test case in `provenance.test.ts`.
+- v3.0 Plan 22-05: `className` prop appended via template-literal concatenation (not `cn()` utility) — matches Plan 21-05 inline pattern at `job-detail-sheet.tsx:206-218` and avoids pulling `@/lib/utils` into a leaf primitive. Cost: slightly less defensive handling of falsy/array className values; benefit: no cross-leaf utility dep, zero-runtime-import pure composition. If a consumer needs conditional-class logic they can `cn()` at the call site and pass the result as a string.
+- v3.0 Plan 22-05: No `aria-label` on Badge — the visible label text ("LLM estimate", "company research", "posted", "scraped") IS the accessible name. Radix's `TooltipTrigger asChild` wraps the Badge in a focusable role-button which gives keyboard + screen-reader users the tooltip content automatically. Adding a redundant aria-label would cause AT double-read of the same string.
 
 ## Blockers
 
@@ -261,3 +268,4 @@ None.
 **Planned Phase:** 22 (salary-intelligence-defensive-render) — 8 plans — 2026-04-22T19:49:06.860Z
 | Phase 22 P01 | ~4 minutes | 3 tasks | 3 files |
 | Phase 22 P04 | 1m 16s | 3 tasks | 1 files |
+| Phase 22 P05 | 2m 51s | 4 tasks | 3 files |

@@ -17,7 +17,8 @@ Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified obse
 - [x] **AI-RENDER-05
 **: Owner sees a quality-score badge on cover letters when `cover_letters.quality_score` is populated
 - [x] **AI-RENDER-06**: Owner sees a company-website link-out (with external-link icon) from the company research section
-- [ ] **AI-RENDER-07**: Owner sees provenance tags ("scraped", "LLM estimate", "company research") on every salary figure displayed; no single "$X" appears without a source label
+- [x] **AI-RENDER-07
+**: Owner sees provenance tags ("scraped", "LLM estimate", "company research") on every salary figure displayed; no single "$X" appears without a source label
 
 ### Owner-Triggered Actions
 
@@ -91,7 +92,7 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 | AI-RENDER-04 | Phase 21 / Plan 21-06 | Code complete (2026-04-22) — prod UAT deferred to v3.5 (see 21-08-SUMMARY.md) |
 | AI-RENDER-05 | Phase 21 (21-05) | Code complete (2026-04-22) — prod UAT deferred to v3.5; runtime dead-UI today (0/12 cover_letters have quality_score) |
 | AI-RENDER-06 | Phase 21 / Plan 21-07 | Code complete (2026-04-22) — prod UAT deferred to v3.5; runtime dead-UI today (0/636 jobs have company_url) |
-| AI-RENDER-07 | Phase 22 | Pending |
+| AI-RENDER-07 | Phase 22 / Plan 22-05 (primitive); Plan 22-07 (call-site adjacency) | Primitive complete (2026-04-22) — `<ProvenanceTag>` + pure `provenanceColor`/`provenanceLabel` helpers shipped; grep-gate G-1 adjacency to `$X` figures enforced by Plan 22-07 |
 | AI-ACTION-01 | Phase 21 (21-04) | Code complete (2026-04-22) — prod UAT deferred to v3.5 (see 21-08-SUMMARY.md) |
 | AI-ACTION-02 | Phase 21 (21-01 pipeline, 21-02 schema, 21-03 server, 21-04 UI) | Code complete (2026-04-22) — prod UAT deferred to v3.5; n8n `TailoredResume01` workflow live + 8/8 rows have real pdf_data |
 | AI-ACTION-03 | Phase 23 | Pending |
