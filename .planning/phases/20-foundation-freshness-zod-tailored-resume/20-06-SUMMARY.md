@@ -121,5 +121,11 @@ None — no external service configuration required. Freshness is pure server co
 - [x] No hardcoded Tailwind color names introduced
 
 ---
+
+## Revision 2026-04-22 — Date-format swap (Phase 21 Plan 00)
+
+`attachFreshness` was updated to emit `generatedDate: "M/D/YY"` (America/Chicago) instead of `relativeTime: "N days ago"`. The helper still handles both `generated_at` (cover_letter, tailored_resume) and `created_at` (company_research) via the same `"generated_at" in artifact` type-narrowing; only the formatted-string field changed. `FreshJobDetail`'s nested freshness shape is therefore now `{ generatedDate, isStale, ageDays }`. See Phase 21 Plan 00 for implementation + test updates + the 5-case `attachFreshness` unit test introduced as part of the revision.
+
+---
 *Phase: 20-foundation-freshness-zod-tailored-resume*
 *Completed: 2026-04-21*

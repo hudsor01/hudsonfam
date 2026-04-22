@@ -150,5 +150,11 @@ All claimed commits exist in `git log`:
 
 ---
 
+## Revision 2026-04-22 — Date-format swap (Phase 21 Plan 00)
+
+FreshnessBadge's `relativeTime: string` prop (emitting "3 days ago" via date-fns `formatDistanceToNowStrict`) was renamed to `generatedDate: string` emitting a formatted `M/D/YY` string (e.g., "4/21/26") produced server-side in `attachFreshness` via `Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", month: "numeric", day: "numeric", year: "2-digit" })`. Amber stale dot + `isStale` + `ageDays` tooltip behavior all remain pixel-identical. Motivation: CONTEXT.md D-06 (owner preference — factual provenance date beats relative approximation; stale dot still answers "needs regeneration"). See Phase 21 Plan 00 for implementation + test updates.
+
+---
+
 *Phase: 20-foundation-freshness-zod-tailored-resume*
 *Completed: 2026-04-21*
