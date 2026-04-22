@@ -185,7 +185,16 @@ Plans:
   3. When zero `salary_intelligence` rows exist for a job, the detail sheet shows the AI-RENDER-04 empty-state messaging for that section and does NOT crash — the defensive `LEFT JOIN LATERAL` returns null cleanly for both `job_id` and `company_name` keying
   4. `src/lib/jobs-db.ts` exports both a `SalaryIntelligence` TypeScript type and a matching Zod schema; a Vitest test constructs a malformed row and asserts the Zod parse returns a fail-open result with a logged warning rather than throwing
   5. The `?? "USD"` currency default at `jobs-db.ts:328` is removed; when `salary_currency` is null the salary block hides entirely rather than mislabeling a GBP/EUR figure with `$`
-**Plans**: TBD
+**Plans:** 8 plans
+Plans:
+- [ ] 22-01-PLAN.md — SalaryIntelligenceSchema + CompanyResearchSchema nullable cascade (AI-DATA-02; D-01 + D-12 prep)
+- [ ] 22-02-PLAN.md — LEFT JOIN LATERAL + SalaryIntelligence type + tri-field attachFreshness (AI-DATA-01 + AI-DATA-02)
+- [ ] 22-03-PLAN.md — Remove `?? "USD"` + flip CompanyResearch.salary_currency nullable (D-12 cascade; grep gate G-6)
+- [ ] 22-04-PLAN.md — Schema-drift EXPECTED map gains salary_intelligence (D-04)
+- [ ] 22-05-PLAN.md — ProvenanceTag primitives (provenanceColor/Label + component) (AI-RENDER-07 foundation)
+- [ ] 22-06-PLAN.md — SalaryIntelligenceSection + EMPTY_STATE_COPY + parseSalaryHeadline + formatSingleSalary (AI-RENDER-03)
+- [ ] 22-07-PLAN.md — Mount in job-detail-sheet + provenance retrofits + D-12 currency guards (AI-RENDER-03 + AI-RENDER-07)
+- [ ] 22-08-PLAN.md — Meta-doc finalization (ROADMAP SC #3 wording + SC #5 line 328→349 + REQUIREMENTS traceability + STATE + SUMMARY)
 
 #### Phase 23: Owner-Triggered Workflows (Pattern Setter)
 **Goal**: Owner can manually trigger the company-research workflow and regenerate a cover letter for any job; every webhook leaving the app is HMAC-signed, idempotency-keyed, and returns only sanitized error sentinels — establishing the pattern Phase 24 will copy.
