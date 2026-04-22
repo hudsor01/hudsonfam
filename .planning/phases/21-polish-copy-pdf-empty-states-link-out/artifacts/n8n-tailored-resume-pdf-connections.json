@@ -1,0 +1,23 @@
+{
+  "Schedule Trigger": {
+    "main": [[{"node": "Fetch Unpackaged Resume", "type": "main", "index": 0}]]
+  },
+  "Manual Trigger": {
+    "main": [[{"node": "Fetch Unpackaged Resume", "type": "main", "index": 0}]]
+  },
+  "Fetch Unpackaged Resume": {
+    "main": [[{"node": "IF Has Resume", "type": "main", "index": 0}]]
+  },
+  "IF Has Resume": {
+    "main": [[{"node": "Build Resume HTML", "type": "main", "index": 0}], []]
+  },
+  "Build Resume HTML": {
+    "main": [[{"node": "Stirling Render", "type": "main", "index": 0}]]
+  },
+  "Stirling Render": {
+    "main": [[{"node": "Assemble Resume PDF", "type": "main", "index": 0}]]
+  },
+  "Assemble Resume PDF": {
+    "main": [[{"node": "Store Resume PDF", "type": "main", "index": 0}]]
+  }
+}

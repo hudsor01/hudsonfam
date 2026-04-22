@@ -1,0 +1,150 @@
+[
+  {
+    "id": "tr-schedule",
+    "name": "Schedule Trigger",
+    "type": "n8n-nodes-base.scheduleTrigger",
+    "position": [0, 400],
+    "parameters": {
+      "rule": {
+        "interval": [
+          { "field": "minutes", "minutesInterval": 15 }
+        ]
+      }
+    },
+    "typeVersion": 1.2
+  },
+  {
+    "id": "tr-manual",
+    "name": "Manual Trigger",
+    "type": "n8n-nodes-base.manualTrigger",
+    "position": [0, 200],
+    "parameters": {},
+    "typeVersion": 1
+  },
+  {
+    "id": "tr-fetch",
+    "name": "Fetch Unpackaged Resume",
+    "type": "n8n-nodes-base.postgres",
+    "position": [250, 300],
+    "parameters": {
+      "query": "SELECT j.id as job_id, j.title, j.company,\n       tr.id as tailored_resume_id, tr.content as resume_content\nFROM jobs j\nJOIN tailored_resumes tr ON tr.job_id = j.id\nWHERE tr.pdf_data IS NULL\nORDER BY j.match_score DESC NULLS LAST, tr.generated_at DESC\nLIMIT 1;",
+      "options": {},
+      "operation": "executeQuery"
+    },
+    "credentials": {
+      "postgres": {
+        "id": "c4DwE47DyukkfZ0m",
+        "name": "Job Search DB"
+      }
+    },
+    "typeVersion": 2.5
+  },
+  {
+    "id": "tr-if-has",
+    "name": "IF Has Resume",
+    "type": "n8n-nodes-base.if",
+    "position": [500, 300],
+    "parameters": {
+      "conditions": {
+        "options": {
+          "caseSensitive": true,
+          "leftValue": "",
+          "typeValidation": "strict",
+          "version": 2
+        },
+        "conditions": [
+          {
+            "id": "has-resume-id",
+            "leftValue": "={{ $json.tailored_resume_id }}",
+            "rightValue": 0,
+            "operator": {
+              "type": "number",
+              "operation": "exists",
+              "singleValue": true
+            }
+          }
+        ],
+        "combinator": "and"
+      },
+      "options": {}
+    },
+    "typeVersion": 2.2
+  },
+  {
+    "id": "tr-build-html",
+    "name": "Build Resume HTML",
+    "type": "n8n-nodes-base.code",
+    "position": [750, 300],
+    "parameters": {
+      "jsCode": "const row = $input.first().json;\n\nfunction mdToHtml(md) {\n  if (!md) return '';\n  const lines = md.split(/\\r?\\n/);\n  const out = [];\n  let inList = false;\n  const flushList = () => { if (inList) { out.push('</ul>'); inList = false; } };\n  const inline = (s) => s\n    .replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>')\n    .replace(/\\*(.+?)\\*/g, '<em>$1</em>')\n    .replace(/`(.+?)`/g, '<code>$1</code>');\n  for (const raw of lines) {\n    const l = raw.trim();\n    if (!l) { flushList(); continue; }\n    let m;\n    if ((m = l.match(/^#{1,6}\\s+(.+)$/))) {\n      flushList();\n      const lvl = Math.min((l.match(/^#+/) || [''])[0].length, 6);\n      out.push('<h' + lvl + '>' + inline(m[1]) + '</h' + lvl + '>');\n    } else if ((m = l.match(/^[-*]\\s+(.+)$/))) {\n      if (!inList) { out.push('<ul>'); inList = true; }\n      out.push('<li>' + inline(m[1]) + '</li>');\n    } else {\n      flushList();\n      out.push('<p>' + inline(l) + '</p>');\n    }\n  }\n  flushList();\n  return out.join('\\n');\n}\n\nconst bodyHtml = mdToHtml(row.resume_content || '');\n\nconst html = `<!DOCTYPE html>\n<html>\n<head>\n<style>\nbody{font-family:Georgia,serif;margin:40px 60px;color:#1a1a1a;line-height:1.45;font-size:12px}\nh1{font-size:22px;margin:0 0 4px 0;color:#111;font-family:-apple-system,sans-serif;font-weight:700}\nh2{font-size:14px;margin:18px 0 6px 0;color:#222;font-family:-apple-system,sans-serif;font-weight:700;border-bottom:1px solid #ddd;padding-bottom:2px;text-transform:uppercase;letter-spacing:0.5px}\nh3{font-size:13px;margin:10px 0 4px 0;color:#222;font-family:-apple-system,sans-serif;font-weight:600}\nh4,h5,h6{font-size:12px;margin:6px 0 2px 0;font-weight:600}\np{margin:4px 0;text-align:justify}\nul{margin:4px 0;padding-left:20px}\nli{margin:2px 0}\nstrong{font-weight:700}\nem{font-style:italic}\ncode{font-family:Menlo,Consolas,monospace;font-size:11px;background:#f4f4f4;padding:1px 3px;border-radius:2px}\n</style>\n</head>\n<body>\n${bodyHtml}\n</body>\n</html>`;\n\nreturn [{\n  json: {\n    job_id: row.job_id,\n    title: row.title,\n    company: row.company,\n    tailored_resume_id: row.tailored_resume_id\n  },\n  binary: {\n    data: {\n      data: Buffer.from(html, 'utf8').toString('base64'),\n      mimeType: 'text/html',\n      fileName: 'resume.html',\n      fileExtension: 'html'\n    }\n  }\n}];\n"
+    },
+    "typeVersion": 2
+  },
+  {
+    "id": "tr-stirling",
+    "name": "Stirling Render",
+    "type": "n8n-nodes-base.httpRequest",
+    "position": [970, 300],
+    "parameters": {
+      "url": "http://stirling-pdf.cloud.svc.cluster.local:8080/api/v1/convert/html/pdf",
+      "method": "POST",
+      "options": {
+        "timeout": 60000,
+        "response": {
+          "response": {
+            "responseFormat": "file",
+            "outputPropertyName": "data"
+          }
+        }
+      },
+      "sendBody": true,
+      "contentType": "multipart-form-data",
+      "authentication": "predefinedCredentialType",
+      "bodyParameters": {
+        "parameters": [
+          {
+            "name": "fileInput",
+            "parameterType": "formBinaryData",
+            "inputDataFieldName": "data"
+          }
+        ]
+      },
+      "nodeCredentialType": "httpHeaderAuth"
+    },
+    "credentials": {
+      "httpHeaderAuth": {
+        "id": "xDzoQNreWH78jsn4",
+        "name": "Stirling PDF API Key"
+      }
+    },
+    "typeVersion": 4.2
+  },
+  {
+    "id": "tr-assemble",
+    "name": "Assemble Resume PDF",
+    "type": "n8n-nodes-base.code",
+    "position": [1190, 300],
+    "parameters": {
+      "jsCode": "const meta = $('Build Resume HTML').first().json;\nconst buf = await this.helpers.getBinaryDataBuffer(0, 'data');\nif (!buf || !buf.length) {\n  throw new Error('Resume PDF generation failed: Stirling returned empty binary');\n}\nreturn [{\n  json: {\n    job_id: meta.job_id,\n    title: meta.title,\n    company: meta.company,\n    tailored_resume_id: meta.tailored_resume_id,\n    pdf_base64: buf.toString('base64')\n  }\n}];\n"
+    },
+    "typeVersion": 2
+  },
+  {
+    "id": "tr-store",
+    "name": "Store Resume PDF",
+    "type": "n8n-nodes-base.postgres",
+    "position": [1430, 300],
+    "parameters": {
+      "query": "={{ $json.pdf_base64 ? \"UPDATE tailored_resumes SET pdf_data = '\" + $json.pdf_base64 + \"' WHERE id = \" + $json.tailored_resume_id + \";\" : \"SELECT 1;\" }}",
+      "options": {},
+      "operation": "executeQuery"
+    },
+    "credentials": {
+      "postgres": {
+        "id": "c4DwE47DyukkfZ0m",
+        "name": "Job Search DB"
+      }
+    },
+    "typeVersion": 2.5
+  }
+]
