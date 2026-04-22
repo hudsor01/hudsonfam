@@ -31,6 +31,8 @@ import {
 } from "@/components/ui/tooltip";
 import { scoreColor, scoreLabel } from "@/lib/score-color";
 import { normalizeUrl } from "@/lib/url-helpers";
+import { EMPTY_STATE_COPY } from "@/lib/empty-state-copy";
+import { isCompanyResearchEmpty } from "@/lib/is-company-research-empty";
 import { FreshnessBadge } from "./freshness-badge";
 import { SectionErrorBoundary } from "./section-error-boundary";
 import { TailoredResumeSection } from "./tailored-resume-section";
@@ -171,8 +173,28 @@ export function JobDetailSheet({
 
               <Separator />
 
-              {detail.cover_letter && (
-                <SectionErrorBoundary section="cover_letter" jobId={detail.id}>
+              <SectionErrorBoundary section="cover_letter" jobId={detail.id}>
+                {detail.cover_letter === null ? (
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold flex items-center gap-1.5">
+                      <FileText className="size-4" />
+                      Cover Letter
+                    </h3>
+                    <p className="text-sm text-muted-foreground italic">
+                      {EMPTY_STATE_COPY.cover_letter.missing}
+                    </p>
+                  </div>
+                ) : !detail.cover_letter.content?.trim() ? (
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold flex items-center gap-1.5">
+                      <FileText className="size-4" />
+                      Cover Letter
+                    </h3>
+                    <p className="text-sm text-muted-foreground italic">
+                      {EMPTY_STATE_COPY.cover_letter.empty}
+                    </p>
+                  </div>
+                ) : (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm font-semibold flex items-center gap-1.5">
@@ -215,101 +237,119 @@ export function JobDetailSheet({
                       {detail.cover_letter.content}
                     </div>
                   </div>
-                </SectionErrorBoundary>
-              )}
+                )}
+              </SectionErrorBoundary>
 
-              {detail.tailored_resume && (
-                <>
-                  <Separator />
-                  <SectionErrorBoundary
-                    section="tailored_resume"
-                    jobId={detail.id}
-                  >
-                    <TailoredResumeSection
-                      jobId={detail.id}
-                      resume={{
-                        content: detail.tailored_resume.content,
-                        model_used: detail.tailored_resume.model_used,
-                        freshness: detail.tailored_resume.freshness,
-                      }}
-                    />
-                  </SectionErrorBoundary>
-                </>
-              )}
+              <Separator />
+              <SectionErrorBoundary
+                section="tailored_resume"
+                jobId={detail.id}
+              >
+                <TailoredResumeSection
+                  jobId={detail.id}
+                  resume={
+                    detail.tailored_resume
+                      ? {
+                          content: detail.tailored_resume.content,
+                          model_used: detail.tailored_resume.model_used,
+                          freshness: detail.tailored_resume.freshness,
+                        }
+                      : null
+                  }
+                />
+              </SectionErrorBoundary>
 
-              {detail.company_research && (
-                <>
-                  <Separator />
-                  <SectionErrorBoundary
-                    section="company_research"
-                    jobId={detail.id}
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold flex items-center gap-1.5">
-                          <Building2 className="size-4" />
-                          Company Intel
-                        </h3>
-                        <FreshnessBadge
-                          generatedDate={detail.company_research.freshness.generatedDate}
-                          modelUsed={null}
-                          isStale={detail.company_research.freshness.isStale}
-                          ageDays={detail.company_research.freshness.ageDays}
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        {detail.company_research.glassdoor_rating && (
-                          <div className="flex items-center gap-1.5">
-                            <Star className="size-3.5 text-score-mid" />
-                            <span>
-                              {detail.company_research.glassdoor_rating}/5
-                              Glassdoor
-                            </span>
-                          </div>
-                        )}
-                        {detail.company_research.employee_count && (
-                          <div className="text-muted-foreground">
-                            {detail.company_research.employee_count} employees
-                          </div>
-                        )}
-                        {detail.company_research.funding_stage && (
-                          <div className="text-muted-foreground capitalize">
-                            {detail.company_research.funding_stage}
-                          </div>
-                        )}
-                        {(detail.company_research.salary_range_min ||
-                          detail.company_research.salary_range_max) && (
-                          <div className="flex items-center gap-1">
-                            <DollarSign className="size-3.5" />
-                            {formatSalary(
-                              detail.company_research.salary_range_min,
-                              detail.company_research.salary_range_max
-                            )}
-                          </div>
-                        )}
-                      </div>
-                      {detail.company_research.tech_stack?.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
-                          {detail.company_research.tech_stack.map((tech) => (
-                            <Badge
-                              key={tech}
-                              variant="outline"
-                              className="text-[11px]"
-                            >
-                              {tech}
-                            </Badge>
-                          ))}
+              <Separator />
+              <SectionErrorBoundary
+                section="company_research"
+                jobId={detail.id}
+              >
+                {detail.company_research === null ? (
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold flex items-center gap-1.5">
+                      <Building2 className="size-4" />
+                      Company Intel
+                    </h3>
+                    <p className="text-sm text-muted-foreground italic">
+                      {EMPTY_STATE_COPY.company_research.missing}
+                    </p>
+                  </div>
+                ) : isCompanyResearchEmpty(detail.company_research) ? (
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold flex items-center gap-1.5">
+                      <Building2 className="size-4" />
+                      Company Intel
+                    </h3>
+                    <p className="text-sm text-muted-foreground italic">
+                      {EMPTY_STATE_COPY.company_research.empty}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-semibold flex items-center gap-1.5">
+                        <Building2 className="size-4" />
+                        Company Intel
+                      </h3>
+                      <FreshnessBadge
+                        generatedDate={detail.company_research.freshness.generatedDate}
+                        modelUsed={null}
+                        isStale={detail.company_research.freshness.isStale}
+                        ageDays={detail.company_research.freshness.ageDays}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      {detail.company_research.glassdoor_rating && (
+                        <div className="flex items-center gap-1.5">
+                          <Star className="size-3.5 text-score-mid" />
+                          <span>
+                            {detail.company_research.glassdoor_rating}/5
+                            Glassdoor
+                          </span>
                         </div>
                       )}
-                      {detail.company_research.ai_summary && (
-                        <p className="text-sm text-muted-foreground">
-                          {detail.company_research.ai_summary}
-                        </p>
+                      {detail.company_research.employee_count && (
+                        <div className="text-muted-foreground">
+                          {detail.company_research.employee_count} employees
+                        </div>
+                      )}
+                      {detail.company_research.funding_stage && (
+                        <div className="text-muted-foreground capitalize">
+                          {detail.company_research.funding_stage}
+                        </div>
+                      )}
+                      {(detail.company_research.salary_range_min ||
+                        detail.company_research.salary_range_max) && (
+                        <div className="flex items-center gap-1">
+                          <DollarSign className="size-3.5" />
+                          {formatSalary(
+                            detail.company_research.salary_range_min,
+                            detail.company_research.salary_range_max
+                          )}
+                        </div>
                       )}
                     </div>
-                  </SectionErrorBoundary>
-                </>
-              )}
+                    {detail.company_research.tech_stack?.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {detail.company_research.tech_stack.map((tech) => (
+                          <Badge
+                            key={tech}
+                            variant="outline"
+                            className="text-[11px]"
+                          >
+                            {tech}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    {detail.company_research.ai_summary && (
+                      <p className="text-sm text-muted-foreground">
+                        {detail.company_research.ai_summary}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </SectionErrorBoundary>
 
               <Separator />
 

@@ -3,8 +3,8 @@
  *
  * Source of truth: .planning/phases/21-polish-copy-pdf-empty-states-link-out/21-CONTEXT.md §D-12.
  *
- * Tone contract (CONTEXT.md D-12): direct, state-only. No CTAs, no
- * references to Phase 23 triggers ("click Research", "click Regenerate").
+ * Tone contract (CONTEXT.md D-12): direct, state-only. No CTAs and no
+ * references to Phase-23-era UI triggers that do not exist yet.
  * One period per line. No exclamation points.
  *
  * Exported as a const map so:

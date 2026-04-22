@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { FreshnessBadge } from "./freshness-badge";
+import { EMPTY_STATE_COPY } from "@/lib/empty-state-copy";
 
 export interface ResumeFreshness {
   /** Pre-computed server-side formatted date string, e.g. "4/21/26" (America/Chicago). */
@@ -58,14 +59,49 @@ interface Props {
  *   - Defense in depth: Plan 20-07's CSP header on /admin/* blocks inline
  *     scripts via nonce + object-src 'none' + frame-ancestors 'none'.
  *
- * Empty state: when `resume` is null, the component returns null — no
- * heading, no body. Explanatory empty-state copy ships in Phase 21
- * (AI-RENDER-04).
+ * Empty-state branches (AI-RENDER-04 / Plan 21-06):
+ *   - `resume === null` → "No tailored resume yet." (row never generated)
+ *   - `resume !== null && !resume.content?.trim()` → "Tailored resume was
+ *     generated but is empty." (row present, content blank/whitespace)
+ *   - Both branches preserve the section shell (heading + FileText icon at
+ *     text-sm font-semibold) per CONTEXT.md D-13, and suppress the
+ *     FreshnessBadge / Copy button / Download anchor (nothing to copy,
+ *     nothing to download, no generated_at to display).
+ *
+ * Hooks note: `useState(copied)` is called unconditionally at the top so
+ * both empty-state branches and the populated branch honour React's rules-
+ * of-hooks. The early returns run AFTER the hook declarations.
  */
 export function TailoredResumeSection({ resume, jobId }: Props) {
   const [copied, setCopied] = useState(false);
 
-  if (!resume) return null;
+  if (resume === null) {
+    return (
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold flex items-center gap-1.5">
+          <FileText className="size-4" />
+          Tailored Resume
+        </h3>
+        <p className="text-sm text-muted-foreground italic">
+          {EMPTY_STATE_COPY.tailored_resume.missing}
+        </p>
+      </div>
+    );
+  }
+
+  if (!resume.content?.trim()) {
+    return (
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold flex items-center gap-1.5">
+          <FileText className="size-4" />
+          Tailored Resume
+        </h3>
+        <p className="text-sm text-muted-foreground italic">
+          {EMPTY_STATE_COPY.tailored_resume.empty}
+        </p>
+      </div>
+    );
+  }
 
   // Copy the raw markdown verbatim (CONTEXT.md D-02). On permission denial
   // or non-secure-context failure, swallow the error silently — UI-SPEC §1

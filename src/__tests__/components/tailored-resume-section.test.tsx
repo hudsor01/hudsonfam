@@ -116,11 +116,18 @@ describe("TailoredResumeSection", () => {
     expect(body?.className).toContain("overflow-y-auto");
   });
 
-  it("returns null when resume is null (Phase 20 hides section; empty state is Phase 21)", () => {
+  it("renders the AI-RENDER-04 empty-state block when resume is null (Phase 21 Plan 06)", () => {
     const { container } = render(
       <TailoredResumeSection jobId={42} resume={null} />
     );
-    expect(container.firstChild).toBeNull();
+    // Section shell preserved per CONTEXT.md D-13
+    expect(container.textContent).toContain("Tailored Resume");
+    expect(container.textContent).toContain("No tailored resume yet.");
+    // FreshnessBadge / Copy button / Download anchor all suppressed
+    expect(
+      container.querySelector('[aria-label="Copy tailored resume to clipboard"]')
+    ).toBeNull();
+    expect(container.querySelector("a[download]")).toBeNull();
   });
 
   it("renders the amber stale dot when freshness.isStale is true", () => {
