@@ -12,7 +12,8 @@ Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified obse
 
 - [x] **AI-RENDER-01**: Owner sees tailored resume content rendered as formatted markdown in the job detail sheet
 - [x] **AI-RENDER-02**: Owner sees `generated_at` timestamp and `model_used` label on every AI artifact section (cover letter, company research, tailored resume, salary intelligence)
-- [ ] **AI-RENDER-03**: Owner sees salary intelligence — LLM analysis prose + structured headline figures — in the job detail sheet
+- [x] **AI-RENDER-03
+**: Owner sees salary intelligence — LLM analysis prose + structured headline figures — in the job detail sheet
 - [x] **AI-RENDER-04**: Owner sees distinct empty-state messaging distinguishing "never generated" from "generated but currently empty" for each AI artifact section
 - [x] **AI-RENDER-05
 **: Owner sees a quality-score badge on cover letters when `cover_letters.quality_score` is populated
