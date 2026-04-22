@@ -3,6 +3,7 @@ import type { ZodIssue } from "zod";
 import {
   CoverLetterSchema,
   CompanyResearchSchema,
+  SalaryIntelligenceSchema,
   TailoredResumeSchema,
   parseOrLog,
 } from "@/lib/jobs-schemas";
@@ -152,5 +153,91 @@ describe("jobs-schemas parseOrLog (fail-open)", () => {
     };
     const result = parseOrLog(CompanyResearchSchema, row, "company_research", 3);
     expect(result).toEqual(row);
+  });
+
+  describe("SalaryIntelligenceSchema — fail-open validation at DB boundary", () => {
+    const validSalaryIntelligence = {
+      id: 1,
+      search_date: "2026-04-22",
+      report_json: { min: 120000, median: 150000, max: 180000, currency: "USD" },
+      raw_results: "search dump text",
+      llm_analysis: "Market tight in H1 2026.",
+      created_at: "2026-04-22T12:00:00Z",
+      updated_at: "2026-04-22T12:00:00Z",
+    };
+
+    it("parses a valid salary_intelligence row successfully", () => {
+      const result = SalaryIntelligenceSchema.safeParse(validSalaryIntelligence);
+      expect(result.success).toBe(true);
+    });
+
+    it("returns null and logs on missing required field (search_date)", () => {
+      const broken = { ...validSalaryIntelligence } as Record<string, unknown>;
+      delete broken.search_date;
+      const result = parseOrLog(SalaryIntelligenceSchema, broken, "salary_intelligence", 42);
+      expect(result).toBeNull();
+      expect(errorSpy).toHaveBeenCalledTimes(1);
+      const [msg, payload] = errorSpy.mock.calls[0] as [string, { jobId: number; issues: unknown[] }];
+      expect(msg).toContain("[jobs-db] salary_intelligence schema drift");
+      expect(payload.jobId).toBe(42);
+    });
+
+    it.each([
+      ["null", null],
+      ["number", 42],
+      ["string", "some text"],
+      ["empty object", {}],
+      ["array", []],
+      ["unknown shape", { totally: "unexpected", shape: 42 }],
+      ["MIN_MEDIAN_MAX shape", { min: 120000, median: 150000, max: 180000, currency: "USD" }],
+      ["PERCENTILES shape", { p25: 120000, p50: 150000, p75: 180000, currency: "USD" }],
+    ])("accepts report_json as %s (D-01 permissive)", (_label, reportJson) => {
+      const result = SalaryIntelligenceSchema.safeParse({ ...validSalaryIntelligence, report_json: reportJson });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts llm_analysis: null (nullable field)", () => {
+      const result = SalaryIntelligenceSchema.safeParse({ ...validSalaryIntelligence, llm_analysis: null });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts raw_results: null (nullable field)", () => {
+      const result = SalaryIntelligenceSchema.safeParse({ ...validSalaryIntelligence, raw_results: null });
+      expect(result.success).toBe(true);
+    });
+
+    it("parseOrLog passes null input through silently (no log)", () => {
+      const result = parseOrLog(SalaryIntelligenceSchema, null, "salary_intelligence", 1);
+      expect(result).toBeNull();
+      expect(errorSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("CompanyResearchSchema — salary_currency nullable cascade (D-12)", () => {
+    const validCompanyResearch = {
+      id: 1,
+      company_name: "Acme Corp",
+      company_url: null,
+      glassdoor_rating: null,
+      salary_range_min: null,
+      salary_range_max: null,
+      salary_currency: "USD",
+      tech_stack: [],
+      funding_stage: null,
+      employee_count: null,
+      recent_news: null,
+      ai_summary: null,
+      created_at: "2026-04-22T12:00:00Z",
+    };
+
+    it("accepts salary_currency: null (Phase 22 D-12 cascade)", () => {
+      const result = CompanyResearchSchema.safeParse({ ...validCompanyResearch, salary_currency: null });
+      expect(result.success).toBe(true);
+    });
+
+    it("still accepts salary_currency: string (no regression)", () => {
+      const result = CompanyResearchSchema.safeParse(validCompanyResearch);
+      expect(result.success).toBe(true);
+    });
   });
 });

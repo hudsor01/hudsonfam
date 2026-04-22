@@ -34,7 +34,7 @@ export const CompanyResearchSchema = z.object({
   glassdoor_rating: z.number().nullable(),
   salary_range_min: z.number().nullable(),
   salary_range_max: z.number().nullable(),
-  salary_currency: z.string(),
+  salary_currency: z.string().nullable(),
   tech_stack: z.array(z.string()),
   funding_stage: z.string().nullable(),
   employee_count: z.string().nullable(),
@@ -49,6 +49,28 @@ export const TailoredResumeSchema = z.object({
   pdf_data: z.string().nullable(),
   model_used: z.string().nullable(),
   generated_at: z.string(),
+});
+
+/**
+ * Zod schema for salary_intelligence rows.
+ *
+ * Per CONTEXT.md D-01, schema is deliberately permissive today:
+ *   - report_json: z.unknown() — shape depends on whatever task #11 ships
+ *   - llm_analysis: z.string().nullable() — may be null if workflow generated
+ *     raw_results but not the final prose
+ *
+ * Other columns match live-DB types (pg driver coerces integer / date /
+ * timestamp / text / jsonb appropriately; ISO string for dates after
+ * .toISOString() in jobs-db.ts, per the CoverLetter/TailoredResume pattern).
+ */
+export const SalaryIntelligenceSchema = z.object({
+  id: z.number(),
+  search_date: z.string(),            // ISO date string after .toISOString() in jobs-db.ts
+  report_json: z.unknown(),           // D-01: loose shape until task #11 stabilizes upstream
+  raw_results: z.string().nullable(),
+  llm_analysis: z.string().nullable(),
+  created_at: z.string(),             // ISO string
+  updated_at: z.string().nullable(),  // updated_at may be null on first insert
 });
 
 /**

@@ -64,7 +64,7 @@ export interface CompanyResearch {
   glassdoor_rating: number | null;
   salary_range_min: number | null;
   salary_range_max: number | null;
-  salary_currency: string;
+  salary_currency: string | null;
   tech_stack: string[];
   funding_stage: string | null;
   employee_count: string | null;
