@@ -14,7 +14,8 @@ Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified obse
 - [x] **AI-RENDER-02**: Owner sees `generated_at` timestamp and `model_used` label on every AI artifact section (cover letter, company research, tailored resume, salary intelligence)
 - [ ] **AI-RENDER-03**: Owner sees salary intelligence — LLM analysis prose + structured headline figures — in the job detail sheet
 - [ ] **AI-RENDER-04**: Owner sees distinct empty-state messaging distinguishing "never generated" from "generated but currently empty" for each AI artifact section
-- [ ] **AI-RENDER-05**: Owner sees a quality-score badge on cover letters when `cover_letters.quality_score` is populated
+- [x] **AI-RENDER-05
+**: Owner sees a quality-score badge on cover letters when `cover_letters.quality_score` is populated
 - [ ] **AI-RENDER-06**: Owner sees a company-website link-out (with external-link icon) from the company research section
 - [ ] **AI-RENDER-07**: Owner sees provenance tags ("scraped", "LLM estimate", "company research") on every salary figure displayed; no single "$X" appears without a source label
 
@@ -88,7 +89,7 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 | AI-RENDER-02 | Phase 20 (20-04, 20-06) | Complete (2026-04-21) |
 | AI-RENDER-03 | Phase 22 | Pending |
 | AI-RENDER-04 | Phase 21 | Pending |
-| AI-RENDER-05 | Phase 21 | Pending |
+| AI-RENDER-05 | Phase 21 (21-05) | Complete (2026-04-22) |
 | AI-RENDER-06 | Phase 21 | Pending |
 | AI-RENDER-07 | Phase 22 | Pending |
 | AI-ACTION-01 | Phase 21 (21-04) | Complete |
