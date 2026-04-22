@@ -37,6 +37,10 @@ const EXPECTED: Record<string, string[]> = {
   tailored_resumes: [
     "id", "job_id", "content", "pdf_data", "model_used", "generated_at",
   ],
+  salary_intelligence: [
+    "id", "search_date", "report_json", "raw_results", "llm_analysis",
+    "created_at", "updated_at",
+  ],
   recruiter_outreach: [
     "id", "job_id", "contact_name", "contact_role", "context",
     "linkedin_connect", "linkedin_dm", "warm_email", "full_output",
