@@ -12,6 +12,7 @@ import type {
   CoverLetter,
   CompanyResearch,
   TailoredResume,
+  SalaryIntelligence,
   ArtifactFreshness,
   FreshJobDetail,
 } from "@/lib/jobs-db";
@@ -44,6 +45,7 @@ async function fireWebhook(
  *   - cover_letter: 14 days
  *   - tailored_resume: 14 days
  *   - company_research: 60 days
+ *   - salary_intelligence: 30 days
  *
  * Client never runs new Date() — all relative-time strings + isStale booleans
  * are pre-computed here so hydration is stable.
@@ -68,6 +70,10 @@ export async function fetchJobDetail(
     company_research: attachFreshness<CompanyResearch>(
       detail.company_research,
       STALE_THRESHOLDS.company_research
+    ),
+    salary_intelligence: attachFreshness<SalaryIntelligence>(
+      detail.salary_intelligence,
+      STALE_THRESHOLDS.salary_intelligence   // 30 — already declared in job-freshness.ts:22
     ),
   };
 }

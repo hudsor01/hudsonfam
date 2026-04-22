@@ -79,3 +79,56 @@ describe("attachFreshness — Intl.DateTimeFormat(America/Chicago)", () => {
     expect(result!.freshness.ageDays).toBe(20);
   });
 });
+
+describe("attachFreshness — tri-field dispatch (Phase 22 extension)", () => {
+  const FROZEN_NOW = new Date("2026-04-22T12:00:00Z");
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(FROZEN_NOW);
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("dispatches on search_date when neither generated_at nor created_at present (salary_intelligence)", () => {
+    const artifact = {
+      id: 1,
+      search_date: "2026-04-21T00:00:00Z",
+      report_json: { min: 120000 },
+      raw_results: null,
+      llm_analysis: "test",
+      created_at: "2026-03-01T00:00:00Z", // intentionally older
+      updated_at: null,
+    };
+    const result = attachFreshness(artifact, 30);
+    expect(result).not.toBeNull();
+    // search_date (4/21) wins over created_at (3/1) per dispatch priority
+    expect(result!.freshness.generatedDate).toBe("4/20/26");
+    expect(result!.freshness.isStale).toBe(false);
+    expect(result!.freshness.ageDays).toBe(1);
+  });
+
+  it("prefers generated_at over search_date when both are present (existing behavior preserved)", () => {
+    const artifact = {
+      generated_at: "2026-04-22T00:00:00Z",
+      search_date: "2026-01-01T00:00:00Z", // older — should be ignored
+    };
+    const result = attachFreshness(artifact, 14);
+    expect(result).not.toBeNull();
+    // Chicago TZ conversion of 4/22/00Z → 4/21/26 (CDT UTC-5)
+    // Key assertion: NOT 1/1/26 (which would be the ignored search_date)
+    expect(result!.freshness.generatedDate).not.toContain("1/1/26");
+    expect(result!.freshness.generatedDate).toBe("4/21/26");
+  });
+
+  it("falls through to created_at when neither generated_at nor search_date present (company_research preserved)", () => {
+    const artifact = {
+      created_at: "2026-04-22T12:00:00Z",
+      other_field: "x",
+    };
+    const result = attachFreshness(artifact, 60);
+    expect(result).not.toBeNull();
+    expect(result!.freshness.ageDays).toBe(0);
+  });
+});

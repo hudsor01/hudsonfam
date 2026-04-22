@@ -3,6 +3,7 @@ import {
   CoverLetterSchema,
   CompanyResearchSchema,
   TailoredResumeSchema,
+  SalaryIntelligenceSchema,
   parseOrLog,
 } from "./jobs-schemas";
 
@@ -81,12 +82,23 @@ export interface TailoredResume {
   generated_at: string;
 }
 
+export interface SalaryIntelligence {
+  id: number;
+  search_date: string;        // ISO after toISOString() in the row assembly below
+  report_json: unknown;       // D-01: z.unknown() passthrough — shape TBD post-task-11
+  raw_results: string | null;
+  llm_analysis: string | null;
+  created_at: string;
+  updated_at: string | null;
+}
+
 export interface JobDetail extends Job {
   description: string | null;
   company_url: string | null;
   cover_letter: CoverLetter | null;
   company_research: CompanyResearch | null;
   tailored_resume: TailoredResume | null;
+  salary_intelligence: SalaryIntelligence | null;
 }
 
 /** Freshness metadata computed server-side and attached by fetchJobDetail. */
@@ -102,10 +114,11 @@ export interface ArtifactFreshness {
  * client never runs `new Date()` during render (hydration-safe).
  */
 export interface FreshJobDetail
-  extends Omit<JobDetail, "cover_letter" | "tailored_resume" | "company_research"> {
+  extends Omit<JobDetail, "cover_letter" | "tailored_resume" | "company_research" | "salary_intelligence"> {
   cover_letter: (CoverLetter & { freshness: ArtifactFreshness }) | null;
   tailored_resume: (TailoredResume & { freshness: ArtifactFreshness }) | null;
   company_research: (CompanyResearch & { freshness: ArtifactFreshness }) | null;
+  salary_intelligence: (SalaryIntelligence & { freshness: ArtifactFreshness }) | null;
 }
 
 export interface PipelineStats {
@@ -307,11 +320,28 @@ export async function getJobDetail(jobId: number): Promise<JobDetail | null> {
        tr.id AS tr_id, tr.content AS tr_content,
        tr.pdf_data AS tr_pdf_data,
        tr.model_used AS tr_model_used,
-       tr.generated_at AS tr_generated_at
+       tr.generated_at AS tr_generated_at,
+       si.id AS si_id,
+       si.search_date AS si_search_date,
+       si.report_json AS si_report_json,
+       si.raw_results AS si_raw_results,
+       si.llm_analysis AS si_llm_analysis,
+       si.created_at AS si_created_at,
+       si.updated_at AS si_updated_at
      FROM jobs j
      LEFT JOIN cover_letters cl ON cl.job_id = j.id
      LEFT JOIN company_research cr ON cr.id = j.company_research_id
      LEFT JOIN tailored_resumes tr ON tr.job_id = j.id
+     LEFT JOIN LATERAL (
+       SELECT id, search_date, report_json, raw_results,
+              llm_analysis, created_at, updated_at
+       FROM salary_intelligence si
+       WHERE FALSE  -- Phase 22 D-03: zero matches pending n8n task #11 fix.
+                    -- When real data lands, tighten to e.g.
+                    -- si.report_json->>'company_name' ILIKE j.company
+       ORDER BY search_date DESC
+       LIMIT 1
+     ) si ON TRUE
      WHERE j.id = $1`,
     [jobId]
   );
@@ -375,6 +405,26 @@ export async function getJobDetail(jobId: number): Promise<JobDetail | null> {
     jobId
   );
 
+  const salaryIntelligence = parseOrLog(
+    SalaryIntelligenceSchema,
+    row.si_id
+      ? {
+          id: row.si_id,
+          search_date:
+            row.si_search_date?.toISOString?.() ?? row.si_search_date,
+          report_json: row.si_report_json,      // jsonb — already parsed by pg driver
+          raw_results: row.si_raw_results,
+          llm_analysis: row.si_llm_analysis,
+          created_at:
+            row.si_created_at?.toISOString?.() ?? row.si_created_at,
+          updated_at:
+            row.si_updated_at?.toISOString?.() ?? row.si_updated_at,
+        }
+      : null,
+    "salary_intelligence",
+    jobId
+  );
+
   return {
     id: row.id,
     external_id: row.external_id,
@@ -399,6 +449,7 @@ export async function getJobDetail(jobId: number): Promise<JobDetail | null> {
     cover_letter: coverLetter,
     company_research: companyResearch,
     tailored_resume: tailoredResume,
+    salary_intelligence: salaryIntelligence,
   };
 }
 
