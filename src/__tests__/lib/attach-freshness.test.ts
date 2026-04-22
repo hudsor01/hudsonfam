@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { attachFreshness } from "@/lib/job-actions";
+import { attachFreshness } from "@/lib/attach-freshness";
 
 describe("attachFreshness — Intl.DateTimeFormat(America/Chicago)", () => {
   beforeEach(() => {
