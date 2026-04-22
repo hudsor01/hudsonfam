@@ -1,7 +1,15 @@
 "use client";
 
-import { FileText } from "lucide-react";
+import { useState } from "react";
+import { Check, Copy, Download, FileText } from "lucide-react";
 import { Streamdown } from "streamdown";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { FreshnessBadge } from "./freshness-badge";
 
 export interface ResumeFreshness {
@@ -24,6 +32,8 @@ export interface TailoredResumeView {
 
 interface Props {
   resume: TailoredResumeView | null;
+  /** Numeric job id used to build the tailored-resume PDF route URL. */
+  jobId: number;
 }
 
 /**
@@ -52,8 +62,25 @@ interface Props {
  * heading, no body. Explanatory empty-state copy ships in Phase 21
  * (AI-RENDER-04).
  */
-export function TailoredResumeSection({ resume }: Props) {
+export function TailoredResumeSection({ resume, jobId }: Props) {
+  const [copied, setCopied] = useState(false);
+
   if (!resume) return null;
+
+  // Copy the raw markdown verbatim (CONTEXT.md D-02). On permission denial
+  // or non-secure-context failure, swallow the error silently — UI-SPEC §1
+  // Behavior locks silent-fail (the owner can just click again). No error
+  // toast in Phase 21.
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(resume.content);
+      setCopied(true);
+      toast.success("Resume copied to clipboard");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // silent fail — see UI-SPEC §1 and CONTEXT.md D-01
+    }
+  };
 
   return (
     <div className="space-y-3">
@@ -62,12 +89,43 @@ export function TailoredResumeSection({ resume }: Props) {
           <FileText className="size-4" />
           Tailored Resume
         </h3>
-        <FreshnessBadge
-          generatedDate={resume.freshness.generatedDate}
-          modelUsed={resume.model_used}
-          isStale={resume.freshness.isStale}
-          ageDays={resume.freshness.ageDays}
-        />
+        <div className="flex items-center gap-3 flex-wrap">
+          <FreshnessBadge
+            generatedDate={resume.freshness.generatedDate}
+            modelUsed={resume.model_used}
+            isStale={resume.freshness.isStale}
+            ageDays={resume.freshness.ageDays}
+          />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Copy tailored resume to clipboard"
+                onClick={handleCopy}
+                className="text-muted-foreground"
+              >
+                {copied ? (
+                  <Check className="size-4" />
+                ) : (
+                  <Copy className="size-4" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="text-xs">
+              Copy to clipboard
+            </TooltipContent>
+          </Tooltip>
+          <a
+            href={`/api/jobs/${jobId}/tailored-resume-pdf`}
+            download
+            className="inline-flex items-center gap-1 text-xs text-primary hover:underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-sm"
+          >
+            <Download className="size-3" />
+            Download PDF
+          </a>
+        </div>
       </div>
       <div className="text-sm text-muted-foreground bg-card/50 rounded-lg p-4 border border-border max-h-96 overflow-y-auto">
         <Streamdown skipHtml linkSafety={{ enabled: false }}>

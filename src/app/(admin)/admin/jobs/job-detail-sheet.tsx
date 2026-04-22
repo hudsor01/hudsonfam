@@ -178,6 +178,7 @@ export function JobDetailSheet({
                     jobId={detail.id}
                   >
                     <TailoredResumeSection
+                      jobId={detail.id}
                       resume={{
                         content: detail.tailored_resume.content,
                         model_used: detail.tailored_resume.model_used,
