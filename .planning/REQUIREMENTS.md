@@ -92,7 +92,7 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 | AI-RENDER-06 | Phase 21 | Pending |
 | AI-RENDER-07 | Phase 22 | Pending |
 | AI-ACTION-01 | Phase 21 | Pending |
-| AI-ACTION-02 | Phase 21 | Pending |
+| AI-ACTION-02 | Phase 21 (21-01 pipeline, 21-02 schema, 21-03 server; 21-04 UI pending) | Pending |
 | AI-ACTION-03 | Phase 23 | Pending |
 | AI-ACTION-04 | Phase 23 | Pending |
 | AI-ACTION-05 | Phase 24 | Pending |
