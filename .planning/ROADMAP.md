@@ -244,7 +244,7 @@ Plans:
 | 22. Salary Intelligence (Defensive Render) | 8/8 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 8/8 | Code complete (prod UAT deferred to v3.5-P4 — n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern) | 2026-04-23 |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 4/4 | Code complete (prod UAT deferred to v3.5-P4) | 2026-04-23 |
-| 25. Pipeline Build (v3.5-P1) | 0/0 | Not started | — |
+| 25. Pipeline Build (v3.5-P1) | 1/1 | Code complete (first GHCR build observational verification pending owner browser check) | 2026-04-23 |
 | 26. Flux Reconfiguration (v3.5-P2) | 0/0 | Not started | — |
 | 27. Decommission Old Pipeline (v3.5-P3) | 0/0 | Not started | — |
 | 28. Smoke + Retroactive UAT (v3.5-P4) | 0/0 | Not started | — |
@@ -273,7 +273,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 25-01-PLAN.md — Create .github/workflows/build-and-push.yml and push to main to trigger first GitHub Actions build
+- [x] 25-01-PLAN.md — Create .github/workflows/build-and-push.yml and push to main to trigger first GitHub Actions build (2026-04-23, commit c7d8f33; SUMMARY `.planning/phases/25-pipeline-build/25-01-SUMMARY.md`)
 
 #### Phase 26: Flux Reconfiguration (v3.5-P2)
 **Goal:** Reconfigure Flux to watch `ghcr.io/hudsor01/hudsonfam` instead of the broken `git.homelab/forgejo-admin/hudsonfam`. Provision GHCR pull secret via the ExternalSecret pattern (matches other homelab services — no PAT in git). Validate imagepolicy picks up the timestamp tag stream.
@@ -310,4 +310,4 @@ Plans:
   4. Phase 22/23/24 retroactive smoke: SalaryIntelligenceSection renders its null branch cleanly without crashing (AI-RENDER-03); clicking "Research this company" fires a signed webhook that n8n accepts (AI-ACTION-03; HMAC validation is homelab-PR prerequisite); clicking "Regenerate cover letter" / "Regenerate tailored resume" / "Regenerate salary intelligence" each produces the correct polling state transitions (AI-ACTION-04/05/06); silent-success warning appears when a webhook returns 200 without timestamp advance (AI-ACTION-07)
 **Plans:** TBD
 
-**Ready to plan.** Next step: `/gsd-discuss-phase 25` to start v3.5-P1.
+**v3.5-P1 shipped 2026-04-23.** Phase 25 code complete (1/1 plan); `.github/workflows/build-and-push.yml` deployed. Next step: `/gsd-discuss-phase 26` to start v3.5-P2 Flux reconfiguration. Before planning Phase 26, record GHCR package visibility (public/private) in STATE.md Current Position via browser check at <https://github.com/users/hudsor01/packages/container/hudsonfam/settings>.

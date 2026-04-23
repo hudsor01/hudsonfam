@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
-status: executing
-last_updated: "2026-04-23T15:30:00.000Z"
-last_activity: 2026-04-23
+status: Defining phase context
+last_updated: "2026-04-23T20:21:27Z"
+last_activity: 2026-04-23 — Phase 25 (v3.5-P1 Pipeline Build) CODE COMPLETE — `.github/workflows/build-and-push.yml` shipped (commit c7d8f33 pushed to main)
 progress:
-  total_phases: 9
-  completed_phases: 5
-  total_plans: 38
-  completed_plans: 42
+  total_phases: 10
+  completed_phases: 6
+  total_plans: 40
+  completed_plans: 44
   percent: 100
 ---
 
@@ -23,12 +23,14 @@ v3.0 AI Integration closed code-complete (5/5 phases). All accumulated prod UAT 
 
 **Active scope:** 4 phases (25-28) covering `.github/workflows/build-and-push.yml` creation, Flux GHCR reconfiguration, old-pipeline decommission, and end-to-end smoke + retroactive UAT for all deferred v3.0 verifications. 13 CICD-XX requirements total.
 
-Phase: 25 (v3.5-P1 Pipeline Build) — Not started
-Plan: —
-Status: Defining phase context
-Last activity: 2026-04-23 — v3.5 milestone activated via `/gsd-new-milestone`
+Phase: 25 (v3.5-P1 Pipeline Build) — **CODE COMPLETE 2026-04-23** (1/1 plans)
+Plan: 25-01 — `.github/workflows/build-and-push.yml` shipped (commit `c7d8f33` pushed to main; first GHCR build observational verification pending owner browser check at github.com/hudsor01/hudsonfam/actions)
+Status: Phase 25 code complete — ready for `/gsd-discuss-phase 26`
+Last activity: 2026-04-23 — Plan 25-01 executed; workflow file + first push-to-main trigger shipped
 
-Progress: [          ] 0% (Phase 25 not yet discussed)
+Progress: [##        ] 25% (Phase 25 / 4 v3.5 phases complete)
+
+**GHCR package visibility (Phase 26 handoff):** Not yet recorded — executor `gh` CLI is unauthenticated; owner should browse to <https://github.com/users/hudsor01/packages/container/hudsonfam/settings> after first build completes and record visibility (public/private) here before Phase 26 planning. Phase 26 provisions a Flux pull PAT via ExternalSecret regardless of visibility, so this is informational, not blocking.
 
 ## What's Done
 
@@ -46,11 +48,11 @@ Progress: [          ] 0% (Phase 25 not yet discussed)
 
 ## What's Next
 
-**v3.5 activated 2026-04-23.** 4 phases (25-28) migrate the deploy pipeline and execute all deferred v3.0 prod UAT. Start Phase 25.
+**v3.5-P1 Pipeline Build CODE COMPLETE 2026-04-23.** `.github/workflows/build-and-push.yml` shipped; push to main triggered first live Actions run. Phase 25 Flux reconfiguration (Phase 26) is the next logical step — retargets Flux imagepolicy from the pre-Phase-25 image (`ghcr.io/hudsor01/hudsonfam:20260408173607`) to the new timestamp stream emitted by the workflow.
 
 ### Immediate next step
 
-**`/gsd-discuss-phase 25`** — gather context for v3.5-P1 Pipeline Build. Phase 25 goal: ship `.github/workflows/build-and-push.yml` that builds the Dockerfile and pushes to `ghcr.io/hudsor01/hudsonfam` with `YYYYMMDDHHmmss` tags on every push to main. Zero cluster changes this phase — cluster reconfiguration lands in Phase 26. Canonical refs to feed into CONTEXT: `.planning/notes/ci-cd-fragility-analysis.md`, `.planning/seeds/SEED-005-cicd-hardening-migration.md`, existing Dockerfile at repo root, CLAUDE.md §Deployment (soon to be rewritten by Phase 28).
+**`/gsd-discuss-phase 26`** — gather context for v3.5-P2 Flux GHCR Reconfiguration. Phase 26 goal: reconfigure Flux `ImageRepository` + `ImagePolicy` in the homelab repo to watch `ghcr.io/hudsor01/hudsonfam` with numerical-ordering regex `^\d{14}$` (matches Phase 25 timestamp format), provision GHCR pull PAT via ExternalSecret for Flux's external-to-GitHub consumer context, and verify `image-update-automation` commits tag bumps back to homelab repo. Canonical refs: `.planning/phases/25-pipeline-build/25-01-SUMMARY.md` (Phase 26 Open Items section), `.planning/seeds/SEED-005-cicd-hardening-migration.md`, existing Flux manifests in `homelab` repo. Before planning: owner should record GHCR package visibility (public/private) in STATE.md Current Position block — browser check at <https://github.com/users/hudsor01/packages/container/hudsonfam/settings>.
 
 ### Sequenced milestone order (locked 2026-04-22)
 
@@ -318,6 +320,12 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 24-03 (2026-04-23): AI-ACTION-05/06 REQUIREMENTS closure deferred to Plan 24-04 meta-doc audit — user-facing capability is LIVE end-to-end with Plan 24-03's mount landings (sheet → section → button chain complete; tests verify visibility + labels + boundary wraps), but REQUIREMENTS.md checkbox flipping happens at Plan 24-04's meta-doc finalization audit step. Matches Plan 24-01 / Plan 24-02 precedent and Phase 23's AI-SAFETY-01 pattern where foundational primitives don't mark requirements complete until the phase-close audit. Prevents a split-state scenario where REQs flip mid-phase and then an unrelated test regression forces them back.
 - v3.0 Plan 24-03 (2026-04-23): Test-source-only RegenerateCoverLetterButton references are intentional anti-regression guards, not legacy code. Production source (src/app/**) has zero occurrences of the old name; `src/__tests__/components/job-detail-sheet.test.tsx` has 5 (3 migration-documentation comments + 2 regex literals in the G-4 regression guard). Removing them would weaken the test. The SC "no legacy name remains" intent applies to production source only; this distinction documented inline in the test file's regression-guard comment.
 - v3.0 Plan 24-03 (2026-04-23): Two task-level commits (19d3f22 + 60debd1) rather than the plan's suggested single atomic commit — chose per-task to match Phase 23 per-task commit convention, preserve TDD RED/GREEN atomicity for Task 1 (test already in place in the working tree → mount fills it to GREEN), and keep Task 2's 4-file scope reviewable independently from Task 1's 2-file scope. Every SC still satisfied; both commits pass the full 564-test suite + build exits 0. Not a deviation — the plan's commit-spec section is a suggestion, not a mandate.
+- v3.5 Plan 25-01 (2026-04-23): Action major-version pins locked at v5/v3 per D-05/06/07 — `docker/build-push-action@v5`, `docker/setup-buildx-action@v3`, `docker/login-action@v3`, `actions/checkout@v4`. Node 24 migration (v7/v4 majors) deferred past v3.5-P4; the GitHub Actions runner forces Node 24 default on 2026-06-02 and removes Node 20 on 2026-09-16 — current versions remain functional inside that window. Upgrade is a post-v3.5 backlog item.
+- v3.5 Plan 25-01 (2026-04-23): `mode=max` added to `cache-to` within D-05 discretion — caches intermediate Dockerfile stages (`deps`, `builder`) in addition to the final `runner` stage. Turns partial source edits into 2–4 minute warm-cache builds vs 6+ minutes rebuilding `deps` every time. Still fits inside the 10 GB per-repo GHA cache quota given the Dockerfile's layer sizes. Single shared scope (`build-and-push`) keeps the cache footprint bounded.
+- v3.5 Plan 25-01 (2026-04-23): Built-in `GITHUB_TOKEN` is sufficient for same-repo GHCR push with `permissions: { packages: write }` at job level — no custom PAT needed in Phase 25. Common misconception that a PAT is always required; the built-in token is ephemeral (expires at run end), auto-rotated, repo-scoped. Phase 26 introduces a separate PAT for Flux's external GHCR pull (different auth context: Flux is external to GitHub; the workflow is internal).
+- v3.5 Plan 25-01 (2026-04-23): Concurrency `cancel-in-progress: true` (D-10) chosen over queue-behind posture — single-developer deploy: always-latest-source wins over finishing stale builds. Prevents queue pile-up on rapid main-branch landings. Concurrency group `build-and-push-main` scopes cancellation to this one workflow so unrelated future workflows are not affected.
+- v3.5 Plan 25-01 (2026-04-23): No `pull_request` trigger (D-02) — structurally excludes fork-pwn-request and cache-poisoning-via-fork threat classes (T-25-04, T-25-08). `workflow_dispatch` covers the ad-hoc rebuild need. PR preview environments remain CICD-FUTURE-01 post-v3.5 backlog.
+- v3.5 Plan 25-01 (2026-04-23): Executor `gh` CLI was unauthenticated locally (`You are not logged into any GitHub hosts`); first-build observational verification deferred to owner browser check at <https://github.com/hudsor01/hudsonfam/actions>. This is expected and documented in SUMMARY — automated first-run verification via `gh run watch` would require setting up `GH_TOKEN` which is out-of-scope for this plan. Structural (pre-push) verification was complete: YAML parse valid via `js-yaml`, all 10 decision-compliance grep gates passed, push accepted by remote (`79ad296..c7d8f33  main -> main`).
 
 ## Blockers
 
@@ -359,8 +367,9 @@ None.
 | 24    | 24-02 | ~3m      | 2     | 2     | 2026-04-23T15:00:00Z |
 | 24    | 24-03 | 4m       | 2     | 6     | 2026-04-23T15:16:00Z |
 | 24    | 24-04 | ~5m      | 2     | 4     | 2026-04-23T15:30:00Z |
+| 25    | 25-01 | 9m 17s   | 2     | 1     | 2026-04-23T20:21:27Z |
 
-**Planned Phase:** 24 (regenerate-expansion-resume-salary-silent-success-state) — 4 plans — 2026-04-23T14:45:27.059Z
+**Planned Phase:** 25 (pipeline-build) — 1 plan — 2026-04-23T20:12:10Z
 | Phase 22 P01 | ~4 minutes | 3 tasks | 3 files |
 | Phase 22 P04 | 1m 16s | 3 tasks | 1 files |
 | Phase 22 P05 | 2m 51s | 4 tasks | 3 files |

@@ -10,9 +10,9 @@ Each requirement maps to a roadmap phase and is observationally verifiable after
 
 ### Pipeline Build (v3.5-P1)
 
-- [ ] **CICD-01**: `.github/workflows/build-and-push.yml` exists and runs on push-to-main; builds the Dockerfile to a multi-arch (linux/amd64) image
-- [ ] **CICD-02**: Built image is pushed to `ghcr.io/hudsor01/hudsonfam` tagged `YYYYMMDDHHmmss` (UTC timestamp, matches existing Flux imagepolicy pattern) AND `latest`
-- [ ] **CICD-03**: GitHub Actions workflow completes in under 10 minutes for a clean build (cached Docker layers); logs are readable in the Actions UI
+- [x] **CICD-01**: `.github/workflows/build-and-push.yml` exists and runs on push-to-main; builds the Dockerfile to a multi-arch (linux/amd64) image — Code complete 2026-04-23 (Phase 25 Plan 25-01, commit c7d8f33; workflow file shipped, first build observational verification pending owner browser check)
+- [x] **CICD-02**: Built image is pushed to `ghcr.io/hudsor01/hudsonfam` tagged `YYYYMMDDHHmmss` (UTC timestamp, matches existing Flux imagepolicy pattern) AND `latest` — Code complete 2026-04-23 (Phase 25 Plan 25-01; tags emission wired in build-push-action@v5 `tags:` input per D-04; observational GHCR verification pending owner browser check)
+- [x] **CICD-03**: GitHub Actions workflow completes in under 10 minutes for a clean build (cached Docker layers); logs are readable in the Actions UI — Code complete 2026-04-23 (Phase 25 Plan 25-01; `type=gha,scope=build-and-push,mode=max` cache wired per D-05; warm-cache 2-6 min target well under 10-min SC; observational timing verification on second build pending owner browser check)
 
 ### Flux Reconfiguration (v3.5-P2)
 
@@ -62,9 +62,9 @@ Mapped to roadmap phases 2026-04-23 by owner-authored plan.
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| CICD-01 | Phase 25 (v3.5-P1) | Pending |
-| CICD-02 | Phase 25 (v3.5-P1) | Pending |
-| CICD-03 | Phase 25 (v3.5-P1) | Pending |
+| CICD-01 | Phase 25 (v3.5-P1) / Plan 25-01 | Code complete (2026-04-23) — workflow file shipped; first build observational verification pending |
+| CICD-02 | Phase 25 (v3.5-P1) / Plan 25-01 | Code complete (2026-04-23) — workflow file shipped; first build observational verification pending |
+| CICD-03 | Phase 25 (v3.5-P1) / Plan 25-01 | Code complete (2026-04-23) — workflow file shipped; first build observational verification pending |
 | CICD-04 | Phase 26 (v3.5-P2) | Pending |
 | CICD-05 | Phase 26 (v3.5-P2) | Pending |
 | CICD-06 | Phase 26 (v3.5-P2) | Pending |
