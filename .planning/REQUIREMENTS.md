@@ -22,10 +22,8 @@ Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified obse
 
 - [x] **AI-ACTION-01**: Owner can copy tailored resume content to the clipboard via a button that confirms success via toast
 - [x] **AI-ACTION-02**: Owner can download the tailored resume as a PDF file via a button
-- [x] **AI-ACTION-03
-**: Owner can trigger "Research this company" for a job whose `company_research` is empty; the UI reflects in-progress state and updates when the row appears
-- [x] **AI-ACTION-04
-**: Owner can regenerate the cover letter for a specific job; the UI shows a pessimistic spinner, poll-refreshes on completion, and displays the new `generated_at` timestamp
+- [x] **AI-ACTION-03**: Owner can trigger "Research this company" for a job whose `company_research` is empty; the UI reflects in-progress state and updates when the row appears
+- [x] **AI-ACTION-04**: Owner can regenerate the cover letter for a specific job; the UI shows a pessimistic spinner, poll-refreshes on completion, and displays the new `generated_at` timestamp
 - [x] **AI-ACTION-05**: Owner can regenerate the tailored resume for a specific job with the same pattern as AI-ACTION-04
 
 - [x] **AI-ACTION-06**: Owner can regenerate salary intelligence for a specific job with the same pattern as AI-ACTION-04
@@ -125,4 +123,4 @@ Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
 
 ---
 *Requirements defined: 2026-04-21*
-*Last updated: 2026-04-22 — Phase 22 (4 REQs: AI-RENDER-03, AI-RENDER-07, AI-DATA-01, AI-DATA-02) marked "Code complete — prod UAT deferred to v3.5" per the same CI/CD pipeline block documented in `.planning/notes/ci-cd-fragility-analysis.md`. Phase 22 ships defensive LEFT JOIN LATERAL skeleton (WHERE FALSE today; 1-line predicate edit when n8n task #11 lands) + SalaryIntelligence Zod schema + SalaryIntelligenceSection renderer + ProvenanceTag primitives + D-12 currency cascade complete. All 4 REQs code-complete + full suite 450/450 green. Prior Phase 21 footer preserved in git history.*
+*Last updated: 2026-04-23 — Phase 23 (Owner-Triggered Workflows Pattern Setter) closed code-complete. 5 REQs marked [x]: AI-ACTION-03 (triggerCompanyResearch Server Action + TriggerCompanyResearchButton + sheet mount, end-to-end 23-02 + 23-05 + 23-07), AI-ACTION-04 (regenerateCoverLetter Server Action + RegenerateCoverLetterButton + sheet mount, end-to-end 23-02 + 23-06 + 23-07 with D-06 amended server-read baseline pattern), AI-SAFETY-02/-03/-04 (sendSignedWebhook primitive — HMAC-SHA256 + X-Idempotency-Key + bounded ErrorSentinel union, Plan 23-01; consumed by all Wave 2+ callers). CI grep gate (Plan 23-04) locks requireRole adjacency on every job-actions.ts export + fireWebhook deletion (G-7). 509/509 tests green. Prod UAT deferred to v3.5-P4 (n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern). Phase 22 footer preserved in git history.*

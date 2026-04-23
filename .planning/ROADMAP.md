@@ -126,7 +126,7 @@
 - [x] **Phase 20: Foundation (Freshness + Zod + Tailored Resume)** — pure isStale util, Zod safeParse at jobs-db boundary, CSP on /admin/*, tailored resume rendered with Streamdown + generated_at/model badges, schema-drift CI guardrail — 2026-04-21
 - [ ] **Phase 21: Polish (Copy + PDF + Empty States + Link-out)** — copy-to-clipboard, tailored-resume PDF download (pipeline-extended end-to-end via n8n Application Packager + tailored_resumes.pdf_data migration), 3 empty-state blocks, company-website link-out, cover-letter quality-score badge, bundled Phase 20 FreshnessBadge date-format revision
 - [x] **Phase 22: Salary Intelligence (Defensive Render)** — SalaryIntelligence Zod + TS type, defensive LEFT JOIN LATERAL (WHERE FALSE skeleton tolerating future schema shape via 1-line predicate edit), llm_analysis + structured headline render, per-figure provenance tags (scraped / LLM / research) — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5
-- [ ] **Phase 23: Owner-Triggered Workflows (Pattern Setter)** — EXECUTING (7/8 plans; 23-01 + 23-02 + 23-03 + 23-04 + 23-05 + 23-06 + 23-07 landed). "Research this company" manual trigger, regenerate cover letter (UPDATE-wait polling with server-returned baseline — D-06 amended), HMAC-SHA256 + X-Idempotency-Key + sentinel-error scrubbing pattern established and retrofit to existing fireWebhook
+- [x] **Phase 23: Owner-Triggered Workflows (Pattern Setter)** — "Research this company" manual trigger, regenerate cover letter (UPDATE-wait polling with server-returned baseline — D-06 amended), HMAC-SHA256 + X-Idempotency-Key + sentinel-error scrubbing pattern established and retrofit to existing fireWebhook call sites — CODE COMPLETE 2026-04-23, prod UAT deferred to v3.5-P4 (n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern)
 - [ ] **Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)** — regenerate tailored resume, regenerate salary intelligence, silent-success warning state when workflow returns OK without updating timestamp
 
 ### Phase Details
@@ -206,7 +206,7 @@ Plans:
   3. An inspector capturing the POST from `hudsonfam` to `n8n.cloud.svc.cluster.local` sees an `X-Hudsonfam-Signature` HMAC-SHA256 header and an `X-Hudsonfam-Timestamp`; replaying the same body with the same `X-Idempotency-Key` does not produce a second LLM run in n8n execution history (mitigates Pitfall 3 — webhook unsigned + replayable)
   4. When an n8n call fails (network error, 500, connect-refused), the owner sees one of four fixed strings — "timeout", "auth", "rate limit", or "unavailable" — and the server-side log captures the full error with stack (no raw `e.message`, no internal cluster IPs, leak to the browser)
   5. Existing `fireWebhook` call sites (`job-feedback-sync` × 2 for reject/dismiss, `job-company-intel` for interested-status auto-trigger) are retrofit to the new signed + idempotency-keyed helper in the same PR; `job-outreach` mention was stale — grep confirmed zero active call sites in `src/`; a CI grep rule in `src/__tests__/lib/job-actions.requireRole.test.ts` asserts every exported function in `src/lib/job-actions.ts` contains `requireRole(["owner"])` within 10 lines and that `fireWebhook` is fully deleted (Pitfall 9 + G-7)
-**Plans**: 8 plans (executing; target: code-complete then prod UAT deferred to v3.5 per Phase 22 precedent)
+**Plans**: 8 plans — Code complete 2026-04-23; prod UAT deferred to v3.5-P4 (n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern)
 
 Plans:
 - [x] 23-01-PLAN.md — sendSignedWebhook primitive + HMAC-SHA256 + sentinel cascade (AI-SAFETY-02/-03/-04) — 2026-04-22
@@ -216,7 +216,7 @@ Plans:
 - [x] 23-05-PLAN.md — TriggerCompanyResearchButton client component + fake-timer tests (AI-ACTION-03) — 2026-04-23
 - [x] 23-06-PLAN.md — RegenerateCoverLetterButton + server-baseline predicate + fake-timer tests (AI-ACTION-04) — 2026-04-23
 - [x] 23-07-PLAN.md — mount buttons in job-detail-sheet + G-4 assertions + env docs (AI-ACTION-03/-04) — 2026-04-23
-- [ ] 23-08-PLAN.md — meta-doc finalization (ROADMAP + REQUIREMENTS + STATE + SUMMARY)
+- [x] 23-08-PLAN.md — meta-doc finalization (ROADMAP + REQUIREMENTS + STATE + SUMMARY) — 2026-04-23
 
 #### Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)
 **Goal**: Owner can regenerate every AI artifact the app renders, and any regenerate that completes "successfully" without actually updating the artifact produces a visible warning instead of silent failure.
@@ -236,7 +236,7 @@ Plans:
 | 20. Foundation (Freshness + Zod + Tailored Resume) | 8/8 | Complete | 2026-04-21 |
 | 21. Polish (Copy + PDF + Empty States + Link-out) | 9/10 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
 | 22. Salary Intelligence (Defensive Render) | 8/8 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
-| 23. Owner-Triggered Workflows (Pattern Setter) | 1/8 | Executing | - |
+| 23. Owner-Triggered Workflows (Pattern Setter) | 8/8 | Code complete (prod UAT deferred to v3.5-P4 — n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern) | 2026-04-23 |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 0/0 | Not started | - |
 
 ### Deferred production UAT
