@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-23T03:29:15.291Z"
+last_updated: "2026-04-23T03:53:27.997Z"
 last_activity: 2026-04-23
 progress:
   total_phases: 8
   completed_phases: 3
   total_plans: 34
-  completed_plans: 35
+  completed_plans: 36
   percent: 100
 ---
 
@@ -18,8 +18,8 @@ progress:
 ## Current Position
 
 Phase: 23 (owner-triggered-workflows-pattern-setter) — EXECUTING
-Plan: 5 of 8
-Status: Ready to execute
+Plan: 6 of 8 — COMPLETE (23-06 landed 2026-04-23; RegenerateCoverLetterButton client component with server-baseline polling + 17-case fake-timer test suite; next: 23-07 mount buttons in job-detail-sheet)
+Status: Plan 23-06 complete; ready to execute Plan 23-07
 Last activity: 2026-04-23
 
 Progress: [██████████] 100%
@@ -276,6 +276,12 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 23-02: DB-error-before-webhook guard (T-23-02-05) — `regenerateCoverLetter` wraps `getJobDetail` in try/catch; on exception returns `{ ok: false, sentinel: "unavailable" }` WITHOUT advancing to `sendSignedWebhook`. Two invariants held: (1) DB outage must not spawn n8n runs (test asserts `mockSendSignedWebhook` was never called in the DB-error path), (2) raw `e.message` never crosses the return boundary (sentinel is the only string the caller sees). This is the first application of the fail-safely-early pattern for Server Actions that touch both DB and external webhooks — Phase 24's regenerate actions inherit the same pattern for their pre-webhook freshness reads.
 - v3.0 Plan 23-02: TDD RED/GREEN gate split into 2 commits (`667e15c` test + `30cfd6f` feat) instead of the plan's single atomic `feat(23-02)` commit spec. Both Plan 23-02 tasks declare `tdd="true"` so the executor's `<tdd_execution>` protocol mandates distinct `test(...)` / `feat(...)` commits — `git show 667e15c` proves tests genuinely failed against the pre-impl source. End state identical to the plan's atomic-commit intent (same 2 files committed, same verification criteria met) with observable RED audit trail for the verifier. Rule-of-thumb: when `tdd="true"` and the plan's final-task commit spec conflicts, split the commit, document the sequencing in the summary's "Plan Deviations" section. Zero production-logic impact.
 - v3.0 Plan 23-02: `triggerCompanyResearch` payload is `{ job_id }` ONLY — matches plan spec verbatim. The `{ job_id, company_name, company_url }` payload called out in the execute prompt's success-criteria is the RETROFITTED `void fireWebhook → void sendSignedWebhook` call inside `updateJobStatus`'s `interested` branch at line 103 (D-11 retrofit scope), which belongs to Plan 23-03, not this plan. Scope discipline: the NEW owner-triggered button surface passes only the job_id to the n8n workflow, which looks up company + URL server-side from the jobs row keyed by job_id. Keeps Server Action payloads minimal at the API boundary and means n8n workflow edits can land separately from client-API changes.
+- v3.0 Plan 23-06 (2026-04-23): Server-returned baseline takes precedence over prop — `res.baseline ?? baselineGeneratedAt` inside `handleClick` captures the Server Action's authoritative pre-webhook DB read whenever available; the prop is a fallback only for the `baseline: null` edge case (no prior `cover_letters` row). This means the component is correct even if the parent's rendered `baselineGeneratedAt` was stale between server-render and user click — the Server Action's response always wins. Reusable pattern: Phase 24's tailored-resume + salary-intelligence regenerate buttons will follow the same precedence rule.
+- v3.0 Plan 23-06 (2026-04-23): `serverBaseline` lives inside the `in-progress` state variant (`{ kind: "in-progress"; serverBaseline: string }`) rather than a separate ref — value is immutable for a single polling run; `startPolling(baseline)` receives it as a closure argument. Discriminated-union typing prevents accidental reads from outside the `in-progress` state. Cleaner than a parallel ref + ensures the baseline and the "I'm polling" flag cannot desync.
+- v3.0 Plan 23-06 (2026-04-23): `isDone` uses `.getTime()` comparison on parsed `Date` instances rather than lexicographic ISO-8601 string compare. Lexicographic would work for Postgres's stable `timestamp with time zone` output but fails silently on harmless format drift (3-vs-6 digit ms, `Z` vs `+00:00` suffix). Spec-safe against anything Postgres or `attach-freshness` produce in future. `new Date(...)` only inside the predicate body — never at render time — so no wall-clock read in the file (G-6).
+- v3.0 Plan 23-06 (2026-04-23): Returns to `idle` after UPDATE success, NOT a terminal `done` state — regeneration is repeatable. Contrasts with Plan 23-05's `TriggerCompanyResearchButton` which unmounts via the parent's `company_research === null` branch flipping to populated; Plan 23-08 will mount `RegenerateCoverLetterButton` inside the `populated` branch of the Cover Letter section, so post-success it must stay visible for owner re-clicks. `idle` IS the success-terminal state for this button.
+- v3.0 Plan 23-06 (2026-04-23): G-6 source-text grep gate uses a diagnostic error message — `expect(matches, "Date.now() found... use server-returned baseline instead").toBe(0)` — so when a future editor accidentally reintroduces a wall-clock read, the failing test output tells them not only "0 expected" but the fix path. Self-teaching gate. Pattern ready for Phase 24 regenerate buttons.
+- v3.0 Plan 23-06 (2026-04-23): Doc-comment rephrasing antipattern retired — source-text grep gates cannot distinguish executable code from prose, so the 3 JSDoc/inline-comment references to the literal `Date.now()` string (inside prohibition-describing prose) tripped the G-6 gate. Fix: rephrase to "the wall clock" / "wall-clock API" / "wall-clock read". Identical pattern to Plan 21-06's `empty-state-copy.ts` doc-comment reword that dodged the anti-CTA grep gate. Rule: whenever a source-text grep gate exists on a file, prose inside that file must avoid the literal forbidden string even when describing what's forbidden.
 
 ## Blockers
 
@@ -309,6 +315,8 @@ None.
 | 23    | 23-01 | 2m 9s    | 3     | 2     | 2026-04-22T23:20:00Z |
 | 23    | 23-04 | 2m       | 2     | 1     | 2026-04-22T23:32:00Z |
 | 23    | 23-02 | ~18m     | 3     | 2     | 2026-04-23T00:07:45Z |
+| 23    | 23-05 | ~8m      | 3     | 2     | 2026-04-23T03:26:15Z |
+| 23    | 23-06 | ~17m     | 3     | 2     | 2026-04-23T03:50:31Z |
 
 **Planned Phase:** 23 (owner-triggered-workflows-pattern-setter) — 8 plans — 2026-04-22T23:20:04.361Z
 | Phase 22 P01 | ~4 minutes | 3 tasks | 3 files |
@@ -322,3 +330,4 @@ None.
 | Phase 23 P04 | 2m | 2 tasks | 1 files |
 | Phase 23 P02 | ~18m | 3 tasks | 2 files |
 | Phase 23 P05 | 8m | 3 tasks | 2 files |
+| Phase 23-owner-triggered-workflows-pattern-setter P06 | 17min | 3 tasks | 2 files |

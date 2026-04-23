@@ -126,7 +126,7 @@
 - [x] **Phase 20: Foundation (Freshness + Zod + Tailored Resume)** — pure isStale util, Zod safeParse at jobs-db boundary, CSP on /admin/*, tailored resume rendered with Streamdown + generated_at/model badges, schema-drift CI guardrail — 2026-04-21
 - [ ] **Phase 21: Polish (Copy + PDF + Empty States + Link-out)** — copy-to-clipboard, tailored-resume PDF download (pipeline-extended end-to-end via n8n Application Packager + tailored_resumes.pdf_data migration), 3 empty-state blocks, company-website link-out, cover-letter quality-score badge, bundled Phase 20 FreshnessBadge date-format revision
 - [x] **Phase 22: Salary Intelligence (Defensive Render)** — SalaryIntelligence Zod + TS type, defensive LEFT JOIN LATERAL (WHERE FALSE skeleton tolerating future schema shape via 1-line predicate edit), llm_analysis + structured headline render, per-figure provenance tags (scraped / LLM / research) — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5
-- [ ] **Phase 23: Owner-Triggered Workflows (Pattern Setter)** — EXECUTING (5/8 plans; 23-01 + 23-02 + 23-03 + 23-04 + 23-05 landed). "Research this company" manual trigger, regenerate cover letter, HMAC-SHA256 + X-Idempotency-Key + sentinel-error scrubbing pattern established and retrofit to existing fireWebhook
+- [ ] **Phase 23: Owner-Triggered Workflows (Pattern Setter)** — EXECUTING (6/8 plans; 23-01 + 23-02 + 23-03 + 23-04 + 23-05 + 23-06 landed). "Research this company" manual trigger, regenerate cover letter (UPDATE-wait polling with server-returned baseline — D-06 amended), HMAC-SHA256 + X-Idempotency-Key + sentinel-error scrubbing pattern established and retrofit to existing fireWebhook
 - [ ] **Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)** — regenerate tailored resume, regenerate salary intelligence, silent-success warning state when workflow returns OK without updating timestamp
 
 ### Phase Details
@@ -214,7 +214,7 @@ Plans:
 - [x] 23-03-PLAN.md — retrofit 3 fireWebhook call sites; delete helper (G-7) — 2026-04-23
 - [x] 23-04-PLAN.md — CI grep gate: requireRole adjacency + fireWebhook absence (D-12/G-7) — 2026-04-22
 - [x] 23-05-PLAN.md — TriggerCompanyResearchButton client component + fake-timer tests (AI-ACTION-03) — 2026-04-23
-- [ ] 23-06-PLAN.md — RegenerateCoverLetterButton + server-baseline predicate + fake-timer tests (AI-ACTION-04)
+- [x] 23-06-PLAN.md — RegenerateCoverLetterButton + server-baseline predicate + fake-timer tests (AI-ACTION-04) — 2026-04-23
 - [ ] 23-07-PLAN.md — mount buttons in job-detail-sheet + G-4 assertions + env docs (AI-ACTION-03/-04)
 - [ ] 23-08-PLAN.md — meta-doc finalization (ROADMAP + REQUIREMENTS + STATE + SUMMARY)
 
