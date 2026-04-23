@@ -533,27 +533,15 @@ kubectl rollout status deployment/hudsonfam -n homepage --timeout=120s
 | A5 | The current cluster pod for hudsonfam can be Recreate-rolled without downtime concerns (per `deployment.yaml:13 strategy.type: Recreate`) | Architecture | Brief downtime expected during rollout; no surprise. Mitigation: communicated in Phase 26 SUMMARY as expected behavior. |
 | A6 | Kustomize honors the `images:` override based on exact name match (no version-pinning gotcha when both `name` AND `newTag` are pinned) | Pitfalls | If kustomize has a strict mode that rejects `name` not appearing in any underlying resource, the override could fail validation. Mitigation: validated by Phase 43 SUMMARY which used the same pattern successfully. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **GHCR package visibility (public vs private)**
-   - What we know: per `STATE.md:33` and `25-01-SUMMARY.md:92-100`, owner browser check is pending at <https://github.com/users/hudsor01/packages/container/hudsonfam/settings>.
-   - What's unclear: whether the package is private (default for first push) or has been flipped to public.
-   - Recommendation: design works for BOTH cases. If public, the PAT is harmless overhead (Flux uses it; GHCR ignores it for public images). If private, the PAT is required. Plan should NOT make this a precondition gate — but plan should add a one-line note that owner can flip to public via the GHCR UI as a separate ops decision (would simplify any future attempt to remove the pull PAT).
+1. **GHCR package visibility (public vs private)** — RESOLVED: design works for BOTH cases regardless of visibility. If public, the PAT is harmless overhead (Flux uses it; GHCR ignores it for public images). If private, the PAT is required. Plan does NOT make this a precondition gate — Wave 0 Task 26-01-01 owner check captures visibility informationally for STATE.md only. Owner can flip to public via the GHCR UI as a separate post-Phase-26 ops decision (would simplify any future attempt to remove the pull PAT).
 
-2. **First Phase-25 build observational verification**
-   - What we know: per `25-01-SUMMARY.md:84-90`, the first push-to-main triggered the workflow but observational verification is pending.
-   - What's unclear: whether the first build succeeded or failed.
-   - Recommendation: D-12 already covers this — owner can `workflow_dispatch` if no GHCR image exists yet. Plan precondition checklist must include "verify at least one `^\d{14}$`-tagged image exists at GHCR before merging Commit 2."
+2. **First Phase-25 build observational verification** — RESOLVED: Wave 0 Task 26-01-01 owner-checklist gate + CONTEXT D-12 `workflow_dispatch` fallback together cover this. Plan precondition checklist requires "verify at least one `^\d{14}$`-tagged image exists at GHCR before Commit 2 merges."
 
-3. **Should the existing `forgejo-registry-creds` Secret in flux-system also be cleaned up in Phase 26?**
-   - What we know: D-10 says it stays as the rollback safety net through Phase 26, deleted in Phase 27.
-   - What's unclear: nothing actually — CONTEXT.md is explicit. Listing here only because the planner might be tempted to combine cleanup into Phase 26.
-   - Recommendation: do NOT delete in Phase 26. Plan must explicitly list `forgejo-registry-creds` in the "do not touch" file list.
+3. **Cleanup of `forgejo-registry-creds` Secret in Phase 26** — RESOLVED: explicitly DEFERRED to Phase 27 per CONTEXT D-10 (rollback safety net through Phase 26). Plans 26-01 and 26-02 only de-reference it (flip Deployment `imagePullSecrets[0].name` and ImageRepository `secretRef.name`); the Secret resource itself stays in cluster.
 
-4. **Should the homelab `CLAUDE.md` (in homelab repo) gain a one-line note about the new GHCR ImageRepository?**
-   - What we know: Claude's-discretion item in CONTEXT.md; default YES.
-   - What's unclear: whether the note belongs in `clusters/homelab/...` README or `CLAUDE.md` top-level.
-   - Recommendation: add a one-liner to `homelab/CLAUDE.md` under §Software (or the closest section that mentions Flux). Single sentence; no narrative.
+4. **One-line note in `homelab/CLAUDE.md` documenting the new GHCR ImageRepository** — RESOLVED: deferred to executor's discretion at Plan 26-02 commit time per CONTEXT.md `<decisions> ## Claude's Discretion` block (low priority; small ops note that can be added in a follow-up commit if forgotten).
 
 ## Environment Availability
 
@@ -813,12 +801,12 @@ This verifies the rollback path is intact BEFORE the operation that might requir
 | GHCR fine-grained PAT (D-01) | MEDIUM-NEGATIVE | Official GitHub docs say classic-only; planner action: convert to classic PAT |
 | Open question on package visibility | LOW (informational) | Owner browser check still pending; design works for both cases |
 
-### Open Questions
+### Open Questions (RESOLVED)
 
-1. GHCR package visibility (public/private) — owner browser check pending; design unaffected.
-2. First Phase-25 build observational verification — D-12 `workflow_dispatch` precondition trigger covers if absent.
-3. Cleanup of `forgejo-registry-creds` Secret — explicitly DEFERRED to Phase 27 per D-10 (rollback safety net).
-4. Optional one-line note in `homelab/CLAUDE.md` documenting the new GHCR ImageRepository — Claude's-discretion item; default YES.
+1. GHCR package visibility (public/private) — RESOLVED: design works for both cases; PAT provisioned regardless; visibility recorded in STATE.md informationally via Wave 0 owner check. Cross-ref §Open Questions (above) item #1.
+2. First Phase-25 build observational verification — RESOLVED: Wave 0 Task 26-01-01 owner-checklist + D-12 `workflow_dispatch` fallback. Cross-ref §Open Questions (above) item #2.
+3. Cleanup of `forgejo-registry-creds` Secret — RESOLVED: explicitly DEFERRED to Phase 27 per D-10 (rollback safety net through Phase 26). Cross-ref §Open Questions (above) item #3.
+4. Optional one-line note in `homelab/CLAUDE.md` documenting the new GHCR ImageRepository — RESOLVED: Claude's-discretion item per CONTEXT.md; default YES; deferred to executor at Plan 26-02 commit time. Cross-ref §Open Questions (above) item #4.
 
 ### Risks for Planner
 
