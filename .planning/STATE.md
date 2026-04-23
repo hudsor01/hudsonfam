@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-23T04:40:00.000Z"
+last_updated: "2026-04-23T15:03:26.975Z"
 last_activity: 2026-04-23
 progress:
-  total_phases: 8
+  total_phases: 9
   completed_phases: 4
-  total_plans: 42
-  completed_plans: 42
+  total_plans: 38
+  completed_plans: 40
   percent: 100
 ---
 
@@ -17,9 +17,11 @@ progress:
 
 ## Current Position
 
+Phase: 24 (regenerate-expansion-resume-salary-silent-success-state) — EXECUTING
+Plan: 2 of 4 (Plan 24-01 complete 2026-04-23; Plan 24-02 next)
 Phase 23 (owner-triggered-workflows-pattern-setter) — CODE COMPLETE (2026-04-23) — 8/8 plans landed; prod UAT deferred to v3.5-P4 (n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern).
 
-Status: Phase 23 closed; ready to start Phase 24 (Regenerate Expansion — tailored resume, salary intelligence, silent-success warning).
+Status: Ready to execute
 Last activity: 2026-04-23
 
 Progress: [██████████] 100%
@@ -290,6 +292,14 @@ Scope constraints honored: interview_prep / recruiter_outreach out of scope; DAS
 - v3.0 Plan 23-07 (2026-04-23): Branch condition = visibility gate (D-09 confirmed at implementation) — no additional prop-level `if (condition) return null` guards needed inside TriggerCompanyResearchButton or RegenerateCoverLetterButton because the buttons are only rendered when their respective branch conditions are true (`detail.company_research === null` for trigger; `detail.cover_letter` populated with `content?.trim()` truthy for regenerate). T-23-07-01 disposition satisfied structurally by the render tree. Reusable pattern for Phase 24: mount inside the branch that gates visibility; trust the ternary to do the gating; do not duplicate the gate inside the button component.
 - v3.0 Plan 23-07 (2026-04-23): Symmetric 4th test case added as Rule 2 coverage beyond plan's 3-test spec — plan asserted TriggerCompanyResearchButton adjacency to `company_research === null` branch condition (20-line look-ahead), but provided no symmetric pin for RegenerateCoverLetterButton to the Cover Letter populated meta row. Without it, a refactor could hoist the button outside the `flex items-center gap-3 flex-wrap` sibling chain and the G-4 boundary test would still pass (button still inside the SectionErrorBoundary, just in the wrong sibling position). Added `RegenerateCoverLetterButton within 20 lines after Download PDF anchor` line-scan as the mirror guard. Pattern: any new button-mount assertion block should include BOTH a boundary-wrap regex AND a local-anchor adjacency scan.
 - v3.0 Plan 23-07 (2026-04-23): `baselineGeneratedAt={detail.cover_letter.generated_at}` passed directly (no `?? null` coalesce) because the mount sits inside the populated branch where `detail.cover_letter.content?.trim()` is truthy — TypeScript narrows `detail.cover_letter` to non-null automatically at the mount site. `RegenerateCoverLetterButtonProps.baselineGeneratedAt: string` (not `string | null`) so direct access matches the component's interface contract. The execute-phase prompt's suggested `detail.cover_letter?.generated_at ?? null` would not compile against the button's declared prop type — type system enforces correctness here.
+- v3.0 Plan 24-01 (2026-04-23): Predicates EXTRACTED to `src/lib/regenerate-predicates.ts` rather than inlined — UI-SPEC recommendation honored (`§Component Contracts 5`). Pattern-matches `@/lib/score-color.ts` / `@/lib/empty-state-copy.ts` / `@/lib/format-salary.ts` conventions; enables isolated Vitest coverage (21 predicate tests) without component render; keeps the shared component's polling callback a single-line `isDone(detail, serverBaseline)` prop call. Plans 24-02/-03 import `{coverLetterIsDone, tailoredResumeIsDone, salaryIntelligenceIsDone}` as named exports.
+- v3.0 Plan 24-01 (2026-04-23): 4-state discriminated-union machine (idle | in-progress | error | silent-success) with **structural** mutual exclusion — the `in-progress` state is only reachable after a `{ok: true}` Server Action response, so reaching the 60-poll cap unconditionally means the webhook reported success without artifact advance. Both `.then` AND `.catch` cap-exits route to `silent-success` (not error). No runtime `if (wasOkResponse)` flag needed — the state-machine shape enforces the invariant that error and silent-success are never co-rendered.
+- v3.0 Plan 24-01 (2026-04-23): silent-success stays-until-clicked (no auto-revert timer) — matches the sentinel-error UX precedent from Phase 23; simpler than timer-based transitions; owner may be looking away when the 60-poll cap is reached so auto-revert would silently lose the diagnostic cue. Clicking from silent-success transitions to in-progress with identical shape to clicking from error.
+- v3.0 Plan 24-01 (2026-04-23): `baselineGeneratedAt` widened to `string | null` (D-01) — accommodates INSERT-wait case where the Server Action returns `baseline: null` because no prior artifact row exists. Predicate's `serverBaseline === null` branch returns `true` as soon as any artifact row appears (any row is progress). Contrasts with Phase 23's `string` (non-null) prop type because the Phase 24 mounts in tailored-resume and salary-intelligence sections may encounter null baselines more readily than cover_letter (which always has a row in the populated branch).
+- v3.0 Plan 24-01 (2026-04-23): `salaryIntelligenceIsDone` uses UTC-midnight parse `new Date(current + "T00:00:00Z").getTime()` to avoid browser-locale TZ drift (a user in UTC-08 parsing `"2026-04-20"` would otherwise create a Date at midnight local time, producing an 8-hour offset against UTC epoch). Date-granular same-day limitation is a KNOWN ROUGH EDGE: same-day regenerate does not advance `search_date`, triggering silent-success. Explicit test case `same-day regenerate triggers silent-success (Pitfall 1 / D-04)` locks the behavior; v3.2+ may add a timestamp column to `salary_intelligence` to disambiguate (deferred).
+- v3.0 Plan 24-01 (2026-04-23): G-8 verbatim-copy lock is a two-prong gate — source-grep (exact-count === 1 in `regenerate-button.tsx`) + DOM assertion (state transition renders the string via `getByText`). Catches both coding-time drift (typo, em-dash → double-hyphen, punctuation swap) and test-time-only drift (component source correct but test asserts a paraphrased version). Pattern reusable for any owner-committed copy lock where drift silently degrades UX. Em-dash is U+2014, period-terminated, no exclamation (anti-CTA per Plan 21-06).
+- v3.0 Plan 24-01 (2026-04-23): `_artifact` prop retained + suppressed via `void _artifact` — the D-01 props contract is part of the public API so downstream mount sites benefit from `artifact="..."` being enforced by TypeScript even though the current component body doesn't branch on it. Leaves the door open for future per-artifact icon swaps without breaking Plan 24-03 call-sites.
+- v3.0 Plan 24-01 (2026-04-23): AI-ACTION-05/06/07 REQUIREMENTS NOT marked complete in this plan despite frontmatter claims — Plan 24-01 ships the foundational component + predicates + tests, but user-facing capability requires Plan 24-02 (Server Actions) + Plan 24-03 (mounts). Closure happens in Plan 24-04's meta-doc finalization audit. Matches Phase 23 precedent where Plan 23-01's `sendSignedWebhook` primitive didn't mark AI-SAFE-01 complete until the phase closed.
 
 ## Blockers
 
@@ -328,7 +338,7 @@ None.
 | 23    | 23-07 | ~10m     | 3     | 4     | 2026-04-23T04:08:00Z |
 | 23    | 23-08 | ~5m      | 3     | 4     | 2026-04-23T04:40:00Z |
 
-**Planned Phase:** 23 (owner-triggered-workflows-pattern-setter) — 8 plans — 2026-04-22T23:20:04.361Z
+**Planned Phase:** 24 (regenerate-expansion-resume-salary-silent-success-state) — 4 plans — 2026-04-23T14:45:27.059Z
 | Phase 22 P01 | ~4 minutes | 3 tasks | 3 files |
 | Phase 22 P04 | 1m 16s | 3 tasks | 1 files |
 | Phase 22 P05 | 2m 51s | 4 tasks | 3 files |
@@ -343,3 +353,5 @@ None.
 | Phase 23-owner-triggered-workflows-pattern-setter P06 | 17min | 3 tasks | 2 files |
 | Phase 23 P07 | 10m | 3 tasks | 4 files |
 | Phase 23 P08 | 5m | 3 tasks | 4 files |
+| Phase 24 P01 | ~8m | 3 tasks | 4 files |
+| Phase 24 P02 | 3m | 2 tasks | 2 files |
