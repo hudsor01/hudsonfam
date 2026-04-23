@@ -11,7 +11,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { FreshnessBadge } from "./freshness-badge";
+import { RegenerateButton } from "./regenerate-button";
 import { EMPTY_STATE_COPY } from "@/lib/empty-state-copy";
+import { regenerateTailoredResume } from "@/lib/job-actions";
+import { tailoredResumeIsDone } from "@/lib/regenerate-predicates";
 
 export interface ResumeFreshness {
   /** Pre-computed server-side formatted date string, e.g. "4/21/26" (America/Chicago). */
@@ -35,6 +38,16 @@ interface Props {
   resume: TailoredResumeView | null;
   /** Numeric job id used to build the tailored-resume PDF route URL. */
   jobId: number;
+  /**
+   * Server-computed ISO-8601 timestamp from `tailored_resumes.generated_at`
+   * threaded through to the RegenerateButton's polling predicate (Phase 24
+   * D-09). Distinct from `resume.freshness.generatedDate` which is a
+   * pre-formatted display string ("4/21/26"); the predicate needs the raw
+   * ISO string to `new Date(...).getTime()` compare. Nullable so parents
+   * can pass `null` when the row has no prior row (INSERT-wait fallback
+   * handled inside RegenerateButton).
+   */
+  baselineGeneratedAtIso: string | null;
 }
 
 /**
@@ -72,7 +85,11 @@ interface Props {
  * both empty-state branches and the populated branch honour React's rules-
  * of-hooks. The early returns run AFTER the hook declarations.
  */
-export function TailoredResumeSection({ resume, jobId }: Props) {
+export function TailoredResumeSection({
+  resume,
+  jobId,
+  baselineGeneratedAtIso,
+}: Props) {
   const [copied, setCopied] = useState(false);
 
   if (resume === null) {
@@ -161,6 +178,14 @@ export function TailoredResumeSection({ resume, jobId }: Props) {
             <Download className="size-3" />
             Download PDF
           </a>
+          <RegenerateButton
+            jobId={jobId}
+            artifact="tailored_resume"
+            label="Regenerate tailored resume"
+            action={regenerateTailoredResume}
+            isDone={tailoredResumeIsDone}
+            baselineGeneratedAt={baselineGeneratedAtIso}
+          />
         </div>
       </div>
       <div className="text-sm text-muted-foreground bg-card/50 rounded-lg p-4 border border-border max-h-96 overflow-y-auto">

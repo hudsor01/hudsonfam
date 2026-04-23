@@ -273,3 +273,57 @@ describe("TailoredResumeSection — Copy button + Download anchor (Phase 21)", (
     expect(anchor.querySelector(".lucide-download")).not.toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Phase 24 Plan 03 — RegenerateButton mount assertions (D-09)
+// ---------------------------------------------------------------------------
+
+// Mock the RegenerateButton at the module path used by tailored-resume-section
+// (relative import "./regenerate-button") — we isolate to the LABEL being
+// rendered in the populated branch, skipping the 4-state machine / polling
+// infrastructure which has its own test file (regenerate-button.test.tsx).
+vi.mock("@/app/(admin)/admin/jobs/regenerate-button", () => ({
+  RegenerateButton: ({ label }: { label: string }) => (
+    <button type="button">{label}</button>
+  ),
+}));
+
+describe("TailoredResumeSection — RegenerateButton mount (Phase 24 D-09)", () => {
+  it("renders RegenerateButton with verbatim label in the populated branch", () => {
+    const { getByText } = render(
+      <TailoredResumeSection
+        jobId={42}
+        resume={freshView}
+        baselineGeneratedAtIso="2026-04-21T12:00:00.000Z"
+      />
+    );
+    expect(getByText("Regenerate tailored resume")).toBeTruthy();
+  });
+
+  it("does NOT render RegenerateButton when resume is null (empty-state branch)", () => {
+    const { queryByText } = render(
+      <TailoredResumeSection
+        jobId={42}
+        resume={null}
+        baselineGeneratedAtIso={null}
+      />
+    );
+    expect(queryByText("Regenerate tailored resume")).toBeNull();
+  });
+
+  it("does NOT render RegenerateButton when resume.content is whitespace (empty-content branch)", () => {
+    const whitespaceView: TailoredResumeView = {
+      content: "   ",
+      model_used: "gpt-4o-mini",
+      freshness: { generatedDate: "4/21/26", isStale: false, ageDays: 0 },
+    };
+    const { queryByText } = render(
+      <TailoredResumeSection
+        jobId={42}
+        resume={whitespaceView}
+        baselineGeneratedAtIso="2026-04-21T12:00:00.000Z"
+      />
+    );
+    expect(queryByText("Regenerate tailored resume")).toBeNull();
+  });
+});
