@@ -1,0 +1,64 @@
+# .github/workflows/build-and-push.yml
+#
+# Phase 25 / v3.5-P1: Builds the hudsonfam Dockerfile and pushes to GHCR
+# with YYYYMMDDHHmmss UTC timestamp + latest tags. Consumed by Flux
+# imagepolicy (Phase 26) via numerical-ordering regex ^\d{14}$.
+#
+# Action versions pinned to v5/v3 majors per 25-CONTEXT.md D-05/06/07.
+# A Node 24 migration (v7/v4 majors) is deferred past v3.5-P4; the
+# GitHub Actions runner forces Node 24 default on 2026-06-02 and
+# removes Node 20 on 2026-09-16. Current versions remain functional
+# inside that window.
+
+name: build-and-push
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: build-and-push-main
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate timestamp tag
+        id: ts
+        run: |
+          timestamp="$(date -u +%Y%m%d%H%M%S)"
+          echo "ts=${timestamp}" >> "$GITHUB_OUTPUT"
+          echo "Timestamp tag: ${timestamp}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/hudsor01/hudsonfam:${{ steps.ts.outputs.ts }}
+            ghcr.io/hudsor01/hudsonfam:latest
+          cache-from: type=gha,scope=build-and-push
+          cache-to: type=gha,scope=build-and-push,mode=max
