@@ -270,7 +270,10 @@ Plans:
   3. Image is `linux/amd64` (single-arch matches the K3s cluster); size ≤ 600MB (comparable to Phase 20 baseline production image)
   4. Workflow uses `actions/checkout` + `docker/setup-buildx-action` + `docker/login-action` (GHCR via `GITHUB_TOKEN`) + `docker/build-push-action` with layer caching via `type=gha`; no hand-rolled shell scripts
   5. A manual `workflow_dispatch` trigger is wired for ad-hoc rebuilds (useful for cache invalidation without a code commit)
-**Plans:** TBD
+**Plans:** 1 plan
+
+Plans:
+- [ ] 25-01-PLAN.md — Create .github/workflows/build-and-push.yml and push to main to trigger first GitHub Actions build
 
 #### Phase 26: Flux Reconfiguration (v3.5-P2)
 **Goal:** Reconfigure Flux to watch `ghcr.io/hudsor01/hudsonfam` instead of the broken `git.homelab/forgejo-admin/hudsonfam`. Provision GHCR pull secret via the ExternalSecret pattern (matches other homelab services — no PAT in git). Validate imagepolicy picks up the timestamp tag stream.
