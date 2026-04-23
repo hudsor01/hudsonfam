@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
-status: Defining phase context
-last_updated: "2026-04-23T20:21:27Z"
-last_activity: 2026-04-23 — Phase 25 (v3.5-P1 Pipeline Build) CODE COMPLETE — `.github/workflows/build-and-push.yml` shipped (commit c7d8f33 pushed to main)
+status: completed
+last_updated: "2026-04-23T22:23:51.683Z"
+last_activity: 2026-04-23 — Plan 25-01 executed; workflow file + first push-to-main trigger shipped
 progress:
-  total_phases: 10
+  total_phases: 11
   completed_phases: 6
-  total_plans: 40
-  completed_plans: 44
+  total_plans: 41
+  completed_plans: 43
   percent: 100
 ---
 
@@ -369,7 +369,7 @@ None.
 | 24    | 24-04 | ~5m      | 2     | 4     | 2026-04-23T15:30:00Z |
 | 25    | 25-01 | 9m 17s   | 2     | 1     | 2026-04-23T20:21:27Z |
 
-**Planned Phase:** 25 (pipeline-build) — 1 plan — 2026-04-23T20:12:10Z
+**Planned Phase:** 26 (flux-reconfiguration) — 2 plans — 2026-04-23T22:23:51.677Z
 | Phase 22 P01 | ~4 minutes | 3 tasks | 3 files |
 | Phase 22 P04 | 1m 16s | 3 tasks | 1 files |
 | Phase 22 P05 | 2m 51s | 4 tasks | 3 files |
