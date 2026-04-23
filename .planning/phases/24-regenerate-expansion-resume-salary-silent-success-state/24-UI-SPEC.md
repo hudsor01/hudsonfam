@@ -1,10 +1,12 @@
 ---
 phase: 24
 slug: regenerate-expansion-resume-salary-silent-success-state
-status: draft
+status: approved
 shadcn_initialized: true
 preset: none (manual init — new-york style, zinc base, lucide icons; inherited from Phase 20 via unchanged components.json)
 created: 2026-04-23
+reviewed_at: 2026-04-23
+review_result: APPROVED (6 PASS; zero new tokens/installs; 3 non-blocking researcher notes acknowledged)
 ---
 
 # Phase 24 — UI Design Contract
