@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: executing
-last_updated: "2026-04-23T15:16:26.225Z"
+last_updated: "2026-04-23T15:30:00.000Z"
 last_activity: 2026-04-23
 progress:
   total_phases: 9
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 38
-  completed_plans: 41
+  completed_plans: 42
   percent: 100
 ---
 
@@ -17,11 +17,11 @@ progress:
 
 ## Current Position
 
-Phase: 24 (regenerate-expansion-resume-salary-silent-success-state) — EXECUTING
-Plan: 4 of 4 (Plans 24-01 + 24-02 + 24-03 complete 2026-04-23; Plan 24-04 — meta-doc finalization + REQUIREMENTS audit + phase-close — is next)
-Phase 23 (owner-triggered-workflows-pattern-setter) — CODE COMPLETE (2026-04-23) — 8/8 plans landed; prod UAT deferred to v3.5-P4 (n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern).
+Phase 24 (regenerate-expansion-resume-salary-silent-success-state) — CODE COMPLETE (2026-04-23) — 4/4 plans landed; prod UAT deferred to v3.5-P4. v3.0 AI Integration milestone is now fully code-complete (5/5 phases code-complete). Status: ready for v3.5 CI/CD Hardening.
 
-Status: Ready to execute
+Phase 23 (owner-triggered-workflows-pattern-setter) — CODE COMPLETE (2026-04-23) — 8/8 plans landed; prod UAT deferred to v3.5-P4.
+
+Status: Phase complete
 Last activity: 2026-04-23
 
 Progress: [██████████] 100%
@@ -46,18 +46,18 @@ Progress: [██████████] 100%
 
 ### Immediate next step
 
-**Execute Plan 24-04** — Phase 24 meta-doc finalization + REQUIREMENTS audit + phase-close. Plan 24-03 landed Plan-24-03 AI-ACTION-05/06 mounts end-to-end (sheet → section → button chain complete across all 3 artifacts; 564/564 tests green; build exits 0). Plan 24-04 is the docs-only final plan: ROADMAP.md Phase 24 top-level bullet + progress row flip to `[x] CODE COMPLETE 2026-04-23`; REQUIREMENTS.md checkbox + traceability-row flip for AI-ACTION-05 / AI-ACTION-06 / AI-ACTION-07 with Plan citations; 24-SUMMARY.md phase-level rollup (mirrors 21-09 / 22-08 / 23-08 patterns); STATE.md closure transitions. Matches Phase 23 precedent where foundational primitives (24-01) + Server Actions (24-02) + mounts (24-03) all completed BEFORE REQUIREMENTS flipped — closure happens at phase-close audit, not per-plan. No code changes expected.
+**`/gsd-new-milestone` — v3.5 CI/CD Hardening (SEED-005).** Migrates hudsonfam deploy to GitHub Actions + GHCR per CLAUDE.md intent. 4 phases (~4 hours total). v3.5-P4 executes retroactive UAT for all deferred Phase 21/22/23/24 prod verifications in one pass after the pipeline is rebuilt. v3.0 AI Integration milestone is now fully code-complete (5/5 phases code-complete); the entire accumulated v3.0 backlog rolls out to production in a single deploy once v3.5 lands.
 
 ### Sequenced milestone order (locked 2026-04-22)
 
-- **v3.0 AI Integration** (in progress, 3/5 phases code-complete):
+- **v3.0 AI Integration** (CODE COMPLETE, 5/5 phases):
   - Phase 20: Foundation — COMPLETE (2026-04-21)
   - Phase 21: Polish — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5-P4
   - Phase 22: Salary Intelligence — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5-P4
-  - **Phase 23: Owner-Triggered Workflows — CODE COMPLETE 2026-04-23 (8/8 plans); prod UAT deferred to v3.5-P4 (n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern)**
-  - Phase 24: Regenerate Expansion — depends on Phase 22 + 23
-- **v3.5 CI/CD Hardening** (seeded 2026-04-22, SEED-005): activates AFTER v3.0 closes. 4 phases (~4 hours + accumulated UAT). Migrates hudsonfam deploy to GitHub Actions + GHCR per CLAUDE.md's original intent. v3.5-P4 retroactively executes deferred UAT for Phases 21 + 22 + 23 + 24 in one pass.
-- **v3.0 "shipped" milestone marker** requires BOTH code-complete (all 5 phases) AND v3.5 executed (pipeline rebuilt + all UAT signed off). Until v3.5 ships, v3.0 is "code-complete, deploy-blocked."
+  - Phase 23: Owner-Triggered Workflows — CODE COMPLETE 2026-04-23 (8/8 plans); prod UAT deferred to v3.5-P4
+  - **Phase 24: Regenerate Expansion — CODE COMPLETE 2026-04-23 (4/4 plans); prod UAT deferred to v3.5-P4 (n8n webhook endpoints regenerate-tailored-resume + regenerate-salary-intelligence are homelab-repo PR concern per Phase 22/23 pattern)**
+- **v3.5 CI/CD Hardening** (seeded 2026-04-22, SEED-005): ACTIVATES NOW. 4 phases (~4 hours + accumulated UAT). Migrates hudsonfam deploy to GitHub Actions + GHCR per CLAUDE.md's original intent. v3.5-P4 retroactively executes deferred UAT for Phases 21 + 22 + 23 + 24 in one pass.
+- **v3.0 "shipped" milestone marker** requires BOTH code-complete (all 5 phases ✅) AND v3.5 executed (pipeline rebuilt + all UAT signed off). v3.0 is now "code-complete, deploy-blocked" — the block clears when v3.5 ships.
 
 ## Last Session
 
@@ -354,6 +354,7 @@ None.
 | 24    | 24-01 | ~8m      | 3     | 4     | 2026-04-23T14:50:00Z |
 | 24    | 24-02 | ~3m      | 2     | 2     | 2026-04-23T15:00:00Z |
 | 24    | 24-03 | 4m       | 2     | 6     | 2026-04-23T15:16:00Z |
+| 24    | 24-04 | ~5m      | 2     | 4     | 2026-04-23T15:30:00Z |
 
 **Planned Phase:** 24 (regenerate-expansion-resume-salary-silent-success-state) — 4 plans — 2026-04-23T14:45:27.059Z
 | Phase 22 P01 | ~4 minutes | 3 tasks | 3 files |

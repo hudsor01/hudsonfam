@@ -127,7 +127,7 @@
 - [ ] **Phase 21: Polish (Copy + PDF + Empty States + Link-out)** — copy-to-clipboard, tailored-resume PDF download (pipeline-extended end-to-end via n8n Application Packager + tailored_resumes.pdf_data migration), 3 empty-state blocks, company-website link-out, cover-letter quality-score badge, bundled Phase 20 FreshnessBadge date-format revision
 - [x] **Phase 22: Salary Intelligence (Defensive Render)** — SalaryIntelligence Zod + TS type, defensive LEFT JOIN LATERAL (WHERE FALSE skeleton tolerating future schema shape via 1-line predicate edit), llm_analysis + structured headline render, per-figure provenance tags (scraped / LLM / research) — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5
 - [x] **Phase 23: Owner-Triggered Workflows (Pattern Setter)** — "Research this company" manual trigger, regenerate cover letter (UPDATE-wait polling with server-returned baseline — D-06 amended), HMAC-SHA256 + X-Idempotency-Key + sentinel-error scrubbing pattern established and retrofit to existing fireWebhook call sites — CODE COMPLETE 2026-04-23, prod UAT deferred to v3.5-P4 (n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern)
-- [ ] **Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)** — regenerate tailored resume, regenerate salary intelligence, silent-success warning state when workflow returns OK without updating timestamp
+- [x] **Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)** — regenerate tailored resume, regenerate salary intelligence, silent-success warning state when workflow returns OK without updating timestamp — CODE COMPLETE 2026-04-23, prod UAT deferred to v3.5-P4
 
 ### Phase Details
 
@@ -227,12 +227,13 @@ Plans:
   2. Owner clicks "Regenerate" on the salary intelligence section; same pattern — polls `salary_intelligence.search_date` until it advances or the 60-poll cap expires (NOTE: search_date is date-granular YYYY-MM-DD; same-day regenerate triggers the silent-success warning — see 24-CONTEXT.md D-04)
   3. When a regenerate webhook returns 200 but the artifact's `generated_at` timestamp does not advance within the polling window, owner sees a distinct warning banner — "Regeneration reported success but no new content was written — check n8n logs" — not a silent revert to pre-click state (AI-ACTION-07)
   4. All three regenerate actions (cover letter from Phase 23, tailored resume, salary intelligence) share the same `regenerate-button.tsx` component and the same signed-webhook helper; adding a fourth regenerate action in the future requires one Server Action + one button prop, not a new pattern
-**Plans**: 4 plans
+**Plans**: 4 plans — Code complete 2026-04-23; prod UAT deferred to v3.5-P4 (n8n webhook endpoints regenerate-tailored-resume + regenerate-salary-intelligence are homelab-repo PR concern per Phase 22/23 pattern)
+
 Plans:
-- [x] 24-01-PLAN.md — Generalize regenerate-button.tsx (4-state machine + silent-success) + regenerate-predicates.ts + 32+ tests — 2026-04-23
+- [x] 24-01-PLAN.md — Generalize regenerate-button.tsx (4-state machine + silent-success) + predicates + 32+ tests — 2026-04-23
 - [x] 24-02-PLAN.md — regenerateTailoredResume + regenerateSalaryIntelligence Server Actions + 10 contract tests — 2026-04-23
 - [x] 24-03-PLAN.md — Mount RegenerateButton in tailored-resume + salary-intelligence sections; rewire CL mount — 2026-04-23
-- [ ] 24-04-PLAN.md — Meta-doc finalization (ROADMAP SC #2 correction + REQUIREMENTS + STATE + SUMMARY)
+- [x] 24-04-PLAN.md — Meta-doc finalization (ROADMAP SC #2 correction + REQUIREMENTS + STATE + SUMMARY) — 2026-04-23
 
 ### Progress
 
@@ -242,7 +243,7 @@ Plans:
 | 21. Polish (Copy + PDF + Empty States + Link-out) | 9/10 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
 | 22. Salary Intelligence (Defensive Render) | 8/8 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 8/8 | Code complete (prod UAT deferred to v3.5-P4 — n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern) | 2026-04-23 |
-| 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 3/4 | Executing | - |
+| 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 4/4 | Code complete (prod UAT deferred to v3.5-P4) | 2026-04-23 |
 
 ### Deferred production UAT
 
