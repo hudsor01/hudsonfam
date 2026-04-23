@@ -231,7 +231,7 @@ Plans:
 Plans:
 - [x] 24-01-PLAN.md — Generalize regenerate-button.tsx (4-state machine + silent-success) + regenerate-predicates.ts + 32+ tests — 2026-04-23
 - [x] 24-02-PLAN.md — regenerateTailoredResume + regenerateSalaryIntelligence Server Actions + 10 contract tests — 2026-04-23
-- [ ] 24-03-PLAN.md — Mount RegenerateButton in tailored-resume + salary-intelligence sections; rewire CL mount
+- [x] 24-03-PLAN.md — Mount RegenerateButton in tailored-resume + salary-intelligence sections; rewire CL mount — 2026-04-23
 - [ ] 24-04-PLAN.md — Meta-doc finalization (ROADMAP SC #2 correction + REQUIREMENTS + STATE + SUMMARY)
 
 ### Progress
@@ -242,7 +242,7 @@ Plans:
 | 21. Polish (Copy + PDF + Empty States + Link-out) | 9/10 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
 | 22. Salary Intelligence (Defensive Render) | 8/8 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 8/8 | Code complete (prod UAT deferred to v3.5-P4 — n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern) | 2026-04-23 |
-| 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 2/4 | Executing | - |
+| 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 3/4 | Executing | - |
 
 ### Deferred production UAT
 
