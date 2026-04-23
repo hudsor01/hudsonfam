@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render as rtlRender } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { ReactElement } from "react";
@@ -7,6 +7,17 @@ import {
   type SalaryIntelligenceView,
 } from "@/app/(admin)/admin/jobs/salary-intelligence-section";
 import { EMPTY_STATE_COPY } from "@/lib/empty-state-copy";
+
+// Phase 24 Plan 03 (D-09): Mock the RegenerateButton at the module path used by
+// salary-intelligence-section (relative import "./regenerate-button") — we
+// isolate to the LABEL rendered in the populated branch, skipping the 4-state
+// machine / polling infrastructure which has its own test file
+// (regenerate-button.test.tsx).
+vi.mock("@/app/(admin)/admin/jobs/regenerate-button", () => ({
+  RegenerateButton: ({ label }: { label: string }) => (
+    <button type="button">{label}</button>
+  ),
+}));
 
 function render(ui: ReactElement) {
   return rtlRender(ui, {
@@ -56,7 +67,7 @@ const missingCurrencyView: SalaryIntelligenceView = {
 
 describe("SalaryIntelligenceSection — branch rendering", () => {
   it("null salary → renders heading + missing-state italic copy from EMPTY_STATE_COPY", () => {
-    const { container } = render(<SalaryIntelligenceSection salary={null} />);
+    const { container } = render(<SalaryIntelligenceSection salary={null} jobId={1} baselineSearchDate={null} />);
     const h3 = container.querySelector("h3");
     expect(h3?.textContent).toContain("Salary Intelligence");
     const body = container.querySelector("p.italic");
@@ -64,7 +75,7 @@ describe("SalaryIntelligenceSection — branch rendering", () => {
   });
 
   it("unrecognized JSON + blank prose → renders heading + empty-state italic copy", () => {
-    const { container } = render(<SalaryIntelligenceSection salary={unrecognizedEmptyView} />);
+    const { container } = render(<SalaryIntelligenceSection salary={unrecognizedEmptyView} jobId={1} baselineSearchDate={null} />);
     const h3 = container.querySelector("h3");
     expect(h3?.textContent).toContain("Salary Intelligence");
     const body = container.querySelector("p.italic");
@@ -72,7 +83,7 @@ describe("SalaryIntelligenceSection — branch rendering", () => {
   });
 
   it("missing currency → headline hides; if prose present, Streamdown renders only", () => {
-    const { container } = render(<SalaryIntelligenceSection salary={missingCurrencyView} />);
+    const { container } = render(<SalaryIntelligenceSection salary={missingCurrencyView} jobId={1} baselineSearchDate={null} />);
     const figures = container.querySelectorAll(".tabular-nums");
     expect(figures.length).toBe(0); // no headline row
     // Streamdown container SHOULD be present because prose has content
@@ -83,7 +94,7 @@ describe("SalaryIntelligenceSection — branch rendering", () => {
 
 describe("SalaryIntelligenceSection — populated branches", () => {
   it("MIN_MEDIAN_MAX shape renders 3 figures with Min / Median / Max labels", () => {
-    const { container, getAllByText } = render(<SalaryIntelligenceSection salary={minMedianMaxView} />);
+    const { container, getAllByText } = render(<SalaryIntelligenceSection salary={minMedianMaxView} jobId={1} baselineSearchDate="2026-04-20" />);
     expect(getAllByText("Min").length).toBe(1);
     expect(getAllByText("Median").length).toBe(1);
     expect(getAllByText("Max").length).toBe(1);
@@ -93,14 +104,14 @@ describe("SalaryIntelligenceSection — populated branches", () => {
   });
 
   it("PERCENTILES shape renders 3 figures with 25th / 50th / 75th labels", () => {
-    const { getAllByText } = render(<SalaryIntelligenceSection salary={percentilesView} />);
+    const { getAllByText } = render(<SalaryIntelligenceSection salary={percentilesView} jobId={1} baselineSearchDate="2026-04-20" />);
     expect(getAllByText("25th").length).toBe(1);
     expect(getAllByText("50th").length).toBe(1);
     expect(getAllByText("75th").length).toBe(1);
   });
 
   it("every headline figure is accompanied by a <ProvenanceTag source='llm'> with text-warning class", () => {
-    const { getAllByText } = render(<SalaryIntelligenceSection salary={minMedianMaxView} />);
+    const { getAllByText } = render(<SalaryIntelligenceSection salary={minMedianMaxView} jobId={1} baselineSearchDate="2026-04-20" />);
     // Three "LLM estimate" badges
     const tags = getAllByText("LLM estimate");
     expect(tags.length).toBe(3);
@@ -111,7 +122,7 @@ describe("SalaryIntelligenceSection — populated branches", () => {
   });
 
   it("headline-only (prose null) → headline row renders, Streamdown container absent", () => {
-    const { container } = render(<SalaryIntelligenceSection salary={headlineOnlyView} />);
+    const { container } = render(<SalaryIntelligenceSection salary={headlineOnlyView} jobId={1} baselineSearchDate="2026-04-20" />);
     const figures = container.querySelectorAll(".tabular-nums");
     expect(figures.length).toBe(2); // min + max
     const streamdownContainer = container.querySelector(".bg-card\\/50");
@@ -119,7 +130,7 @@ describe("SalaryIntelligenceSection — populated branches", () => {
   });
 
   it("prose-only (unrecognized JSON) → Streamdown renders, headline row absent", () => {
-    const { container } = render(<SalaryIntelligenceSection salary={proseOnlyView} />);
+    const { container } = render(<SalaryIntelligenceSection salary={proseOnlyView} jobId={1} baselineSearchDate="2026-04-20" />);
     const figures = container.querySelectorAll(".tabular-nums");
     expect(figures.length).toBe(0);
     const streamdownContainer = container.querySelector(".bg-card\\/50");
@@ -127,7 +138,7 @@ describe("SalaryIntelligenceSection — populated branches", () => {
   });
 
   it("Streamdown container carries bg-card/50 + border-border classes (Phase 20 posture inherited)", () => {
-    const { container } = render(<SalaryIntelligenceSection salary={minMedianMaxView} />);
+    const { container } = render(<SalaryIntelligenceSection salary={minMedianMaxView} jobId={1} baselineSearchDate="2026-04-20" />);
     const streamdownContainer = container.querySelector(".bg-card\\/50");
     expect(streamdownContainer).toBeTruthy();
     expect(streamdownContainer?.className).toContain("border-border");
@@ -137,7 +148,13 @@ describe("SalaryIntelligenceSection — populated branches", () => {
 
   it("heading is always present across all render branches (Plan 21-06 always-render-shell)", () => {
     for (const variant of [null, unrecognizedEmptyView, minMedianMaxView, percentilesView, headlineOnlyView, proseOnlyView]) {
-      const { container, unmount } = render(<SalaryIntelligenceSection salary={variant} />);
+      const { container, unmount } = render(
+        <SalaryIntelligenceSection
+          salary={variant}
+          jobId={1}
+          baselineSearchDate={null}
+        />
+      );
       const h3 = container.querySelector("h3");
       expect(h3?.textContent).toContain("Salary Intelligence");
       unmount();
@@ -147,14 +164,14 @@ describe("SalaryIntelligenceSection — populated branches", () => {
 
 describe("SalaryIntelligenceSection — anti-CTA drift guard (grep gate G-5 + G-3)", () => {
   it("missing-state copy matches EMPTY_STATE_COPY verbatim (no inline literal drift)", () => {
-    const { container } = render(<SalaryIntelligenceSection salary={null} />);
+    const { container } = render(<SalaryIntelligenceSection salary={null} jobId={1} baselineSearchDate={null} />);
     const body = container.querySelector("p.italic");
     expect(body?.textContent).toBe("No salary intelligence yet.");
     expect(body?.textContent).toBe(EMPTY_STATE_COPY.salary_intelligence.missing);
   });
 
   it("empty-state copy matches EMPTY_STATE_COPY verbatim", () => {
-    const { container } = render(<SalaryIntelligenceSection salary={unrecognizedEmptyView} />);
+    const { container } = render(<SalaryIntelligenceSection salary={unrecognizedEmptyView} jobId={1} baselineSearchDate={null} />);
     const body = container.querySelector("p.italic");
     expect(body?.textContent).toBe("Salary intelligence was generated but is empty.");
     expect(body?.textContent).toBe(EMPTY_STATE_COPY.salary_intelligence.empty);
@@ -164,10 +181,54 @@ describe("SalaryIntelligenceSection — anti-CTA drift guard (grep gate G-5 + G-
     EMPTY_STATE_COPY.salary_intelligence.missing,
     EMPTY_STATE_COPY.salary_intelligence.empty,
   ])("copy '%s' passes the anti-CTA rule (no imperative verbs, no !, exactly one period)", (copy) => {
+    // Phase 24 Plan 03 note: the "regenerate" imperative-verb guard applies to
+    // the EMPTY_STATE_COPY strings rendered in the section's empty branches —
+    // NOT the RegenerateButton mount label. The populated-branch meta row's
+    // "Regenerate salary intelligence" is not tested here; its verbatim-lock
+    // assertion lives in job-detail-sheet.test.tsx G-5.
     const forbidden = /\b(click|regenerate|run|generate now|try|retry|please|start|begin|trigger)\b/i;
     expect(copy).not.toMatch(forbidden);
     expect(copy).not.toContain("!");
     const periods = (copy.match(/\./g) || []).length;
     expect(periods).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 24 Plan 03 — RegenerateButton mount assertions (D-09)
+// ---------------------------------------------------------------------------
+
+describe("SalaryIntelligenceSection — RegenerateButton mount (Phase 24 D-09)", () => {
+  it("renders RegenerateButton with verbatim label in the populated branch (MIN_MEDIAN_MAX shape)", () => {
+    const { getByText } = render(
+      <SalaryIntelligenceSection
+        salary={minMedianMaxView}
+        jobId={1}
+        baselineSearchDate="2026-04-20"
+      />
+    );
+    expect(getByText("Regenerate salary intelligence")).toBeTruthy();
+  });
+
+  it("does NOT render RegenerateButton when salary is null (missing-state branch)", () => {
+    const { queryByText } = render(
+      <SalaryIntelligenceSection
+        salary={null}
+        jobId={1}
+        baselineSearchDate={null}
+      />
+    );
+    expect(queryByText("Regenerate salary intelligence")).toBeNull();
+  });
+
+  it("does NOT render RegenerateButton in the unrecognized-JSON + blank-prose empty-state branch", () => {
+    const { queryByText } = render(
+      <SalaryIntelligenceSection
+        salary={unrecognizedEmptyView}
+        jobId={1}
+        baselineSearchDate={null}
+      />
+    );
+    expect(queryByText("Regenerate salary intelligence")).toBeNull();
   });
 });

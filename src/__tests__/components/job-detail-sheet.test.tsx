@@ -183,3 +183,106 @@ describe("job-detail-sheet.tsx — Phase 23 button mount assertions (G-4)", () =
     throw new Error("No `Download PDF` anchor found in job-detail-sheet.tsx");
   });
 });
+
+// ---------------------------------------------------------------------------
+// Phase 24 Plan 03 — G-4 boundary pairings (3 mounts) + G-5 verbatim labels
+// ---------------------------------------------------------------------------
+//
+// G-4 asserts that each of the 3 RegenerateButton mounts is nested inside the
+// matching SectionErrorBoundary. Because the tailored_resume + salary_intelligence
+// mounts live *inside* their respective section components (mount-inside-section
+// pattern F — Pitfall 4 recommendation), the G-4 assertion splits across three
+// files: the sheet owns the cover_letter pairing (asserted above); the two
+// section-component files own the artifact-prop declaration. The pairings below
+// assert the nested mount shape via source-text adjacency in the appropriate
+// file for each artifact.
+//
+// G-5 asserts that all 3 verbatim button labels appear in source at their
+// respective mount sites — the single source-of-truth for the contractual
+// labels specified in ROADMAP Phase 24 Success Criteria.
+// ---------------------------------------------------------------------------
+
+const TAILORED_RESUME_PATH = path.join(
+  process.cwd(),
+  "src/app/(admin)/admin/jobs/tailored-resume-section.tsx"
+);
+const SALARY_INTELLIGENCE_PATH = path.join(
+  process.cwd(),
+  "src/app/(admin)/admin/jobs/salary-intelligence-section.tsx"
+);
+const tailoredResumeSource = readFileSync(TAILORED_RESUME_PATH, "utf-8");
+const salaryIntelligenceSource = readFileSync(
+  SALARY_INTELLIGENCE_PATH,
+  "utf-8"
+);
+
+describe("Phase 24 Plan 03 — G-4 three boundary pairings (cover_letter, tailored_resume, salary_intelligence)", () => {
+  it("G-4 pairing 1/3: cover_letter — <RegenerateButton artifact=\"cover_letter\" nested inside SectionErrorBoundary section=\"cover_letter\" in job-detail-sheet.tsx", () => {
+    const match = sheetSource.match(
+      /SectionErrorBoundary[\s\S]{0,400}section="cover_letter"[\s\S]{0,4000}<RegenerateButton[\s\S]{0,200}artifact="cover_letter"/
+    );
+    expect(
+      match,
+      "cover_letter RegenerateButton not nested inside its SectionErrorBoundary — G-4 pairing broken"
+    ).not.toBeNull();
+  });
+
+  it("G-4 pairing 2/3: tailored_resume — <RegenerateButton artifact=\"tailored_resume\" present in tailored-resume-section.tsx", () => {
+    // The TailoredResumeSection is wrapped by SectionErrorBoundary
+    // section="tailored_resume" upstream in job-detail-sheet.tsx (asserted
+    // below); this file owns the artifact="tailored_resume" declaration.
+    expect(tailoredResumeSource).toMatch(/<RegenerateButton[\s\S]{0,400}artifact="tailored_resume"/);
+    // Upstream wrap — the section call site must sit inside the matching boundary.
+    expect(sheetSource).toMatch(
+      /SectionErrorBoundary[\s\S]{0,200}section="tailored_resume"[\s\S]{0,400}<TailoredResumeSection/
+    );
+  });
+
+  it("G-4 pairing 3/3: salary_intelligence — <RegenerateButton artifact=\"salary_intelligence\" present in salary-intelligence-section.tsx", () => {
+    expect(salaryIntelligenceSource).toMatch(
+      /<RegenerateButton[\s\S]{0,400}artifact="salary_intelligence"/
+    );
+    // Upstream wrap — already asserted above in the grep-gate block, re-asserted
+    // here for pairing-completeness traceability.
+    expect(sheetSource).toMatch(
+      /SectionErrorBoundary[\s\S]{0,200}section="salary_intelligence"[\s\S]{0,400}<SalaryIntelligenceSection/
+    );
+  });
+
+  it("G-5 verbatim labels: all 3 ROADMAP-SC mount labels appear in source at their respective mount sites", () => {
+    // Mount A (cover_letter) — job-detail-sheet.tsx
+    expect(sheetSource).toContain('"Regenerate cover letter"');
+    // Mount B (tailored_resume) — tailored-resume-section.tsx
+    expect(tailoredResumeSource).toContain('"Regenerate tailored resume"');
+    // Mount C (salary_intelligence) — salary-intelligence-section.tsx
+    expect(salaryIntelligenceSource).toContain('"Regenerate salary intelligence"');
+  });
+
+  it("G-4 regression guard: no legacy RegenerateCoverLetterButton references remain in source (full CL → generalized-button migration)", () => {
+    // Plan 24-03 completes the rename from Phase 23's RegenerateCoverLetterButton
+    // to the generalized RegenerateButton. After Plan 24-01 deleted the original
+    // component file, any lingering reference would be a compile-time dead link.
+    expect(sheetSource).not.toMatch(/RegenerateCoverLetterButton/);
+    expect(sheetSource).not.toMatch(/regenerate-cover-letter-button/);
+  });
+
+  it("prop threading: baselineGeneratedAtIso reaches TailoredResumeSection via detail.tailored_resume?.generated_at ?? null", () => {
+    expect(sheetSource).toMatch(
+      /baselineGeneratedAtIso=\{[\s\S]{0,200}detail\.tailored_resume\?\.generated_at\s*\?\?\s*null/
+    );
+  });
+
+  it("prop threading: jobId + baselineSearchDate reach SalaryIntelligenceSection", () => {
+    // SalaryIntelligenceSection jobId threading guard (Pitfall 4 A4). Window
+    // set to 800 chars — the `salary={...}` block before jobId spans the
+    // nested ternary + 3-property object literal (~450 chars) so a tighter
+    // ceiling would false-fail on a valid formatter change.
+    expect(sheetSource).toMatch(
+      /<SalaryIntelligenceSection[\s\S]{0,800}jobId=\{detail\.id\}/
+    );
+    // SalaryIntelligenceSection baselineSearchDate threading guard.
+    expect(sheetSource).toMatch(
+      /baselineSearchDate=\{[\s\S]{0,200}detail\.salary_intelligence\?\.search_date\s*\?\?\s*null/
+    );
+  });
+});

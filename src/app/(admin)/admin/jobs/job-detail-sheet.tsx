@@ -272,6 +272,9 @@ export function JobDetailSheet({
                         }
                       : null
                   }
+                  baselineGeneratedAtIso={
+                    detail.tailored_resume?.generated_at ?? null
+                  }
                 />
               </SectionErrorBoundary>
 
@@ -289,6 +292,10 @@ export function JobDetailSheet({
                           freshness: detail.salary_intelligence.freshness,
                         }
                       : null
+                  }
+                  jobId={detail.id}
+                  baselineSearchDate={
+                    detail.salary_intelligence?.search_date ?? null
                   }
                 />
               </SectionErrorBoundary>

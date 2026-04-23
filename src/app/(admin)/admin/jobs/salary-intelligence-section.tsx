@@ -4,9 +4,12 @@ import { DollarSign } from "lucide-react";
 import { Streamdown } from "streamdown";
 import { FreshnessBadge } from "./freshness-badge";
 import { ProvenanceTag } from "./provenance-tag";
+import { RegenerateButton } from "./regenerate-button";
 import { EMPTY_STATE_COPY } from "@/lib/empty-state-copy";
 import { parseSalaryHeadline } from "@/lib/parse-salary-report";
 import { formatSingleSalary } from "@/lib/format-salary";
+import { regenerateSalaryIntelligence } from "@/lib/job-actions";
+import { salaryIntelligenceIsDone } from "@/lib/regenerate-predicates";
 
 export interface SalaryFreshness {
   generatedDate: string;
@@ -25,6 +28,19 @@ export interface SalaryIntelligenceView {
 
 interface Props {
   salary: SalaryIntelligenceView | null;
+  /** Numeric job id threaded to the RegenerateButton's Server Action (Phase 24 D-09). */
+  jobId: number;
+  /**
+   * Server-computed YYYY-MM-DD date string from `salary_intelligence.search_date`
+   * threaded through to the RegenerateButton's polling predicate (Phase 24 D-09).
+   * Postgres column is `date`, NOT `timestamp`, so this is a date-granular string
+   * (e.g. "2026-04-20"). The `salaryIntelligenceIsDone` predicate UTC-midnight
+   * parses both sides to avoid TZ drift. Same-day re-runs trigger silent-success
+   * (documented rough edge — D-04 / Pitfall 1). Nullable to accommodate parents
+   * that know no prior row exists for the job (INSERT-wait fallback handled
+   * inside RegenerateButton).
+   */
+  baselineSearchDate: string | null;
 }
 
 /**
@@ -39,7 +55,11 @@ interface Props {
  * `linkSafety={{ enabled: false }}` is the admin-only surface pattern
  * inherited from TailoredResumeSection. CSP from Plan 20-07 is defense in depth.
  */
-export function SalaryIntelligenceSection({ salary }: Props) {
+export function SalaryIntelligenceSection({
+  salary,
+  jobId,
+  baselineSearchDate,
+}: Props) {
   if (salary === null) {
     return (
       <div className="space-y-3">
@@ -84,6 +104,14 @@ export function SalaryIntelligenceSection({ salary }: Props) {
             modelUsed={null}
             isStale={salary.freshness.isStale}
             ageDays={salary.freshness.ageDays}
+          />
+          <RegenerateButton
+            jobId={jobId}
+            artifact="salary_intelligence"
+            label="Regenerate salary intelligence"
+            action={regenerateSalaryIntelligence}
+            isDone={salaryIntelligenceIsDone}
+            baselineGeneratedAt={baselineSearchDate}
           />
         </div>
       </div>
