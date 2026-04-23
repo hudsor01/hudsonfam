@@ -196,3 +196,98 @@ export async function regenerateCoverLetter(
   revalidatePath("/admin/jobs");
   return { ok: true, baseline };
 }
+
+/**
+ * Owner-triggered Server Action: regenerate the tailored resume for a job.
+ *
+ * Clones the regenerateCoverLetter pattern (Plan 23-02 D-06 amended) with two
+ * swap points — webhook path and baseline field:
+ *   1. requireRole(["owner"]) — first statement; D-12 CI grep gate enforces adjacency.
+ *   2. Pre-webhook baseline read from tailored_resumes.generated_at via getJobDetail.
+ *   3. sendSignedWebhook("regenerate-tailored-resume") — HMAC-signed + idempotency-keyed.
+ *   4. Returns { ok: true, baseline } for client polling predicate OR { ok: false, sentinel }.
+ *
+ * T-23-02-05: DB read failure returns "unavailable" WITHOUT firing the webhook —
+ * a DB outage must not produce spurious n8n runs, and the raw error never crosses
+ * the return boundary.
+ *
+ * Contract (AI-ACTION-05):
+ *   - First line `await requireRole(["owner"])` (D-12)
+ *   - Fresh `randomUUID()` idempotency key per call (D-03)
+ *   - Returns `{ ok: true, baseline: string | null } | { ok: false, sentinel }` (D-08)
+ */
+export async function regenerateTailoredResume(
+  jobId: number,
+): Promise<
+  | { ok: true; baseline: string | null }
+  | { ok: false; sentinel: ErrorSentinel }
+> {
+  await requireRole(["owner"]);
+
+  let baseline: string | null = null;
+  try {
+    const detail = await getJobDetail(jobId);
+    baseline = detail?.tailored_resume?.generated_at ?? null;
+  } catch {
+    // DB error — no raw e.message across the boundary (T-23-02-05); webhook
+    // intentionally NOT fired so a DB outage can't spawn n8n runs.
+    return { ok: false, sentinel: "unavailable" };
+  }
+
+  const idempotencyKey = randomUUID();
+  const res = await sendSignedWebhook(
+    "regenerate-tailored-resume",
+    { job_id: jobId },
+    idempotencyKey,
+  );
+  if (!res.ok) return { ok: false, sentinel: res.sentinel };
+  revalidatePath("/admin/jobs");
+  return { ok: true, baseline };
+}
+
+/**
+ * Owner-triggered Server Action: regenerate salary intelligence for a job.
+ *
+ * Clones the regenerateCoverLetter pattern — swaps:
+ *   - webhook path: "regenerate-salary-intelligence"
+ *   - baseline field: salary_intelligence.search_date (YYYY-MM-DD date string, not ISO)
+ *
+ * KNOWN ROUGH EDGE (24-CONTEXT.md D-04): search_date is date-granular. Same-day
+ * regenerate does NOT advance search_date, so the client polling predicate will
+ * exhaust 60 iterations and surface the silent-success warning (AI-ACTION-07).
+ * Documented in 24-SUMMARY.md; future v3.2+ may add a generated_at column to
+ * disambiguate. See also 24-CONTEXT.md D-04 rationale.
+ *
+ * Contract (AI-ACTION-06):
+ *   - First line `await requireRole(["owner"])` (D-12)
+ *   - Fresh `randomUUID()` idempotency key per call (D-03)
+ *   - Returns `{ ok: true, baseline: string | null } | { ok: false, sentinel }` (D-08)
+ */
+export async function regenerateSalaryIntelligence(
+  jobId: number,
+): Promise<
+  | { ok: true; baseline: string | null }
+  | { ok: false; sentinel: ErrorSentinel }
+> {
+  await requireRole(["owner"]);
+
+  let baseline: string | null = null;
+  try {
+    const detail = await getJobDetail(jobId);
+    baseline = detail?.salary_intelligence?.search_date ?? null;
+  } catch {
+    // DB error — no raw e.message across the boundary (T-23-02-05); webhook
+    // intentionally NOT fired so a DB outage can't spawn n8n runs.
+    return { ok: false, sentinel: "unavailable" };
+  }
+
+  const idempotencyKey = randomUUID();
+  const res = await sendSignedWebhook(
+    "regenerate-salary-intelligence",
+    { job_id: jobId },
+    idempotencyKey,
+  );
+  if (!res.ok) return { ok: false, sentinel: res.sentinel };
+  revalidatePath("/admin/jobs");
+  return { ok: true, baseline };
+}
