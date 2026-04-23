@@ -176,6 +176,7 @@ SONARR_API_KEY
 RADARR_API_KEY
 JELLYFIN_API_KEY
 JOBS_DATABASE_URL     # Separate jobs database
+N8N_WEBHOOK_SECRET    # HMAC-SHA256 shared secret for signing n8n webhook POSTs (Phase 23 AI-SAFETY-02)
 OWNER_EMAIL           # Email auto-promoted to owner role on signup
 ```
 

@@ -38,6 +38,8 @@ import { SectionErrorBoundary } from "./section-error-boundary";
 import { TailoredResumeSection } from "./tailored-resume-section";
 import { SalaryIntelligenceSection } from "./salary-intelligence-section";
 import { ProvenanceTag } from "./provenance-tag";
+import { TriggerCompanyResearchButton } from "./trigger-company-research-button";
+import { RegenerateCoverLetterButton } from "./regenerate-cover-letter-button";
 
 interface JobDetailSheetProps {
   jobId: number | null;
@@ -235,6 +237,10 @@ export function JobDetailSheet({
                           <Download className="size-3" />
                           Download PDF
                         </a>
+                        <RegenerateCoverLetterButton
+                          jobId={detail.id}
+                          baselineGeneratedAt={detail.cover_letter.generated_at}
+                        />
                       </div>
                     </div>
                     <div className="text-sm text-muted-foreground whitespace-pre-wrap bg-card/50 rounded-lg p-4 border border-border max-h-64 overflow-y-auto">
@@ -295,6 +301,7 @@ export function JobDetailSheet({
                     <p className="text-sm text-muted-foreground italic">
                       {EMPTY_STATE_COPY.company_research.missing}
                     </p>
+                    <TriggerCompanyResearchButton jobId={detail.id} />
                   </div>
                 ) : isCompanyResearchEmpty(detail.company_research) ? (
                   <div className="space-y-3">

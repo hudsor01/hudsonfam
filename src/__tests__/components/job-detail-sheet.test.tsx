@@ -123,3 +123,58 @@ describe("ProvenanceTag smoke tests for the two retrofit sources", () => {
     expect(badge?.textContent).toBe("company research");
   });
 });
+
+describe("job-detail-sheet.tsx — Phase 23 button mount assertions (G-4)", () => {
+  it("TriggerCompanyResearchButton is nested inside SectionErrorBoundary section=\"company_research\" (G-4)", () => {
+    const match = sheetSource.match(
+      /SectionErrorBoundary[\s\S]{0,400}section="company_research"[\s\S]{0,600}<TriggerCompanyResearchButton/
+    );
+    expect(
+      match,
+      "TriggerCompanyResearchButton is not nested inside SectionErrorBoundary section=\"company_research\" — move it inside the existing boundary (G-4)"
+    ).not.toBeNull();
+  });
+
+  it("RegenerateCoverLetterButton is nested inside SectionErrorBoundary section=\"cover_letter\" (G-4)", () => {
+    // The cover_letter section has three ternary branches (null / empty /
+    // populated) before the populated branch's meta row; the mount point sits
+    // ~3200 chars after `section="cover_letter"`. A 4000-char window
+    // accommodates the current distance with headroom; if a future refactor
+    // moves the mount point further, this test fails loudly.
+    const match = sheetSource.match(
+      /SectionErrorBoundary[\s\S]{0,400}section="cover_letter"[\s\S]{0,4000}<RegenerateCoverLetterButton/
+    );
+    expect(
+      match,
+      "RegenerateCoverLetterButton is not nested inside SectionErrorBoundary section=\"cover_letter\" — move it inside the existing boundary (G-4)"
+    ).not.toBeNull();
+  });
+
+  it("TriggerCompanyResearchButton mounts only inside the company_research === null branch (source-text guard)", () => {
+    const lines = sheetSource.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      if (!/detail\.company_research\s*===\s*null/.test(lines[i])) continue;
+      const window = lines.slice(i, Math.min(i + 20, lines.length)).join("\n");
+      expect(
+        window,
+        "TriggerCompanyResearchButton not found within 20 lines after company_research === null branch condition"
+      ).toMatch(/<TriggerCompanyResearchButton/);
+      return;
+    }
+    throw new Error("No `detail.company_research === null` branch found in job-detail-sheet.tsx");
+  });
+
+  it("RegenerateCoverLetterButton appears within 20 lines after a Download PDF anchor (populated cover_letter branch guard)", () => {
+    const lines = sheetSource.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      if (!/Download PDF/.test(lines[i])) continue;
+      const window = lines.slice(i, Math.min(i + 20, lines.length)).join("\n");
+      expect(
+        window,
+        "RegenerateCoverLetterButton not found within 20 lines after the Download PDF anchor (populated-branch meta row)"
+      ).toMatch(/<RegenerateCoverLetterButton/);
+      return;
+    }
+    throw new Error("No `Download PDF` anchor found in job-detail-sheet.tsx");
+  });
+});
