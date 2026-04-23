@@ -21,24 +21,6 @@ import { STALE_THRESHOLDS } from "@/lib/job-freshness";
 import { attachFreshness } from "@/lib/attach-freshness";
 import { sendSignedWebhook, type ErrorSentinel } from "@/lib/webhooks";
 
-const N8N_WEBHOOK_BASE =
-  process.env.N8N_WEBHOOK_URL || "http://n8n.cloud.svc.cluster.local:5678";
-
-async function fireWebhook(
-  path: string,
-  body: Record<string, unknown>
-): Promise<void> {
-  try {
-    await fetch(`${N8N_WEBHOOK_BASE}/webhook/${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    // Fire-and-forget
-  }
-}
-
 /**
  * Fetch full job detail (cover letter, company research, tailored resume)
  * for the detail sheet, with server-side freshness attached to each artifact.
@@ -97,16 +79,24 @@ export async function updateJobStatus(
   }
 
   if (newStatus === "rejected") {
-    void fireWebhook("job-feedback-sync", { job_id: jobId, action: "reject" });
+    void sendSignedWebhook(
+      "job-feedback-sync",
+      { job_id: jobId, action: "reject" },
+      randomUUID(),
+    );
   }
   if (newStatus === "interested") {
     const job = await dbGetJob(jobId);
     if (job?.company) {
-      void fireWebhook("job-company-intel", {
-        job_id: jobId,
-        company_name: job.company,
-        company_url: job.company_url,
-      });
+      void sendSignedWebhook(
+        "job-company-intel",
+        {
+          job_id: jobId,
+          company_name: job.company,
+          company_url: job.company_url,
+        },
+        randomUUID(),
+      );
     }
   }
 
@@ -117,7 +107,11 @@ export async function updateJobStatus(
 export async function dismissJob(jobId: number): Promise<void> {
   await requireRole(["owner"]);
   await dbUpdateStatus(jobId, "dismissed");
-  void fireWebhook("job-feedback-sync", { job_id: jobId, action: "dismiss" });
+  void sendSignedWebhook(
+    "job-feedback-sync",
+    { job_id: jobId, action: "dismiss" },
+    randomUUID(),
+  );
   revalidatePath("/admin/jobs");
 }
 
