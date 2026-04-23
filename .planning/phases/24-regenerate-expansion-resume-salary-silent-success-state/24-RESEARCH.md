@@ -614,22 +614,16 @@ it("salary_intelligence same-day regenerate triggers silent-success (known rough
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Where do `isDone` predicates live?** (D-02 explicit discretion)
-   - What we know: 3 predicates × ~5 lines each. Project has `@/lib/score-color.ts`, `@/lib/empty-state-copy.ts`, `@/lib/format-salary.ts` precedents for pure-helper extraction next to schemas.
-   - What's unclear: Whether the planner prefers extraction for testability + reuse OR inlining for colocation.
-   - Recommendation: Extract to `src/lib/regenerate-predicates.ts` + add dedicated `src/__tests__/lib/regenerate-predicates.test.ts` with 4 cases per predicate (null detail, null baseline, baseline > current, current > baseline).
+   - **RESOLVED:** Extract to `src/lib/regenerate-predicates.ts` + dedicated `src/__tests__/lib/regenerate-predicates.test.ts`. Applied in Plan 24-01 Task 1. Matches `score-color.ts` / `empty-state-copy.ts` / `format-salary.ts` precedent.
 
 2. **Section-component mount vs inline mount in sheet** (A3 — Pitfall 4)
-   - What we know: Cover Letter mount is inline in `job-detail-sheet.tsx:240-243` because no CoverLetterSection component exists. Tailored Resume + Salary Intelligence have dedicated section components that own their meta rows.
-   - What's unclear: Whether to mount new buttons inside section components (asymmetric with Cover Letter) or inline in the sheet (requires breaking Salary/Tailored section encapsulation).
-   - Recommendation: Mount-in-section for Tailored Resume + Salary Intelligence; keep Cover Letter mount inline. G-4 tests split — one `readFileSync` on `job-detail-sheet.tsx` for Cover Letter; one on each section component for the other two.
+   - **RESOLVED:** Mount-in-section for Tailored Resume + Salary Intelligence; keep Cover Letter mount inline (historical asymmetry preserved). Applied in Plan 24-03 Task 1 (section prop threading) + Task 2 (CL rewire). G-4 tests split per section component + sheet.
 
 3. **Silent-success inline-note-to-owner for salary date-granularity edge case** (Claude's discretion in CONTEXT.md)
-   - What we know: Same-day salary regenerate will trigger silent-success because `search_date` is date-granular.
-   - What's unclear: Whether the salary regenerate button should show a supplementary note ("Note: salary updates are captured daily; same-day re-runs won't show changes") OR whether the generic silent-success copy "check n8n logs" is sufficient.
-   - Recommendation: Just the generic copy. The SC #3 string naturally covers the case — n8n logs WILL show the workflow ran. Adding a salary-specific hint bloats the shared component. Owner learns the rough edge from SUMMARY documentation + one occurrence of silent-success.
+   - **RESOLVED:** No supplementary note — generic silent-success copy (SC #3 verbatim) is sufficient. Rationale: "check n8n logs" naturally covers the case; owner learns the rough edge via SUMMARY documentation + one live occurrence. Applied in Plan 24-01 Task 2 (single render branch for all artifacts).
 
 ---
 

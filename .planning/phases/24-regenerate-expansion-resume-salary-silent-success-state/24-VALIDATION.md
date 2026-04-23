@@ -1,10 +1,11 @@
 ---
 phase: 24
 slug: regenerate-expansion-resume-salary-silent-success-state
-status: draft
-nyquist_compliant: false
+status: approved
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-04-23
+approved_at: 2026-04-23
 ---
 
 # Phase 24 — Validation Strategy
@@ -43,12 +44,11 @@ created: 2026-04-23
 | 24-01-* | 01 Generalize regenerate-button + rename test | 1 | AI-ACTION-05, AI-ACTION-06 | 4-state machine; silent-success variant; G-6 no Date.now(); G-8 verbatim warning copy | unit + component | `npm test -- --run src/__tests__/components/regenerate-button.test.tsx` | ❌ W0 (rename + extend) | ⬜ pending |
 | 24-02-* | 02 regenerateTailoredResume + regenerateSalaryIntelligence Server Actions | 1 | AI-ACTION-05, AI-ACTION-06 | requireRole first line; D-12 grep gate auto-verifies; discriminated-union return; DB-error guards (T-23-02-05) | unit | `npm test -- --run src/__tests__/lib/job-actions.regenerate.test.ts` | ❌ W0 (new test file) | ⬜ pending |
 | 24-03-* | 03 Cover Letter mount rewire + 2 new mounts | 2 | AI-ACTION-05, AI-ACTION-06 | Tailored Resume + Salary Intelligence buttons mounted in respective meta rows; visibility gated by artifact !== null; SectionErrorBoundary wrap preserved | integration | `npm test -- --run src/__tests__/components/job-detail-sheet.test.tsx` | ❌ W0 (test extension) | ⬜ pending |
-| 24-04-* | 04 Silent-success warning wiring | 2 | AI-ACTION-07 | webhook ok + poll exhaust → silent-success state; warning copy verbatim (G-8); mutually exclusive with error state | unit + component | `npm test -- --run src/__tests__/components/regenerate-button.test.tsx -t "silent-success"` | ⬜ pending (bundled into 24-01) | ⬜ pending |
-| 24-05-* | 05 Meta-doc finalization | 3 | all 3 | ROADMAP SC #2 stale `generated_at` → `search_date` correction; REQUIREMENTS traceability for 3 REQs; STATE advance; 24-SUMMARY.md | doc | `grep -c "AI-ACTION-05\|AI-ACTION-06\|AI-ACTION-07.*Complete" .planning/REQUIREMENTS.md` ≥ 3 | ❌ planner emits | ⬜ pending |
+| 24-04-* | 04 Meta-doc finalization (ROADMAP + REQUIREMENTS + STATE + 24-SUMMARY.md) | 3 | all 3 | ROADMAP SC #2 `search_date` verification (already corrected in-planning); REQUIREMENTS traceability flips for 3 REQs; AI-ACTION-07 checklist `[x]`; STATE advance | doc | `grep -c "AI-ACTION-05\|AI-ACTION-06\|AI-ACTION-07.*Complete" .planning/REQUIREMENTS.md` ≥ 3 | ❌ planner emits | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
-**Planner note:** Plan 24-04 (silent-success) may bundle into Plan 24-01 since both touch the same component; planner decides.
+**Note:** Silent-success (AI-ACTION-07) wiring is bundled into Plan 24-01 Task 2 (4-state machine + silent-success render branch) + Task 3 (G-8 test assertions). No separate plan; AI-ACTION-07 test coverage lives in `regenerate-button.test.tsx` alongside the other state-machine branches.
 
 ---
 
