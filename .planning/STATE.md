@@ -17,14 +17,18 @@ progress:
 
 ## Current Position
 
-Phase 24 (regenerate-expansion-resume-salary-silent-success-state) — CODE COMPLETE (2026-04-23) — 4/4 plans landed; prod UAT deferred to v3.5-P4. v3.0 AI Integration milestone is now fully code-complete (5/5 phases code-complete). Status: ready for v3.5 CI/CD Hardening.
+**Milestone v3.5 — CI/CD Hardening — ACTIVE (activated 2026-04-23).**
 
-Phase 23 (owner-triggered-workflows-pattern-setter) — CODE COMPLETE (2026-04-23) — 8/8 plans landed; prod UAT deferred to v3.5-P4.
+v3.0 AI Integration closed code-complete (5/5 phases). All accumulated prod UAT deferred to v3.5-P4 (Phase 28). v3.5 is the permanent fix for the "CI breaks every time" DX pattern that blocked Phase 21 production UAT on 2026-04-22.
 
-Status: Phase complete
-Last activity: 2026-04-23
+**Active scope:** 4 phases (25-28) covering `.github/workflows/build-and-push.yml` creation, Flux GHCR reconfiguration, old-pipeline decommission, and end-to-end smoke + retroactive UAT for all deferred v3.0 verifications. 13 CICD-XX requirements total.
 
-Progress: [██████████] 100%
+Phase: 25 (v3.5-P1 Pipeline Build) — Not started
+Plan: —
+Status: Defining phase context
+Last activity: 2026-04-23 — v3.5 milestone activated via `/gsd-new-milestone`
+
+Progress: [          ] 0% (Phase 25 not yet discussed)
 
 ## What's Done
 
@@ -42,11 +46,11 @@ Progress: [██████████] 100%
 
 ## What's Next
 
-**Phase 21 closed code-complete on 2026-04-22.** Plan 21-08 (production UAT) deferred to v3.5. **Owner decision 2026-04-22:** continue the v3.0 Job Dashboard feature track (Phases 22 → 23 → 24), then do v3.5 CI/CD hardening as a dedicated sprint after v3.0 closes. All v3.0 phases ship code-complete + prod-UAT-deferred; v3.5-P4 executes the accumulated retroactive UAT in one pass.
+**v3.5 activated 2026-04-23.** 4 phases (25-28) migrate the deploy pipeline and execute all deferred v3.0 prod UAT. Start Phase 25.
 
 ### Immediate next step
 
-**`/gsd-new-milestone` — v3.5 CI/CD Hardening (SEED-005).** Migrates hudsonfam deploy to GitHub Actions + GHCR per CLAUDE.md intent. 4 phases (~4 hours total). v3.5-P4 executes retroactive UAT for all deferred Phase 21/22/23/24 prod verifications in one pass after the pipeline is rebuilt. v3.0 AI Integration milestone is now fully code-complete (5/5 phases code-complete); the entire accumulated v3.0 backlog rolls out to production in a single deploy once v3.5 lands.
+**`/gsd-discuss-phase 25`** — gather context for v3.5-P1 Pipeline Build. Phase 25 goal: ship `.github/workflows/build-and-push.yml` that builds the Dockerfile and pushes to `ghcr.io/hudsor01/hudsonfam` with `YYYYMMDDHHmmss` tags on every push to main. Zero cluster changes this phase — cluster reconfiguration lands in Phase 26. Canonical refs to feed into CONTEXT: `.planning/notes/ci-cd-fragility-analysis.md`, `.planning/seeds/SEED-005-cicd-hardening-migration.md`, existing Dockerfile at repo root, CLAUDE.md §Deployment (soon to be rewritten by Phase 28).
 
 ### Sequenced milestone order (locked 2026-04-22)
 

@@ -31,9 +31,9 @@ URL: thehudsonfam.com via Cloudflare Tunnel
 
 ## Current State
 
-**Shipped:** v2.0 Code Quality Enhancement (2026-04-08)
-**Production image:** ghcr.io/hudsor01/hudsonfam:20260408173607
-**Current milestone:** v3.0 — AI Integration
+**Shipped:** v3.0 AI Integration code-complete (2026-04-23; prod UAT deferred to v3.5-P4)
+**Production image:** ghcr.io/hudsor01/hudsonfam:20260408173607 (pre-v3.0; pipeline broken)
+**Current milestone:** v3.5 — CI/CD Hardening
 
 ### Validated (all milestones)
 - v1.0: Core site, auth, CRUD, homelab dashboard, K8s deployment, memorial
@@ -42,18 +42,21 @@ URL: thehudsonfam.com via Cloudflare Tunnel
 - v1.3: Services page, infra hardening, job search dashboard, photo compression, color consolidation
 - v1.4: Jobs dashboard production deployment, 15/15 requirements verified, exhaustive browser UAT
 - v2.0: useEffect audit, component structure cleanup, server/client boundaries, hydration fixes
+- v3.0: Freshness + Zod safeParse at DB boundary (Phase 20); empty-state copy + link-out polish (Phase 21); salary_intelligence defensive render (Phase 22); HMAC-signed + idempotency-keyed owner-triggered webhooks with sentinel errors (Phase 23); generalized regenerate pattern across all 3 AI artifacts + silent-success warning (Phase 24). 23 REQs shipped; 564/564 tests green. Production UAT for all 5 phases deferred to v3.5-P4 (deploy pipeline broken; see SEED-005).
 
-## Current Milestone: v3.0 AI Integration
+## Current Milestone: v3.5 CI/CD Hardening
 
-**Goal:** Surface the existing n8n Job Search pipeline's AI output in /admin/jobs and fix the upstream data gaps that leave the UI blank.
+**Goal:** Eliminate the "CI breaks every time" DX pattern by migrating hudsonfam deploy from broken self-hosted Forgejo+Woodpecker pipeline to the CLAUDE.md-intended GitHub Actions + GHCR pattern. Unlock retroactive production UAT for the accumulated v3.0 backlog (Phases 21-24).
 
 **Target features:**
-- Render `tailored_resumes` in the job detail sheet (data exists, query exists, UI missing)
-- Make `company_research` actually populate (UI renders it; upstream workflow produces nothing)
-- Model + render `salary_intelligence` in the app, plus fix the workflow's batch-INSERT parameter-limit bug
+- GitHub Actions workflow (`.github/workflows/build-and-push.yml`) that builds Dockerfile and pushes to GHCR with `YYYYMMDDHHmmss` tags on push-to-main
+- Flux reconfiguration so `imagerepository/hudsonfam` watches `ghcr.io/hudsor01/hudsonfam` (via a GHCR PAT provisioned through the ExternalSecret pattern)
+- Decommission the broken `default/imagerepository/hudsonfam`, orphaned Woodpecker repo registration, and stale `git.homelab` registry entries
+- End-to-end smoke test (no-op commit → GitHub Actions build → GHCR push → Flux reconcile → K3s rollout) + CLAUDE.md docs update reflecting the live pipeline
+- Retroactive execution of all deferred v3.0 production UAT (Plan 21-08 + Phases 22/23/24 prod smoke tests) in a single v3.5-P4 pass
 
-**Out of scope (explicit):** `interview_prep`, `recruiter_outreach` — owner direction.
-**Deferred (SEED-001):** aggregate pipeline-health dashboard — revisit after detail-sheet gaps close.
+**Out of scope (explicit):** Migration of homelab-manifests-repo deploy path (homelab is a separate concern); new feature work (v3.5 is infra-only); retention of any Forgejo+Woodpecker hudsonfam-specific configuration (full decommission, not coexistence).
+**Canonical refs:** `.planning/notes/ci-cd-fragility-analysis.md`, `.planning/seeds/SEED-005-cicd-hardening-migration.md`, CLAUDE.md §Deployment.
 
 ## Key Decisions
 - TanStack Form (NOT react-hook-form) for all forms

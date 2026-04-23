@@ -1,126 +1,143 @@
-# Requirements: v3.0 — AI Integration
+# Requirements: v3.5 — CI/CD Hardening
 
-**Defined:** 2026-04-21
-**Reference:** `.planning/research/SUMMARY.md`, `.planning/notes/ai-pipeline-integration-context.md`
-**Core Value:** Close the rendering gap between the n8n Job Search pipeline's LLM output and the /admin/jobs dashboard so the owner can actually use what the pipeline produces.
+**Defined:** 2026-04-23
+**Reference:** `.planning/notes/ci-cd-fragility-analysis.md`, `.planning/seeds/SEED-005-cicd-hardening-migration.md`, CLAUDE.md §Deployment
+**Core Value:** Eliminate the "CI breaks every time" DX pattern. Migrate hudsonfam deploy from broken self-hosted Forgejo+Woodpecker to GitHub Actions + GHCR. Unlock retroactive production UAT for the deferred v3.0 backlog.
 
-## v1 Requirements
+## v3.5 Requirements (active)
 
-Requirements for v3.0 MVP. Each maps to a roadmap phase and can be verified observationally.
+Each requirement maps to a roadmap phase and is observationally verifiable after v3.5 ships.
 
-### AI Artifact Rendering
+### Pipeline Build (v3.5-P1)
 
-- [x] **AI-RENDER-01**: Owner sees tailored resume content rendered as formatted markdown in the job detail sheet
-- [x] **AI-RENDER-02**: Owner sees `generated_at` timestamp and `model_used` label on every AI artifact section (cover letter, company research, tailored resume, salary intelligence)
-- [x] **AI-RENDER-03**: Owner sees salary intelligence — LLM analysis prose + structured headline figures — in the job detail sheet
-- [x] **AI-RENDER-04**: Owner sees distinct empty-state messaging distinguishing "never generated" from "generated but currently empty" for each AI artifact section
-- [x] **AI-RENDER-05**: Owner sees a quality-score badge on cover letters when `cover_letters.quality_score` is populated
-- [x] **AI-RENDER-06**: Owner sees a company-website link-out (with external-link icon) from the company research section
-- [x] **AI-RENDER-07**: Owner sees provenance tags ("scraped", "LLM estimate", "company research") on every salary figure displayed; no single "$X" appears without a source label
+- [ ] **CICD-01**: `.github/workflows/build-and-push.yml` exists and runs on push-to-main; builds the Dockerfile to a multi-arch (linux/amd64) image
+- [ ] **CICD-02**: Built image is pushed to `ghcr.io/hudsor01/hudsonfam` tagged `YYYYMMDDHHmmss` (UTC timestamp, matches existing Flux imagepolicy pattern) AND `latest`
+- [ ] **CICD-03**: GitHub Actions workflow completes in under 10 minutes for a clean build (cached Docker layers); logs are readable in the Actions UI
 
-### Owner-Triggered Actions
+### Flux Reconfiguration (v3.5-P2)
 
-- [x] **AI-ACTION-01**: Owner can copy tailored resume content to the clipboard via a button that confirms success via toast
-- [x] **AI-ACTION-02**: Owner can download the tailored resume as a PDF file via a button
-- [x] **AI-ACTION-03**: Owner can trigger "Research this company" for a job whose `company_research` is empty; the UI reflects in-progress state and updates when the row appears
-- [x] **AI-ACTION-04**: Owner can regenerate the cover letter for a specific job; the UI shows a pessimistic spinner, poll-refreshes on completion, and displays the new `generated_at` timestamp
-- [x] **AI-ACTION-05**: Owner can regenerate the tailored resume for a specific job with the same pattern as AI-ACTION-04
+- [ ] **CICD-04**: `imagerepository/hudsonfam` (in the correct Flux namespace, not `default`) watches `ghcr.io/hudsor01/hudsonfam` and reconciles successfully
+- [ ] **CICD-05**: GHCR pull secret is provisioned via the ExternalSecret + ClusterSecretStore pattern (same pattern as other homelab services); no PAT committed to git
+- [ ] **CICD-06**: `imagepolicy/hudsonfam` filters the `YYYYMMDDHHmmss` tag stream and picks the newest timestamp; `imageupdateautomation` updates the Deployment manifest in `homelab` manifests repo on new images
 
-- [x] **AI-ACTION-06**: Owner can regenerate salary intelligence for a specific job with the same pattern as AI-ACTION-04
+### Decommission Old Pipeline (v3.5-P3)
 
-- [x] **AI-ACTION-07**: Owner sees a "workflow returned success but no data changed" warning state when a regenerate completes without updating the artifact's timestamp
+- [ ] **CICD-07**: Broken `default/imagerepository/hudsonfam` is deleted (the one that references the missing `forgejo-registry-creds` secret); `kubectl get imagerepository -A | grep hudsonfam` shows only the new entry
+- [ ] **CICD-08**: `.woodpecker.yaml` at the repo root is deleted; Woodpecker repo deregistration for `forgejo-admin/hudsonfam` confirmed via Woodpecker UI/API
+- [ ] **CICD-09**: Orphaned `git.homelab/forgejo-admin/hudsonfam` container registry entries are cleaned up OR documented as intentionally kept (with reason) — no dangling refs remain in Flux or Forgejo
 
-### Safety & Hardening
+### End-to-End Smoke + Retroactive UAT (v3.5-P4)
 
-- [x] **AI-SAFETY-01**: Markdown rendered from LLM output cannot execute JavaScript — a `<script>alert(1)</script>` payload in any artifact content renders as literal text
-- [x] **AI-SAFETY-02**: Every n8n webhook call from the app is signed with HMAC-SHA256 using a shared secret (`N8N_WEBHOOK_SECRET`); n8n rejects unsigned calls
-- [x] **AI-SAFETY-03**: Every n8n webhook call includes an `X-Idempotency-Key` header; replaying the same call does not re-run the underlying workflow twice
-- [x] **AI-SAFETY-04**: Server Action errors returned to the client are drawn from a sentinel set ("timeout", "auth", "rate limit", "unavailable") — raw `e.message` or stack traces are never returned
-- [x] **AI-SAFETY-05**: `/admin/*` routes serve a Content-Security-Policy header that blocks inline scripts, object embeds, and framing
-- [x] **AI-SAFETY-06**: Every row read from an LLM artifact table (cover_letters, company_research, tailored_resumes, salary_intelligence) is validated via Zod `safeParse` at the `jobs-db.ts` boundary; malformed rows fail-open with a logged warning and an error-boundary-rendered section, never crash the page
+- [ ] **CICD-10**: A no-op commit to `main` triggers the full pipeline end-to-end (GitHub Actions build → GHCR push → Flux detects new tag → Flux updates manifest → K3s rolls the deployment → `https://thehudsonfam.com` serves the new image); entire cycle completes in under 15 minutes
+- [ ] **CICD-11**: CLAUDE.md §Deployment section is rewritten to reflect the live pipeline (GitHub Actions + GHCR + Flux) — documented commands + ExternalSecret reference + troubleshooting notes; matches reality
+- [ ] **CICD-12**: Plan 21-08 retroactive UAT executes successfully against the deployed Phase 21 code (empty-state copy, link-out external-link icon, quality badge render-paths); all 5 Phase 21 features confirmed live
+- [ ] **CICD-13**: Retroactive UAT smoke-tests each deferred v3.0 phase's prod verification: Phase 22 salary intelligence defensive render (renders null branch cleanly; schema-drift guard holds); Phase 23 owner-triggered workflows (HMAC sign → n8n accepts signed calls; sentinel errors on failure); Phase 24 regenerate expansion (all 3 regenerate buttons produce polling state transitions end-to-end)
 
-### Data Layer
+## Future Requirements
 
-- [x] **AI-DATA-01**: `getJobDetail()` returns salary intelligence joined to the job via a defensive `LEFT JOIN LATERAL` that tolerates both `job_id` and `company_name` keying in the `salary_intelligence` table
-- [x] **AI-DATA-02**: `src/lib/jobs-db.ts` exports a `SalaryIntelligence` TypeScript type + matching Zod schema derived from the actual `salary_intelligence` schema once task #11 has produced at least one row
-- [x] **AI-DATA-03**: A pure `isStale(timestamp, thresholdDays)` util exists in `src/lib/job-freshness.ts` with Vitest coverage and is used to drive every freshness badge
-- [x] **AI-DATA-04**: A Vitest integration test verifies each column referenced in `jobs-db.ts` exists in the live `n8n` database via `information_schema.columns`; the test fails with a clear message if any column is missing
+Deferred past v3.5 (not planned for current milestone).
 
-## v2 Requirements
-
-Deferred to v3.1 (gated on owner feedback after v3.0 ships and is used for ~2 weeks).
-
-### Inline Editing
-
-- **EDIT-01**: Owner can inline-edit the tailored resume content; edits persist to a new `edited_at` column without overwriting the LLM-generated `original_content`
-- **EDIT-02**: Owner can inline-edit the cover letter content with the same pattern as EDIT-01
-- **EDIT-03**: Owner can revert an edited artifact back to its `original_content`
-
-### Cross-Cutting Visibility
-
-- **DASH-01** (SEED-001): Owner sees an aggregate pipeline-health view (scored-last-7d, cover-letters-generated, per-workflow error rate) on a `/admin/jobs/pipeline` sub-tab or equivalent surface
+- **CICD-FUTURE-01**: Preview environments for PRs (GitHub Actions builds PR images; Flux namespace-per-PR) — complexity exceeds owner-visible benefit for solo-user app
+- **CICD-FUTURE-02**: Automated rollback on health-check failure (Flux HelmRelease rollback policies) — Phase 21 precedent (`disableWait: true`) handles the current-state HPA/DS rollout hang; reconsider if rollback becomes a recurring need
+- **CICD-FUTURE-03**: Per-commit-SHA image tags alongside timestamp tags — useful for bisecting but overkill for single-developer app
 
 ## Out of Scope
 
-Explicitly excluded — do not add to v3.0 scope.
+Explicitly excluded — do not add to v3.5 scope.
 
 | Feature | Reason |
 |---------|--------|
-| Interview prep rendering | Owner does not care (explicit scope decision, 2026-04-21) |
-| Recruiter outreach rendering | Owner does not care (explicit scope decision, 2026-04-21) |
-| Streaming token output during regenerate | Solo user, infrequent action, 30s spinner is acceptable |
-| Inline PDF preview in detail sheet | Attack surface (data:/blob: URIs, iframe CSP) exceeds owner-visible benefit — download-only is preferred (Pitfall 2) |
-| Collaboration, comments, sharing, mentions | Solo-user application; no collaboration surface exists |
-| Audit log of artifact edits | Git-like versioning is over-engineered for v3.0 — `edited_at`/`original_content` (v3.1) is sufficient history |
-| In-app chat with LLM | Duplicates Claude.ai / ChatGPT; no product value add |
-| Bulk regenerate across many jobs | Pipeline-cost explosion risk + no owner-requested use case |
-| Configurable LLM prompts from UI | Pipeline-config concern; belongs in n8n workflow editing, not the admin dashboard |
-| Email-from-admin for cover letters | Already works better in the owner's existing email client |
-| Auto-scheduled `company_research` across all 467 jobs | Token waste; owner-triggered only per context note |
+| Migration of homelab-manifests-repo deploy path | Separate concern; homelab manifests repo is Forgejo-hosted by design for self-hosting |
+| Retention of any Forgejo+Woodpecker hudsonfam-specific config | Full decommission, not coexistence; owner decision 2026-04-22 |
+| New feature work in hudsonfam | v3.5 is infra-only; all feature backlog lives in v3.0 (code-complete, deferred UAT) or v3.1 (planned post-shipping) |
+| Multi-arch builds (arm64) | Cluster is all-amd64; adding arm would slow builds with no runtime benefit |
+| GitHub Actions matrix for node/next.js versions | Single target version per commit; matrix adds CI minutes without catching real bugs |
+| Automated dependency updates (Renovate, Dependabot) | Future concern; requires CI pipeline stability first (Catch-22 — v3.5 IS that stability) |
+| Separate staging environment | Owner reviews main directly; staging adds complexity without separation-of-concerns benefit at this scale |
+| External monitoring / alerting for CI failures | GitHub's default email notifications + Flux's reconciliation state are sufficient for solo-user app |
 
-## Traceability
+## Traceability (v3.5)
 
-Mapped to roadmap phases 2026-04-21 by `gsd-roadmapper`.
+Mapped to roadmap phases 2026-04-23 by owner-authored plan.
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| AI-RENDER-01 | Phase 20 (20-01, 20-05, 20-06) | Complete (2026-04-21) |
-| AI-RENDER-02 | Phase 20 (20-04, 20-06) | Complete (2026-04-21) |
-| AI-RENDER-03 | Phase 22 (22-06 component; 22-07 mount + SectionErrorBoundary wrap) | Code complete (2026-04-22) — prod UAT deferred to v3.5; SalaryIntelligenceSection mounted in job-detail-sheet.tsx between Tailored Resume and Company Intel, wrapped in SectionErrorBoundary section="salary_intelligence"; dead-UI today (0 salary_intelligence rows pending n8n task #11) but all 3 render branches fully test-covered |
-| AI-RENDER-04 | Phase 21 / Plan 21-06 | Code complete (2026-04-22) — prod UAT deferred to v3.5 (see 21-08-SUMMARY.md) |
-| AI-RENDER-05 | Phase 21 (21-05) | Code complete (2026-04-22) — prod UAT deferred to v3.5; runtime dead-UI today (0/12 cover_letters have quality_score) |
-| AI-RENDER-06 | Phase 21 / Plan 21-07 | Code complete (2026-04-22) — prod UAT deferred to v3.5; runtime dead-UI today (0/636 jobs have company_url) |
-| AI-RENDER-07 | Phase 22 / Plan 22-05 (primitive); Plan 22-07 (call-site adjacency) | Code complete (2026-04-22) — prod UAT deferred to v3.5; `<ProvenanceTag>` + pure `provenanceColor`/`provenanceLabel` helpers shipped (Plan 22-05); 2 retrofit call sites landed in Plan 22-07 (header `source="scraped"`, Company Intel `source="company_research"`; SalaryIntelligenceSection's headline `source="llm"` already wired by Plan 22-06); grep-gate G-1 adjacency to `$X` figures test-enforced via source-text assertion in job-detail-sheet.test.tsx |
-| AI-ACTION-01 | Phase 21 (21-04) | Code complete (2026-04-22) — prod UAT deferred to v3.5 (see 21-08-SUMMARY.md) |
-| AI-ACTION-02 | Phase 21 (21-01 pipeline, 21-02 schema, 21-03 server, 21-04 UI) | Code complete (2026-04-22) — prod UAT deferred to v3.5; n8n `TailoredResume01` workflow live + 8/8 rows have real pdf_data |
-| AI-ACTION-03 | Phase 23 (23-04 CI grep gate + 23-02 triggerCompanyResearch Server Action — requireRole first-line + randomUUID idempotency + sendSignedWebhook("job-company-intel") + discriminated-union return; 23-05 TriggerCompanyResearchButton client component — idle/in-progress/error state machine + setInterval polling + 60-poll cap + unmount cleanup + G-1/G-2/G-3/G-5 grep gates; 23-07 mounted inside Company Intel missing-branch SectionErrorBoundary with G-4 source-text guard) | Code complete (2026-04-23) — Server Action + client button + sheet mount all end-to-end: 9/9 server contract tests (Plan 23-02) + 14/14 client fake-timer tests (Plan 23-05) + 4/4 G-4 mount-site guard tests (Plan 23-07); first fake-timer polling scaffold in project; prod UAT deferred to v3.5 |
-| AI-ACTION-04 | Phase 23 (23-04 CI grep gate + 23-02 regenerateCoverLetter Server Action + 23-06 RegenerateCoverLetterButton client component — UPDATE-wait polling with server-returned baseline ISO string, `new Date().getTime()` compare inside predicate body, zero wall-clock reads (G-6 grep = 0), 60-poll cap (D-05), 17/17 fake-timer tests green; 23-07 mounted as rightmost sibling in Cover Letter populated-branch flex-wrap meta row inside SectionErrorBoundary with G-4 source-text guard + Download-PDF-adjacency scan) | Code complete (2026-04-23) — Server Action + client component + sheet mount all landed with full test coverage; D-06 amended baseline template end-to-end across all three layers; Phase 24 regenerate buttons can clone this pattern verbatim; prod UAT deferred to v3.5 |
-| AI-ACTION-05 | Phase 24 / Plans 24-01 (generalized RegenerateButton + tailoredResumeIsDone predicate), 24-02 (regenerateTailoredResume Server Action), 24-03 (mount in TailoredResumeSection + sheet prop threading) | Code complete (2026-04-23) — prod UAT deferred to v3.5-P4 |
-| AI-ACTION-06 | Phase 24 / Plans 24-01 (salaryIntelligenceIsDone predicate — date-granular YYYY-MM-DD comparison), 24-02 (regenerateSalaryIntelligence Server Action), 24-03 (mount in SalaryIntelligenceSection + jobId/baselineSearchDate prop threading) | Code complete (2026-04-23) — prod UAT deferred to v3.5-P4; same-day regenerate triggers silent-success (known rough edge, D-04) |
-| AI-ACTION-07 | Phase 24 / Plan 24-01 (4th state variant { kind: 'silent-success' } in RegenerateButton; 60-poll cap-exit forks on ok=true → silent-success instead of error; G-8 grep gate locks verbatim SC #3 copy in source + DOM assertion) | Code complete (2026-04-23) — prod UAT deferred to v3.5-P4 |
-| AI-SAFETY-01 | Phase 20 (20-05) | Complete (2026-04-21) |
-| AI-SAFETY-02 | Phase 23 (23-01 sendSignedWebhook primitive — HMAC helper contract) | Code complete (2026-04-22) — prod UAT deferred to v3.5; callers in 23-02/03/05/06 consume the primitive |
-| AI-SAFETY-03 | Phase 23 (23-01 sendSignedWebhook primitive — X-Idempotency-Key helper contract) | Code complete (2026-04-22) — prod UAT deferred to v3.5; callers in 23-02/03/05/06 pass crypto.randomUUID() per click |
-| AI-SAFETY-04 | Phase 23 (23-01 sendSignedWebhook primitive — ErrorSentinel bounded union + D-08 no-raw-leak) | Code complete (2026-04-22) — prod UAT deferred to v3.5; callers render on sentinel match |
-| AI-SAFETY-05 | Phase 20 (20-07) | Complete (2026-04-21) |
-| AI-SAFETY-06 | Phase 20 (20-03) | Complete (2026-04-21) |
-| AI-DATA-01 | Phase 22 (22-02 LEFT JOIN LATERAL + WHERE FALSE skeleton) | Code complete (2026-04-22) — prod UAT deferred to v3.5; WHERE FALSE skeleton pending n8n task #11 upstream fix for real rows |
-| AI-DATA-02 | Phase 22 (22-01 schema + CompanyResearch cascade; 22-02 SalaryIntelligence TS interface + JobDetail/FreshJobDetail extensions + parseOrLog wiring; 22-03 `?? "USD"` default removal server-side D-12 cascade) | Code complete (2026-04-22) — prod UAT deferred to v3.5 |
-| AI-DATA-03 | Phase 20 (20-02) | Complete (2026-04-21) |
-| AI-DATA-04 | Phase 20 (20-08) | Complete (2026-04-21) |
+| CICD-01 | Phase 25 (v3.5-P1) | Pending |
+| CICD-02 | Phase 25 (v3.5-P1) | Pending |
+| CICD-03 | Phase 25 (v3.5-P1) | Pending |
+| CICD-04 | Phase 26 (v3.5-P2) | Pending |
+| CICD-05 | Phase 26 (v3.5-P2) | Pending |
+| CICD-06 | Phase 26 (v3.5-P2) | Pending |
+| CICD-07 | Phase 27 (v3.5-P3) | Pending |
+| CICD-08 | Phase 27 (v3.5-P3) | Pending |
+| CICD-09 | Phase 27 (v3.5-P3) | Pending |
+| CICD-10 | Phase 28 (v3.5-P4) | Pending |
+| CICD-11 | Phase 28 (v3.5-P4) | Pending |
+| CICD-12 | Phase 28 (v3.5-P4) | Pending |
+| CICD-13 | Phase 28 (v3.5-P4) | Pending |
 
 **Coverage:**
-- v1 requirements: 24 total
-- Mapped to phases: 24 ✅
+- v3.5 requirements: 13 total
+- Mapped to phases: 13 ✅
 - Unmapped: 0
 
 **Per-phase counts:**
-- Phase 20 (Foundation): 7 REQs — AI-RENDER-01, AI-RENDER-02, AI-SAFETY-01, AI-SAFETY-05, AI-SAFETY-06, AI-DATA-03, AI-DATA-04
-- Phase 21 (Polish): 5 REQs — AI-ACTION-01, AI-ACTION-02, AI-RENDER-04, AI-RENDER-05, AI-RENDER-06
-- Phase 22 (Salary Intel defensive): 4 REQs — AI-RENDER-03, AI-RENDER-07, AI-DATA-01, AI-DATA-02
-- Phase 23 (Owner-triggered pattern-setter): 5 REQs — AI-ACTION-03, AI-ACTION-04, AI-SAFETY-02, AI-SAFETY-03, AI-SAFETY-04
-- Phase 24 (Regenerate expansion): 3 REQs — AI-ACTION-05, AI-ACTION-06, AI-ACTION-07
+- Phase 25 (v3.5-P1 Pipeline Build): 3 REQs — CICD-01, CICD-02, CICD-03
+- Phase 26 (v3.5-P2 Flux Reconfig): 3 REQs — CICD-04, CICD-05, CICD-06
+- Phase 27 (v3.5-P3 Decommission): 3 REQs — CICD-07, CICD-08, CICD-09
+- Phase 28 (v3.5-P4 Smoke + Retroactive UAT): 4 REQs — CICD-10, CICD-11, CICD-12, CICD-13
 
 ---
-*Requirements defined: 2026-04-21*
-*Last updated: 2026-04-23 — Phase 24 (Regenerate Expansion — Resume + Salary + Silent-Success State) closed code-complete. 3 REQs flipped from Pending → Code complete: AI-ACTION-05 (regenerateTailoredResume Server Action + RegenerateButton mount in TailoredResumeSection, end-to-end 24-01 + 24-02 + 24-03), AI-ACTION-06 (regenerateSalaryIntelligence Server Action + RegenerateButton mount in SalaryIntelligenceSection with date-granular YYYY-MM-DD predicate, end-to-end 24-01 + 24-02 + 24-03; same-day regenerate triggers silent-success as known rough edge D-04), AI-ACTION-07 (4th state variant `{ kind: 'silent-success' }` in generalized RegenerateButton + G-8 verbatim-copy grep gate + 60-poll cap-exit fork on ok=true → silent-success instead of error, all in Plan 24-01). AI-ACTION-05/06 checklist entries were prematurely marked [x] prior to this phase but are now legitimately earned end-to-end. All 3 Phase 24 REQs mounted LIVE across sheet → section → button chain; 564+ tests green (up from 509 baseline at Phase 23 close); build exits 0. Prod UAT deferred to v3.5-P4 (n8n webhook endpoints `regenerate-tailored-resume` + `regenerate-salary-intelligence` are homelab-repo PR concerns per Phase 22/23 pattern). v3.0 AI Integration milestone now fully code-complete (5/5 phases); ready for v3.5 CI/CD Hardening to rebuild the deploy pipeline and execute retroactive UAT for all deferred Phase 21/22/23/24 prod verifications in one pass. Phase 23 footer preserved in git history.*
+
+## Validated (v3.0 — AI Integration, shipped code-complete 2026-04-23)
+
+### v3.0 Requirements — all complete (prod UAT deferred to v3.5-P4 via CICD-12 + CICD-13)
+
+**AI Artifact Rendering:**
+- [x] **AI-RENDER-01**: Tailored resume content rendered as formatted markdown — Phase 20 (20-01, 20-05, 20-06)
+- [x] **AI-RENDER-02**: `generated_at` + `model_used` on every AI artifact section — Phase 20 (20-04, 20-06)
+- [x] **AI-RENDER-03**: Salary intelligence section (prose + structured headline figures) — Phase 22 (22-06, 22-07)
+- [x] **AI-RENDER-04**: Distinct empty-state messaging for each AI artifact section — Phase 21 (21-06)
+- [x] **AI-RENDER-05**: Quality-score badge on cover letters — Phase 21 (21-05)
+- [x] **AI-RENDER-06**: Company-website link-out with external-link icon — Phase 21 (21-07)
+- [x] **AI-RENDER-07**: Provenance tags on every salary figure — Phase 22 (22-05 primitive, 22-07 call-site adjacency)
+
+**Owner-Triggered Actions:**
+- [x] **AI-ACTION-01**: Copy tailored resume to clipboard — Phase 21 (21-04)
+- [x] **AI-ACTION-02**: Download tailored resume as PDF — Phase 21 (21-01..21-04 pipeline + schema + server + UI)
+- [x] **AI-ACTION-03**: Trigger "Research this company" — Phase 23 (23-02 Server Action + 23-05 button + 23-07 mount)
+- [x] **AI-ACTION-04**: Regenerate cover letter — Phase 23 (23-02 Server Action + 23-06 button + 23-07 mount)
+- [x] **AI-ACTION-05**: Regenerate tailored resume — Phase 24 (24-01 generalized button + 24-02 Server Action + 24-03 mount)
+- [x] **AI-ACTION-06**: Regenerate salary intelligence — Phase 24 (24-01 date-granular predicate + 24-02 Server Action + 24-03 mount; same-day regenerate triggers silent-success by D-04 design)
+- [x] **AI-ACTION-07**: Silent-success warning state — Phase 24 (24-01 4th state variant + G-8 verbatim-copy grep gate)
+
+**Safety & Hardening:**
+- [x] **AI-SAFETY-01**: Markdown XSS prevented (no script execution) — Phase 20 (20-05)
+- [x] **AI-SAFETY-02**: HMAC-SHA256 webhook signing — Phase 23 (23-01 `sendSignedWebhook` primitive)
+- [x] **AI-SAFETY-03**: `X-Idempotency-Key` header on every call — Phase 23 (23-01 primitive + callers)
+- [x] **AI-SAFETY-04**: 4-sentinel bounded error union, no raw `e.message` — Phase 23 (23-01 `ErrorSentinel` + D-08 no-raw-leak)
+- [x] **AI-SAFETY-05**: CSP header blocks inline scripts / object embeds / framing — Phase 20 (20-07)
+- [x] **AI-SAFETY-06**: Zod `safeParse` on every LLM artifact row read — Phase 20 (20-03)
+
+**Data Layer:**
+- [x] **AI-DATA-01**: `getJobDetail()` LEFT JOIN LATERAL on salary_intelligence — Phase 22 (22-02; `WHERE FALSE` skeleton pending n8n task #11)
+- [x] **AI-DATA-02**: `SalaryIntelligence` TS type + Zod schema + nullable currency cascade — Phase 22 (22-01, 22-02, 22-03)
+- [x] **AI-DATA-03**: `isStale(timestamp, thresholdDays)` pure util in `job-freshness.ts` — Phase 20 (20-02)
+- [x] **AI-DATA-04**: Schema-drift guard — Vitest asserts every referenced column exists in live `n8n` DB — Phase 20 (20-08)
+
+**Total v3.0:** 24 requirements, all code-complete. Prod UAT deferred to v3.5-P4 (CICD-12 + CICD-13 executes retroactive smoke tests).
+
+### v3.1 (deferred past v3.5 — inline editing)
+
+- **EDIT-01**: Inline-edit tailored resume content with `edited_at` + `original_content` preservation
+- **EDIT-02**: Inline-edit cover letter with same pattern as EDIT-01
+- **EDIT-03**: Revert edited artifact back to `original_content`
+
+### v3.1 (deferred past v3.5 — cross-cutting visibility)
+
+- **DASH-01** (SEED-001): Aggregate pipeline-health view on `/admin/jobs/pipeline`
+
+---
+
+*Requirements defined: 2026-04-21 (v3.0), extended: 2026-04-23 (v3.5)*
+*Last updated: 2026-04-23 — v3.5 milestone activated. 13 new CICD-XX requirements mapped to Phases 25-28. v3.0 section preserved as Validated history with full per-phase traceability. Active scope: migrate deploy pipeline from broken Forgejo+Woodpecker to GitHub Actions + GHCR; execute retroactive UAT for all deferred v3.0 prod verifications in v3.5-P4.*

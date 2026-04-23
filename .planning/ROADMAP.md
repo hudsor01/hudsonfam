@@ -244,26 +244,67 @@ Plans:
 | 22. Salary Intelligence (Defensive Render) | 8/8 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
 | 23. Owner-Triggered Workflows (Pattern Setter) | 8/8 | Code complete (prod UAT deferred to v3.5-P4 — n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern) | 2026-04-23 |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 4/4 | Code complete (prod UAT deferred to v3.5-P4) | 2026-04-23 |
+| 25. Pipeline Build (v3.5-P1) | 0/0 | Not started | — |
+| 26. Flux Reconfiguration (v3.5-P2) | 0/0 | Not started | — |
+| 27. Decommission Old Pipeline (v3.5-P3) | 0/0 | Not started | — |
+| 28. Smoke + Retroactive UAT (v3.5-P4) | 0/0 | Not started | — |
 
 ### Deferred production UAT
 
 - **Plan 21-08** — end-to-end UAT on `https://thehudsonfam.com/admin/jobs` is gated on v3.5 rebuilding the deploy pipeline (Forgejo+Woodpecker is broken; `forgejo-admin/hudsonfam` repo no longer exists on Forgejo). After v3.5 lands, execute 21-08 retroactively against the freshly-deployed code. See `.planning/phases/21-polish-copy-pdf-empty-states-link-out/21-08-SUMMARY.md` for the retroactive execution path.
 
-## v3.5 — CI/CD Hardening (planned)
+## v3.5 — CI/CD Hardening
 
-**Goal:** Eliminate the "CI breaks every time" DX pattern by migrating hudsonfam deploy from self-hosted Forgejo+Woodpecker to the CLAUDE.md-intended GitHub Actions + GHCR pattern. Preserve Flux-driven K3s rollout; keep Forgejo for homelab-manifests-repo concerns only.
+**Status:** Active (milestone activated 2026-04-23 after v3.0 code-complete)
+**Goal:** Eliminate the "CI breaks every time" DX pattern by migrating hudsonfam deploy from broken self-hosted Forgejo+Woodpecker pipeline to the CLAUDE.md-intended GitHub Actions + GHCR pattern. Unlock retroactive production UAT for the accumulated v3.0 backlog.
 
-**Context:** During Phase 21 production UAT (2026-04-22), investigation found 6 moving parts in the deploy path (5 self-hosted), with `forgejo-admin/hudsonfam` Forgejo repo missing + `default/imagerepository/hudsonfam` Flux resource in persistent failed state. CLAUDE.md described a GitHub Actions + GHCR pipeline that was never actually implemented. Full analysis: `.planning/notes/ci-cd-fragility-analysis.md`. Seed: `SEED-005-cicd-hardening-migration.md`.
+**Context:** During Phase 21 production UAT (2026-04-22), investigation found 6 moving parts in the deploy path (5 self-hosted), with `forgejo-admin/hudsonfam` Forgejo repo missing + `default/imagerepository/hudsonfam` Flux resource in persistent failed state. CLAUDE.md documented a GitHub Actions + GHCR pipeline that was never actually implemented. Full analysis: `.planning/notes/ci-cd-fragility-analysis.md`. Seed: `.planning/seeds/SEED-005-cicd-hardening-migration.md`.
 
-**Proposed phases** (4 phases, ~4 hours total):
+#### Phase 25: Pipeline Build (v3.5-P1)
+**Goal:** Ship `.github/workflows/build-and-push.yml` that builds the hudsonfam Dockerfile and pushes to `ghcr.io/hudsor01/hudsonfam` with `YYYYMMDDHHmmss` UTC timestamp tags on every push to `main`. Zero infra changes to the running cluster; this phase just produces images in GHCR.
+**Depends on:** None (cold start — no prior v3.5 infra)
+**Requirements:** CICD-01, CICD-02, CICD-03
+**Success Criteria** (what must be TRUE):
+  1. Pushing any commit to `main` triggers `.github/workflows/build-and-push.yml` which completes successfully (green check in Actions UI) in under 10 minutes on a warm-cache build
+  2. Image appears at `ghcr.io/hudsor01/hudsonfam` with two tags on every build: `<UTC timestamp YYYYMMDDHHmmss>` AND `latest`
+  3. Image is `linux/amd64` (single-arch matches the K3s cluster); size ≤ 600MB (comparable to Phase 20 baseline production image)
+  4. Workflow uses `actions/checkout` + `docker/setup-buildx-action` + `docker/login-action` (GHCR via `GITHUB_TOKEN`) + `docker/build-push-action` with layer caching via `type=gha`; no hand-rolled shell scripts
+  5. A manual `workflow_dispatch` trigger is wired for ad-hoc rebuilds (useful for cache invalidation without a code commit)
+**Plans:** TBD
 
-| Phase | Proposed goal |
-|---|---|
-| v3.5-P1 | `.github/workflows/build-and-push.yml` — build + push to ghcr.io/hudsor01/hudsonfam with YYYYMMDDHHmmss tags |
-| v3.5-P2 | Flux reconfiguration — imagerepository + imagepolicy watch GHCR; GHCR pull secret via ExternalSecret |
-| v3.5-P3 | Decommission old pipeline — Woodpecker repo registration + broken default/imagerepository + orphaned git.homelab registry entries |
-| v3.5-P4 | End-to-end smoke test + CLAUDE.md docs + retroactive Plan 21-08 UAT against newly-deployed Phase 21 code |
+#### Phase 26: Flux Reconfiguration (v3.5-P2)
+**Goal:** Reconfigure Flux to watch `ghcr.io/hudsor01/hudsonfam` instead of the broken `git.homelab/forgejo-admin/hudsonfam`. Provision GHCR pull secret via the ExternalSecret pattern (matches other homelab services — no PAT in git). Validate imagepolicy picks up the timestamp tag stream.
+**Depends on:** Phase 25 (GHCR must have images to watch)
+**Requirements:** CICD-04, CICD-05, CICD-06
+**Success Criteria** (what must be TRUE):
+  1. `kubectl get imagerepository hudsonfam -n <flux-ns>` shows `Ready: True` and latest tag matches the most recent GitHub Actions build timestamp (verified within 5 min of build)
+  2. `kubectl get imagepolicy hudsonfam -n <flux-ns>` shows `LATEST IMAGE` = the newest `YYYYMMDDHHmmss` tag; selector is timestamp-based (`^\d{14}$`), not SHA or semver
+  3. GHCR pull secret is provisioned via an ExternalSecret manifest (committed to homelab-manifests-repo) that syncs from a ClusterSecretStore-backed vault — PAT never appears in git
+  4. `kubectl describe deployment hudsonfam -n homepage` shows the new image pull secret reference and pod events confirm successful image pull from `ghcr.io/hudsor01/hudsonfam`
+  5. ImageUpdateAutomation commits manifest updates to homelab-manifests-repo with author "flux-image-automation" on each new tag (signing pattern matches existing Flux IUA configs)
+**Plans:** TBD
 
-**Trigger:** v3.0 Phase 22+23+24 can execute without v3.5 landing first (their code will also queue up behind the same deploy block). Optimal sequencing: complete v3.0 AI work through Phase 24, then v3.5 unblocks production rollout of the accumulated v3.0 backlog in a single deploy. Alternative: insert v3.5 between any two v3.0 phases if deployment becomes urgent.
+#### Phase 27: Decommission Old Pipeline (v3.5-P3)
+**Goal:** Remove all broken/orphaned remnants of the Forgejo+Woodpecker pipeline for hudsonfam. Woodpecker + Forgejo themselves remain for other homelab services. This phase is pure cleanup — zero code changes to hudsonfam source.
+**Depends on:** Phase 26 (new pipeline must be proven working before old is removed)
+**Requirements:** CICD-07, CICD-08, CICD-09
+**Success Criteria** (what must be TRUE):
+  1. `kubectl get imagerepository -A | grep hudsonfam` returns exactly one entry (the Phase 26 GHCR watcher); the broken `default/imagerepository/hudsonfam` referencing `forgejo-registry-creds` is deleted
+  2. `.woodpecker.yaml` at hudsonfam repo root is deleted in `main`; Woodpecker UI shows hudsonfam repo as deregistered (no active builds on push)
+  3. `git.homelab/forgejo-admin/hudsonfam` registry path is either deleted OR explicitly documented as retained (with a reason in a new `.planning/notes/decommission-decisions.md`); no dangling Flux refs point to it
+  4. `kubectl get gitrepository,imagerepository,imagepolicy,imageupdateautomation,kustomization -A` shows zero Failed/Stalled conditions related to hudsonfam; every hudsonfam Flux resource is Ready
+  5. CLAUDE.md §Deployment is updated in the same PR so documentation reflects the decommission (no references to Woodpecker or git.homelab for hudsonfam)
+**Plans:** TBD
 
-**Not yet started.** Planning artifacts will be created via `/gsd-new-milestone` when owner decides to activate.
+#### Phase 28: End-to-End Smoke + Retroactive UAT (v3.5-P4)
+**Goal:** Prove the new pipeline works end-to-end with a single no-op commit, then unlock and execute all deferred v3.0 production UAT (Plan 21-08 + Phases 22/23/24 smoke tests). This is the phase that delivers the actual payoff of the v3.5 milestone.
+**Depends on:** Phase 27 (cleanup must be done before smoke test produces clean results)
+**Requirements:** CICD-10, CICD-11, CICD-12, CICD-13
+**Success Criteria** (what must be TRUE):
+  1. A no-op commit (e.g., whitespace or comment change) to `main` travels the full pipeline: GitHub Actions build (green) → GHCR push (new tag visible) → Flux imagerepository picks up new tag (within 5 min) → Flux updates Deployment in homelab-manifests-repo → K3s rolls out new pod → `https://thehudsonfam.com` serves new image (verified by the timestamp in response headers or a sentinel string); total elapsed time under 15 minutes
+  2. CLAUDE.md §Deployment section is rewritten to describe the live pipeline: GitHub Actions + GHCR + Flux + K3s, with example reconcile commands, ExternalSecret pattern reference, and top-3 failure modes + mitigations; matches observable reality
+  3. Plan 21-08 retroactive UAT executes successfully against the live deployed site: empty-state copy visible for jobs with missing AI artifacts (AI-RENDER-04); external-link icon + company-website link-out renders (AI-RENDER-06) when `company_url` is non-null; quality-score badge renders (AI-RENDER-05) when `quality_score` is non-null; copy-to-clipboard (AI-ACTION-01) + download-PDF (AI-ACTION-02) work on a real cover letter
+  4. Phase 22/23/24 retroactive smoke: SalaryIntelligenceSection renders its null branch cleanly without crashing (AI-RENDER-03); clicking "Research this company" fires a signed webhook that n8n accepts (AI-ACTION-03; HMAC validation is homelab-PR prerequisite); clicking "Regenerate cover letter" / "Regenerate tailored resume" / "Regenerate salary intelligence" each produces the correct polling state transitions (AI-ACTION-04/05/06); silent-success warning appears when a webhook returns 200 without timestamp advance (AI-ACTION-07)
+**Plans:** TBD
+
+**Ready to plan.** Next step: `/gsd-discuss-phase 25` to start v3.5-P1.
