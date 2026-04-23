@@ -245,7 +245,7 @@ Plans:
 | 23. Owner-Triggered Workflows (Pattern Setter) | 8/8 | Code complete (prod UAT deferred to v3.5-P4 — n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern) | 2026-04-23 |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 4/4 | Code complete (prod UAT deferred to v3.5-P4) | 2026-04-23 |
 | 25. Pipeline Build (v3.5-P1) | 1/1 | Code complete (first GHCR build observational verification pending owner browser check) | 2026-04-23 |
-| 26. Flux Reconfiguration (v3.5-P2) | 0/0 | Not started | — |
+| 26. Flux Reconfiguration (v3.5-P2) | 0/2 | Planned 2026-04-23 | — |
 | 27. Decommission Old Pipeline (v3.5-P3) | 0/0 | Not started | — |
 | 28. Smoke + Retroactive UAT (v3.5-P4) | 0/0 | Not started | — |
 
@@ -285,7 +285,11 @@ Plans:
   3. GHCR pull secret is provisioned via an ExternalSecret manifest (committed to homelab-manifests-repo) that syncs from a ClusterSecretStore-backed vault — PAT never appears in git
   4. `kubectl describe deployment hudsonfam -n homepage` shows the new image pull secret reference and pod events confirm successful image pull from `ghcr.io/hudsor01/hudsonfam`
   5. ImageUpdateAutomation commits manifest updates to homelab-manifests-repo with author "flux-image-automation" on each new tag (signing pattern matches existing Flux IUA configs)
-**Plans:** TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 26-01-PLAN.md — Provision GHCR pull secret in homepage + flux-system namespaces via ExternalSecret + ClusterSecretStore (CICD-05; D-09 Commit 1 of two-commit safety cadence)
+- [ ] 26-02-PLAN.md — Cut over Flux ImageRepository + Deployment to ghcr.io/hudsor01/hudsonfam (CICD-04, CICD-06; D-09 Commit 2; depends_on 26-01)
 
 #### Phase 27: Decommission Old Pipeline (v3.5-P3)
 **Goal:** Remove all broken/orphaned remnants of the Forgejo+Woodpecker pipeline for hudsonfam. Woodpecker + Forgejo themselves remain for other homelab services. This phase is pure cleanup — zero code changes to hudsonfam source.
