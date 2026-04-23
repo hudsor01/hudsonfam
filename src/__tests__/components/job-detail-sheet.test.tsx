@@ -135,18 +135,19 @@ describe("job-detail-sheet.tsx — Phase 23 button mount assertions (G-4)", () =
     ).not.toBeNull();
   });
 
-  it("RegenerateCoverLetterButton is nested inside SectionErrorBoundary section=\"cover_letter\" (G-4)", () => {
-    // The cover_letter section has three ternary branches (null / empty /
-    // populated) before the populated branch's meta row; the mount point sits
-    // ~3200 chars after `section="cover_letter"`. A 4000-char window
-    // accommodates the current distance with headroom; if a future refactor
-    // moves the mount point further, this test fails loudly.
+  it("RegenerateButton (artifact=\"cover_letter\") is nested inside SectionErrorBoundary section=\"cover_letter\" (G-4)", () => {
+    // Phase 24 D-01/D-02: generalized RegenerateButton replaces the Phase 23
+    // RegenerateCoverLetterButton. The cover_letter section has three ternary
+    // branches (null / empty / populated) before the populated branch's meta
+    // row; the mount point sits ~3200 chars after `section="cover_letter"`.
+    // A 4000-char window accommodates the current distance with headroom; if
+    // a future refactor moves the mount point further, this test fails loudly.
     const match = sheetSource.match(
-      /SectionErrorBoundary[\s\S]{0,400}section="cover_letter"[\s\S]{0,4000}<RegenerateCoverLetterButton/
+      /SectionErrorBoundary[\s\S]{0,400}section="cover_letter"[\s\S]{0,4000}<RegenerateButton[\s\S]{0,200}artifact="cover_letter"/
     );
     expect(
       match,
-      "RegenerateCoverLetterButton is not nested inside SectionErrorBoundary section=\"cover_letter\" — move it inside the existing boundary (G-4)"
+      "RegenerateButton artifact=\"cover_letter\" is not nested inside SectionErrorBoundary section=\"cover_letter\" — move it inside the existing boundary (G-4)"
     ).not.toBeNull();
   });
 
@@ -164,15 +165,19 @@ describe("job-detail-sheet.tsx — Phase 23 button mount assertions (G-4)", () =
     throw new Error("No `detail.company_research === null` branch found in job-detail-sheet.tsx");
   });
 
-  it("RegenerateCoverLetterButton appears within 20 lines after a Download PDF anchor (populated cover_letter branch guard)", () => {
+  it("RegenerateButton appears within 20 lines after a Download PDF anchor (populated cover_letter branch guard)", () => {
+    // Phase 24 D-01/D-02: RegenerateButton (generalized) sits adjacent to the
+    // Download PDF anchor inside the populated-branch meta row, same spatial
+    // relationship Phase 23 locked; renamed import (RegenerateButton) is the
+    // only delta vs pre-Phase-24 source.
     const lines = sheetSource.split("\n");
     for (let i = 0; i < lines.length; i++) {
       if (!/Download PDF/.test(lines[i])) continue;
       const window = lines.slice(i, Math.min(i + 20, lines.length)).join("\n");
       expect(
         window,
-        "RegenerateCoverLetterButton not found within 20 lines after the Download PDF anchor (populated-branch meta row)"
-      ).toMatch(/<RegenerateCoverLetterButton/);
+        "RegenerateButton not found within 20 lines after the Download PDF anchor (populated-branch meta row)"
+      ).toMatch(/<RegenerateButton/);
       return;
     }
     throw new Error("No `Download PDF` anchor found in job-detail-sheet.tsx");

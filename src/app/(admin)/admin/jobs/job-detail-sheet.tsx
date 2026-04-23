@@ -39,7 +39,9 @@ import { TailoredResumeSection } from "./tailored-resume-section";
 import { SalaryIntelligenceSection } from "./salary-intelligence-section";
 import { ProvenanceTag } from "./provenance-tag";
 import { TriggerCompanyResearchButton } from "./trigger-company-research-button";
-import { RegenerateCoverLetterButton } from "./regenerate-cover-letter-button";
+import { RegenerateButton } from "./regenerate-button";
+import { regenerateCoverLetter } from "@/lib/job-actions";
+import { coverLetterIsDone } from "@/lib/regenerate-predicates";
 
 interface JobDetailSheetProps {
   jobId: number | null;
@@ -237,8 +239,12 @@ export function JobDetailSheet({
                           <Download className="size-3" />
                           Download PDF
                         </a>
-                        <RegenerateCoverLetterButton
+                        <RegenerateButton
                           jobId={detail.id}
+                          artifact="cover_letter"
+                          label="Regenerate cover letter"
+                          action={regenerateCoverLetter}
+                          isDone={coverLetterIsDone}
                           baselineGeneratedAt={detail.cover_letter.generated_at}
                         />
                       </div>
