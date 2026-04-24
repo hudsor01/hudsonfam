@@ -245,7 +245,7 @@ Plans:
 | 23. Owner-Triggered Workflows (Pattern Setter) | 8/8 | Code complete (prod UAT deferred to v3.5-P4 — n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern) | 2026-04-23 |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 4/4 | Code complete (prod UAT deferred to v3.5-P4) | 2026-04-23 |
 | 25. Pipeline Build (v3.5-P1) | 1/1 | Code complete (first GHCR build observational verification pending owner browser check) | 2026-04-23 |
-| 26. Flux Reconfiguration (v3.5-P2) | 0/2 | Planned 2026-04-23 | — |
+| 26. Flux Reconfiguration (v3.5-P2) | 1/2 | Wave 1 complete 2026-04-24 (Plan 26-01 GHCR pull secret provisioned; cluster verified; Wave 2 ready) | — |
 | 27. Decommission Old Pipeline (v3.5-P3) | 0/0 | Not started | — |
 | 28. Smoke + Retroactive UAT (v3.5-P4) | 0/0 | Not started | — |
 
@@ -288,7 +288,7 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 26-01-PLAN.md — Provision GHCR pull secret in homepage + flux-system namespaces via ExternalSecret + ClusterSecretStore (CICD-05; D-09 Commit 1 of two-commit safety cadence)
+- [x] 26-01-PLAN.md — Provision GHCR pull secret in homepage + flux-system namespaces via ExternalSecret + ClusterSecretStore (CICD-05; D-09 Commit 1 of two-commit safety cadence) — 2026-04-24 (homelab commits `91d9cd9` + `943c2c4` deviation hotfix; SUMMARY at `.planning/phases/26-flux-reconfiguration/26-01-SUMMARY.md` commit `d872e0e`)
 - [ ] 26-02-PLAN.md — Cut over Flux ImageRepository + Deployment to ghcr.io/hudsor01/hudsonfam (CICD-04, CICD-06; D-09 Commit 2; depends_on 26-01)
 
 #### Phase 27: Decommission Old Pipeline (v3.5-P3)

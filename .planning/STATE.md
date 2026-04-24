@@ -23,10 +23,10 @@ v3.0 AI Integration closed code-complete (5/5 phases). All accumulated prod UAT 
 
 **Active scope:** 4 phases (25-28) covering `.github/workflows/build-and-push.yml` creation, Flux GHCR reconfiguration, old-pipeline decommission, and end-to-end smoke + retroactive UAT for all deferred v3.0 verifications. 13 CICD-XX requirements total.
 
-Phase: 26 (v3.5-P2 Flux Reconfiguration) — **EXECUTING** (Plan 26-01 paused at Wave 0 owner gate; Wave 0 prereqs SATISFIED 2026-04-24)
-Plan: 26-01 (Wave 1 of 2) — Wave 0 owner prereqs all green; ready to resume executor at Task 26-01-02 (file writes in /home/dev-server/homelab/)
-Status: Wave 0 ✓ — vault PAT in place + Phase 25 build verified green
-Last activity: 2026-04-24 02:39 UTC — Phase 25 build c099b66 succeeded after lockfile regen unblocker (see Plan 25-01 hotfix detour below)
+Phase: 26 (v3.5-P2 Flux Reconfiguration) — **EXECUTING** (Plan 26-01 COMPLETE 2026-04-24; Plan 26-02 next)
+Plan: 26-02 (Wave 2 of 2) — depends_on 26-01 SATISFIED; both ghcr-pull-credentials Secrets live in cluster (homepage + flux-system, both `kubernetes.io/dockerconfigjson` type with decoded `auths."ghcr.io".username == hudsor01`); ready to spawn executor for ImageRepository spec mutation + Deployment image rewire
+Status: Plan 26-01 ✓ (homelab commits `91d9cd9` + `943c2c4` hotfix; SUMMARY `d872e0e`); Wave 2 imminent
+Last activity: 2026-04-24 03:25 UTC — Plan 26-01 cluster verification PASS (T-26-01 PAT-leakage gate ZERO matches; T-26-06 setter-comment count UNCHANGED at 1; ESO Ready=True both ns)
 
 Progress: [##        ] 25% (Phase 25 / 4 v3.5 phases; Phase 26 Wave 0 done, Waves 1-2 next)
 
