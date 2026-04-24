@@ -23,14 +23,21 @@ v3.0 AI Integration closed code-complete (5/5 phases). All accumulated prod UAT 
 
 **Active scope:** 4 phases (25-28) covering `.github/workflows/build-and-push.yml` creation, Flux GHCR reconfiguration, old-pipeline decommission, and end-to-end smoke + retroactive UAT for all deferred v3.0 verifications. 13 CICD-XX requirements total.
 
-Phase: 25 (v3.5-P1 Pipeline Build) — **CODE COMPLETE 2026-04-23** (1/1 plans)
-Plan: 25-01 — `.github/workflows/build-and-push.yml` shipped (commit `c7d8f33` pushed to main; first GHCR build observational verification pending owner browser check at github.com/hudsor01/hudsonfam/actions)
-Status: Phase 25 code complete — ready for `/gsd-discuss-phase 26`
-Last activity: 2026-04-23 — Plan 25-01 executed; workflow file + first push-to-main trigger shipped
+Phase: 26 (v3.5-P2 Flux Reconfiguration) — **EXECUTING** (Plan 26-01 paused at Wave 0 owner gate; Wave 0 prereqs SATISFIED 2026-04-24)
+Plan: 26-01 (Wave 1 of 2) — Wave 0 owner prereqs all green; ready to resume executor at Task 26-01-02 (file writes in /home/dev-server/homelab/)
+Status: Wave 0 ✓ — vault PAT in place + Phase 25 build verified green
+Last activity: 2026-04-24 02:39 UTC — Phase 25 build c099b66 succeeded after lockfile regen unblocker (see Plan 25-01 hotfix detour below)
 
-Progress: [##        ] 25% (Phase 25 / 4 v3.5 phases complete)
+Progress: [##        ] 25% (Phase 25 / 4 v3.5 phases; Phase 26 Wave 0 done, Waves 1-2 next)
 
-**GHCR package visibility (Phase 26 handoff):** Not yet recorded — executor `gh` CLI is unauthenticated; owner should browse to <https://github.com/users/hudsor01/packages/container/hudsonfam/settings> after first build completes and record visibility (public/private) here before Phase 26 planning. Phase 26 provisions a Flux pull PAT via ExternalSecret regardless of visibility, so this is informational, not blocking.
+**GHCR package visibility (Phase 26 handoff):** **PUBLIC** (verified 2026-04-24 via authenticated GHCR API call). Two-ExternalSecret + classic-PAT design works for both visibilities; no design change needed despite public status. The Flux pull PAT is still provisioned (rate-limit hygiene + future-proofs against any visibility flip).
+
+**Plan 25-01 hotfix detour (2026-04-24):** Phase 25's first GitHub Actions build (`c7d8f33`) failed at the deps stage in 45s — `bun install --frozen-lockfile` rejected a 17-day-stale `bun.lock` (last bumped 2026-04-04 vs `package.json` 2026-04-21). Recent commits (`efdfe2a`, `9ab8c38`, `6c8935e`) added streamdown / @testing-library/dom / test:schema script via `npm install --legacy-peer-deps` but never regenerated bun.lock. Fix: ran `bun install` locally → 562 deps resolved → `bun install --frozen-lockfile` verified → committed bun.lock (+307/-7 lines) as `c099b66` and pushed to main. Build re-triggered, completed 2026-04-24 02:39 UTC, pushed first Phase-25-format tag `20260424023904` to GHCR. Phase 26 precondition gate now satisfied. Hotfix docs: this STATE.md note + the c099b66 commit message are the canonical record (no PLAN/SUMMARY artifact since this was an unscoped hotfix to unblock Phase 26 execution, not a Phase 25 deviation).
+
+**Wave 0 prereqs verified for Phase 26 Plan 26-01 Task 26-01-01 (2026-04-24):**
+1. ✓ Classic PAT (read:packages scope only, 1-year expiry) stored in cluster Secret `ghcr-pull-credentials` in `secrets` namespace with `username` + `pat` properties
+2. ✓ PAT smoke-tested via authenticated GHCR API token-exchange + tag-list (no docker required; ghcr.io API auth chain proven)
+3. ✓ Phase 25 build green at GHCR; tag `20260424023904` (and earlier 14-digit tags from old pipeline) visible
 
 ## What's Done
 
