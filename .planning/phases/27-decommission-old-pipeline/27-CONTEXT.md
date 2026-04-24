@@ -60,22 +60,33 @@ Remove all broken/orphaned remnants of the Forgejo+Woodpecker pipeline for hudso
 
 - **D-03 [--auto]:** Delete `/home/dev-server/hudsonfam/.woodpecker.yaml` via `git rm` (NOT just `rm` — git rm stages the deletion). Commit message format matches the established v3.5 cadence (`feat(27): ...` or `chore(27): ...`). Push to GitHub `main` (the hudsonfam app repo, NOT the homelab repo this time). Acceptance: `git ls-files .woodpecker.yaml` returns empty; `git log --diff-filter=D HEAD~1 HEAD .woodpecker.yaml` shows the deletion.
 
-- **D-04 [--auto]:** Woodpecker repo deregistration via MCP tools (`mcp__woodpecker__*`). Sequence:
-  1. `mcp__woodpecker__search_repository` with query `hudsonfam` → returns `forgejo-admin/hudsonfam` with its repoId
-  2. `mcp__woodpecker__list_pipelines` for that repoId — confirm zero in-flight pipelines (sanity check; should be zero since Forgejo repo doesn't exist anymore)
-  3. Use Woodpecker API (via MCP if available, else direct HTTP DELETE) to deactivate or delete the repo registration. Per `ci-cd-fragility-analysis.md`, Woodpecker still thinks the repo is wired up despite Forgejo deletion — so the dereg is correcting a stale reference, not removing an active integration. Acceptance: re-running `mcp__woodpecker__search_repository "hudsonfam"` returns zero matches OR returns the entry with `active: false`.
+- **D-04 [--auto, AMENDED 2026-04-24 post-research]:** Woodpecker repo deregistration via **direct REST API** (Woodpecker MCP is read-only — verified against upstream `denysvitali/woodpecker-ci-mcp` README; all 7 MCP tools are read-only with NO delete capability). Corrected sequence:
+  1. **Pre-verify with MCP:** `mcp__woodpecker__search_repository "hudsonfam"` → returns `forgejo-admin/hudsonfam` with its `repo_id` (numeric)
+  2. **DELETE via REST:** `curl -X DELETE -H "Authorization: Bearer <WOODPECKER_PAT>" "https://woodpecker.homelab/api/repos/<repo_id>"` → expects HTTP 200
+  3. **Post-verify with MCP:** `mcp__woodpecker__search_repository "hudsonfam"` → expects zero matches
 
-  **Fallback if Woodpecker MCP doesn't expose deletion:** the Woodpecker UI at <https://woodpecker.homelab/repos> or the Woodpecker REST API (`DELETE /api/repos/<owner>/<name>` per Woodpecker docs) is the manual path. Owner-runnable; document in plan SUMMARY.
+  **PAT availability constraint:** Neither Forgejo nor Woodpecker PAT is in executor environment per RESEARCH §finding 5. Plan task for the REST DELETE MUST be `autonomous: false` and surface owner-supplied `WOODPECKER_PAT` inline, OR fall back to owner-runnable Woodpecker UI at <https://woodpecker.homelab/repos> → click hudsonfam repo → "Delete repository" button.
+
+  **Original framing of "MCP if available, else REST" is misleading** — REST is the only DELETE path; MCP is verification-only.
 
 ### Forgejo registry path cleanup (CICD-09 part 3)
 
 - **D-05 [--auto]:** Delete the Forgejo container registry path `git.homelab/forgejo-admin/hudsonfam` entirely. Rationale: per CONTEXT D-10 of Phase 26, this path was preserved as rollback safety net through Phase 26 verification — that window has now elapsed. The historical tags (e.g., `20260417202843`) lived only as deployment refs; they were never the source-of-truth for any code or build (the source is in git, the build is reproducible from `c099b66`+ via the new GHCR pipeline). Keeping them is pure storage cost with no observability or rollback value (Phase 26 cutover is now the new baseline; rollback would mean re-cutover to GHCR, not back to Forgejo).
 
-  Removal path: Forgejo API. Per Forgejo docs, container packages can be deleted via:
-  - `DELETE /api/v1/packages/{owner}/container/{package_name}` (package-level — preferred; nukes all versions/tags atomically)
-  - OR per-version: `DELETE /api/v1/packages/{owner}/container/{package_name}/{version}` (looped over each tag if package-level not supported by current Forgejo version)
+  **Removal path AMENDED 2026-04-24 post-research:** Forgejo per-version DELETE is the **ONLY** path supported by the live `git.homelab` server (Forgejo 14.0.3+gitea-1.22.0; verified via swagger inspection — NO package-level DELETE endpoint exists). The originally-suggested "package-level preferred, per-version fallback" framing is incorrect — per-version is the main path.
 
-  Use Forgejo PAT or basic auth (admin-level) for the DELETE. Phase 27 SUMMARY documents the exact API call used + the response code. Acceptance: `curl -sk "https://git.homelab/api/v1/packages/forgejo-admin/container/hudsonfam"` returns 404; `curl -sk "https://git.homelab/api/v1/packages/search?q=hudsonfam&type=container"` returns empty list.
+  ```bash
+  curl -sk -X DELETE \
+    -H "Authorization: token <FORGEJO_PAT>" \
+    "https://git.homelab/api/v1/packages/forgejo-admin/container/hudsonfam/<VERSION>"
+  # → expects HTTP 204 (success)
+  ```
+
+  **6 versions to delete** (per RESEARCH §finding 1; loop over the live list at execution time): 4 timestamp tags (`20260424072940`, `20260417202843`, `20260414002755`, `20260409010056`) + 2 sha256 manifest digests. The exact list should be re-queried at execution time via `curl -sk "https://git.homelab/api/v1/packages/forgejo-admin?type=container" | jq -r '.[] | select(.name=="hudsonfam") | .version'` since new tags may have been added between Phase 26 and Phase 27 execution.
+
+  **PAT availability constraint:** Forgejo PAT is NOT in executor environment per RESEARCH §finding 5. Plan task MUST be `autonomous: false` and surface owner-supplied `FORGEJO_PAT` inline (PAT scope: `write:package`).
+
+  **Acceptance (CORRECTED — original D-10 search-endpoint commands are broken):** `curl -sk "https://git.homelab/api/v1/packages/forgejo-admin?type=container" | jq -r '.[] | select(.name=="hudsonfam")'` returns empty (no JSON object matching `name=="hudsonfam"`). The `/api/v1/packages/search` endpoint does NOT exist on Forgejo 14.x; the `/api/v1/packages/forgejo-admin/container/hudsonfam` (no-version) endpoint returns 404 because the path requires `{version}`. Use the owner-listing endpoint with jq filter instead.
 
 - **D-06 [--auto]:** Owner-runnable fallback: if Forgejo API auth is fiddly from the executor sandbox, owner can delete via Forgejo UI (`https://git.homelab/forgejo-admin/-/packages` → click `hudsonfam` container → delete). Plan task should be `autonomous: false` for this step if API auth is unavailable.
 
@@ -120,8 +131,12 @@ Remove all broken/orphaned remnants of the Forgejo+Woodpecker pipeline for hudso
   # CICD-08 part 2: Woodpecker repo dereg
   # Via MCP: mcp__woodpecker__search_repository "hudsonfam" → expect zero matches OR active:false
 
-  # CICD-09 part 3: Forgejo registry empty
-  curl -sk "https://git.homelab/api/v1/packages/forgejo-admin/container/hudsonfam" | jq -r '.message // "PRESENT"'  # → "package not found" or 404
+  # CICD-09 part 3: Forgejo registry empty (CORRECTED 2026-04-24 post-research)
+  # NOTE: original /api/v1/packages/search endpoint does NOT exist on Forgejo 14.x;
+  # the /api/v1/packages/forgejo-admin/container/hudsonfam path requires {version} suffix and 404s without it.
+  # Use the owner-listing endpoint + jq filter:
+  curl -sk "https://git.homelab/api/v1/packages/forgejo-admin?type=container" | jq -r '.[] | select(.name=="hudsonfam") | .name + ":" + .version'
+  # → expects EMPTY output (no hudsonfam container packages remain)
 
   # Overall Flux health: zero hudsonfam-related Failed conditions
   kubectl get gitrepository,imagerepository,imagepolicy,imageupdateautomation,kustomization -A 2>&1 | grep -iE "hudsonfam|homepage" | grep -i "false\|failed\|stalled"  # → empty
