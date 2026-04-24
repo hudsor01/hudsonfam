@@ -300,8 +300,11 @@ Plans:
   2. `.woodpecker.yaml` at hudsonfam repo root is deleted in `main`; Woodpecker UI shows hudsonfam repo as deregistered (no active builds on push)
   3. `git.homelab/forgejo-admin/hudsonfam` registry path is either deleted OR explicitly documented as retained (with a reason in a new `.planning/notes/decommission-decisions.md`); no dangling Flux refs point to it
   4. `kubectl get gitrepository,imagerepository,imagepolicy,imageupdateautomation,kustomization -A` shows zero Failed/Stalled conditions related to hudsonfam; every hudsonfam Flux resource is Ready
-  5. CLAUDE.md §Deployment is updated in the same PR so documentation reflects the decommission (no references to Woodpecker or git.homelab for hudsonfam)
-**Plans:** TBD
+  5. CLAUDE.md §Deployment is updated in the same PR so documentation reflects the decommission (no references to Woodpecker or git.homelab for hudsonfam) — **NOTE: superseded per CONTEXT D-09; comprehensive §Deployment rewrite owned by Phase 28 CICD-11; Phase 27 leaves CLAUDE.md untouched to avoid two PRs touching the same docs section**
+**Plans:** 1 plan
+
+Plans:
+- [ ] 27-01-PLAN.md — Decommission old Forgejo+Woodpecker pipeline (CICD-07 + CICD-08 + CICD-09): delete .woodpecker.yaml + Woodpecker repo dereg + cluster-orphan IR/Secrets cleanup + Forgejo per-version registry deletion + 11-check verification suite + owner-approval checkpoint (autonomous=false; Tasks 27-01-02 + 27-01-05 require owner-supplied PATs per T-27-02)
 
 #### Phase 28: End-to-End Smoke + Retroactive UAT (v3.5-P4)
 **Goal:** Prove the new pipeline works end-to-end with a single no-op commit, then unlock and execute all deferred v3.0 production UAT (Plan 21-08 + Phases 22/23/24 smoke tests). This is the phase that delivers the actual payoff of the v3.5 milestone.
