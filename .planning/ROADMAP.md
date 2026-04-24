@@ -245,7 +245,7 @@ Plans:
 | 23. Owner-Triggered Workflows (Pattern Setter) | 8/8 | Code complete (prod UAT deferred to v3.5-P4 — n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern) | 2026-04-23 |
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 4/4 | Code complete (prod UAT deferred to v3.5-P4) | 2026-04-23 |
 | 25. Pipeline Build (v3.5-P1) | 1/1 | Code complete (first GHCR build observational verification pending owner browser check) | 2026-04-23 |
-| 26. Flux Reconfiguration (v3.5-P2) | 1/2 | Wave 1 complete 2026-04-24 (Plan 26-01 GHCR pull secret provisioned; cluster verified; Wave 2 ready) | — |
+| 26. Flux Reconfiguration (v3.5-P2) | 2/2 | Code complete 2026-04-24 (Plan 26-01 + 26-02; cluster cutover live — pod running on ghcr.io/hudsor01/hudsonfam:20260424023904 with ghcr-pull-credentials; CICD-04/05/06 satisfied; CICD-06 SC #5 IUA-on-GHCR-path observational-pending until next Phase 25 build) | 2026-04-24 |
 | 27. Decommission Old Pipeline (v3.5-P3) | 0/0 | Not started | — |
 | 28. Smoke + Retroactive UAT (v3.5-P4) | 0/0 | Not started | — |
 
@@ -289,7 +289,7 @@ Plans:
 
 Plans:
 - [x] 26-01-PLAN.md — Provision GHCR pull secret in homepage + flux-system namespaces via ExternalSecret + ClusterSecretStore (CICD-05; D-09 Commit 1 of two-commit safety cadence) — 2026-04-24 (homelab commits `91d9cd9` + `943c2c4` deviation hotfix; SUMMARY at `.planning/phases/26-flux-reconfiguration/26-01-SUMMARY.md` commit `d872e0e`)
-- [ ] 26-02-PLAN.md — Cut over Flux ImageRepository + Deployment to ghcr.io/hudsor01/hudsonfam (CICD-04, CICD-06; D-09 Commit 2; depends_on 26-01)
+- [x] 26-02-PLAN.md — Cut over Flux ImageRepository + Deployment to ghcr.io/hudsor01/hudsonfam (CICD-04, CICD-06; D-09 Commit 2; depends_on 26-01) — 2026-04-24 (homelab commit `7f3302c` post-rebase against concurrent IUA `a1b454b`; SUMMARY at `.planning/phases/26-flux-reconfiguration/26-02-SUMMARY.md` commit `710d6a4`; pod hudsonfam-b6b754b64-vcn5l running 1/1 on ghcr.io/hudsor01/hudsonfam:20260424023904 with ghcr-pull-credentials)
 
 #### Phase 27: Decommission Old Pipeline (v3.5-P3)
 **Goal:** Remove all broken/orphaned remnants of the Forgejo+Woodpecker pipeline for hudsonfam. Woodpecker + Forgejo themselves remain for other homelab services. This phase is pure cleanup — zero code changes to hudsonfam source.

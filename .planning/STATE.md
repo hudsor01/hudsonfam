@@ -23,10 +23,16 @@ v3.0 AI Integration closed code-complete (5/5 phases). All accumulated prod UAT 
 
 **Active scope:** 4 phases (25-28) covering `.github/workflows/build-and-push.yml` creation, Flux GHCR reconfiguration, old-pipeline decommission, and end-to-end smoke + retroactive UAT for all deferred v3.0 verifications. 13 CICD-XX requirements total.
 
-Phase: 26 (v3.5-P2 Flux Reconfiguration) — **EXECUTING** (Plan 26-01 COMPLETE 2026-04-24; Plan 26-02 next)
-Plan: 26-02 (Wave 2 of 2) — depends_on 26-01 SATISFIED; both ghcr-pull-credentials Secrets live in cluster (homepage + flux-system, both `kubernetes.io/dockerconfigjson` type with decoded `auths."ghcr.io".username == hudsor01`); ready to spawn executor for ImageRepository spec mutation + Deployment image rewire
-Status: Plan 26-01 ✓ (homelab commits `91d9cd9` + `943c2c4` hotfix; SUMMARY `d872e0e`); Wave 2 imminent
-Last activity: 2026-04-24 03:25 UTC — Plan 26-01 cluster verification PASS (T-26-01 PAT-leakage gate ZERO matches; T-26-06 setter-comment count UNCHANGED at 1; ESO Ready=True both ns)
+Phase: 26 (v3.5-P2 Flux Reconfiguration) — **CODE COMPLETE 2026-04-24** (2/2 plans; cutover live)
+Plan: 26-02 ✓ (homelab commit `7f3302c` post-rebase; SUMMARY `710d6a4`); pod `hudsonfam-b6b754b64-vcn5l` Running 1/1 on `ghcr.io/hudsor01/hudsonfam:20260424023904` with `ghcr-pull-credentials`; CICD-04/05/06 satisfied
+Status: Phase 26 code complete — **Phase 27 GATING RULE: do NOT run Phase 27 until Phase 26 has been observably green for ≥10 minutes** per CONTEXT D-10 (Phase 27 deletes the Forgejo rollback path). Once 10-min sentinel elapses (calendar wall-clock from 2026-04-24 cutover commit), proceed to `/gsd-discuss-phase 27`.
+Last activity: 2026-04-24 — Phase 26 cluster cutover complete; ImageRepository scanned 46 tags, ImagePolicy promoted ghcr.io/hudsor01/hudsonfam:20260424023904, pod rolled cleanly. CICD-06 SC #5 (IUA commit on GHCR path) is observational-pending until next Phase 25 build produces a newer tag.
+
+**Phase 26 deviations captured (4 auto-fixed; documented in 26-02-SUMMARY.md):**
+1. Homelab remote name `forgejo` (not `origin` as plan said) — environmental alias
+2. Mid-execution rebase against concurrent Flux IUA commit `a1b454b` (Forgejo-path IUA promotion superseded by Plan 26-02 GHCR cutover)
+3. Plan-supplied sed extraction in Check 4 had greedy `.*:` parse bug — anchored regex fix; semantic content was always correct
+4. Flux CRD field rename: docs say `status.latestImage`, installed CRD uses `status.latestRef.{name,tag}` — same CRD-vs-docs pattern as Plan 26-01 ESO `spec.target.type`. Worth a forward-facing intel note for any future Flux ImagePolicy verification scripting.
 
 Progress: [##        ] 25% (Phase 25 / 4 v3.5 phases; Phase 26 Wave 0 done, Waves 1-2 next)
 

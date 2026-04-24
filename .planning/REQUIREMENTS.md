@@ -16,9 +16,9 @@ Each requirement maps to a roadmap phase and is observationally verifiable after
 
 ### Flux Reconfiguration (v3.5-P2)
 
-- [ ] **CICD-04**: `imagerepository/hudsonfam` (in the correct Flux namespace, not `default`) watches `ghcr.io/hudsor01/hudsonfam` and reconciles successfully
-- [ ] **CICD-05**: GHCR pull secret is provisioned via the ExternalSecret + ClusterSecretStore pattern (same pattern as other homelab services); no PAT committed to git
-- [ ] **CICD-06**: `imagepolicy/hudsonfam` filters the `YYYYMMDDHHmmss` tag stream and picks the newest timestamp; `imageupdateautomation` updates the Deployment manifest in `homelab` manifests repo on new images
+- [x] **CICD-04**: `imagerepository/hudsonfam` (in the correct Flux namespace, not `default`) watches `ghcr.io/hudsor01/hudsonfam` and reconciles successfully — Code complete 2026-04-24 (Phase 26 Plan 26-02; ImageRepository in `flux-system` ns shows Ready=True, scanned 46 GHCR tags; homelab commit `7f3302c`; pod live on ghcr.io image)
+- [x] **CICD-05**: GHCR pull secret is provisioned via the ExternalSecret + ClusterSecretStore pattern (same pattern as other homelab services); no PAT committed to git — Code complete 2026-04-24 (Phase 26 Plan 26-01; both `ghcr-pull-credentials` Secrets materialized as `kubernetes.io/dockerconfigjson` in homepage + flux-system ns; T-26-01 PAT-leakage gate ZERO matches across homelab repo; homelab commits `91d9cd9` + `943c2c4` ESO CRD deviation hotfix)
+- [x] **CICD-06**: `imagepolicy/hudsonfam` filters the `YYYYMMDDHHmmss` tag stream and picks the newest timestamp; `imageupdateautomation` updates the Deployment manifest in `homelab` manifests repo on new images — Code complete 2026-04-24 (Phase 26 Plan 26-02; ImagePolicy `latestRef = ghcr.io/hudsor01/hudsonfam:20260424023904`; setter comments preserved byte-for-byte; IUA commit on GHCR path is OBSERVATIONAL-PENDING until next Phase 25 build produces a newer tag — does NOT block code-complete declaration)
 
 ### Decommission Old Pipeline (v3.5-P3)
 
@@ -62,12 +62,12 @@ Mapped to roadmap phases 2026-04-23 by owner-authored plan.
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| CICD-01 | Phase 25 (v3.5-P1) / Plan 25-01 | Code complete (2026-04-23) — workflow file shipped; first build observational verification pending |
-| CICD-02 | Phase 25 (v3.5-P1) / Plan 25-01 | Code complete (2026-04-23) — workflow file shipped; first build observational verification pending |
-| CICD-03 | Phase 25 (v3.5-P1) / Plan 25-01 | Code complete (2026-04-23) — workflow file shipped; first build observational verification pending |
-| CICD-04 | Phase 26 (v3.5-P2) | Pending |
-| CICD-05 | Phase 26 (v3.5-P2) | Pending |
-| CICD-06 | Phase 26 (v3.5-P2) | Pending |
+| CICD-01 | Phase 25 (v3.5-P1) / Plan 25-01 | Code complete (2026-04-23, build green 2026-04-24 c099b66 after lockfile hotfix; tag 20260424023904 verified) |
+| CICD-02 | Phase 25 (v3.5-P1) / Plan 25-01 | Code complete (2026-04-23, build green 2026-04-24; both tags `20260424023904` + `latest` verified at GHCR) |
+| CICD-03 | Phase 25 (v3.5-P1) / Plan 25-01 | Code complete (2026-04-23, build c099b66 completed inside 10-min target; future builds will reuse warm cache) |
+| CICD-04 | Phase 26 (v3.5-P2) / Plan 26-02 | Code complete (2026-04-24) — ImageRepository hudsonfam in flux-system ns Ready=True scanning ghcr.io/hudsor01/hudsonfam (46 tags) |
+| CICD-05 | Phase 26 (v3.5-P2) / Plan 26-01 | Code complete (2026-04-24) — both `ghcr-pull-credentials` Secrets materialized as `kubernetes.io/dockerconfigjson`; T-26-01 PAT-leakage gate ZERO matches across homelab repo |
+| CICD-06 | Phase 26 (v3.5-P2) / Plan 26-02 | Code complete (2026-04-24) — ImagePolicy `latestRef = ghcr.io/hudsor01/hudsonfam:20260424023904`; setter comments preserved; IUA commit on GHCR path is OBSERVATIONAL-PENDING until next Phase 25 build produces a newer tag |
 | CICD-07 | Phase 27 (v3.5-P3) | Pending |
 | CICD-08 | Phase 27 (v3.5-P3) | Pending |
 | CICD-09 | Phase 27 (v3.5-P3) | Pending |
