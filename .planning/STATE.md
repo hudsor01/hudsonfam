@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: completed
-last_updated: "2026-04-23T22:23:51.683Z"
-last_activity: 2026-04-23 — Plan 25-01 executed; workflow file + first push-to-main trigger shipped
+last_updated: "2026-04-24T17:39:33.524Z"
+last_activity: "2026-04-24 — Phase 26 cluster cutover complete; ImageRepository scanned 46 tags, ImagePolicy promoted ghcr.io/hudsor01/hudsonfam:20260424023904, pod rolled cleanly. CICD-06 SC #5 (IUA commit on GHCR path) is observational-pending until next Phase 25 build produces a newer tag."
 progress:
-  total_phases: 11
-  completed_phases: 6
-  total_plans: 41
-  completed_plans: 43
+  total_phases: 12
+  completed_phases: 7
+  total_plans: 42
+  completed_plans: 45
   percent: 100
 ---
 
@@ -29,6 +29,7 @@ Status: Phase 26 code complete — **Phase 27 GATING RULE: do NOT run Phase 27 u
 Last activity: 2026-04-24 — Phase 26 cluster cutover complete; ImageRepository scanned 46 tags, ImagePolicy promoted ghcr.io/hudsor01/hudsonfam:20260424023904, pod rolled cleanly. CICD-06 SC #5 (IUA commit on GHCR path) is observational-pending until next Phase 25 build produces a newer tag.
 
 **Phase 26 deviations captured (4 auto-fixed; documented in 26-02-SUMMARY.md):**
+
 1. Homelab remote name `forgejo` (not `origin` as plan said) — environmental alias
 2. Mid-execution rebase against concurrent Flux IUA commit `a1b454b` (Forgejo-path IUA promotion superseded by Plan 26-02 GHCR cutover)
 3. Plan-supplied sed extraction in Check 4 had greedy `.*:` parse bug — anchored regex fix; semantic content was always correct
@@ -41,6 +42,7 @@ Progress: [##        ] 25% (Phase 25 / 4 v3.5 phases; Phase 26 Wave 0 done, Wave
 **Plan 25-01 hotfix detour (2026-04-24):** Phase 25's first GitHub Actions build (`c7d8f33`) failed at the deps stage in 45s — `bun install --frozen-lockfile` rejected a 17-day-stale `bun.lock` (last bumped 2026-04-04 vs `package.json` 2026-04-21). Recent commits (`efdfe2a`, `9ab8c38`, `6c8935e`) added streamdown / @testing-library/dom / test:schema script via `npm install --legacy-peer-deps` but never regenerated bun.lock. Fix: ran `bun install` locally → 562 deps resolved → `bun install --frozen-lockfile` verified → committed bun.lock (+307/-7 lines) as `c099b66` and pushed to main. Build re-triggered, completed 2026-04-24 02:39 UTC, pushed first Phase-25-format tag `20260424023904` to GHCR. Phase 26 precondition gate now satisfied. Hotfix docs: this STATE.md note + the c099b66 commit message are the canonical record (no PLAN/SUMMARY artifact since this was an unscoped hotfix to unblock Phase 26 execution, not a Phase 25 deviation).
 
 **Wave 0 prereqs verified for Phase 26 Plan 26-01 Task 26-01-01 (2026-04-24):**
+
 1. ✓ Classic PAT (read:packages scope only, 1-year expiry) stored in cluster Secret `ghcr-pull-credentials` in `secrets` namespace with `username` + `pat` properties
 2. ✓ PAT smoke-tested via authenticated GHCR API token-exchange + tag-list (no docker required; ghcr.io API auth chain proven)
 3. ✓ Phase 25 build green at GHCR; tag `20260424023904` (and earlier 14-digit tags from old pipeline) visible
@@ -382,7 +384,7 @@ None.
 | 24    | 24-04 | ~5m      | 2     | 4     | 2026-04-23T15:30:00Z |
 | 25    | 25-01 | 9m 17s   | 2     | 1     | 2026-04-23T20:21:27Z |
 
-**Planned Phase:** 26 (flux-reconfiguration) — 2 plans — 2026-04-23T22:23:51.677Z
+**Planned Phase:** 27 (decommission-old-pipeline) — 1 plans — 2026-04-24T17:39:33.516Z
 | Phase 22 P01 | ~4 minutes | 3 tasks | 3 files |
 | Phase 22 P04 | 1m 16s | 3 tasks | 1 files |
 | Phase 22 P05 | 2m 51s | 4 tasks | 3 files |
