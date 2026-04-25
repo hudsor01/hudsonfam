@@ -12,6 +12,24 @@ scope: Medium (1-day focused infra sprint; ~4 hours hands-on) — actual: ~3 day
 
 # SEED-005: CI/CD hardening — migrate hudsonfam deploy to GitHub Actions + GHCR
 
+> ## ✓ CLOSED 2026-04-25 — thesis fully executed
+>
+> **Status:** CLOSED. v3.5 CI/CD Hardening milestone ran 2026-04-23 → 2026-04-25 across 4 phases (25/26/27/28); 13/13 CICD-XX REQs satisfied; tag `v3.5-complete` on commit `f02440c`.
+>
+> **Outcome:** the 6-moving-part Forgejo+Woodpecker pipeline (5 self-hosted) was permanently retired and replaced with the CLAUDE.md-intended 2-moving-part GitHub Actions + GHCR pipeline (both vendor-managed). Phase 21's deploy block — and the deferred prod-UAT debt accumulated by Phases 22/23/24 — were both cleared by Phase 28 retroactively.
+>
+> **Where the closure record lives:** `.planning/milestones/v3.5-cicd-hardening/v3.5-MILESTONE-SUMMARY.md` is the canonical close-out document. It captures per-phase outcomes, total Rule 3 deviations (9 across 4 phases), forward-facing intel (`crd-vs-docs-mismatch-pattern.md`), and the SEED lifecycle handoff to SEED-006 (n8n hardening, dormant) + SEED-007 (Cloudflare Rocket Loader synthetic, dormant).
+>
+> **Closure invariants verified at audit-prep time:**
+> - `git tag -l | grep v3.5-complete` → 1 hit
+> - `git ls-remote origin v3.5-complete` → matches `f02440c`
+> - Phase 28 SUMMARY exists at `.planning/phases/28-smoke-retroactive-uat/28-01-SUMMARY.md`
+> - All 4 CICD REQs marked `[x]` in REQUIREMENTS.md with traceability
+> - Tests 571/571 green; lint 0 errors; build green
+> - Production pod on a post-v3.5 GHCR-pipeline image
+>
+> **The text below is the original seed body preserved verbatim from 2026-04-22** for historical context (decisions made, opportunity-cost framing at planting time, scope estimate vs actual). Reads in future tense by design — that was the state when the seed was planted. Do NOT update this body to past-tense; the frontmatter status + this closure box are the authoritative current-state signals.
+
 ## Why This Matters
 
 Owner's own observation (2026-04-22): "every time I use it I have to fix it which is a very low dx". Current deploy pipeline has 6 moving parts, 5 of which are self-hosted:
