@@ -1,4 +1,4 @@
-import { ServiceHealth, FamilyServiceHealth } from "./types";
+import { ServiceHealth } from "./types";
 
 interface ServiceDefinition {
   name: string;
@@ -6,61 +6,6 @@ interface ServiceDefinition {
   checkUrl: string;
   group: string;
 }
-
-interface FamilyServiceDefinition {
-  name: string;
-  url: string;
-  checkUrl: string;
-  group: string;
-  description: string;
-  lanOnly?: boolean;
-  skipHealthCheck?: boolean;
-}
-
-const FAMILY_SERVICES: FamilyServiceDefinition[] = [
-  // Media & Entertainment
-  {
-    name: "Media Library",
-    url: "https://media.thehudsonfam.com",
-    checkUrl: "http://jellyfin.media.svc.cluster.local:8096",
-    group: "Media & Entertainment",
-    description: "Watch movies, TV shows & music",
-  },
-  {
-    name: "Request Media",
-    url: "https://request.thehudsonfam.com",
-    checkUrl: "http://jellyseerr.media.svc.cluster.local:5055",
-    group: "Media & Entertainment",
-    description: "Request new movies & TV shows",
-  },
-
-  // Documents & Tools
-  {
-    name: "DocuSeal",
-    url: "https://sign.thehudsonfam.com",
-    checkUrl: "http://docuseal.cloud.svc.cluster.local:3000",
-    group: "Documents & Tools",
-    description: "Sign & send documents",
-  },
-  {
-    name: "Stirling PDF",
-    url: "https://pdf.thehudsonfam.com",
-    checkUrl: "http://stirling-pdf.cloud.svc.cluster.local:8080",
-    group: "Documents & Tools",
-    description: "Edit, merge & convert PDFs",
-  },
-
-  // AI
-  {
-    name: "Hudson AI",
-    url: "http://chat.homelab",
-    checkUrl: "",
-    group: "AI",
-    description: "Chat with AI assistant",
-    lanOnly: true,
-    skipHealthCheck: true,
-  },
-];
 
 const SERVICES: ServiceDefinition[] = [
   // Home & Automation
@@ -241,78 +186,5 @@ export function groupServices(
       return groups;
     },
     {} as Record<string, ServiceHealth[]>
-  );
-}
-
-async function checkFamilyService(
-  service: FamilyServiceDefinition
-): Promise<FamilyServiceHealth> {
-  if (service.skipHealthCheck) {
-    return { ...service, status: "skipped" };
-  }
-
-  const start = Date.now();
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-
-    const response = await fetch(service.checkUrl, {
-      method: "HEAD",
-      signal: controller.signal,
-      redirect: "follow",
-    });
-
-    clearTimeout(timeout);
-    const responseTime = Date.now() - start;
-
-    return {
-      ...service,
-      status:
-        response.ok || response.status === 401 || response.status === 302
-          ? "up"
-          : "down",
-      responseTime,
-    };
-  } catch (err) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(`[dashboard] LAN health check failed: ${service.name}`, (err as Error).message);
-    }
-    return {
-      ...service,
-      status: "down",
-      responseTime: Date.now() - start,
-    };
-  }
-}
-
-export async function checkFamilyServices(): Promise<FamilyServiceHealth[]> {
-  const results = await Promise.allSettled(
-    FAMILY_SERVICES.map((service) => checkFamilyService(service))
-  );
-
-  return results.map((result, index) => {
-    if (result.status === "fulfilled") {
-      return result.value;
-    }
-    return {
-      ...FAMILY_SERVICES[index],
-      status: "unknown" as const,
-    };
-  });
-}
-
-export function groupFamilyServices(
-  services: FamilyServiceHealth[]
-): Record<string, FamilyServiceHealth[]> {
-  return services.reduce(
-    (groups, service) => {
-      const group = service.group;
-      if (!groups[group]) {
-        groups[group] = [];
-      }
-      groups[group].push(service);
-      return groups;
-    },
-    {} as Record<string, FamilyServiceHealth[]>
   );
 }
