@@ -28,12 +28,27 @@ Status: **v3.5 milestone CLOSED** — v3.0 milestone now fully shippable (was pr
 
 **Owner-facing post-milestone checklist (none blocking; all action-when-convenient):**
 
-- `kubectl delete secret phase-27-pats -n secrets` (Phase 27 cleanup)
-- Rotate or revoke Woodpecker + Forgejo PATs (Phase 27 decommissioned the old pipeline; PATs no longer in active use)
-- Triage GitHub Dependabot alerts (3 vulns — 1 high + 2 moderate at https://github.com/hudsor01/hudsonfam/security/dependabot)
-- GHCR storage retention policy decision (older 14-digit tags from old Forgejo pipeline still accumulating)
-- Optional SEED-006 followup (n8n-side hardening; ~2-4h homelab-repo PR)
-- Optional SEED-007 followup (Cloudflare Rocket Loader synthetic check; ~30-60m external monitor)
+- ~~`kubectl delete secret phase-27-pats -n secrets`~~ — DONE 2026-04-25 (verified NotFound during audit)
+- ~~Triage GitHub Dependabot alerts~~ — production-runtime advisories patched 2026-04-25 in commit `41c0191` (next 16.2.3 + postcss 8.5.10); remaining 8 transitive vulns are dev/build-time only
+- ~~GHCR storage retention policy decision~~ — workflow_dispatch-only ghcr-retention.yml shipped 2026-04-25 in commit `82dc38d` (manual trigger; dry-run default; keeps :latest + 30 newest timestamp tags)
+- Rotate or revoke Woodpecker + Forgejo PATs (T-27-02 defense-in-depth; UI access required — agent-blocked)
+- Optional SEED-006 followup (n8n-side hardening; ~2-4h homelab-repo PR — partial: HMAC verify Code-node template ready at `.planning/notes/seed-006-hmac-verify-template.md`)
+- Optional SEED-007 followup (Cloudflare Rocket Loader synthetic check; ~30-60m external monitor — DEPLOYED dormant 2026-04-25 in homelab commit `47ebaa3`; owner activates after NTFY_N8N_TOKEN check)
+
+## Deferred Items
+
+Items acknowledged + deferred at v3.5 milestone close on 2026-04-25:
+
+| Category | Item | Status |
+|----------|------|--------|
+| seed | SEED-001-ai-pipeline-health-dashboard | dormant — v3.1+ candidate |
+| seed | SEED-002-qwen-photo-captions | dormant — v3.1+ candidate |
+| seed | SEED-003-qdrant-semantic-search | dormant — v3.1+ candidate |
+| seed | SEED-004-tdarr-jellyfin-family-media | dormant — v3.1+ candidate |
+| seed | SEED-006-n8n-hardening-followup | dormant — partial fix shipped (HMAC template), owner activates remaining 5 workflows manually or via v3.5.1 phase |
+| seed | SEED-007-cloudflare-rocket-loader-synthetic | dormant — n8n workflow shipped to homelab commit `47ebaa3`, owner activates after NTFY_N8N_TOKEN check |
+
+All 6 items are forward-facing parking-lot ideas by design (status: dormant). Each carries explicit `trigger_when` clauses describing the activation conditions. None are work-blocking gaps from v3.5 scope.
 Last activity: 2026-04-25 — Phase 27 ops: `.woodpecker.yaml` deleted from GitHub main (commit `0eaacc6`); broken `default/imagerepository/hudsonfam` deleted (only `flux-system/hudsonfam` GHCR watcher remains); both `forgejo-registry-creds` Secrets deleted (`woodpecker-pipelines/forgejo-registry` preserved); Woodpecker REST DELETE on `/api/repos/2` HTTP 200; 6/6 Forgejo container versions HTTP 204 (4 timestamp tags + 2 sha256 manifest digests); pod still ready=true with 0 restarts.
 
 **Phase 27 deviations captured (both Rule 3; documented in 27-01-SUMMARY.md):**

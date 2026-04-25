@@ -22,18 +22,18 @@ A single home for the Hudson family — content management for everyone, homelab
 Single Next.js monolith with 4 route groups:
 - `(public)` — public site (homepage, blog, photos, events, family, memorial)
 - `(auth)` — login, signup, forgot, reset, verify
-- `(dashboard)` — content management for family (posts, photos, albums, events, updates, members, memorial, services)
+- `(dashboard)` — content management for family (posts, photos, albums, events, updates, members, memorial)
 - `(admin)` — homelab monitoring + job search pipeline (owner only)
 
 ## Deployment
-Docker → GHCR → Flux GitOps (timestamp tags) → K3s cluster
+GitHub Actions → GHCR (timestamp tags) → Flux ImageRepository scan → ImagePolicy promote → IUA writes to `flux-image-updates` branch → 2-min CronJob fast-forwards `main` → Flux Kustomization apply → K3s rolling update
 URL: thehudsonfam.com via Cloudflare Tunnel
 
 ## Current State
 
-**Shipped:** v3.0 AI Integration code-complete (2026-04-23; prod UAT deferred to v3.5-P4)
-**Production image:** ghcr.io/hudsor01/hudsonfam:20260408173607 (pre-v3.0; pipeline broken)
-**Current milestone:** v3.5 — CI/CD Hardening
+**Shipped:** v3.5 CI/CD Hardening — closed 2026-04-25 (tag `v3.5-complete`, commit `f02440c`). v3.0 AI Integration also shipped (was deploy-blocked pre-v3.5; now fully production-verified via Phase 28 retroactive UAT).
+**Production image:** auto-rolled per push (current at audit time: `ghcr.io/hudsor01/hudsonfam:20260425*`)
+**Current milestone:** None active — ready for v4.0 planning when owner is ready
 
 ### Validated (all milestones)
 - v1.0: Core site, auth, CRUD, homelab dashboard, K8s deployment, memorial
