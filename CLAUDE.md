@@ -141,26 +141,54 @@ Use theme tokens: `bg-destructive/10 border border-destructive/25 text-destructi
 ## Deployment
 
 ```
-Push to main → GitHub Actions builds Docker image → GHCR
-  → Flux image automation (timestamp tags: YYYYMMDDHHmmss)
-  → Flux kustomization updates K3s deployment
+Push to main (GitHub) → GitHub Actions builds Docker image → GHCR
+  → Flux ImageRepository scans GHCR every 6h
+  → Flux ImagePolicy promotes newest YYYYMMDDHHmmss tag
+  → Flux ImageUpdateAutomation rewrites tag in homelab manifests repo (Forgejo)
+  → Flux Kustomization reconciles → K3s rolls hudsonfam Deployment
 ```
 
-- **Image tags:** `YYYYMMDDHHmmss` format (not commit SHAs)
-- **Namespace:** `homepage`
-- **Volumes:** NFS mount for photo originals (writable), PVC for thumbnails/cache
-- **Secrets:** ExternalSecrets from `secrets` namespace via ClusterSecretStore
+- **Pipeline definition:** `.github/workflows/build-and-push.yml` — single-job workflow (`docker/build-push-action@v5` with `type=gha,mode=max` cache); triggers on `push.branches: [main]` + `workflow_dispatch`; builds in 2-6 min on warm cache.
+- **Image registry:** `ghcr.io/hudsor01/hudsonfam` (public package); built-in `GITHUB_TOKEN` for push (no PAT needed for same-repo push).
+- **Image tags:** `YYYYMMDDHHmmss` UTC timestamp + `latest` per build (Flux ImagePolicy filters on regex `^\d{14}$` and picks the highest numerical value).
+- **Cluster pull credentials:** `ghcr-pull-credentials` Secret (`kubernetes.io/dockerconfigjson` type) materialized in BOTH `homepage` (kubelet pull) and `flux-system` (ImageRepository scan auth) namespaces via two ExternalSecrets sharing a single vault key. Vault key holds `username: hudsor01` + `pat: <classic PAT, scope read:packages, 1-year expiry>`. ExternalSecrets `spec.target.template` reconstructs dockerconfigjson from those two raw fields at sync time. PAT rotation = single vault-write event; both Secrets resync within `refreshInterval: 1h`.
+- **Manifest source:** homelab manifests repo (`dev-projects/homelab` on Forgejo SSH at `192.168.4.236:30022`); Flux source-controller polls every 1 min. ImageUpdateAutomation commits tag bumps as user `Flux Image Automation` to `main` directly. Hudsonfam-specific manifests live at `apps/hudsonfam/` (Deployment + Service + HTTPRoute + 2 PVCs + ExternalSecret + GHCR pull-secret ExternalSecret).
+- **Namespace:** `homepage`. **Volumes:** NFS mount for photo originals (writable, NFS server `192.168.4.164`), local-path PVCs for thumbnails + Next.js cache. **Secrets:** ExternalSecrets from `secrets` namespace via `kubernetes-secrets` ClusterSecretStore (raw K8s Secrets, not external vault).
+- **Public URL:** <https://thehudsonfam.com> via Cloudflare Tunnel.
 
-### Manual deploy
+### Manual deploy + reconcile
+
 ```bash
-flux reconcile image repository hudsonfam -n flux-system
-flux reconcile image update homelab-images -n flux-system
+# Force a fresh GHCR scan (e.g., after a manual workflow_dispatch)
 flux reconcile source git flux-system
+flux reconcile image repository hudsonfam -n flux-system
+
+# Force ImageUpdateAutomation to re-evaluate setters
+flux reconcile image update homelab-images -n flux-system
+
+# Force kustomization apply (picks up image update commit)
 flux reconcile kustomization hudsonfam
-# If quota blocks rolling update:
+
+# If quota blocks rolling update (rare):
 kubectl scale deployment hudsonfam -n homepage --replicas=0
 kubectl scale deployment hudsonfam -n homepage --replicas=1
 ```
+
+### Top failure modes + mitigations (from Phase 25/26/27 lessons)
+
+1. **Stale `bun.lock` rejected by `bun install --frozen-lockfile`** — Dockerfile uses bun + frozen-lockfile; if recent `npm install --legacy-peer-deps` updates `package.json` without regenerating `bun.lock`, the build fails at the deps stage in ~45s. **Fix:** run `bun install` locally to regen the lockfile; commit + push. Symptom: GitHub Actions step "Build and push" fails with `process "/bin/sh -c bun install --frozen-lockfile" did not complete successfully: exit code: 1`. Established as a recurring failure mode after Phase 25 first-build gotcha.
+
+2. **GHCR PAT expiry** — classic PAT expires 1 year from generation (~2027-04-24 for current PAT). Set calendar reminder 2 weeks pre-expiry. **Fix:** generate new classic PAT under owner account, scope `read:packages`, then `kubectl create secret generic ghcr-pull-credentials -n secrets --from-literal=username='hudsor01' --from-literal=pat='<NEW>' --dry-run=client -o yaml | kubectl apply -f -`. Both ExternalSecrets resync within `refreshInterval: 1h` (or force via `kubectl annotate externalsecret ghcr-pull-credentials -n <ns> force-sync=$(date +%s) --overwrite`).
+
+3. **Cluster ESO/Flux CRD vs docs version mismatch** — Some fields documented in upstream library docs may not exist in the installed CRD schema. Examples seen: ESO 2.1.0 rejected `spec.target.type` (canonical type stays in `spec.target.template.type`); Flux ImagePolicy CRD uses `status.latestRef.{name,tag}` not docs-stated `status.latestImage`. **Fix:** validate any new manifest's field paths against `kubectl explain <resource>.<path>` before assuming docs are current. See `.planning/intel/crd-vs-docs-mismatch-pattern.md`.
+
+### Pre-push hook (one-time per clone)
+
+```bash
+./scripts/install-hooks.sh
+```
+
+Installs a native git pre-push hook that runs `npm run test:schema` (queries `information_schema.columns` against the live n8n DB to detect schema drift in `src/lib/jobs-db.ts` queries). Skips cleanly with a non-failure warning when `JOBS_DATABASE_URL` is unset (e.g., on hosts without DB access — pushes still complete).
 
 ## Environment Variables
 
