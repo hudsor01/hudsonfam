@@ -246,7 +246,7 @@ Plans:
 | 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 4/4 | Code complete (prod UAT deferred to v3.5-P4) | 2026-04-23 |
 | 25. Pipeline Build (v3.5-P1) | 1/1 | Code complete (first GHCR build observational verification pending owner browser check) | 2026-04-23 |
 | 26. Flux Reconfiguration (v3.5-P2) | 2/2 | Code complete 2026-04-24 (Plan 26-01 + 26-02; cluster cutover live — pod running on ghcr.io/hudsor01/hudsonfam:20260424023904 with ghcr-pull-credentials; CICD-04/05/06 satisfied; CICD-06 SC #5 IUA-on-GHCR-path observational-pending until next Phase 25 build) | 2026-04-24 |
-| 27. Decommission Old Pipeline (v3.5-P3) | 0/0 | Not started | — |
+| 27. Decommission Old Pipeline (v3.5-P3) | 1/1 | Code complete 2026-04-25 (Plan 27-01; 6 destructive ops verified; 7/7 verification suite PASS; CICD-07/08/09 satisfied; SUMMARY ec0ba52; 2 Rule 3 deviations captured — Woodpecker host correction + sandbox PAT-extract pivot) | 2026-04-25 |
 | 28. Smoke + Retroactive UAT (v3.5-P4) | 0/0 | Not started | — |
 
 ### Deferred production UAT

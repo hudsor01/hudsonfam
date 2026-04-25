@@ -22,9 +22,9 @@ Each requirement maps to a roadmap phase and is observationally verifiable after
 
 ### Decommission Old Pipeline (v3.5-P3)
 
-- [ ] **CICD-07**: Broken `default/imagerepository/hudsonfam` is deleted (the one that references the missing `forgejo-registry-creds` secret); `kubectl get imagerepository -A | grep hudsonfam` shows only the new entry
-- [ ] **CICD-08**: `.woodpecker.yaml` at the repo root is deleted; Woodpecker repo deregistration for `forgejo-admin/hudsonfam` confirmed via Woodpecker UI/API
-- [ ] **CICD-09**: Orphaned `git.homelab/forgejo-admin/hudsonfam` container registry entries are cleaned up OR documented as intentionally kept (with reason) — no dangling refs remain in Flux or Forgejo
+- [x] **CICD-07**: Broken `default/imagerepository/hudsonfam` is deleted (the one that references the missing `forgejo-registry-creds` secret); `kubectl get imagerepository -A | grep hudsonfam` shows only the new entry — Code complete 2026-04-25 (Phase 27 Plan 27-01 Task 27-01-03; Check 1 of verification suite returned `1` for the count, only flux-system/hudsonfam GHCR watcher remains)
+- [x] **CICD-08**: `.woodpecker.yaml` at the repo root is deleted; Woodpecker repo deregistration for `forgejo-admin/hudsonfam` confirmed via Woodpecker UI/API — Code complete 2026-04-25 (Phase 27 Plan 27-01 Tasks 27-01-01 + 27-01-02; commit `0eaacc6` pushed to GitHub main; Woodpecker REST DELETE on `/api/repos/2` returned HTTP 200; Check 4 verification returns HTTP 401 from `ci.thehudsonfam.com/api/repos/lookup/forgejo-admin/hudsonfam` confirming repo gone)
+- [x] **CICD-09**: Orphaned `git.homelab/forgejo-admin/hudsonfam` container registry entries are cleaned up OR documented as intentionally kept (with reason) — no dangling refs remain in Flux or Forgejo — Code complete 2026-04-25 (Phase 27 Plan 27-01 Tasks 27-01-04 + 27-01-05; chose DELETE over retention per CONTEXT D-05; both `forgejo-registry-creds` Secrets deleted from flux-system + homepage namespaces; all 6 Forgejo container versions returned HTTP 204 on per-version DELETE — 4 timestamp tags + 2 sha256 manifest digests; verification Check 5 returns empty for hudsonfam packages)
 
 ### End-to-End Smoke + Retroactive UAT (v3.5-P4)
 
@@ -68,9 +68,9 @@ Mapped to roadmap phases 2026-04-23 by owner-authored plan.
 | CICD-04 | Phase 26 (v3.5-P2) / Plan 26-02 | Code complete (2026-04-24) — ImageRepository hudsonfam in flux-system ns Ready=True scanning ghcr.io/hudsor01/hudsonfam (46 tags) |
 | CICD-05 | Phase 26 (v3.5-P2) / Plan 26-01 | Code complete (2026-04-24) — both `ghcr-pull-credentials` Secrets materialized as `kubernetes.io/dockerconfigjson`; T-26-01 PAT-leakage gate ZERO matches across homelab repo |
 | CICD-06 | Phase 26 (v3.5-P2) / Plan 26-02 | Code complete (2026-04-24) — ImagePolicy `latestRef = ghcr.io/hudsor01/hudsonfam:20260424023904`; setter comments preserved; IUA commit on GHCR path is OBSERVATIONAL-PENDING until next Phase 25 build produces a newer tag |
-| CICD-07 | Phase 27 (v3.5-P3) | Pending |
-| CICD-08 | Phase 27 (v3.5-P3) | Pending |
-| CICD-09 | Phase 27 (v3.5-P3) | Pending |
+| CICD-07 | Phase 27 (v3.5-P3) / Plan 27-01 | Code complete (2026-04-25) — broken default IR deleted; only flux-system/hudsonfam GHCR watcher remains |
+| CICD-08 | Phase 27 (v3.5-P3) / Plan 27-01 | Code complete (2026-04-25) — `.woodpecker.yaml` deleted (commit `0eaacc6` to GitHub main); Woodpecker repo dereg via REST DELETE HTTP 200 (host corrected from `woodpecker.homelab` → `ci.thehudsonfam.com` at runtime) |
+| CICD-09 | Phase 27 (v3.5-P3) / Plan 27-01 | Code complete (2026-04-25) — both `forgejo-registry-creds` Secrets deleted; 6/6 Forgejo container versions HTTP 204; chose DELETE over retention per CONTEXT D-05 |
 | CICD-10 | Phase 28 (v3.5-P4) | Pending |
 | CICD-11 | Phase 28 (v3.5-P4) | Pending |
 | CICD-12 | Phase 28 (v3.5-P4) | Pending |

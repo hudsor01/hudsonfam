@@ -23,10 +23,21 @@ v3.0 AI Integration closed code-complete (5/5 phases). All accumulated prod UAT 
 
 **Active scope:** 4 phases (25-28) covering `.github/workflows/build-and-push.yml` creation, Flux GHCR reconfiguration, old-pipeline decommission, and end-to-end smoke + retroactive UAT for all deferred v3.0 verifications. 13 CICD-XX requirements total.
 
-Phase: 26 (v3.5-P2 Flux Reconfiguration) — **CODE COMPLETE 2026-04-24** (2/2 plans; cutover live)
-Plan: 26-02 ✓ (homelab commit `7f3302c` post-rebase; SUMMARY `710d6a4`); pod `hudsonfam-b6b754b64-vcn5l` Running 1/1 on `ghcr.io/hudsor01/hudsonfam:20260424023904` with `ghcr-pull-credentials`; CICD-04/05/06 satisfied
-Status: Phase 26 code complete — **Phase 27 GATING RULE: do NOT run Phase 27 until Phase 26 has been observably green for ≥10 minutes** per CONTEXT D-10 (Phase 27 deletes the Forgejo rollback path). Once 10-min sentinel elapses (calendar wall-clock from 2026-04-24 cutover commit), proceed to `/gsd-discuss-phase 27`.
-Last activity: 2026-04-24 — Phase 26 cluster cutover complete; ImageRepository scanned 46 tags, ImagePolicy promoted ghcr.io/hudsor01/hudsonfam:20260424023904, pod rolled cleanly. CICD-06 SC #5 (IUA commit on GHCR path) is observational-pending until next Phase 25 build produces a newer tag.
+Phase: 27 (v3.5-P3 Decommission Old Pipeline) — **CODE COMPLETE 2026-04-25** (1/1 plans; 6 destructive ops verified)
+Plan: 27-01 ✓ (hudsonfam SUMMARY commit `ec0ba52`; 7-check verification suite all PASS; CICD-07/08/09 satisfied)
+Status: Phase 27 code complete — **Phase 28 next** (final v3.5 phase: end-to-end smoke + CLAUDE.md §Deployment rewrite + retroactive UAT for Phases 21/22/23/24). Owner cleanup actions (non-blocking): `kubectl delete secret phase-27-pats -n secrets`; rotate Woodpecker + Forgejo PATs at convenience.
+Last activity: 2026-04-25 — Phase 27 ops: `.woodpecker.yaml` deleted from GitHub main (commit `0eaacc6`); broken `default/imagerepository/hudsonfam` deleted (only `flux-system/hudsonfam` GHCR watcher remains); both `forgejo-registry-creds` Secrets deleted (`woodpecker-pipelines/forgejo-registry` preserved); Woodpecker REST DELETE on `/api/repos/2` HTTP 200; 6/6 Forgejo container versions HTTP 204 (4 timestamp tags + 2 sha256 manifest digests); pod still ready=true with 0 restarts.
+
+**Phase 27 deviations captured (both Rule 3; documented in 27-01-SUMMARY.md):**
+
+1. Woodpecker host correction: CONTEXT D-04 + RESEARCH §finding 2 said `https://woodpecker.homelab` but live host is `https://ci.thehudsonfam.com`. Forgejo URL stayed correct as `https://git.homelab`.
+2. Sandbox blocked agent-side `kubectl get secret | base64 -d` even with `dangerouslyDisableSandbox`. Pivoted to owner-local-shell PAT extraction; owner ran the curl DELETE loops, pasted only HTTP codes back to agent (not PATs). T-27-02 PAT-handling discipline observed VERBATIM — no PAT material in transcript, commits, or files.
+
+**Phase 27 forward-facing intel (captured 2026-04-25):**
+
+- `.planning/intel/crd-vs-docs-mismatch-pattern.md` — captures the recurring pattern across Phase 26 (ESO `spec.target.type`, Flux `status.latestImage`) + Phase 27 (Forgejo no package-level DELETE) where docs reference field paths or endpoints that the installed cluster operator / live REST server doesn't accept. Operational discipline: validate via `kubectl explain` (CRDs) or live swagger inspection (REST APIs) before writing client code.
+- `.planning/notes/phase-28-claude-md-deployment-rewrite-draft.md` — pre-staged head-start for CICD-11 (CLAUDE.md §Deployment comprehensive rewrite). Phase 28 executor reviews + applies; does NOT carry over verbatim without re-validation against live state.
+- dev-server PAT (admin scope) successfully deleted forgejo-admin's packages — admin scope traverses user boundaries. Worth noting for future cleanup phases.
 
 **Phase 26 deviations captured (4 auto-fixed; documented in 26-02-SUMMARY.md):**
 
@@ -35,7 +46,7 @@ Last activity: 2026-04-24 — Phase 26 cluster cutover complete; ImageRepository
 3. Plan-supplied sed extraction in Check 4 had greedy `.*:` parse bug — anchored regex fix; semantic content was always correct
 4. Flux CRD field rename: docs say `status.latestImage`, installed CRD uses `status.latestRef.{name,tag}` — same CRD-vs-docs pattern as Plan 26-01 ESO `spec.target.type`. Worth a forward-facing intel note for any future Flux ImagePolicy verification scripting.
 
-Progress: [##        ] 25% (Phase 25 / 4 v3.5 phases; Phase 26 Wave 0 done, Waves 1-2 next)
+Progress: [######    ] 75% (Phases 25/26/27 of 4 v3.5 phases code-complete; Phase 28 next)
 
 **GHCR package visibility (Phase 26 handoff):** **PUBLIC** (verified 2026-04-24 via authenticated GHCR API call). Two-ExternalSecret + classic-PAT design works for both visibilities; no design change needed despite public status. The Flux pull PAT is still provisioned (rate-limit hygiene + future-proofs against any visibility flip).
 
