@@ -1,0 +1,126 @@
+# GHCR Retention Cleanup — manual-trigger pruner for old timestamp tags.
+#
+# Per v3.5-MILESTONE-AUDIT owner-action item: "GHCR storage retention policy
+# decision — older 14-digit tags from old Forgejo pipeline (deleted from
+# Forgejo per CICD-09 but copies remain in GHCR per Phase 27 T-27-06) still
+# accumulating; decide on retention policy if storage cost matters."
+#
+# This workflow:
+#   - Keeps `latest` always (rolling pointer)
+#   - Keeps the N newest YYYYMMDDHHmmss timestamp tags (default: 30 = ~last 30 builds)
+#   - Deletes everything else
+#   - Has `dry_run: true` as default — first invocation is read-only, prints
+#     what it WOULD delete. Set `dry_run: false` to actually prune.
+#   - Triggered ONLY via `workflow_dispatch` (no cron) — owner explicit opt-in
+#     to destructive operation.
+#
+# To enable scheduled cleanup: uncomment the `schedule:` block at the bottom
+# (suggested cadence is monthly; weekly is also fine).
+#
+# Rollback: tags deleted via the GHCR API are NOT recoverable — they would
+# need to be rebuilt from git. Underlying source code is in git regardless,
+# so historical tags are reproducible by checking out the commit and
+# triggering build-and-push.yml manually.
+
+name: ghcr-retention
+
+on:
+  workflow_dispatch:
+    inputs:
+      keep_count:
+        description: "Number of newest YYYYMMDDHHmmss tags to keep (in addition to :latest)"
+        required: false
+        default: "30"
+        type: string
+      dry_run:
+        description: "Dry run (true = report only; false = actually delete)"
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+  # schedule:
+  #   - cron: "0 6 1 * *"  # 06:00 UTC on the 1st of every month — uncomment to enable monthly auto-prune
+
+permissions:
+  contents: read
+  packages: write  # required to delete package versions in GHCR
+
+concurrency:
+  group: ghcr-retention
+  cancel-in-progress: false  # never abort a destructive operation mid-flight
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: List + filter GHCR package versions
+        id: filter
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KEEP_COUNT: ${{ inputs.keep_count || '30' }}
+        run: |
+          set -euo pipefail
+          echo "=== Fetching all package versions for hudsor01/hudsonfam ==="
+          gh api -H "Accept: application/vnd.github+json" \
+            "/users/hudsor01/packages/container/hudsonfam/versions?per_page=100" \
+            --paginate \
+            > all_versions.json
+
+          jq -r '.[] | [.id, (.metadata.container.tags // [])[]] | @tsv' all_versions.json \
+            | awk -F'\t' '{ for (i=2; i<=NF; i++) print $1 "\t" $i }' \
+            > id_tag_pairs.tsv
+
+          echo "=== Total tag entries: $(wc -l < id_tag_pairs.tsv) ==="
+
+          # Keep: latest + top N timestamp tags (sorted descending lexically — works because YYYYMMDDHHmmss sorts correctly)
+          awk -F'\t' '$2 == "latest" { print $1 }' id_tag_pairs.tsv > keep_ids.txt
+          awk -F'\t' '$2 ~ /^[0-9]{14}$/ { print $1 "\t" $2 }' id_tag_pairs.tsv \
+            | sort -t$'\t' -k2,2 -r \
+            | head -n "$KEEP_COUNT" \
+            | awk -F'\t' '{ print $1 }' \
+            >> keep_ids.txt
+
+          sort -u keep_ids.txt > keep_ids_unique.txt
+
+          # Delete: every version ID NOT in keep_ids
+          jq -r '.[].id' all_versions.json | sort -u > all_ids.txt
+          comm -23 all_ids.txt keep_ids_unique.txt > delete_ids.txt
+
+          echo "=== Keeping $(wc -l < keep_ids_unique.txt) versions ==="
+          echo "=== Deleting $(wc -l < delete_ids.txt) versions ==="
+
+          if [ -s delete_ids.txt ]; then
+            echo "=== IDs to delete (first 20): ==="
+            head -20 delete_ids.txt
+          fi
+
+          # Set output for the next step
+          echo "delete_count=$(wc -l < delete_ids.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Delete old versions (skipped on dry_run)
+        if: ${{ inputs.dry_run == 'false' && steps.filter.outputs.delete_count != '0' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "=== Pruning $(wc -l < delete_ids.txt) versions ==="
+          while read -r id; do
+            if gh api -X DELETE -H "Accept: application/vnd.github+json" \
+                "/users/hudsor01/packages/container/hudsonfam/versions/$id"; then
+              echo "  deleted version $id"
+            else
+              echo "  WARN: failed to delete version $id (continuing)"
+            fi
+          done < delete_ids.txt
+
+      - name: Summary
+        run: |
+          echo "=== ghcr-retention summary ==="
+          echo "  dry_run    : ${{ inputs.dry_run || 'true' }}"
+          echo "  keep_count : ${{ inputs.keep_count || '30' }}"
+          echo "  to delete  : ${{ steps.filter.outputs.delete_count }}"
+          if [ "${{ inputs.dry_run || 'true' }}" = "true" ]; then
+            echo ""
+            echo "DRY RUN — no versions deleted. Re-run with dry_run=false to prune."
+          fi
