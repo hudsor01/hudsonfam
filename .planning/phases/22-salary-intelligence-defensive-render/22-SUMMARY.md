@@ -80,6 +80,17 @@ Phase 22 introduced 7 grep gates. All are enforced at test time or via linting /
 
 - **Production UAT on `https://thehudsonfam.com/admin/jobs`** — blocked by the same CI/CD pipeline break documented in `.planning/notes/ci-cd-fragility-analysis.md` (Forgejo+Woodpecker deploy path is broken; `forgejo-admin/hudsonfam` Forgejo repo missing; Flux `default/imagerepository/hudsonfam` in failed state). Phase 22 code is 100% green locally (450/450 tests, `npm run build` exits 0); UAT happens retroactively once v3.5 migrates deploy to GitHub Actions + GHCR per CLAUDE.md's original intent. Retroactive UAT path mirrors the Plan 21-08 pattern documented in `.planning/phases/21-polish-copy-pdf-empty-states-link-out/21-08-SUMMARY.md`.
 
+## Production UAT executed 2026-04-25
+
+**Phase 28 CICD-13 retroactive smoke** — executed against live https://thehudsonfam.com/admin/jobs on commit `dda3af3` (UAT start) → `91a1705` (UAT close, with 2 inline a11y/metadata fixes landed mid-flight) running `ghcr.io/hudsor01/hudsonfam:20260425072351`.
+
+| Check | Feature | REQ | Result | Notes |
+|-------|---------|-----|--------|-------|
+| 22.A | SalaryIntelligenceSection null branch renders cleanly (no crash) | AI-RENDER-03 | PASS | Verified across 4 distinct sheets (JWX Demand RevOps Manager, Remote RevOps Manager, Experian Senior Deal Desk Specialist, Claritev Operations Analyst). Section renders verbatim `EMPTY_STATE_COPY.salary_intelligence.missing` ("No salary intelligence yet."). No crash. SectionErrorBoundary fallback never triggered. |
+| 22.B | Provenance tags on every dollar figure | AI-RENDER-07 | PASS | Operations Analyst @ Claritev (jobicy source) sheet: `$50K+` paired with a styled Badge (`inline-flex items-center px-2.5 py-0.5 rounded-full font-medium tracking-wide bg...`) labeled `scraped`. Header-row salary figure (the only $ figure visible across audited sheets) carried adjacent provenance label. No unlabeled $ figures observed. ProvenanceTag retrofit (Plan 22-07) confirmed mounted. |
+
+**Awaiting Upstream status:** the `WHERE FALSE` LEFT JOIN LATERAL skeleton (Plan 22-02) is still in place — once n8n task #11 lands and `salary_intelligence` rows surface, the populated branch becomes exercisable in production. Today's UAT verifies the null branch only. The "0 live `salary_intelligence` rows" condition documented at Phase 22 close (2026-04-22) was confirmed unchanged at Phase 28 UAT close (2026-04-25): no jobs in production have a `salary_intelligence` row, so the populated branch is still untested in prod (test coverage is 100% locally per Plan 22-06 14 cases).
+
 ## Awaiting Upstream (homelab repo)
 
 - **n8n task #11** (batch-INSERT `$N` parameter-collision bug) — when fixed upstream in n8n workflow `Job Search: Salary Intelligence`, the `WHERE FALSE` predicate in `getJobDetail` tightens to a real match condition. Candidate predicates (to be validated once task #11 lands and at least one row surfaces):
