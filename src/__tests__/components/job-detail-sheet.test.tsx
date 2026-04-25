@@ -286,3 +286,81 @@ describe("Phase 24 Plan 03 — G-4 three boundary pairings (cover_letter, tailor
     );
   });
 });
+
+// Phase 28 / CICD-12 G-A11Y-1 — Radix Dialog accessibility contract.
+// Every render branch of JobDetailSheet (loading / detail / not-found) must
+// mount a SheetTitle and SheetDescription so Radix doesn't emit the
+// "DialogContent requires DialogTitle" / "Missing aria-describedby" warnings.
+// Source-text assertions (same readFileSync pattern as G-1 / G-4) — locks
+// the verbatim sr-only strings so a future refactor that drops one branch's
+// title trips this file rather than silently breaking the a11y contract.
+describe("job-detail-sheet.tsx — Phase 28 G-A11Y-1 (Radix Dialog title + description)", () => {
+  it("loading branch mounts sr-only SheetTitle + SheetDescription", () => {
+    // The loading-branch block sits between `{loading ? (` and `) : detail ?`
+    // openers; verify both copy strings exist verbatim within that window.
+    expect(sheetSource).toMatch(
+      /\{loading \? \([\s\S]{0,400}<SheetHeader className="sr-only">[\s\S]{0,200}<SheetTitle>Loading job details<\/SheetTitle>/
+    );
+    expect(sheetSource).toMatch(
+      /<SheetDescription>\s*Job application details are loading\.\s*<\/SheetDescription>/
+    );
+  });
+
+  it("detail branch mounts visible SheetTitle + sr-only SheetDescription", () => {
+    // Populated branch keeps the visible <SheetTitle>{detail.title}</SheetTitle>
+    // (line ~129) and adds the sr-only SheetDescription locked here.
+    expect(sheetSource).toMatch(
+      /<SheetTitle className="text-xl leading-tight">[\s\S]{0,80}\{detail\.title\}/
+    );
+    expect(sheetSource).toMatch(
+      /<SheetDescription className="sr-only">\s*Job application details for \{detail\.title\}/
+    );
+  });
+
+  it("not-found branch mounts sr-only SheetTitle + SheetDescription", () => {
+    // The not-found branch is the final `: ( ... )` of the ternary chain.
+    expect(sheetSource).toMatch(
+      /<SheetHeader className="sr-only">[\s\S]{0,200}<SheetTitle>Job not found<\/SheetTitle>/
+    );
+    expect(sheetSource).toMatch(
+      /<SheetDescription>\s*The requested job could not be loaded\.\s*<\/SheetDescription>/
+    );
+  });
+
+  it("imports SheetDescription from @/components/ui/sheet", () => {
+    // Without this import the JSX above would not compile; lock it as part of
+    // the contract so import-pruning tools don't strip it.
+    expect(sheetSource).toMatch(
+      /SheetDescription,[\s\S]{0,200}from "@\/components\/ui\/sheet"/
+    );
+  });
+});
+
+// Phase 28 / CICD-12 G-A11Y-1 (mobile-nav) — same Radix contract on the public
+// site's MobileNav SheetContent. Public hamburger menu must keep its
+// SheetTitle + SheetDescription so screen readers announce the nav drawer.
+describe("mobile-nav.tsx — Phase 28 G-A11Y-1 (Radix Dialog title + description)", () => {
+  const MOBILE_NAV_PATH = path.join(
+    process.cwd(),
+    "src/components/public/mobile-nav.tsx"
+  );
+  const mobileNavSource = readFileSync(MOBILE_NAV_PATH, "utf-8");
+
+  it("MobileNav SheetContent mounts a visible SheetTitle", () => {
+    expect(mobileNavSource).toMatch(
+      /<SheetTitle[\s\S]{0,200}>\s*The Hudson Family\s*<\/SheetTitle>/
+    );
+  });
+
+  it("MobileNav SheetContent mounts an sr-only SheetDescription", () => {
+    expect(mobileNavSource).toMatch(
+      /<SheetDescription className="sr-only">\s*Site navigation menu\.\s*<\/SheetDescription>/
+    );
+  });
+
+  it("imports SheetDescription from @/components/ui/sheet", () => {
+    expect(mobileNavSource).toMatch(
+      /SheetDescription,[\s\S]{0,200}from "@\/components\/ui\/sheet"/
+    );
+  });
+});

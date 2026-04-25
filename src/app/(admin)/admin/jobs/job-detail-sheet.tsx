@@ -96,10 +96,12 @@ export function JobDetailSheet({
       <SheetContent className="w-full sm:max-w-lg p-0">
         {loading ? (
           <>
-            <SheetTitle className="sr-only">Loading job details</SheetTitle>
-            <SheetDescription className="sr-only">
-              Job application details are loading.
-            </SheetDescription>
+            <SheetHeader className="sr-only">
+              <SheetTitle>Loading job details</SheetTitle>
+              <SheetDescription>
+                Job application details are loading.
+              </SheetDescription>
+            </SheetHeader>
             <div className="flex items-center justify-center h-full">
               <Loader2 className="size-6 animate-spin text-muted-foreground" />
             </div>
@@ -420,10 +422,12 @@ export function JobDetailSheet({
           </ScrollArea>
         ) : (
           <>
-            <SheetTitle className="sr-only">Job not found</SheetTitle>
-            <SheetDescription className="sr-only">
-              The requested job could not be loaded.
-            </SheetDescription>
+            <SheetHeader className="sr-only">
+              <SheetTitle>Job not found</SheetTitle>
+              <SheetDescription>
+                The requested job could not be loaded.
+              </SheetDescription>
+            </SheetHeader>
             <div className="flex items-center justify-center h-full text-muted-foreground">
               Job not found
             </div>
