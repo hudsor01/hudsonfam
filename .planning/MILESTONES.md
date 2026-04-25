@@ -2,6 +2,8 @@
 
 Append-only ledger of shipped milestones. Each entry: version, date, scope, accomplishments. Detailed roadmap + requirements snapshots in `.planning/milestones/`.
 
+Newest at top. Earlier milestones (v1.0–v1.4, v2.0, v3.0) closed informally pre-tooling and were retroactively archived during v3.5 close.
+
 ---
 
 ## v3.5 — CI/CD Hardening
@@ -56,4 +58,34 @@ See `.planning/STATE.md` §"Deferred Items" for the full list with rationale.
 
 ---
 
-_Append future milestones below this line, newest at top._
+## v3.0 — AI Integration
+
+**Shipped:** 2026-04-23 code-complete (production-verified 2026-04-25 via v3.5-P4 retroactive UAT)
+**Phases:** 20-24 (5 phases, ~14 plans)
+**Tag:** none (closed pre-tooling; retroactively archived 2026-04-25)
+**Archive:** [v3.0-ROADMAP.md](milestones/v3.0-ROADMAP.md) · [v3.0-REQUIREMENTS.md](milestones/v3.0-REQUIREMENTS.md)
+
+### Delivered
+Closed the rendering gap between the n8n Job Search pipeline's LLM output and the `/admin/jobs` dashboard. 24/24 v3.0 requirements satisfied across 4 categories (AI Artifact Rendering, Owner-Triggered Actions, Safety & Hardening, Data Layer). v3.0 was deploy-blocked at code-complete because the pipeline was broken; v3.5 cleared the block and Phase 28 retroactive UAT verified everything in production (5/5 PASS for Plan 21-08; 100% hudsonfam-side green for Phase 22/23/24; n8n-side gaps inherited from v3.0 ship state, captured to SEED-006).
+
+### Pattern-Setting Decisions
+- HMAC-SHA256 webhook signing pattern (`src/lib/webhooks.ts:67-76`)
+- 4-bounded sentinel error union (no raw `e.message` across boundary)
+- Silent-success polling state (4th variant; for n8n 200-without-advance)
+- Streamdown for markdown rendering with provenance badges adjacent to dollar figures
+
+---
+
+## v2.0 — Code Quality Enhancement
+
+**Shipped:** 2026-04-08
+**Phases:** 16-19 (4 phases, 4 plans)
+**Tag:** none (closed pre-tooling; retroactively archived 2026-04-25)
+**Archive:** [v2.0-ROADMAP.md](milestones/v2.0-ROADMAP.md) · [v2.0-REQUIREMENTS.md](milestones/v2.0-REQUIREMENTS.md)
+
+### Delivered
+Systematically audited + fixed React/Next.js code smells across the entire codebase. 22/22 requirements satisfied. Eliminated unnecessary useEffects, fixed component-structure anti-patterns (no nested components, immutable state updates, optimal "use client" placement), hardened server/client boundaries (no non-serializable props crossing, server-component data fetching), zero hydration mismatches, full loading.tsx + error.tsx coverage. Production deploy with no console regressions; 268+ tests pass.
+
+---
+
+_Append future milestones above this line, newest at top._

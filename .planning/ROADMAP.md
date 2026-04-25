@@ -44,7 +44,24 @@
 ## v1.4 — Admin Dashboard Production Readiness (Complete)
 - 3 phases (13-15), 15/15 requirements, completed 2026-04-08 — [archive](milestones/v1.4-ROADMAP.md)
 
-## v2.0 — Code Quality Enhancement
+## v2.0 — Code Quality Enhancement (✅ Shipped 2026-04-08)
+
+4 phases (16-19), 4 plans, 22 REQs. Systematically audited + fixed React/Next.js code smells: zero unnecessary useEffects, clean component architecture, no SSR/client mismatches, full loading.tsx + error.tsx coverage, 268+ tests pass.
+
+→ Full archive: [milestones/v2.0-ROADMAP.md](milestones/v2.0-ROADMAP.md) · requirements: [v2.0-REQUIREMENTS.md](milestones/v2.0-REQUIREMENTS.md)
+
+<details>
+<summary>Phase one-liners (collapsed)</summary>
+
+- Phase 16 (useEffect Audit): zero unnecessary useEffects — 1 plan, 8 REQs (EFFECT-01..08), 2026-04-08
+- Phase 17 (Component Structure & State Patterns): no nested components, immutable updates, optimal "use client" — 1 plan, 7 REQs (COMP-01/02 + BOUNDARY-01..05), 2026-04-08
+- Phase 18 (Server/Client Boundaries & Hydration): zero hydration mismatches; loading.tsx + error.tsx for every route group — 1 plan, 4 REQs (HYDRATION-01/02 + RESILIENCE-01/02), 2026-04-08
+- Phase 19 (Verification & Production Deploy): clean build, 268+ tests pass, prod deploy without regressions — 1 plan, 3 REQs (VERIFY-01/02/03), 2026-04-08
+
+</details>
+
+<details>
+<summary>(legacy) Original v2.0 ROADMAP content (preserved here for context)</summary>
 
 **Goal:** Systematically audit and fix all React/Next.js code smells across the entire codebase using `docs/react-nextjs-code-smells.md` as the reference.
 
@@ -111,7 +128,25 @@
 | 18. Server/Client Boundaries & Hydration | 1/0 | Complete    | 2026-04-08 |
 | 19. Verification & Production Deploy | 1/0 | Complete    | 2026-04-08 |
 
-## v3.0 — AI Integration
+## v3.0 — AI Integration (✅ Shipped 2026-04-23 code-complete · production-verified 2026-04-25 via v3.5-P4 retroactive UAT)
+
+5 phases (20-24), ~14 plans, 24 REQs. Closed the rendering gap between the n8n Job Search pipeline's LLM output and `/admin/jobs`. HMAC + idempotency safety scaffolding shipped (n8n-side verify deferred to SEED-006).
+
+→ Full archive: [milestones/v3.0-ROADMAP.md](milestones/v3.0-ROADMAP.md) · requirements: [v3.0-REQUIREMENTS.md](milestones/v3.0-REQUIREMENTS.md)
+
+<details>
+<summary>Phase one-liners (collapsed)</summary>
+
+- Phase 20 (Foundation): isStale util, Zod safeParse at jobs-db boundary, CSP on /admin/*, tailored resume rendered, schema-drift CI guardrail — 2026-04-21
+- Phase 21 (Polish): Copy-to-clipboard with sonner toast, PDF download, empty-state copy, external-link icon, quality-score badge — 2026-04-22 (prod UAT 2026-04-25 = 5/5 PASS via CICD-12)
+- Phase 22 (Salary Intelligence): SalaryIntelligenceSection with null-branch defensive render + provenance tags + LEFT JOIN LATERAL skeleton — 2026-04-22
+- Phase 23 (Owner-Triggered Workflows): sendSignedWebhook primitive (HMAC + X-Idempotency-Key) + 4-sentinel error union + Research/Regenerate buttons — 2026-04-23
+- Phase 24 (Regenerate Expansion): Generalized RegenerateButton + Resume/Salary Server Actions + silent-success warning state (4th variant) — 2026-04-23
+
+</details>
+
+<details>
+<summary>(legacy) Original v3.0 ROADMAP content (preserved here for context)</summary>
 
 **Goal:** Close the rendering gap between the n8n Job Search pipeline's LLM output and the /admin/jobs dashboard so the owner can actually use what the pipeline produces. Render tailored resumes, model + fix salary intelligence, add manual company-research trigger, and introduce regenerate + freshness + safety scaffolding.
 
