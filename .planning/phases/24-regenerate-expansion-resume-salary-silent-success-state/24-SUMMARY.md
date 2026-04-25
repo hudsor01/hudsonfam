@@ -102,6 +102,20 @@ All 8 UI-SPEC grep gates are locked by Vitest assertions on every `npm test`:
 - n8n webhook endpoints `regenerate-tailored-resume` + `regenerate-salary-intelligence` — homelab-repo PR; same HMAC verification + idempotency dedup contract as Phase 23's `regenerate-cover-letter` webhook
 - Production UAT smoke tests for all 3 regenerate actions (cover letter from Phase 23 + tailored resume + salary intelligence)
 
+## Production UAT executed 2026-04-25
+
+**Phase 28 CICD-13 retroactive smoke** — executed against live https://thehudsonfam.com/admin/jobs on commit `dda3af3` (UAT start) → `91a1705` (UAT close) running `ghcr.io/hudsor01/hudsonfam:20260425072351`.
+
+| Check | Feature | REQ | Result | Notes |
+|-------|---------|-----|--------|-------|
+| 24.A | "Regenerate tailored resume" state machine end-to-end | AI-ACTION-05 | n8n-PENDING | JWX (jobId 2593, `tailored_resumes.generated_at = 4/18/26`). Click fired the Server Action successfully (POST `/admin/jobs` → 200). UI surfaced `Error: unavailable` sentinel rendered verbatim per Plan 24-01 G-3 contract directly inline below the "Regenerate tailored resume" button. State machine transitioned cleanly: idle → action-fired → sentinel-error. No crash, no boundary fallback. The hudsonfam-side end-to-end works; the n8n endpoint is unavailable. |
+| 24.B | "Regenerate salary intelligence" state machine end-to-end | AI-ACTION-06 | N/A | The `RegenerateButton` for `salary_intelligence` mounts in the populated-branch meta row only — and the entire production database has 0 `salary_intelligence` rows (Phase 22 §Awaiting Upstream notes the WHERE FALSE skeleton remains until n8n task #11 lands). With every job rendering the null branch ("No salary intelligence yet."), the regenerate button is structurally not present on any sheet. CICD-13 cannot exercise this path until upstream data lands. The hudsonfam-side regenerate Server Action + RegenerateButton wiring + 49 vitest cases (in `regenerate-button.test.tsx`) verify the contract holds locally. |
+| 24.C | Silent-success warning verbatim copy renders on no-advance scenario | AI-ACTION-07 | N/A | The silent-success warning surfaces only when n8n returns `{ ok: true }` AND the artifact's timestamp does not advance within the 60-poll window. With n8n returning `unavailable` sentinels first (24.A + the inherited Phase 23 23.B regenerate-cover-letter), the polling never enters the 60-tick exhaustion path required to trigger the silent-success state. The verbatim copy `"Regeneration reported success but no new content was written — check n8n logs."` is locked at the source level by Plan 24-01 G-8 grep gate (verified by `regenerate-button.test.tsx` G-8 DOM assertion). |
+
+**WARNING-EXERCISED note:** silent-success warning state is documented as CORRECT UI behavior per Phase 24 D-04 + AI-ACTION-07. The fact that no WARNING-EXERCISED outcome surfaced today is consistent with the n8n endpoints being unavailable (sentinel error path is preferred over warning path; the warning path requires n8n to respond `ok: true`). NOT a regression.
+
+**Awaiting Upstream status:** the n8n endpoints `regenerate-tailored-resume` + `regenerate-salary-intelligence` may be missing or non-mutating per Phase 24 §Deferred to v3.5-P4 / §Awaiting Upstream. Documented as v3.5.1 followup candidate via SEED-006 (see `.planning/seeds/SEED-006-n8n-hardening-followup.md`). Phase 24 hudsonfam-side (3-artifact regenerate state machine + silent-success branch + verbatim copy + G-8 source-text + DOM-test gate) verified end-to-end at the contract level; the prod-data path requires homelab-repo PR + n8n-side workflow creation.
+
 ## Awaiting Upstream
 
 Homelab-repo PR needed (same template as Phase 23 awaiting-upstream note):
