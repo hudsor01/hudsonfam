@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
@@ -94,9 +95,15 @@ export function JobDetailSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-lg p-0">
         {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="size-6 animate-spin text-muted-foreground" />
-          </div>
+          <>
+            <SheetTitle className="sr-only">Loading job details</SheetTitle>
+            <SheetDescription className="sr-only">
+              Job application details are loading.
+            </SheetDescription>
+            <div className="flex items-center justify-center h-full">
+              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            </div>
+          </>
         ) : detail ? (
           <ScrollArea className="h-full">
             <div className="p-6 space-y-6">
@@ -122,6 +129,10 @@ export function JobDetailSheet({
                 <SheetTitle className="text-xl leading-tight">
                   {detail.title}
                 </SheetTitle>
+                <SheetDescription className="sr-only">
+                  Job application details for {detail.title}
+                  {detail.company ? ` at ${detail.company}` : ""}.
+                </SheetDescription>
                 <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
                   {detail.company &&
                     (() => {
@@ -408,9 +419,15 @@ export function JobDetailSheet({
             </div>
           </ScrollArea>
         ) : (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
-            Job not found
-          </div>
+          <>
+            <SheetTitle className="sr-only">Job not found</SheetTitle>
+            <SheetDescription className="sr-only">
+              The requested job could not be loaded.
+            </SheetDescription>
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              Job not found
+            </div>
+          </>
         )}
       </SheetContent>
     </Sheet>

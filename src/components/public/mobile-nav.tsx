@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -49,6 +50,9 @@ export function MobileNav({ links }: { links: NavLink[] }) {
             <SheetTitle className="text-left font-serif text-accent">
               The Hudson Family
             </SheetTitle>
+            <SheetDescription className="sr-only">
+              Site navigation menu.
+            </SheetDescription>
           </SheetHeader>
           <nav className="flex flex-col gap-1 mt-6">
             {links.map((link) => {
