@@ -247,7 +247,7 @@ Plans:
 | 25. Pipeline Build (v3.5-P1) | 1/1 | Code complete (first GHCR build observational verification pending owner browser check) | 2026-04-23 |
 | 26. Flux Reconfiguration (v3.5-P2) | 2/2 | Code complete 2026-04-24 (Plan 26-01 + 26-02; cluster cutover live — pod running on ghcr.io/hudsor01/hudsonfam:20260424023904 with ghcr-pull-credentials; CICD-04/05/06 satisfied; CICD-06 SC #5 IUA-on-GHCR-path observational-pending until next Phase 25 build) | 2026-04-24 |
 | 27. Decommission Old Pipeline (v3.5-P3) | 1/1 | Code complete 2026-04-25 (Plan 27-01; 6 destructive ops verified; 7/7 verification suite PASS; CICD-07/08/09 satisfied; SUMMARY ec0ba52; 2 Rule 3 deviations captured — Woodpecker host correction + sandbox PAT-extract pivot) | 2026-04-25 |
-| 28. Smoke + Retroactive UAT (v3.5-P4) | 0/0 | Not started | — |
+| 28. Smoke + Retroactive UAT (v3.5-P4) | 0/1 | Planned 2026-04-25 | — |
 
 ### Deferred production UAT
 
@@ -315,6 +315,9 @@ Plans:
   2. CLAUDE.md §Deployment section is rewritten to describe the live pipeline: GitHub Actions + GHCR + Flux + K3s, with example reconcile commands, ExternalSecret pattern reference, and top-3 failure modes + mitigations; matches observable reality
   3. Plan 21-08 retroactive UAT executes successfully against the live deployed site: empty-state copy visible for jobs with missing AI artifacts (AI-RENDER-04); external-link icon + company-website link-out renders (AI-RENDER-06) when `company_url` is non-null; quality-score badge renders (AI-RENDER-05) when `quality_score` is non-null; copy-to-clipboard (AI-ACTION-01) + download-PDF (AI-ACTION-02) work on a real cover letter
   4. Phase 22/23/24 retroactive smoke: SalaryIntelligenceSection renders its null branch cleanly without crashing (AI-RENDER-03); clicking "Research this company" fires a signed webhook that n8n accepts (AI-ACTION-03; HMAC validation is homelab-PR prerequisite); clicking "Regenerate cover letter" / "Regenerate tailored resume" / "Regenerate salary intelligence" each produces the correct polling state transitions (AI-ACTION-04/05/06); silent-success warning appears when a webhook returns 200 without timestamp advance (AI-ACTION-07)
-**Plans:** TBD
+**Plans:** 1 plan
+
+Plans:
+- [ ] 28-01-PLAN.md — v3.5-P4 Smoke + Retroactive UAT + Milestone Close-out (CICD-10/11/12/13; 5 tasks: empty-commit smoke + CLAUDE.md §Deployment rewrite + Plan 21-08 retroactive UAT + Phase 22/23/24 retroactive smoke + Phase 28 SUMMARY consolidation + v3.5 milestone close-out)
 
 **v3.5-P1 shipped 2026-04-23.** Phase 25 code complete (1/1 plan); `.github/workflows/build-and-push.yml` deployed. Next step: `/gsd-discuss-phase 26` to start v3.5-P2 Flux reconfiguration. Before planning Phase 26, record GHCR package visibility (public/private) in STATE.md Current Position via browser check at <https://github.com/users/hudsor01/packages/container/hudsonfam/settings>.
