@@ -127,9 +127,39 @@ This intel doc captures the Flux-canonical permanent fix. Future homelab edits s
 
 Sibling pattern: see `crd-vs-docs-mismatch-pattern.md` for the related "live cluster CRD shape diverges from upstream docs" pattern that hit Plan 26-01 (ESO `spec.target.type`) and Plan 26-02 (`status.latestImage` → `latestRef`).
 
+## Implementation Iteration Notes (2026-04-25)
+
+The merger CronJob took **6 iterations** to land cleanly. Each surfaced a real CRD-vs-docs / pod-runtime quirk worth recording so future "I need to git push from a flux-system K8s pod" implementations don't repeat them:
+
+| # | Symptom | Root cause | Fix |
+|---|---------|------------|-----|
+| 1 | `No user exists for uid 1000` → `fatal: Could not read from remote repository` | alpine/git container has only root + nobody in /etc/passwd; we runAsUser:1000; SSH refuses to proceed when getpwuid lookup fails | Initial misdiagnosis: thought it was DNS. Switched REPO_URL to FQDN as a precaution (this was the wrong fix; see iteration 6) |
+| 2 | `/bin/sh: can't create /etc/passwd: Permission denied` | Tried to write a runtime /etc/passwd shim; PodSecurity restricted profile drops ALL caps including DAC_OVERRIDE; can't write root-owned files | Switched to ConfigMap-mounted /etc/passwd via subPath (the documented K8s pattern for "make non-root uid resolve") |
+| 3 | `Host key verification failed` | After /etc/passwd fix surfaced the next layer: REPO_URL was FQDN but Secret-mounted known_hosts only had short-name entries | Added an awk pass to append FQDN-keyed copies of each known_hosts line (same key, broader hostname patterns) |
+| 4 | `/bin/sh: can't create /home/git/.ssh/known_hosts: Permission denied` | `cp /ssh/known_hosts ...` inherited the Secret's defaultMode 0400, breaking subsequent `>>` append | Switched to `cat /ssh/known_hosts > destination` — `cat` writes via shell's umask 022 → mode 644 |
+| 5 | `Host key verification failed` (again, despite awk-rewritten known_hosts) | At this point user pushed back on iterating blind. Direct evidence inspection of `kubectl get gitrepository flux-system -o yaml` revealed source-controller successfully connects via the SHORT name `forgejo-ssh.forge` — proving the FQDN switch was unnecessary all along. Earlier `nslookup forgejo-ssh.forge` returning NXDOMAIN was a busybox `nslookup` quirk (it doesn't apply /etc/resolv.conf search paths the way getaddrinfo() does) | Reverted REPO_URL to short name; dropped the awk FQDN-rewrite logic entirely. The short name matches the Secret's known_hosts entries so host-key verification passes naturally |
+| 6 | (final, working) | All real fixes accumulated: ConfigMap /etc/passwd + cat-not-cp + short Service DNS name. SSH connects, git fetch works, merger logic runs end-to-end | — |
+
+**Verified live (2026-04-25 16:55-16:57):**
+- ✓ `branch absent` exit-clean path (run #8)
+- ✓ `branches converged, no-op` path (run #10)
+- ✓ `fast-forward push` path (run #11) — main moved `d42c9ce` → `29ab2ab` via the merger pushing flux-image-updates HEAD as fast-forward
+
+**Cherry-pick replay path (cases of true human-vs-IUA divergence)** is well-tested logic but not exercised live — would require contrived scenario (human commit + IUA push without IUA rebasing first). Will be exercised naturally over time when the recurring pattern would have hit (no longer hits because the new architecture prevents it).
+
+**Lessons for future "git push from K8s pod" implementations:**
+1. Inspect what the working comparable does (in this case, source-controller's GitRepository spec) BEFORE assuming you need a different URL/config than what already works
+2. busybox `nslookup` is a poor proxy for actual DNS resolution; it does not apply /etc/resolv.conf search paths the same way getaddrinfo() does. If you need to test K8s DNS resolution from inside a pod, use a tool that wraps getaddrinfo (e.g., `getent hosts`)
+3. ConfigMap-mounted /etc/passwd via subPath is the canonical K8s pattern for runAsUser:N where N isn't in the container image's stock /etc/passwd
+4. PodSecurity restricted profile + drop-ALL caps means you cannot edit any root-owned file at runtime; design for read-only system files
+5. Secret-mounted files inherit defaultMode; using `cp` source→dest preserves the source mode. Use `cat src > dest` to write at the shell's umask instead
+
 ## Sources
 
-- [Flux docs — Automate image updates to Git](https://fluxcd.io/flux/guides/image-update/)
+- [Flux docs — Automate image updates to Git](https://fluxcd.io/flux/guides/image-update/) — push-branch separation reference
 - [Flux ImageUpdateAutomation CRD reference](https://fluxcd.io/flux/components/image/imageupdateautomations/)
-- [Phase 26-02 SUMMARY §"Deviation 2 — Rebase required"](../phases/26-flux-reconfiguration/26-02-SUMMARY.md)
-- This implementation: `/home/dev-server/homelab/clusters/homelab/image-automation/{image-update-automation.yaml, flux-image-updates-merger.yaml, kustomization.yaml}`
+- [Using a private Git host — Flux documentation](https://docs.fluxcd.io/en/1.18.0/guides/use-private-git-host.html) — known_hosts must include the connected hostname VERBATIM
+- [GitHub SSH Handshake failed: knownhosts key mismatch — fluxcd/flux2 Discussion #2097](https://github.com/fluxcd/flux2/discussions/2097)
+- [Phase 26-02 SUMMARY §"Deviation 2 — Rebase required"](../phases/26-flux-reconfiguration/26-02-SUMMARY.md) — the original recurring-pattern instance #1
+- This implementation (homelab repo): `/home/dev-server/homelab/clusters/homelab/image-automation/{image-update-automation.yaml, flux-image-updates-merger.yaml, kustomization.yaml}` — final working state at homelab `29ab2ab`
+- Live evidence — `kubectl get gitrepository flux-system -n flux-system -o yaml` (proves source-controller connects via short Service DNS `forgejo-ssh.forge`)
