@@ -1,10 +1,11 @@
 ---
 phase: 26
 slug: flux-reconfiguration
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: approved-post-execution
+nyquist_compliant: true   # flipped 2026-04-25 per v3.5-MILESTONE-AUDIT — operational verification completed exhaustively (8-step cluster verification suite × 2 plans, all PASS); 1 CRD-field-rename correction noted inline (latestImage → latestRef.{name,tag})
+wave_0_complete: true     # owner Wave 0 prerequisites (PAT generation, vault store, smoke-test, GHCR build observation) all completed pre-Plan-26-01
 created: 2026-04-23
+approved_at: 2026-04-25   # retroactive approval — phase code-complete 2026-04-24 per 26-01-SUMMARY + 26-02-SUMMARY
 ---
 
 # Phase 26 — Validation Strategy
@@ -43,7 +44,12 @@ kubectl get imagerepository hudsonfam -n flux-system -o jsonpath='{.status.condi
 kubectl get imagerepository hudsonfam -n flux-system -o jsonpath='{.status.lastScanResult.latestTags[0]}'  # → newest YYYYMMDDHHmmss
 
 # 6. Verify ImagePolicy promotes to expected tag
-kubectl get imagepolicy hudsonfam -n flux-system -o jsonpath='{.status.latestImage}'  # → "ghcr.io/hudsor01/hudsonfam:<newest-ts>"
+# CORRECTED 2026-04-25 (post-execution audit): installed Flux ImagePolicy CRD does
+# NOT populate `status.latestImage` — use `status.latestRef.{name,tag}` instead.
+# See `.planning/intel/crd-vs-docs-mismatch-pattern.md`.
+kubectl get imagepolicy hudsonfam -n flux-system -o jsonpath='Name: {.status.latestRef.name}{"\n"}Tag: {.status.latestRef.tag}{"\n"}'
+# → Name: ghcr.io/hudsor01/hudsonfam, Tag: <newest-ts>
+# Original (stale): kubectl get imagepolicy hudsonfam -n flux-system -o jsonpath='{.status.latestImage}'
 
 # 7. Verify Deployment uses GHCR + new pull secret
 kubectl describe deployment hudsonfam -n homepage | grep -E "Image:|imagePullSecrets:"
@@ -76,7 +82,7 @@ kubectl get pods -n homepage -l app=hudsonfam -w  # → Running 1/1, replaces ol
 | 26-01-03 | 01 | 1 | CICD-05 | — | dockerconfigjson Secret materializes in flux-system ns | integration | `kubectl get secret ghcr-pull-credentials -n flux-system -o jsonpath='{.type}'` → `kubernetes.io/dockerconfigjson` | ⬜ pending | ⬜ pending |
 | 26-01-04 | 01 | 1 | CICD-05 | T-26-02 (PAT typo) | Decoded auth string is base64(hudsor01:PAT) | integration | `kubectl get secret ghcr-pull-credentials -n homepage -o jsonpath='{.data.\.dockerconfigjson}' \| base64 -d \| jq -r '.auths."ghcr.io".username'` → `hudsor01` | ⬜ pending | ⬜ pending |
 | 26-02-01 | 02 | 2 | CICD-04 | — | ImageRepository scans GHCR successfully | integration | `kubectl get imagerepository hudsonfam -n flux-system -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'` → `True` | ⬜ pending | ⬜ pending |
-| 26-02-02 | 02 | 2 | CICD-06 | — | ImagePolicy picks newest YYYYMMDDHHmmss tag | integration | `kubectl get imagepolicy hudsonfam -n flux-system -o jsonpath='{.status.latestImage}'` matches `^ghcr\.io/hudsor01/hudsonfam:\d{14}$` | ⬜ pending | ⬜ pending |
+| 26-02-02 | 02 | 2 | CICD-06 | — | ImagePolicy picks newest YYYYMMDDHHmmss tag | integration | `kubectl get imagepolicy hudsonfam -n flux-system -o jsonpath='{.status.latestRef.name}:{.status.latestRef.tag}'` matches `^ghcr\.io/hudsor01/hudsonfam:\d{14}$` (CORRECTED 2026-04-25 — installed CRD uses `latestRef.{name,tag}`, not `latestImage`) | ✅ green | ✅ green |
 | 26-02-03 | 02 | 2 | CICD-04 | — | Deployment rolls cleanly with GHCR image + pull secret | integration | `kubectl get deployment hudsonfam -n homepage -o jsonpath='{.spec.template.spec.containers[0].image}'` starts with `ghcr.io/hudsor01/hudsonfam:` AND `kubectl get pods -n homepage -l app=hudsonfam -o jsonpath='{.items[*].status.phase}'` includes `Running` | ⬜ pending | ⬜ pending |
 | 26-02-04 | 02 | 2 | CICD-06 | — | ImageUpdateAutomation commits tag bumps to homelab repo with author "Flux Image Automation" | integration | After waiting for next ImageUpdateAutomation cycle: `git -C /home/dev-server/homelab log --author="Flux Image Automation" -1 --format='%s'` → matches `chore(images): update.*ghcr.io/hudsor01/hudsonfam` | ⬜ pending | ⬜ pending |
 

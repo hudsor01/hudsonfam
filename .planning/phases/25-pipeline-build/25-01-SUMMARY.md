@@ -38,6 +38,7 @@ decisions:
   - "Concurrency cancel-in-progress:true chosen over queue-behind — stale builds should die when newer main lands"
   - "No pull_request trigger (D-02) — excludes fork-pwn-request threat class entirely; workflow_dispatch covers manual rebuild need"
   - "Dockerfile unchanged this phase (D-09) — Phase 25 validates existing Dockerfile builds on GitHub-hosted runner (6.5GB/4-core vs Woodpecker 4Gi/2CPU limits); Dockerfile optimizations deferred"
+requirements-completed: [CICD-01, CICD-02, CICD-03]
 metrics:
   duration: "9m 17s"
   completed: "2026-04-23"

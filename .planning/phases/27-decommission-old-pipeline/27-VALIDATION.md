@@ -1,10 +1,11 @@
 ---
 phase: 27
 slug: decommission-old-pipeline
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: approved-post-execution
+nyquist_compliant: true   # flipped 2026-04-25 per v3.5-MILESTONE-AUDIT — operational verification completed exhaustively (7-check verification suite + 6 destructive-op confirmations, all PASS); 2 Rule 3 deviations auto-fixed (Woodpecker host correction; sandbox PAT extraction → owner-local-shell pivot per T-27-02)
+wave_0_complete: true     # owner Wave 0 prerequisites (FORGEJO_PAT + WOODPECKER_PAT generation, K8s Secret store) all completed pre-Plan-27-01
 created: 2026-04-24
+approved_at: 2026-04-25   # retroactive approval — phase code-complete 2026-04-25 per 27-01-SUMMARY
 ---
 
 # Phase 27 — Validation Strategy
