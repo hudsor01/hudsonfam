@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — Core Site
 status: completed
-last_updated: "2026-04-24T17:39:33.524Z"
-last_activity: "2026-04-24 — Phase 26 cluster cutover complete; ImageRepository scanned 46 tags, ImagePolicy promoted ghcr.io/hudsor01/hudsonfam:20260424023904, pod rolled cleanly. CICD-06 SC #5 (IUA commit on GHCR path) is observational-pending until next Phase 25 build produces a newer tag."
+last_updated: "2026-04-25T04:14:37.136Z"
+last_activity: "2026-04-25 — Phase 27 ops: `.woodpecker.yaml` deleted from GitHub main (commit `0eaacc6`); broken `default/imagerepository/hudsonfam` deleted (only `flux-system/hudsonfam` GHCR watcher remains); both `forgejo-registry-creds` Secrets deleted (`woodpecker-pipelines/forgejo-registry` preserved); Woodpecker REST DELETE on `/api/repos/2` HTTP 200; 6/6 Forgejo container versions HTTP 204 (4 timestamp tags + 2 sha256 manifest digests); pod still ready=true with 0 restarts."
 progress:
-  total_phases: 12
-  completed_phases: 7
-  total_plans: 42
-  completed_plans: 45
+  total_phases: 13
+  completed_phases: 8
+  total_plans: 43
+  completed_plans: 46
   percent: 100
 ---
 
@@ -395,7 +395,7 @@ None.
 | 24    | 24-04 | ~5m      | 2     | 4     | 2026-04-23T15:30:00Z |
 | 25    | 25-01 | 9m 17s   | 2     | 1     | 2026-04-23T20:21:27Z |
 
-**Planned Phase:** 27 (decommission-old-pipeline) — 1 plans — 2026-04-24T17:39:33.516Z
+**Planned Phase:** 28 (smoke-retroactive-uat) — 1 plans — 2026-04-25T04:14:37.131Z
 | Phase 22 P01 | ~4 minutes | 3 tasks | 3 files |
 | Phase 22 P04 | 1m 16s | 3 tasks | 1 files |
 | Phase 22 P05 | 2m 51s | 4 tasks | 3 files |
