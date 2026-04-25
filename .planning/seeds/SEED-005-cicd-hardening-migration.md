@@ -1,10 +1,13 @@
 ---
 id: SEED-005
-status: dormant
+status: closed
 planted: 2026-04-22
 planted_during: v3.0 Phase 21 production UAT (blocked by broken CI pipeline)
-trigger_when: Phase 21 is code-complete and ready to deploy to production, OR any future phase's production deployment is blocked by the Forgejo+Woodpecker pipeline, OR owner decides to close the Phase-21-UAT gap deliberately (not on an external block)
-scope: Medium (1-day focused infra sprint; ~4 hours hands-on)
+germinated: 2026-04-23 (v3.5 milestone activated; Phase 25 kicked off)
+closed: 2026-04-25 (v3.5 milestone CLOSED; Phase 28 retroactively closed all v3.0 prod-UAT debt; tag `v3.5-complete` on commit `f02440c`)
+closed_outcome: thesis fully executed — 6-moving-part Forgejo+Woodpecker pipeline (5 self-hosted) replaced with the CLAUDE.md-intended 2-moving-part GitHub Actions + GHCR pipeline (both vendor-managed). All 4 v3.5 phases (25/26/27/28) code-complete; 13/13 CICD-XX REQs satisfied. Forward-facing intel captured in `.planning/intel/crd-vs-docs-mismatch-pattern.md`.
+trigger_when: (CLOSED — no longer triggerable; original trigger criteria were "Phase 21 is code-complete and ready to deploy to production, OR any future phase's production deployment is blocked by the Forgejo+Woodpecker pipeline, OR owner decides to close the Phase-21-UAT gap deliberately")
+scope: Medium (1-day focused infra sprint; ~4 hours hands-on) — actual: ~3 days across 4 phases (2026-04-23 → 2026-04-25)
 ---
 
 # SEED-005: CI/CD hardening — migrate hudsonfam deploy to GitHub Actions + GHCR
