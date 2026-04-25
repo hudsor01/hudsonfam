@@ -14,7 +14,6 @@ import type {
   CompanyResearch,
   TailoredResume,
   SalaryIntelligence,
-  ArtifactFreshness,
   FreshJobDetail,
 } from "@/lib/jobs-db";
 import { STALE_THRESHOLDS } from "@/lib/job-freshness";

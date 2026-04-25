@@ -8,7 +8,7 @@ import EventCard from "@/components/public/event-card";
 import { EventsMiniCalendar } from "@/components/public/events-mini-calendar";
 
 export const metadata = {
-  title: "Events | The Hudson Family",
+  title: "Events",
   description: "Upcoming family events and gatherings",
 };
 

@@ -9,7 +9,7 @@ import UpdateCard from "@/components/public/update-card";
 import LoadMoreUpdates from "./load-more-updates";
 
 export const metadata = {
-  title: "Family Updates | The Hudson Family",
+  title: "Family Updates",
   description: "Latest updates from the Hudson family",
 };
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { SectionHeader } from "@/components/ui/section-header";
 
 export const metadata = {
-  title: "Photos | The Hudson Family",
+  title: "Photos",
   description: "Browse our family photo albums",
 };
 

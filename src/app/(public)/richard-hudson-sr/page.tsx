@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
-  title: "Richard Hudson Sr. — In Loving Memory | The Hudson Family",
+  title: "Richard Hudson Sr. — In Loving Memory",
   description:
     "Remembering Richard Hudson Sr. — a devoted father, mentor, and friend. View photos, watch tributes, and share your memories of Richard Hudson. A memorial tribute by the Hudson family in Dallas, Texas.",
   keywords: [
