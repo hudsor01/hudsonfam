@@ -1,15 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: — Core Site
-status: completed
-last_updated: "2026-04-25T04:14:37.136Z"
-last_activity: "2026-04-25 — Phase 27 ops: `.woodpecker.yaml` deleted from GitHub main (commit `0eaacc6`); broken `default/imagerepository/hudsonfam` deleted (only `flux-system/hudsonfam` GHCR watcher remains); both `forgejo-registry-creds` Secrets deleted (`woodpecker-pipelines/forgejo-registry` preserved); Woodpecker REST DELETE on `/api/repos/2` HTTP 200; 6/6 Forgejo container versions HTTP 204 (4 timestamp tags + 2 sha256 manifest digests); pod still ready=true with 0 restarts."
+milestone: v3.5
+milestone_name: CI/CD Hardening
+status: closed
+closed: "2026-04-25"
+last_updated: "2026-04-25T07:55:00.000Z"
+last_activity: "2026-04-25 — Phase 28 (v3.5-P4) CODE COMPLETE; v3.5 milestone CLOSED. All 4 CICD-10/11/12/13 REQs satisfied. CICD-10 smoke 11m13s vs 15-min budget (commit `e1ec19a`). CICD-11 CLAUDE.md §Deployment rewrite (commit `dda3af3`; 6/6 D-04 PASS). CICD-12 Plan 21-08 5/5 retroactive UAT signed off (commit `f1be1d0`) with 2 trivial inline fixes per CONTEXT D-09 (`12ce076` Radix a11y + `91a1705` metadata duplicate-suffix). CICD-13 Phase 22/23/24 8-check retroactive smoke (commits `33d9781`/`fbea63e`/`bae9a00`) — 2 PASS + 5 OBSERVATIONAL-PENDING-N8N + 2 N/A; 100% hudsonfam-side green; n8n-side gaps seeded as SEED-006. BUG-1 Cloudflare Rocket Loader incident captured to SEED-007 (owner remediated zone-config). v3.5 milestone summary `.planning/milestones/v3.5-cicd-hardening/v3.5-MILESTONE-SUMMARY.md` (commit `f02440c`); lightweight tag `v3.5-complete` applied + pushed to origin."
 progress:
   total_phases: 13
-  completed_phases: 8
-  total_plans: 43
-  completed_plans: 46
+  completed_phases: 13
+  total_plans: 47
+  completed_plans: 47
   percent: 100
 ---
 
@@ -17,15 +18,22 @@ progress:
 
 ## Current Position
 
-**Milestone v3.5 — CI/CD Hardening — ACTIVE (activated 2026-04-23).**
+**Milestone v3.5 — CI/CD Hardening — CLOSED 2026-04-25.** Tag `v3.5-complete` pushed to origin.
 
-v3.0 AI Integration closed code-complete (5/5 phases). All accumulated prod UAT deferred to v3.5-P4 (Phase 28). v3.5 is the permanent fix for the "CI breaks every time" DX pattern that blocked Phase 21 production UAT on 2026-04-22.
+All 4 v3.5 phases (25/26/27/28) code-complete; 13 CICD-XX requirements satisfied. SEED-005 thesis fully executed — the 6-moving-part Forgejo+Woodpecker pipeline (5 self-hosted) is permanently retired, replaced with the CLAUDE.md-intended 2-moving-part GitHub Actions + GHCR pipeline (both vendor-managed). v3.0 prod-UAT debt accumulated since 2026-04-22 cleared via Phase 28 CICD-12 + CICD-13 retroactive UAT.
 
-**Active scope:** 4 phases (25-28) covering `.github/workflows/build-and-push.yml` creation, Flux GHCR reconfiguration, old-pipeline decommission, and end-to-end smoke + retroactive UAT for all deferred v3.0 verifications. 13 CICD-XX requirements total.
+Phase: 28 (v3.5-P4 Smoke + Retroactive UAT) — **CODE COMPLETE 2026-04-25** (1/1 plans; CICD-10/11/12/13 satisfied)
+Plan: 28-01 ✓ (Phase 28 SUMMARY commit `d39541c`; v3.5 milestone summary commit `f02440c`; tag `v3.5-complete`)
+Status: **v3.5 milestone CLOSED** — v3.0 milestone now fully shippable (was previously code-complete, deploy-blocked; the block clears with v3.5 close). Next: v4.0 planning when owner is ready.
 
-Phase: 27 (v3.5-P3 Decommission Old Pipeline) — **CODE COMPLETE 2026-04-25** (1/1 plans; 6 destructive ops verified)
-Plan: 27-01 ✓ (hudsonfam SUMMARY commit `ec0ba52`; 7-check verification suite all PASS; CICD-07/08/09 satisfied)
-Status: Phase 27 code complete — **Phase 28 next** (final v3.5 phase: end-to-end smoke + CLAUDE.md §Deployment rewrite + retroactive UAT for Phases 21/22/23/24). Owner cleanup actions (non-blocking): `kubectl delete secret phase-27-pats -n secrets`; rotate Woodpecker + Forgejo PATs at convenience.
+**Owner-facing post-milestone checklist (none blocking; all action-when-convenient):**
+
+- `kubectl delete secret phase-27-pats -n secrets` (Phase 27 cleanup)
+- Rotate or revoke Woodpecker + Forgejo PATs (Phase 27 decommissioned the old pipeline; PATs no longer in active use)
+- Triage GitHub Dependabot alerts (3 vulns — 1 high + 2 moderate at https://github.com/hudsor01/hudsonfam/security/dependabot)
+- GHCR storage retention policy decision (older 14-digit tags from old Forgejo pipeline still accumulating)
+- Optional SEED-006 followup (n8n-side hardening; ~2-4h homelab-repo PR)
+- Optional SEED-007 followup (Cloudflare Rocket Loader synthetic check; ~30-60m external monitor)
 Last activity: 2026-04-25 — Phase 27 ops: `.woodpecker.yaml` deleted from GitHub main (commit `0eaacc6`); broken `default/imagerepository/hudsonfam` deleted (only `flux-system/hudsonfam` GHCR watcher remains); both `forgejo-registry-creds` Secrets deleted (`woodpecker-pipelines/forgejo-registry` preserved); Woodpecker REST DELETE on `/api/repos/2` HTTP 200; 6/6 Forgejo container versions HTTP 204 (4 timestamp tags + 2 sha256 manifest digests); pod still ready=true with 0 restarts.
 
 **Phase 27 deviations captured (both Rule 3; documented in 27-01-SUMMARY.md):**
@@ -69,7 +77,9 @@ Progress: [######    ] 75% (Phases 25/26/27 of 4 v3.5 phases code-complete; Phas
 - v3.0 research: STACK, ARCHITECTURE, FEATURES, PITFALLS, SUMMARY — all HIGH confidence
 - v3.0 requirements defined: 24 v1 REQs across AI Artifact Rendering, Owner-Triggered Actions, Safety & Hardening, Data Layer
 - v3.0 roadmap: 5 phases (20–24) derived from requirements; 24/24 requirements mapped to phases
-- 41 shadcn/ui components, 268 tests passing, build clean
+- v3.0 — AI Integration: Code-complete 2026-04-23 (5/5 phases); fully shippable post-v3.5 close (prod UAT signed off via Phase 28 CICD-12 + CICD-13)
+- v3.5 — CI/CD Hardening: **CLOSED 2026-04-25** (4/4 phases, 13/13 CICD REQs; tag `v3.5-complete` pushed)
+- 41 shadcn/ui components, 564 tests passing, build clean
 - Zero hardcoded Tailwind colors in any .tsx file
 
 ## What's Next

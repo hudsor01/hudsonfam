@@ -247,7 +247,7 @@ Plans:
 | 25. Pipeline Build (v3.5-P1) | 1/1 | Code complete (first GHCR build observational verification pending owner browser check) | 2026-04-23 |
 | 26. Flux Reconfiguration (v3.5-P2) | 2/2 | Code complete 2026-04-24 (Plan 26-01 + 26-02; cluster cutover live — pod running on ghcr.io/hudsor01/hudsonfam:20260424023904 with ghcr-pull-credentials; CICD-04/05/06 satisfied; CICD-06 SC #5 IUA-on-GHCR-path observational-pending until next Phase 25 build) | 2026-04-24 |
 | 27. Decommission Old Pipeline (v3.5-P3) | 1/1 | Code complete 2026-04-25 (Plan 27-01; 6 destructive ops verified; 7/7 verification suite PASS; CICD-07/08/09 satisfied; SUMMARY ec0ba52; 2 Rule 3 deviations captured — Woodpecker host correction + sandbox PAT-extract pivot) | 2026-04-25 |
-| 28. Smoke + Retroactive UAT (v3.5-P4) | 0/1 | Planned 2026-04-25 | — |
+| 28. Smoke + Retroactive UAT (v3.5-P4) | 1/1 | Code complete 2026-04-25 (Plan 28-01; CICD-10 smoke 11m13s vs 15-min budget; CICD-11 CLAUDE.md §Deployment rewrite; CICD-12 Plan 21-08 5/5 retroactive UAT signed off + 2 trivial inline fixes per D-09; CICD-13 Phase 22/23/24 8-check retroactive smoke = 2 PASS + 5 OBSERVATIONAL-PENDING-N8N + 2 N/A → 100% hudsonfam-side green; SEED-006 + SEED-007 planted dormant; v3.5-complete tag pushed; v3.5 milestone CLOSED) | 2026-04-25 |
 
 ### Deferred production UAT
 

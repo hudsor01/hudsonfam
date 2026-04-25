@@ -28,10 +28,10 @@ Each requirement maps to a roadmap phase and is observationally verifiable after
 
 ### End-to-End Smoke + Retroactive UAT (v3.5-P4)
 
-- [ ] **CICD-10**: A no-op commit to `main` triggers the full pipeline end-to-end (GitHub Actions build → GHCR push → Flux detects new tag → Flux updates manifest → K3s rolls the deployment → `https://thehudsonfam.com` serves the new image); entire cycle completes in under 15 minutes
-- [ ] **CICD-11**: CLAUDE.md §Deployment section is rewritten to reflect the live pipeline (GitHub Actions + GHCR + Flux) — documented commands + ExternalSecret reference + troubleshooting notes; matches reality
-- [ ] **CICD-12**: Plan 21-08 retroactive UAT executes successfully against the deployed Phase 21 code (empty-state copy, link-out external-link icon, quality badge render-paths); all 5 Phase 21 features confirmed live
-- [ ] **CICD-13**: Retroactive UAT smoke-tests each deferred v3.0 phase's prod verification: Phase 22 salary intelligence defensive render (renders null branch cleanly; schema-drift guard holds); Phase 23 owner-triggered workflows (HMAC sign → n8n accepts signed calls; sentinel errors on failure); Phase 24 regenerate expansion (all 3 regenerate buttons produce polling state transitions end-to-end)
+- [x] **CICD-10**: A no-op commit to `main` triggers the full pipeline end-to-end (GitHub Actions build → GHCR push → Flux detects new tag → Flux updates manifest → K3s rolls the deployment → `https://thehudsonfam.com` serves the new image); entire cycle completes in under 15 minutes — Code complete 2026-04-25 (Phase 28 / Plan 28-01 Task 28-01-01: empty commit `e1ec19a` traveled end-to-end in 11m13s; pod rolled to `ghcr.io/hudsor01/hudsonfam:20260425042539`)
+- [x] **CICD-11**: CLAUDE.md §Deployment section is rewritten to reflect the live pipeline (GitHub Actions + GHCR + Flux) — documented commands + ExternalSecret reference + troubleshooting notes; matches reality — Code complete 2026-04-25 (Phase 28 / Plan 28-01 Task 28-01-02: commit `dda3af3`; 6/6 D-04 live-revalidation items PASS)
+- [x] **CICD-12**: Plan 21-08 retroactive UAT executes successfully against the deployed Phase 21 code (empty-state copy, link-out external-link icon, quality badge render-paths); all 5 Phase 21 features confirmed live — Code complete 2026-04-25 (Phase 28 / Plan 28-01 Task 28-01-03: 5/5 PASS, Plan 21-08 SUMMARY status flipped DEFERRED→COMPLETE; commit `f1be1d0`; 2 trivial inline fixes per CONTEXT D-09 — Radix a11y `12ce076` + metadata duplicate-suffix `91a1705`)
+- [x] **CICD-13**: Retroactive UAT smoke-tests each deferred v3.0 phase's prod verification: Phase 22 salary intelligence defensive render (renders null branch cleanly; schema-drift guard holds); Phase 23 owner-triggered workflows (HMAC sign → n8n accepts signed calls; sentinel errors on failure); Phase 24 regenerate expansion (all 3 regenerate buttons produce polling state transitions end-to-end) — Code complete 2026-04-25 (Phase 28 / Plan 28-01 Task 28-01-04: 8 checks = 2 PASS + 5 OBSERVATIONAL-PENDING-N8N + 2 N/A → 100% hudsonfam-side green; per-phase SUMMARY commits `33d9781`/`fbea63e`/`bae9a00`; n8n-side gaps inherited from v3.0 ship state, seeded as SEED-006-n8n-hardening-followup.md per D-09)
 
 ## Future Requirements
 
@@ -71,10 +71,10 @@ Mapped to roadmap phases 2026-04-23 by owner-authored plan.
 | CICD-07 | Phase 27 (v3.5-P3) / Plan 27-01 | Code complete (2026-04-25) — broken default IR deleted; only flux-system/hudsonfam GHCR watcher remains |
 | CICD-08 | Phase 27 (v3.5-P3) / Plan 27-01 | Code complete (2026-04-25) — `.woodpecker.yaml` deleted (commit `0eaacc6` to GitHub main); Woodpecker repo dereg via REST DELETE HTTP 200 (host corrected from `woodpecker.homelab` → `ci.thehudsonfam.com` at runtime) |
 | CICD-09 | Phase 27 (v3.5-P3) / Plan 27-01 | Code complete (2026-04-25) — both `forgejo-registry-creds` Secrets deleted; 6/6 Forgejo container versions HTTP 204; chose DELETE over retention per CONTEXT D-05 |
-| CICD-10 | Phase 28 (v3.5-P4) | Pending |
-| CICD-11 | Phase 28 (v3.5-P4) | Pending |
-| CICD-12 | Phase 28 (v3.5-P4) | Pending |
-| CICD-13 | Phase 28 (v3.5-P4) | Pending |
+| CICD-10 | Phase 28 (v3.5-P4) / Plan 28-01 | Code complete (2026-04-25) — empty smoke commit `e1ec19a` traveled GitHub→GHCR→Flux→K3s in 11m13s vs 15-min budget; pod on `ghcr.io/hudsor01/hudsonfam:20260425042539` |
+| CICD-11 | Phase 28 (v3.5-P4) / Plan 28-01 | Code complete (2026-04-25) — CLAUDE.md §Deployment rewrite commit `dda3af3` (lines 141-163 → ~50 lines new); 6/6 D-04 live-revalidation items PASS |
+| CICD-12 | Phase 28 (v3.5-P4) / Plan 28-01 | Code complete (2026-04-25) — Plan 21-08 5/5 retroactive UAT signed off (commit `f1be1d0`); status DEFERRED→COMPLETE; 2 trivial inline fixes per D-09 (Radix a11y `12ce076` + metadata duplicate-suffix `91a1705`) |
+| CICD-13 | Phase 28 (v3.5-P4) / Plan 28-01 | Code complete (2026-04-25) — Phase 22/23/24 8-check retroactive smoke = 2 PASS + 5 OBSERVATIONAL-PENDING-N8N + 2 N/A; 100% hudsonfam-side green; n8n-side gaps documented as SEED-006-n8n-hardening-followup.md per D-09 (inherited v3.0 ship state, no new regression) |
 
 **Coverage:**
 - v3.5 requirements: 13 total
