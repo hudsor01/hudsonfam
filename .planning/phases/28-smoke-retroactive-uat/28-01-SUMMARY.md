@@ -51,7 +51,7 @@ requirements-completed:
   - CICD-10 (no-op smoke 11m13s vs 15-min budget)
   - CICD-11 (CLAUDE.md §Deployment rewrite — commit dda3af3)
   - CICD-12 (Plan 21-08 5/5 retroactive UAT signed off)
-  - CICD-13 (Phase 22/23/24 8-check retroactive smoke executed; 2/2 PASS + 5 OBSERVATIONAL-PENDING-N8N + 2 N/A; SEED-006 seeded)
+  - CICD-13 (Phase 22/23/24 8-check retroactive smoke executed; 2/8 PASS + 4/8 OBSERVATIONAL-PENDING-N8N + 2/8 N/A; SEED-006 seeded)
 duration: ~3h (1 owner-driven smoke verify + 1 docs apply + ~2h agent-driven UAT including 2 deploy cycles)
 ---
 
@@ -59,7 +59,7 @@ duration: ~3h (1 owner-driven smoke verify + 1 docs apply + ~2h agent-driven UAT
 
 ## Outcome
 
-v3.5-P4 ships the final layer of the CI/CD hardening milestone. CICD-10 smoke proved the GHCR+Flux pipeline travels end-to-end in 11 min 13s (vs 15-min budget). CICD-11 rewrote CLAUDE.md §Deployment to match observable reality (50 lines, 6/6 D-04 live-revalidation items PASS). CICD-12 + CICD-13 retroactive UAT closed the v3.0 prod-UAT debt accumulated since 2026-04-22 — Plan 21-08 (5/5 checks PASS) + Phase 22/23/24 (8 checks: 2 PASS + 5 OBSERVATIONAL-PENDING-N8N + 2 N/A — 100% hudsonfam-side green; n8n-side gaps inherited from v3.0 ship state with no new regression introduced).
+v3.5-P4 ships the final layer of the CI/CD hardening milestone. CICD-10 smoke proved the GHCR+Flux pipeline travels end-to-end in 11 min 13s (vs 15-min budget). CICD-11 rewrote CLAUDE.md §Deployment to match observable reality (50 lines, 6/6 D-04 live-revalidation items PASS). CICD-12 + CICD-13 retroactive UAT closed the v3.0 prod-UAT debt accumulated since 2026-04-22 — Plan 21-08 (5/5 checks PASS) + Phase 22/23/24 (8 checks: 2 PASS + 4 OBSERVATIONAL-PENDING-N8N + 2 N/A — 100% hudsonfam-side green; n8n-side gaps inherited from v3.0 ship state with no new regression introduced).
 
 **v3.5 milestone CLOSED.** SEED-005 thesis fully executed; the broken Forgejo+Woodpecker pipeline is replaced with the CLAUDE.md-intended GitHub Actions + GHCR pipeline.
 
@@ -70,7 +70,7 @@ v3.5-P4 ships the final layer of the CI/CD hardening milestone. CICD-10 smoke pr
 - **Commit:** `e1ec19a` — empty `smoke(28): v3.5-P4 end-to-end pipeline verification`
 - **Pipeline path:** GitHub Actions `build-and-push.yml` → GHCR new tag `20260425042539` → Flux ImageRepository scan (force-reconciled) → ImagePolicy promote → ImageUpdateAutomation → homelab `apps/hudsonfam/kustomization.yaml` setter → Flux Kustomization apply → K3s rolling update
 - **Total elapsed:** 11 min 13s (T-0 = 2026-04-25T04:25:17Z; pod ready on new tag at ~T+11m13s)
-- **Result:** PASS — 11m13s well under 15-min CICD-10 SC budget; 0 failure modes triggered; 100% warm-cache build path validated end-to-end
+- **Result:** PASS — 11m13s well under 15-min CICD-10 SC budget; 0 failure modes triggered; warm-cache build path observed for one cycle (`type=gha,mode=max` cache-hit semantic verified end-to-end)
 - **REQ:** CICD-10 → Code complete
 
 ### Task 28-01-02: CICD-11 CLAUDE.md §Deployment rewrite
@@ -125,7 +125,7 @@ v3.5-P4 ships the final layer of the CI/CD hardening milestone. CICD-10 smoke pr
 
 ### Task 28-01-05: Phase 28 SUMMARY + v3.5 milestone close-out (this task)
 
-- **Commits:** `<SHA-this-commit>` Phase 28 plan SUMMARY (this file) + `<SHA-milestone-commit>` v3.5 milestone summary
+- **Commits:** `d39541c` Phase 28 plan SUMMARY (this file) + `f02440c` v3.5 milestone summary
 - **Tag:** `v3.5-complete` (lightweight; rollback via `git tag -d v3.5-complete && git push origin :refs/tags/v3.5-complete`)
 - **REQ:** Phase 28 SUMMARY + v3.5 milestone close-out delivered
 
@@ -152,11 +152,11 @@ v3.5-P4 ships the final layer of the CI/CD hardening milestone. CICD-10 smoke pr
 | **CICD-10** | No-op commit travels end-to-end in <15 min | Task 28-01-01: 11m13s elapsed; pod on `ghcr.io/hudsor01/hudsonfam:20260425042539` | ✓ Code complete 2026-04-25 |
 | **CICD-11** | CLAUDE.md §Deployment rewritten to live-pipeline truth | Task 28-01-02: commit `dda3af3`; live-state re-validation per D-04 (6/6 PASS) | ✓ Code complete 2026-04-25 |
 | **CICD-12** | Plan 21-08 retroactive UAT signed off | Task 28-01-03: 5/5 PASS; SUMMARY commit `f1be1d0`; status flipped to ✓ COMPLETE; 2 inline fixes (`12ce076`, `91a1705`) per D-09 | ✓ Code complete 2026-04-25 |
-| **CICD-13** | Phase 22/23/24 retroactive smoke executed | Task 28-01-04: 8 checks (2/8 PASS + 5/8 OBSERVATIONAL-PENDING-N8N + 2/8 N/A); per-phase SUMMARY commits `33d9781` / `fbea63e` / `bae9a00`; n8n-side gaps seeded as SEED-006 | ✓ Code complete 2026-04-25 (hudsonfam-side green; n8n-side PENDING per D-09) |
+| **CICD-13** | Phase 22/23/24 retroactive smoke executed | Task 28-01-04: 8 checks (2/8 PASS + 4/8 OBSERVATIONAL-PENDING-N8N + 2/8 N/A); per-phase SUMMARY commits `33d9781` / `fbea63e` / `bae9a00`; n8n-side gaps seeded as SEED-006 | ✓ Code complete 2026-04-25 (hudsonfam-side green; n8n-side PENDING per D-09) |
 
 ## n8n-side gap inventory (cross-ref SEED-006)
 
-CICD-13 surfaced 4 sentinel-error outcomes (23.A, 23.B, 24.A) and 1 client-PASS+n8n-PENDING (23.C). All are **OBSERVATIONAL-PENDING-N8N** per CONTEXT D-09 — the hudsonfam-side state machine works end-to-end (Server Actions fire, signed webhooks dispatch, sentinel cascade renders, polling state machine transitions cleanly), but the n8n-side endpoints either don't exist or aren't responding 2xx.
+CICD-13 surfaced 3 sentinel-error outcomes (23.A, 23.B, 24.A) and 1 client-PASS+n8n-PENDING (23.C) — 4 OBSERVATIONAL-PENDING-N8N total. All are **OBSERVATIONAL-PENDING-N8N** per CONTEXT D-09 — the hudsonfam-side state machine works end-to-end (Server Actions fire, signed webhooks dispatch, sentinel cascade renders, polling state machine transitions cleanly), but the n8n-side endpoints either don't exist or aren't responding 2xx.
 
 This is **inherited v3.0 ship state, not a v3.5 regression.** Phase 23 + Phase 24 SUMMARYs explicitly flagged "Awaiting Upstream homelab-repo PR" at v3.0 close (2026-04-23); that PR was never made. Phase 28 confirms the gap is still open and seeds the followup as `SEED-006-n8n-hardening-followup.md` (dormant; trigger when owner decides to close the safety chain).
 
@@ -221,7 +221,7 @@ These items are in scope for the OWNER (not Claude) to action when convenient. N
 - [x] n8n-gap inventory cross-references SEED-006
 - [x] Threat-model verifications (T-28-01..T-28-05) present with disposition outcomes
 - [x] BUG-1 (Cloudflare Rocket Loader) documented as deviation with SEED-007 cross-reference
-- [x] Owner-facing post-milestone checklist present (6 items per D-12 + bonus SEED-007 item)
+- [x] Owner-facing post-milestone checklist present (6 items — 1 more than D-12's 4-5 spec; SEED-007 item integrated as the 6th)
 - [x] All per-task outcomes section present (28-01-01 through 28-01-05)
 - [x] Per-phase 22/23/24 + 21-08 SUMMARY commits exist (`f1be1d0`, `33d9781`, `fbea63e`, `bae9a00`)
 - [x] SEED-006 + SEED-007 created (both dormant; commit `bae9a00`)
