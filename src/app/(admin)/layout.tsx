@@ -1,11 +1,26 @@
+import { Suspense } from "react";
 import Link from "next/link";
+import { connection } from "next/server";
 import { requireRole } from "@/lib/session";
 
-export default async function AdminLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // The owner-only auth check (requireRole) is an uncached session lookup;
+  // under Cache Components it must sit inside a <Suspense> boundary so it
+  // doesn't block the route's static shell. Auth runs server-side before any
+  // protected content renders (awaited inside AdminShell).
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <AdminShell>{children}</AdminShell>
+    </Suspense>
+  );
+}
+
+async function AdminShell({ children }: { children: React.ReactNode }) {
+  await connection();
   await requireRole(["owner"]);
 
   return (
@@ -19,7 +34,6 @@ export default async function AdminLayout({
         </div>
         <div className="flex gap-4 text-sm text-muted-foreground">
           <Link href="/admin" className="hover:text-foreground transition-colors">Overview</Link>
-          <Link href="/admin/jobs" className="hover:text-foreground transition-colors">Jobs</Link>
           <Link href="/" className="hover:text-foreground transition-colors">Site</Link>
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
         </div>
