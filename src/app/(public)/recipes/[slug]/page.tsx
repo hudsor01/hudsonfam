@@ -119,9 +119,9 @@ export default async function RecipePage({ params }: PageProps) {
         <h1 className="text-3xl sm:text-4xl font-serif text-foreground font-normal mb-3 text-balance">
           {title}
         </h1>
-        <p className="text-muted-foreground text-pretty">
-          From {contributor}
-        </p>
+        {contributor && (
+          <p className="text-muted-foreground text-pretty">From {contributor}</p>
+        )}
         {sourceNote && (
           <p className="text-muted-foreground text-sm italic mt-1 text-pretty">
             {sourceNote}
@@ -214,7 +214,7 @@ export default async function RecipePage({ params }: PageProps) {
             &larr; Back to Hudson Recipes
           </Link>
           <p className="text-xs text-text-dim">
-            Preserved from {contributor}
+            {contributor ? `Preserved from ${contributor}` : "Hudson Recipes"}
           </p>
         </div>
       </footer>

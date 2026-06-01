@@ -21,6 +21,7 @@ export interface RecipeFrontmatter {
   dateAdded: string;
   status: RecipeStatus;
   reviewNotes: string[];
+  order: number;
 }
 
 export interface RecipeMeta {
@@ -54,7 +55,7 @@ export function normalizeFrontmatter(
     title: (data.title as string) || slug,
     category: (data.category as string) || "Uncategorized",
     scans: toStringArray(data.scans),
-    contributor: (data.contributor as string) || "Grandma Hudson",
+    contributor: (data.contributor as string) || "",
     sourceNote: (data.sourceNote as string) || null,
     servings: (data.servings as string) || null,
     prepTime: (data.prepTime as string) || null,
@@ -65,6 +66,7 @@ export function normalizeFrontmatter(
     dateAdded: (data.dateAdded as string) || new Date().toISOString().split("T")[0],
     status: data.status === "published" ? "published" : "draft",
     reviewNotes: toStringArray(data.reviewNotes),
+    order: Number.isFinite(Number(data.order)) ? Number(data.order) : 999999,
   };
 }
 
@@ -114,10 +116,11 @@ async function readAllRecipes(): Promise<RecipeMeta[]> {
     .filter((r) => r.status === "fulfilled")
     .map((r) => (r as PromiseFulfilledResult<RecipeMeta>).value);
 
-  // Sort by title ascending for a predictable, browsable order.
-  recipes.sort((a, b) =>
-    a.frontmatter.title.localeCompare(b.frontmatter.title)
-  );
+  // Sort by book order (the `order` field); fall back to title.
+  recipes.sort((a, b) => {
+    const d = a.frontmatter.order - b.frontmatter.order;
+    return d !== 0 ? d : a.frontmatter.title.localeCompare(b.frontmatter.title);
+  });
 
   return recipes;
 }
@@ -177,13 +180,17 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
   }
 }
 
+/** Categories in book order (first appearance), since recipes are order-sorted. */
 export async function getAllCategories(): Promise<string[]> {
   const recipes = await getPublishedRecipes();
-  const categorySet = new Set<string>();
+  const seen = new Set<string>();
+  const ordered: string[] = [];
   for (const recipe of recipes) {
-    if (recipe.frontmatter.category) {
-      categorySet.add(recipe.frontmatter.category);
+    const c = recipe.frontmatter.category;
+    if (c && !seen.has(c)) {
+      seen.add(c);
+      ordered.push(c);
     }
   }
-  return Array.from(categorySet).sort();
+  return ordered;
 }
