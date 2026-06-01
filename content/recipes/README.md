@@ -42,35 +42,49 @@ detail page — clear them before publishing.
    banner appears — compare against the scan and fix any issues.
 7. **Publish.** Set `status: "published"` and clear `reviewNotes`.
 
+## File naming convention
+
+The source book (Modern Priscilla Cook Book) puts **several recipes on each
+page**, so we name at two levels:
+
+- **Page images — one file per photographed page**, named
+  `p<NN>-<section>.jpeg` (book page number + section), stored in
+  `public/images/recipes/_pages/`. Examples: `p23-quick-breads.jpeg`,
+  `p42-biscuits-and-rolls.jpeg`. This keeps the originals traceable; page
+  numbers repeat across sections, so the section suffix keeps them unique.
+- **Recipes — one MDX file per recipe**, slug = the recipe name
+  (`spoon-bread-no-2.mdx` → `/recipes/spoon-bread-no-2`). Several recipes from
+  the same page all point their `scans` at that one shared page image. The
+  recipe *name* lives in the slug (searchable in the listing); the *image*
+  filename only needs to identify the page.
+
 ## Bulk batch loop
 
 Designed for digitizing hundreds of pages, then typing them up over time:
 
-1. Drop raw scan photos into `public/images/recipes/_inbox/`.
-2. **Optimize each batch** (downscale to ≤2000px, re-encode to JPEG):
-
-   ```sh
-   bun run optimize:scan <slug>
-   # e.g.
-   bun run optimize:scan grandma-hudson-apple-pie
-   ```
-
-3. **Scaffold the MDX** (scans auto-filled, `status: "draft"`):
-
-   ```sh
-   bun run scaffold:recipe <slug>
-   ```
-
-   The script reads the images already present in
-   `public/images/recipes/<slug>/`, populates `scans`, and writes
-   `content/recipes/<slug>.mdx` with empty ingredient/instruction arrays.
-
-4. **Review in `bun dev`.** Visit `/recipes/<slug>`. The draft banner is
-   visible only in development — compare transcription to scan, fix errors, and
-   add `reviewNotes` for anything uncertain.
-
-5. **Publish.** Set `status: "published"` (and clear `reviewNotes`) once
+1. **Drop photos** into `public/images/recipes/_inbox/` (in page order).
+2. **Rename each photo to its page** — `p<NN>-<section>.jpeg` — so the original
+   is identifiable at a glance instead of `IMG_2701.jpeg`. Read the page number
+   printed on the page and its section heading. Multi-recipe pages stay as one
+   image.
+3. **Optimize** the renamed pages to ≤2000px and move them into
+   `public/images/recipes/_pages/`. (`bun run optimize:scan <slug>` handles the
+   downscale for a per-slug folder; for shared page images the assistant
+   optimizes the `_pages/` files directly during transcription.)
+4. **Create one recipe MDX per recipe on the page** (slug = recipe name),
+   `status: "draft"`, with `scans` pointing at the shared page image, e.g.
+   `scans: ["/images/recipes/_pages/p23-quick-breads.jpeg"]`. Transcribe the
+   `ingredients`/`instructions` verbatim; add `reviewNotes` for anything
+   uncertain.
+5. **Review in `bun dev`.** Visit each `/recipes/<slug>`. The draft banner is
+   visible only in development — compare transcription to scan and fix errors.
+6. **Publish.** Set `status: "published"` (and clear `reviewNotes`) once
    verified. The recipe goes live on the next build.
+
+> The `bun run scaffold:recipe <slug>` helper assumes the simpler one-folder-
+> per-recipe layout (`public/images/recipes/<slug>/`) and auto-fills `scans`
+> from images in that folder. For shared page images, set `scans` to the
+> `_pages/` path by hand (or let the assistant wire it up).
 
 Check overall progress at any time:
 
