@@ -303,3 +303,48 @@ Plans:
 - Phase 28 (v3.5-P4 Smoke + Retroactive UAT): 11m13s end-to-end smoke; CLAUDE.md §Deployment rewrite; Plan 21-08 + Phase 22/23/24 retroactive UAT closed v3.0 prod-UAT debt — 1 plan, 4 REQs, 2026-04-25
 
 </details>
+
+---
+
+## v4.0 — Cloud Re-platform & Recipes Experience (🚧 Active — started 2026-06-01)
+
+**Goal:** Get thehudsonfam.com back online on managed cloud (homelab down indefinitely after a flood), remove the job-search subsystem entirely, and make the 1,000-recipe collection genuinely usable for the family.
+
+**Locked stack (all free):** Vercel (host) · Neon (Postgres) · Cloudflare R2 (images) · better-auth on Postgres (no Redis) · Cloudflare DNS → Vercel.
+
+Phase numbering continues from v3.5 (last phase 28).
+
+### Phase 29 — Decommission Job Pipeline
+
+Remove all job-search code, deps, env, tests, admin UI, and tooling. Self-contained: the app must build and the test suite stay green after the subsystem is gone.
+
+REQs: JOB-01..07
+
+| Plan | Scope | Status |
+|------|-------|--------|
+| 29-01 | Delete job admin UI + API routes + nav entry | Pending |
+| 29-02 | Delete job lib modules + tests + schema-drift tooling; prune deps; purge env | Pending |
+
+### Phase 30 — Cloud Re-platform
+
+De-homelab the app: Prisma → Neon, drop Redis, images → Cloudflare R2, park the homelab-monitoring admin, fix the lockfile, deploy to Vercel, cut DNS.
+
+REQs: CLOUD-01..08
+
+| Plan | Scope | Status |
+|------|-------|--------|
+| 30-01 | Prisma → Neon; drop Redis (better-auth on Postgres); fix bun.lock | Pending |
+| 30-02 | Images → Cloudflare R2; park homelab-monitoring admin | Pending |
+| 30-03 | Remove K8s/Flux/Docker deploy artifacts; Vercel deploy; Cloudflare DNS → Vercel; live boot verification | Pending |
+
+### Phase 31 — Recipes Experience
+
+The UI/UX layer over the finished 1,000-recipe collection: search, ingredient checkboxes, print view, breadcrumbs+prev/next, build-your-own-menu.
+
+REQs: RECIPE-01..05
+
+| Plan | Scope | Status |
+|------|-------|--------|
+| 31-01 | Recipe search (cmdk) + breadcrumbs + prev/next within chapter | Pending |
+| 31-02 | Ingredient/step checkboxes (localStorage) + print/kitchen view | Pending |
+| 31-03 | Build-your-own-menu: add-to-menu, floating indicator, /my-menu page (localStorage) | Pending |
