@@ -82,7 +82,7 @@ export function filterByVisibility(
   return recipes.filter((r) => r.frontmatter.status === "published");
 }
 
-export async function getAllRecipes(): Promise<RecipeMeta[]> {
+async function readAllRecipes(): Promise<RecipeMeta[]> {
   let files: string[];
   try {
     files = await fs.readdir(RECIPES_DIR);
@@ -122,6 +122,24 @@ export async function getAllRecipes(): Promise<RecipeMeta[]> {
   return recipes;
 }
 
+/** Public listing source: published always; drafts also included under `bun dev`. */
+export async function getAllRecipes(): Promise<RecipeMeta[]> {
+  const all = await readAllRecipes();
+  return filterByVisibility(all, { includeDrafts: includeDrafts() });
+}
+
+/** Published recipes only, regardless of environment (listing grid + sitemap). */
+export async function getPublishedRecipes(): Promise<RecipeMeta[]> {
+  const all = await readAllRecipes();
+  return all.filter((r) => r.frontmatter.status === "published");
+}
+
+/** Draft recipes only (dev-only "needs review" section). */
+export async function getDraftRecipes(): Promise<RecipeMeta[]> {
+  const all = await readAllRecipes();
+  return all.filter((r) => r.frontmatter.status === "draft");
+}
+
 export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
   // Prevent path traversal: reject slugs with separators, dot sequences, or underscore prefix.
   if (
@@ -146,18 +164,21 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
     const raw = await fs.readFile(filePath, "utf-8");
     const { data, content } = matter(raw);
 
-    return {
-      slug,
-      frontmatter: normalizeFrontmatter(data, slug),
-      content,
-    };
+    const frontmatter = normalizeFrontmatter(data, slug);
+
+    // Drafts are visible only under `bun dev`; 404 them in production.
+    if (frontmatter.status === "draft" && !includeDrafts()) {
+      return null;
+    }
+
+    return { slug, frontmatter, content };
   } catch {
     return null;
   }
 }
 
 export async function getAllCategories(): Promise<string[]> {
-  const recipes = await getAllRecipes();
+  const recipes = await getPublishedRecipes();
   const categorySet = new Set<string>();
   for (const recipe of recipes) {
     if (recipe.frontmatter.category) {
