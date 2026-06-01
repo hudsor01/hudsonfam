@@ -11,10 +11,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Hudson Recipes | Hudson Family",
   description:
-    "Preserving Grandma Hudson's handwritten recipe book — original scanned pages alongside clean transcriptions, kept safe for every generation to come.",
+    "Grandma Hudson's recipes, digitized and typed out clear and easy to read, so every generation can cook from them.",
 };
 
-export const revalidate = 300; // ISR: revalidate every 5 minutes
 
 export default async function RecipesPage() {
   const published = await getPublishedRecipes();
@@ -25,7 +24,6 @@ export default async function RecipesPage() {
     slug: recipe.slug,
     title: recipe.frontmatter.title,
     category: recipe.frontmatter.category,
-    thumbnail: recipe.frontmatter.scans[0] ?? null,
   }));
 
   return (
@@ -36,10 +34,9 @@ export default async function RecipesPage() {
         </h1>
         <p className="text-muted-foreground text-pretty leading-relaxed max-w-2xl">
           Grandma Hudson&rsquo;s recipe book has fed this family for generations
-          &mdash; pages worn soft, corners stained with butter and flour. Before
-          that handwriting fades for good, we&rsquo;re digitizing every page:
-          the original scan kept beside a clean transcription, so these recipes
-          live on long after the paper doesn&rsquo;t.
+          &mdash; pages worn soft, corners stained with butter and flour.
+          We&rsquo;re typing every recipe out clear and easy to read, so they
+          live on long after the paper does.
         </p>
       </header>
 
@@ -61,7 +58,7 @@ export default async function RecipesPage() {
             Drafts &mdash; needs review ({drafts.length})
           </h2>
           <p className="text-xs text-text-dim mb-6">
-            Visible only in local development. Review each against its scan, then
+            Visible only in local development. Verify each against the book, then
             set <code>status: published</code>.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -71,7 +68,6 @@ export default async function RecipesPage() {
                 slug={recipe.slug}
                 title={recipe.frontmatter.title}
                 category={recipe.frontmatter.category}
-                thumbnail={recipe.frontmatter.scans[0] ?? null}
                 isDraft
               />
             ))}

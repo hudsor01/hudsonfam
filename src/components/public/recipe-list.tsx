@@ -8,7 +8,6 @@ interface RecipeListItem {
   slug: string;
   title: string;
   category: string;
-  thumbnail: string | null;
 }
 
 interface RecipeListProps {
@@ -60,7 +59,6 @@ export function RecipeList({ recipes, categories }: RecipeListProps) {
               slug={recipe.slug}
               title={recipe.title}
               category={recipe.category}
-              thumbnail={recipe.thumbnail}
             />
           ))}
         </div>

@@ -3,7 +3,6 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { getRecipeBySlug, getAllRecipes } from "@/lib/recipes";
 import { mdxComponents } from "@/components/public/mdx-components";
-import { RecipeScans } from "@/components/public/recipe-scans";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -34,13 +33,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: frontmatter.title,
       description,
       type: "article",
-      ...(frontmatter.scans[0] ? { images: [frontmatter.scans[0]] } : {}),
     },
     twitter: {
-      card: frontmatter.scans[0] ? "summary_large_image" : "summary",
+      card: "summary",
       title: frontmatter.title,
       description,
-      ...(frontmatter.scans[0] ? { images: [frontmatter.scans[0]] } : {}),
     },
   };
 }
@@ -57,7 +54,6 @@ export default async function RecipePage({ params }: PageProps) {
   const {
     title,
     category,
-    scans,
     contributor,
     sourceNote,
     servings,
@@ -81,7 +77,6 @@ export default async function RecipePage({ params }: PageProps) {
     ...(servings ? { recipeYield: servings } : {}),
     ...(prepTime ? { prepTime } : {}),
     ...(cookTime ? { cookTime } : {}),
-    ...(scans.length > 0 ? { image: scans } : {}),
     ...(ingredients.length > 0 ? { recipeIngredient: ingredients } : {}),
     ...(instructions.length > 0
       ? {
@@ -97,7 +92,7 @@ export default async function RecipePage({ params }: PageProps) {
   const hasMeta = Boolean(servings || prepTime || cookTime);
 
   return (
-    <article className="max-w-5xl mx-auto px-5 sm:px-7 py-10 sm:py-14">
+    <article className="max-w-3xl mx-auto px-5 sm:px-7 py-10 sm:py-14">
       {/* JSON-LD for SEO / preservation */}
       <script
         type="application/ld+json"
@@ -111,7 +106,7 @@ export default async function RecipePage({ params }: PageProps) {
             Draft — needs review
           </p>
           <p className="text-sm text-muted-foreground text-pretty">
-            Compare this transcription against the original scan, then set{" "}
+            Verify this transcription against the book, then set{" "}
             <code>status: published</code> in the recipe&rsquo;s frontmatter.
           </p>
           {reviewNotes.length > 0 && (
@@ -192,68 +187,43 @@ export default async function RecipePage({ params }: PageProps) {
         )}
       </header>
 
-      {/* Centerpiece: original scan(s) alongside the clean transcription */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-        {/* Original scan(s) */}
-        <section>
-          <h2 className="text-xs font-sans font-semibold tracking-[3px] text-primary uppercase mb-4">
-            Original Page
-          </h2>
-          {scans.length > 0 ? (
-            <RecipeScans scans={scans} title={title} />
-          ) : (
-            <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center">
-              <p className="text-sm text-muted-foreground italic">
-                No scan available yet.
-              </p>
-            </div>
-          )}
-        </section>
+      {/* The recipe itself — large, clear, easy to read first */}
+      <div className="flex flex-col gap-10">
+        {ingredients.length > 0 && (
+          <section>
+            <h2 className="text-2xl font-serif text-foreground font-normal mb-4">
+              Ingredients
+            </h2>
+            <ul className="list-disc marker:text-primary pl-6 text-foreground text-lg sm:text-xl leading-relaxed space-y-2.5">
+              {ingredients.map((item, i) => (
+                <li key={i} className="pl-1">{item}</li>
+              ))}
+            </ul>
+          </section>
+        )}
 
-        {/* Clean transcription */}
-        <section>
-          <h2 className="text-xs font-sans font-semibold tracking-[3px] text-primary uppercase mb-4">
-            Transcription
-          </h2>
+        {instructions.length > 0 && (
+          <section>
+            <h2 className="text-2xl font-serif text-foreground font-normal mb-4">
+              Instructions
+            </h2>
+            <ol className="list-decimal marker:text-primary marker:font-serif pl-6 text-foreground text-lg sm:text-xl leading-relaxed space-y-5">
+              {instructions.map((step, i) => (
+                <li key={i} className="pl-2">{step}</li>
+              ))}
+            </ol>
+          </section>
+        )}
 
-          <div className="flex flex-col gap-8">
-            {ingredients.length > 0 && (
-              <div>
-                <h3 className="text-xl font-serif text-foreground font-normal mb-3">
-                  Ingredients
-                </h3>
-                <ul className="list-disc list-inside text-foreground space-y-1.5 pl-1">
-                  {ingredients.map((item, i) => (
-                    <li key={i} className="leading-relaxed">{item}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {instructions.length > 0 && (
-              <div>
-                <h3 className="text-xl font-serif text-foreground font-normal mb-3">
-                  Instructions
-                </h3>
-                <ol className="list-decimal list-inside text-foreground space-y-3 pl-1">
-                  {instructions.map((step, i) => (
-                    <li key={i} className="leading-relaxed pl-1">{step}</li>
-                  ))}
-                </ol>
-              </div>
-            )}
-
-            {ingredients.length === 0 && instructions.length === 0 && (
-              <p className="text-sm text-muted-foreground italic">
-                No structured ingredients or instructions yet — see the original
-                scan alongside.
-              </p>
-            )}
-          </div>
-        </section>
+        {ingredients.length === 0 && instructions.length === 0 && (
+          <p className="text-lg text-muted-foreground italic">
+            This recipe hasn&rsquo;t been typed up yet — the original page is
+            shown below.
+          </p>
+        )}
       </div>
 
-      {/* MDX body: story / notes */}
+      {/* Story / notes */}
       {content.trim().length > 0 && (
         <div className="prose-navy mt-12 pt-8 border-t border-border">
           <MDXRemote
