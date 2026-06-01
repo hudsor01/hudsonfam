@@ -10,6 +10,7 @@
     "seed:content": "bun prisma/seed-content.ts",
     "scaffold:recipe": "bun scripts/scaffold-recipe.ts",
     "optimize:scan": "bun scripts/optimize-scan.ts",
+    "recipes:status": "bun scripts/recipes-status.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:schema": "bun scripts/check-jobs-schema.ts"
