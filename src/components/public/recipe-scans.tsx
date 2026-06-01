@@ -47,6 +47,7 @@ export function RecipeScans({ scans, title }: RecipeScansProps) {
               height={1600}
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+              priority={i === 0}
               unoptimized
             />
           </button>
