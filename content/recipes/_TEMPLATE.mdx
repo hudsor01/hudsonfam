@@ -1,0 +1,64 @@
+---
+# COPY THIS FILE to <slug>.mdx (e.g. grandma-hudson-apple-pie.mdx) for a new recipe.
+# Files starting with "_" are IGNORED by the loader, so this template never renders.
+# The <slug> in the filename becomes the URL: /recipes/<slug>
+
+# REQUIRED: display name of the recipe.
+title: "Recipe Title Here"
+
+# REQUIRED: one of "Desserts", "Mains", "Breads", "Canning & Preserves", etc.
+# Categories power the filter on the listing page — keep them consistent.
+category: "Desserts"
+
+# REQUIRED (can be empty []): paths to the original page scans, in page order.
+# Put the actual image files in: public/images/recipes/<slug>/
+# Reference them here with a leading slash (served from /public).
+scans:
+  - "/images/recipes/<slug>/page-1.jpg"
+  # - "/images/recipes/<slug>/page-2.jpg"   # add more pages as needed
+
+# Who the recipe came from. Defaults to "Grandma Hudson" if omitted.
+contributor: "Grandma Hudson"
+
+# OPTIONAL: provenance / story in one line.
+sourceNote: "From Grandma Hudson's handwritten book, c. 1960s"
+
+# OPTIONAL: free-text servings, e.g. "12 biscuits" or "Serves 6".
+servings: "Serves 6"
+
+# OPTIONAL: prep/cook time. ISO-8601 duration (PT30M, PT1H15M) is best for
+# schema.org/SEO, but plain text like "30 minutes" also displays fine.
+prepTime: "PT20M"
+cookTime: "PT45M"
+
+# Structured transcription — these render as the clean ingredient list and
+# numbered steps. Leave as [] until you transcribe.
+ingredients:
+  - "1 cup example ingredient"
+  - "2 tablespoons another ingredient"
+instructions:
+  - "First step of the recipe."
+  - "Second step of the recipe."
+
+# OPTIONAL: free-form tags for discovery.
+tags:
+  - "example"
+
+# REQUIRED: date you added it, YYYY-MM-DD.
+dateAdded: "2026-01-01"
+
+# REQUIRED: "draft" or "published". New recipes start as "draft" — they show
+# only under `bun dev` for review and 404 in production. Set "published" once
+# you've verified the transcription against the scan.
+status: "draft"
+
+# OPTIONAL: notes for the reviewer — words you're unsure of, ambiguous amounts,
+# etc. Shown in the dev-only review banner. Clear them once resolved.
+reviewNotes:
+  - "Example: '1 c. ?our' — flour or sugar?"
+---
+
+Free-form story, notes, or memories go here (standard MDX/Markdown). Headings,
+lists, blockquotes, and images all work — they render below the transcription.
+
+This body is optional; delete it entirely if you have nothing to add.
