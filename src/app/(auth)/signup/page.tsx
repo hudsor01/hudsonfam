@@ -70,10 +70,12 @@ function SignupForm() {
     if (result.error) {
       setError(result.error.message || "Sign up failed");
     } else {
-      // Mark invite as used
+      // Mark invite as used (best-effort; surface failures for debugging)
       fetch(`/api/invite/validate?token=${encodeURIComponent(token!)}`, {
         method: "POST",
-      }).catch(() => {});
+      }).catch((err) => {
+        console.error("[signup] Failed to mark invite as used:", err);
+      });
       router.push("/dashboard");
     }
   }

@@ -19,12 +19,6 @@ export interface ImageMetadata {
   takenAt: Date | null;
 }
 
-export interface ProcessedSize {
-  path: string;
-  width: number;
-  height: number;
-}
-
 /**
  * Extract EXIF date from image buffer.
  * Returns null if no EXIF date is found.

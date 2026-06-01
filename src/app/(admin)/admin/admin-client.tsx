@@ -45,8 +45,9 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
         setData(newData);
         setLastRefresh(new Date());
       }
-    } catch {
-      // Silently fail — keep showing stale data
+    } catch (err) {
+      // Keep showing stale data, but surface the failure for debugging
+      console.error("[admin] Dashboard auto-refresh failed:", err);
     } finally {
       setIsRefreshing(false);
     }

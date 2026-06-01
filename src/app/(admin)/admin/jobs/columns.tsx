@@ -30,18 +30,6 @@ export type JobRow = {
   onRowClick?: (jobId: number) => void;
 };
 
-function formatSalary(min: number | null, max: number | null, currency: string) {
-  if (!min && !max) return null;
-  const fmt = (n: number) => {
-    if (n >= 1000) return `${Math.round(n / 1000)}K`;
-    return String(n);
-  };
-  if (min && max) return `${currency === "USD" ? "$" : ""}${fmt(min)}-${fmt(max)}`;
-  if (min) return `${currency === "USD" ? "$" : ""}${fmt(min)}+`;
-  if (max) return `up to ${currency === "USD" ? "$" : ""}${fmt(max)}`;
-  return null;
-}
-
 export const sourceColors: Record<string, string> = {
   jobicy: "bg-source-jobicy/15 text-source-jobicy border-source-jobicy/25",
   remoteok: "bg-source-remoteok/15 text-source-remoteok border-source-remoteok/25",
@@ -190,6 +178,3 @@ export function getJobColumns(): ColumnDef<JobRow>[] {
     },
   ];
 }
-
-// Keep formatSalary available if needed by future columns
-export { formatSalary };

@@ -75,7 +75,9 @@ export const auth = betterAuth({
         after: async (user) => {
           const ownerEmail = process.env.OWNER_EMAIL;
           if (ownerEmail && user.email === ownerEmail) {
-            console.log(`[auth] Auto-promoting ${user.email} to owner role`);
+            if (process.env.NODE_ENV !== "production") {
+              console.log(`[auth] Auto-promoting ${user.email} to owner role`);
+            }
             await prisma.user.update({
               where: { id: user.id },
               data: { role: "owner" },

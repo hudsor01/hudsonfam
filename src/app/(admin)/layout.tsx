@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { headers } from "next/headers";
 import { requireRole } from "@/lib/session";
 
 export default async function AdminLayout({
@@ -8,12 +7,6 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   await requireRole(["owner"]);
-
-  // Per proxy.ts: CSP nonce set on request headers. Read here so any future
-  // <Script> tag in the admin shell can consume it. Latent for Phase 20 (no
-  // admin <Script> tags exist yet) — retrofit-ready per AI-SAFETY-05.
-  const nonce = (await headers()).get("x-nonce");
-  void nonce;
 
   return (
     <div className="min-h-screen bg-background">

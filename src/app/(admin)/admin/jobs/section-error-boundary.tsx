@@ -10,7 +10,7 @@ const SECTION_LABELS = {
   salary_intelligence: "Salary Intelligence",
 } as const;
 
-export type Section = keyof typeof SECTION_LABELS;
+type Section = keyof typeof SECTION_LABELS;
 
 interface Props {
   section: Section;
