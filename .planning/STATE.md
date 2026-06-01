@@ -89,4 +89,4 @@ Mapped 2026-06-01 — verify no non-job consumer before each deletion:
 
 ## Blockers
 
-None.
+- **bun install blocked locally (2026-06-01):** Aikido Safe Chain shim suppresses same-day-latest versions via its minimum-package-age cooldown. `package.json` is being auto-bumped to bleeding-edge (`next 16.2.7`, `react 19.2.7`, `better-auth ^1.6.13`, `vitest ^4.1.8`…), which Safe Chain hides → `bun install` errors "No version matching … (but package exists)". Captured as CLOUD-09 / Plan 30-01. Immediate unblock options: (a) pin deps back to aged-stable + regen lockfile (clean, no flag — recommended), or (b) one-time `bun install --safe-chain-skip-minimum-package-age` to regen the lockfile. Root irritant: an auto-bumper keeps re-churning package.json after pins — must be identified + stopped.

@@ -342,7 +342,7 @@ Verify no non-job consumer before each lib deletion: `jobs-db.ts`, `job-actions.
 **REQs:** CLOUD-01, CLOUD-02, CLOUD-03, CLOUD-04, CLOUD-05, CLOUD-06, CLOUD-07, CLOUD-08
 
 Plans:
-- [ ] 30-01: Prisma → Neon (pooled + direct URLs, migrate deploy); drop Redis (`ioredis`, `REDIS_URL`, secondaryStorage) → better-auth on Postgres; fix `bun.lock` to match `package.json`
+- [ ] 30-01: Prisma → Neon (pooled + direct URLs, migrate deploy); drop Redis (`ioredis`, `REDIS_URL`, secondaryStorage) → better-auth on Postgres; pin deps to Aikido Safe Chain age-gate-passing versions (no same-day-latest) and regenerate `bun.lock` so `bun install` resolves clean (no skip flag) and `--frozen-lockfile` passes; stop the auto-bumper
 - [ ] 30-02: Images → Cloudflare R2 (`src/lib/images.ts` write path + read path); park homelab-monitoring admin (Prometheus/health/weather/UPS/media-stats) behind an offline-safe guard
 - [ ] 30-03: Remove K8s/Flux/Docker artifacts (Dockerfile, GHCR workflows, Flux refs); deploy to Vercel; Cloudflare DNS → Vercel; verify live boot (auth, DB, recipes, R2 photos)
 
