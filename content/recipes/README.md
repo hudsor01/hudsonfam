@@ -1,9 +1,13 @@
 # Hudson Recipes — Authoring Guide
 
 This folder holds the MDX source for the **Hudson Recipes** collection — a
-project to digitize and preserve Grandma Hudson's handwritten recipe book
-(200–400 recipes). Each recipe pairs the **original scanned page** with a clean,
-typed **transcription**.
+project to digitize Grandma Hudson's old recipe book (her copy of the *Modern
+Priscilla Cook Book*, ~200–400 recipes) into clean, **typed-out recipes** that
+anyone in the family — including older relatives — can read and cook from.
+
+Recipe pages are **text only**: a large, clear ingredient list and numbered
+steps. The original page photos are used **only as the source for typing** —
+they are not shown on the website.
 
 - One `.mdx` file per recipe. The filename (minus `.mdx`) is the URL slug:
   `apple-pie.mdx` → `/recipes/apple-pie`.
@@ -22,76 +26,52 @@ Recipes use a `status` field with two values:
 | `"published"` | Always visible. Appears in the listing, detail page, and sitemap. |
 
 New recipes always start as `"draft"`. Set `status: "published"` once you've
-verified the transcription against the original scan.
+verified the typed text against the book.
 
 Use the optional `reviewNotes` array to flag anything uncertain (an illegible
 word, an ambiguous amount). Notes appear in the dev-only review banner on the
 detail page — clear them before publishing.
 
-## Adding a recipe (manual)
+## The batch loop
 
-1. **Photograph the page.** One clear photo per page. Name them `page-1.jpg`,
-   `page-2.jpg`, … in page order.
-2. **Put the images in** `public/images/recipes/<slug>/`. Create the folder if
-   it doesn't exist. Example: `public/images/recipes/apple-pie/page-1.jpg`.
-3. **Copy `_TEMPLATE.mdx`** to `<slug>.mdx` in this folder.
-4. **Fill the frontmatter.** Set `title`, `category`, the `scans` paths (they
-   live under `/images/recipes/<slug>/`), and any times/servings.
-5. **Transcribe.** Type the `ingredients` and `instructions` arrays.
-6. **Review in dev.** Run `bun dev` and visit `/recipes/<slug>`. The draft
-   banner appears — compare against the scan and fix any issues.
-7. **Publish.** Set `status: "published"` and clear `reviewNotes`.
+Designed for digitizing hundreds of pages, then typing them up over time. You
+do step 1; the assistant does the transcription interactively.
 
-## File naming convention
-
-The source book (Modern Priscilla Cook Book) puts **several recipes on each
-page**, so we name at two levels:
-
-- **Page images — one file per photographed page**, named
-  `p<NN>-<section>.jpeg` (book page number + section), stored in
-  `public/images/recipes/_pages/`. Examples: `p23-quick-breads.jpeg`,
-  `p42-biscuits-and-rolls.jpeg`. This keeps the originals traceable; page
-  numbers repeat across sections, so the section suffix keeps them unique.
-- **Recipes — one MDX file per recipe**, slug = the recipe name
-  (`spoon-bread-no-2.mdx` → `/recipes/spoon-bread-no-2`). Several recipes from
-  the same page all point their `scans` at that one shared page image. The
-  recipe *name* lives in the slug (searchable in the listing); the *image*
-  filename only needs to identify the page.
-
-## Bulk batch loop
-
-Designed for digitizing hundreds of pages, then typing them up over time:
-
-1. **Drop photos** into `public/images/recipes/_inbox/` (in page order).
-2. **Rename each photo to its page** — `p<NN>-<section>.jpeg` — so the original
-   is identifiable at a glance instead of `IMG_2701.jpeg`. Read the page number
-   printed on the page and its section heading. Multi-recipe pages stay as one
-   image.
-3. **Optimize** the renamed pages to ≤2000px and move them into
-   `public/images/recipes/_pages/`. (`bun run optimize:scan <slug>` handles the
-   downscale for a per-slug folder; for shared page images the assistant
-   optimizes the `_pages/` files directly during transcription.)
-4. **Create one recipe MDX per recipe on the page** (slug = recipe name),
-   `status: "draft"`, with `scans` pointing at the shared page image, e.g.
-   `scans: ["/images/recipes/_pages/p23-quick-breads.jpeg"]`. Transcribe the
-   `ingredients`/`instructions` verbatim; add `reviewNotes` for anything
-   uncertain.
-5. **Review in `bun dev`.** Visit each `/recipes/<slug>`. The draft banner is
-   visible only in development — compare transcription to scan and fix errors.
-6. **Publish.** Set `status: "published"` (and clear `reviewNotes`) once
+1. **Photograph the pages** and drop them in `public/images/recipes/_inbox/`,
+   in page order.
+2. **Rename each photo to its page** — `p<NN>-<section>.jpeg` (book page number
+   + section) — so the original is identifiable at a glance instead of
+   `IMG_2701.jpeg`. The book puts several recipes on one page, so each photo
+   stays a single page image. Page numbers repeat across sections, so the
+   section suffix keeps them unique. Examples: `p23-quick-breads.jpeg`,
+   `p42-biscuits-and-rolls.jpeg`.
+3. **Transcribe each recipe on the page into its own `.mdx`** (slug = the recipe
+   name, e.g. `spoon-bread-no-2.mdx`), with `status: "draft"`. Type the
+   `ingredients` and `instructions` arrays **verbatim** — keep period wording
+   ("1 teacup", "hot oven") and put modern equivalents in the MDX body. Flag
+   anything uncertain in `reviewNotes`.
+4. **Review in `bun dev`.** Open each `/recipes/<slug>` and read the typed
+   recipe against the book; fix any errors.
+5. **Publish.** Set `status: "published"` (and clear `reviewNotes`) once
    verified. The recipe goes live on the next build.
 
-> The `bun run scaffold:recipe <slug>` helper assumes the simpler one-folder-
-> per-recipe layout (`public/images/recipes/<slug>/`) and auto-fills `scans`
-> from images in that folder. For shared page images, set `scans` to the
-> `_pages/` path by hand (or let the assistant wire it up).
+Optional helper: `bun run scaffold:recipe <slug>` writes a skeleton draft
+`.mdx` you can fill in. Check progress any time with `bun run recipes:status`.
 
-Check overall progress at any time:
+## Source photos (not shown on the site)
 
-```sh
-bun run recipes:status
-```
+The page photos are the **input for typing**, never website content:
+
+- Keep them named `p<NN>-<section>.jpeg` so the source page is easy to find later.
+- They live in `public/images/recipes/_pages/` (and `_inbox/` while pending).
+- The optional `scans` frontmatter field just records which source page a recipe
+  came from — it is **not displayed** anywhere. Provenance only.
+- `bun run optimize:scan <slug>` downscales a folder of photos to ≤2000px if you
+  want smaller source files; optional.
 
 ## Frontmatter reference
 
-See `_TEMPLATE.mdx` — every field is documented inline.
+See `_TEMPLATE.mdx` — every field is documented inline. The fields that actually
+appear on the recipe page are `title`, `category`, `contributor`, `sourceNote`,
+`servings` / `prepTime` / `cookTime`, `ingredients`, and `instructions` (plus
+the MDX body for stories and notes).
