@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
+import { cacheLife, cacheTag } from "next/cache";
 
 const RECIPES_DIR = path.join(process.cwd(), "content", "recipes");
 
@@ -83,6 +84,13 @@ export function filterByVisibility(
 }
 
 async function readAllRecipes(): Promise<RecipeMeta[]> {
+  "use cache";
+  // Recipe content is filesystem MDX committed to the repo — cache the IO and
+  // tag it; all listing wrappers (getAllRecipes/getPublishedRecipes/…) reuse
+  // this cached result. Drafts vs published is a pure filter applied after.
+  cacheLife("hours");
+  cacheTag("recipes");
+
   let files: string[];
   try {
     files = await fs.readdir(RECIPES_DIR);
@@ -141,6 +149,10 @@ export async function getDraftRecipes(): Promise<RecipeMeta[]> {
 }
 
 export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("recipes", `recipe:${slug}`);
+
   // Prevent path traversal: reject slugs with separators, dot sequences, or underscore prefix.
   if (
     !slug ||
