@@ -12,13 +12,11 @@ Family website replacing Glance dashboard. Next.js 16 App Router, Tailwind CSS v
 ```bash
 npm run dev          # Dev server
 npm run build        # Production build (standalone output)
-npm run test         # Vitest (268 tests)
+npm run test         # Vitest
 npm run test:watch   # Vitest watch mode
 npm run lint         # ESLint 9
 npx prisma generate  # Regenerate client after schema changes
 npx prisma migrate dev  # Run migrations (uses DIRECT_DATABASE_URL via prisma.config.ts)
-./scripts/install-hooks.sh    # One-time per clone: install pre-push hook (schema drift guard)
-npm run test:schema           # On demand: verify n8n DB columns match jobs-db.ts queries
 ```
 
 ## Tech Stack
@@ -48,9 +46,8 @@ src/
 │   │       └── services/                     # Family services portal
 │   ├── (admin)/         # Owner-only admin panel
 │   │   └── admin/
-│   │       ├── page.tsx           # Homelab dashboard (Glance replacement)
-│   │       └── jobs/              # Job search pipeline dashboard
-│   └── api/             # 11 API routes
+│   │       └── page.tsx           # Homelab dashboard (Glance replacement)
+│   └── api/             # API routes
 ├── components/
 │   ├── ui/              # 41 shadcn primitives
 │   ├── dashboard/       # 14 dashboard widgets
@@ -60,8 +57,6 @@ src/
 │   ├── auth.ts          # Better Auth + Redis with graceful fallback
 │   ├── session.ts       # requireRole() / requireSession()
 │   ├── images.ts        # Photo processing (2400px WebP q85 cap)
-│   ├── jobs-db.ts       # Separate pg Pool for external jobs database
-│   ├── job-actions.ts   # Job server actions + N8N webhooks
 │   ├── dashboard-actions.ts  # Dashboard CRUD server actions
 │   └── dashboard/       # Prometheus, health checks, weather, UPS, media stats
 ├── styles/
@@ -88,7 +83,6 @@ src/
 
 ### Database
 - **Main app:** Prisma v7 via `@prisma/adapter-pg` with connection pooling (max 10, 5s timeout)
-- **Jobs:** Separate `pg.Pool` using `JOBS_DATABASE_URL` — not in Prisma schema
 - **Prisma output:** `./generated/prisma/` (not node_modules)
 - **Migrations:** CLI uses `DIRECT_DATABASE_URL` (bypasses PgBouncer)
 
@@ -112,11 +106,6 @@ src/
 
 ### Shared palette (referenced via `var()`)
 `green`, `purple`, `emerald`, `blue`, `orange`, `teal`, `yellow`
-
-### Job pipeline aliases (all reference shared palette)
-- Status: `status-applied`, `status-interview`, `status-offer` (new=primary, interested=accent, rejected=destructive)
-- Sources: `source-jobicy`, `source-remoteok`, `source-himalayas`, `source-arbeitnow`, `source-workingnomads`, `source-serpapi`, `source-remotive`
-- Scores: `score-high`, `score-mid`
 
 ### When adding colors
 1. Add OKLCH value to shared palette in globals.css (or reuse existing)
@@ -182,14 +171,6 @@ kubectl scale deployment hudsonfam -n homepage --replicas=1
 
 3. **Cluster ESO/Flux CRD vs docs version mismatch** — Some fields documented in upstream library docs may not exist in the installed CRD schema. Examples seen: ESO 2.1.0 rejected `spec.target.type` (canonical type stays in `spec.target.template.type`); Flux ImagePolicy CRD uses `status.latestRef.{name,tag}` not docs-stated `status.latestImage`. **Fix:** validate any new manifest's field paths against `kubectl explain <resource>.<path>` before assuming docs are current. See `.planning/intel/crd-vs-docs-mismatch-pattern.md`.
 
-### Pre-push hook (one-time per clone)
-
-```bash
-./scripts/install-hooks.sh
-```
-
-Installs a native git pre-push hook that runs `npm run test:schema` (queries `information_schema.columns` against the live n8n DB to detect schema drift in `src/lib/jobs-db.ts` queries). Skips cleanly with a non-failure warning when `JOBS_DATABASE_URL` is unset (e.g., on hosts without DB access — pushes still complete).
-
 ## Environment Variables
 
 ```
@@ -203,8 +184,6 @@ REDIS_URL             # redis://:password@host:6379
 SONARR_API_KEY
 RADARR_API_KEY
 JELLYFIN_API_KEY
-JOBS_DATABASE_URL     # Separate jobs database
-N8N_WEBHOOK_SECRET    # HMAC-SHA256 shared secret for signing n8n webhook POSTs (Phase 23 AI-SAFETY-02)
 OWNER_EMAIL           # Email auto-promoted to owner role on signup
 ```
 
@@ -223,7 +202,7 @@ Originals are always `.webp` regardless of upload format.
 
 - **Framework:** Vitest + happy-dom + Testing Library + MSW
 - **Mocks:** Prisma mocked via `src/__tests__/mocks/prisma.ts`
-- **Run:** `npm test` (268 tests, <1s)
+- **Run:** `npm test`
 
 ## GSD Planning
 
