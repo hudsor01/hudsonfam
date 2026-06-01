@@ -44,7 +44,7 @@ async function main() {
   drafts.sort();
   const total = published + drafts.length;
 
-  console.log("Hudson Recipes — progress");
+  console.log("Grandma Hudson's Recipes");
   console.log("─────────────────────────");
   console.log(`Published:       ${published}`);
   console.log(`Drafts (review): ${drafts.length}`);

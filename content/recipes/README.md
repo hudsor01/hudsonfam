@@ -1,6 +1,6 @@
-# Hudson Recipes — Authoring Guide
+# Grandma Hudson's Recipes — Authoring Guide
 
-This folder holds the MDX source for the **Hudson Recipes** collection — a
+This folder holds the MDX source for the **Grandma Hudson's Recipes** collection, a
 project to digitize Grandma Hudson's old recipe book (her copy of the *Modern
 Priscilla Cook Book*, ~200–400 recipes) into clean, **typed-out recipes** that
 anyone in the family — including older relatives — can read and cook from.

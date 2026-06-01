@@ -24,10 +24,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { frontmatter } = recipe;
   const description =
     frontmatter.sourceNote ||
-    `${frontmatter.title} — a recipe from ${frontmatter.contributor}, preserved in the Hudson Recipes collection.`;
+    `${frontmatter.title}, from Grandma Hudson's Recipes.`;
 
   return {
-    title: `${frontmatter.title} | Hudson Recipes`,
+    title: `${frontmatter.title} | Grandma Hudson's Recipes`,
     description,
     openGraph: {
       title: frontmatter.title,
@@ -108,7 +108,7 @@ export default async function RecipePage({ params }: PageProps) {
             d="M15 19l-7-7 7-7"
           />
         </svg>
-        Back to Hudson Recipes
+        Back to Grandma Hudson&rsquo;s Recipes
       </Link>
 
       {/* Recipe header */}
@@ -211,10 +211,10 @@ export default async function RecipePage({ params }: PageProps) {
             href="/recipes"
             className="text-sm text-primary hover:text-primary/80 transition-colors"
           >
-            &larr; Back to Hudson Recipes
+            &larr; Back to Grandma Hudson&rsquo;s Recipes
           </Link>
           <p className="text-xs text-text-dim">
-            {contributor ? `Preserved from ${contributor}` : "Hudson Recipes"}
+            {contributor ? `Preserved from ${contributor}` : "Grandma Hudson's Recipes"}
           </p>
         </div>
       </footer>

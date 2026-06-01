@@ -1,11 +1,14 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { MobileNav } from "@/components/public/mobile-nav";
 import { UserNav } from "@/components/public/user-nav";
+import { CopyrightYear } from "@/components/public/copyright-year";
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/blog", label: "Blog" },
   { href: "/photos", label: "Photos" },
+  { href: "/recipes", label: "Grandma Hudson's Recipes" },
   { href: "/events", label: "Events" },
   { href: "/family", label: "Family" },
   { href: "/richard-hudson-sr", label: "In Memory" },
@@ -38,8 +41,12 @@ export default function PublicLayout({
           <UserNav />
         </div>
 
-        {/* Mobile nav */}
-        <MobileNav links={navLinks} />
+        {/* Mobile nav — uses usePathname(), which is dynamic for param routes
+            (e.g. /photos/[album]). Suspense keeps it from blocking the layout's
+            static shell under Cache Components. */}
+        <Suspense fallback={<div className="md:hidden size-9" />}>
+          <MobileNav links={navLinks} />
+        </Suspense>
       </nav>
 
       <main className="flex-1">{children}</main>
@@ -68,7 +75,7 @@ export default function PublicLayout({
           </div>
         </div>
         <div className="border-t border-border px-5 sm:px-7 py-3 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-text-dim">
-          <span>&copy; {new Date().getFullYear()} The Hudson Family. All rights reserved.</span>
+          <span>&copy; <CopyrightYear /> The Hudson Family. All rights reserved.</span>
           <span>
             Built by{" "}
             <a

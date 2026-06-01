@@ -9,9 +9,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Hudson Recipes | Hudson Family",
+  title: "Grandma Hudson's Recipes | Hudson Family",
   description:
-    "Grandma Hudson's recipe book, digitized — every recipe typed out clear and easy to read, in the order they appear in the book.",
+    "Grandma Hudson's recipes, digitized and typed out clear and easy to read, in the order they appear in the book.",
 };
 
 function anchor(category: string): string {
@@ -38,12 +38,12 @@ export default async function RecipesPage() {
     <div className="max-w-5xl mx-auto px-5 sm:px-7 py-10 sm:py-14 motion-safe:animate-fade-in-up">
       <header className="mb-8">
         <h1 className="text-3xl sm:text-4xl font-serif text-foreground font-normal mb-3 text-balance">
-          Hudson Recipes
+          Grandma Hudson&rsquo;s Recipes
         </h1>
         <p className="text-muted-foreground text-pretty leading-relaxed max-w-2xl">
-          Grandma Hudson&rsquo;s recipe book, digitized &mdash; every recipe
-          typed out clear and easy to read, kept in the order they appear in the
-          book. {published.length > 0 ? `${published.length} recipes.` : ""}
+          Grandma Hudson&rsquo;s recipes, digitized and typed out clear and easy
+          to read, kept in the order they appear in the book.{" "}
+          {published.length > 0 ? `${published.length} recipes.` : ""}
         </p>
       </header>
 
@@ -104,7 +104,7 @@ export default async function RecipesPage() {
       {drafts.length > 0 && (
         <section className="mt-16 pt-8 border-t border-dashed border-warning/40">
           <h2 className="text-sm font-sans font-semibold tracking-[2px] text-warning uppercase mb-1">
-            Drafts &mdash; needs review ({drafts.length})
+            Drafts, needs review ({drafts.length})
           </h2>
           <p className="text-xs text-text-dim mb-4">
             Visible only in local development.
