@@ -324,12 +324,12 @@ Get thehudsonfam.com back online on managed cloud (the K3s homelab is offline in
 
 **Goal:** Remove all job-search code, deps, env, tests, admin UI, and schema-drift tooling. Self-contained: the app must build and the Vitest suite stay green after the subsystem is gone.
 **Depends on:** Nothing (pure deletion; shrinks surface before the re-platform)
-**Plans:** 2
+**Plans:** 2/2 plans complete
 **REQs:** JOB-01, JOB-02, JOB-03, JOB-04, JOB-05, JOB-06, JOB-07
 
 Plans:
-- [ ] 29-01: Delete job admin UI (`src/app/(admin)/admin/jobs/`) + API routes (`src/app/api/jobs/`) + admin nav "Jobs" entry
-- [ ] 29-02: Delete job lib modules + job tests + schema-drift tooling (check-jobs-schema, test:schema, pre-push hook); prune job-only deps; purge JOBS_DATABASE_URL + N8N_WEBHOOK_SECRET
+- [x] 29-01: Delete job admin UI (`src/app/(admin)/admin/jobs/`) + API routes (`src/app/api/jobs/`) + admin nav "Jobs" entry
+- [x] 29-02: Delete job lib modules + job tests + schema-drift tooling (check-jobs-schema, test:schema, pre-push hook); prune job-only deps; purge JOBS_DATABASE_URL + N8N_WEBHOOK_SECRET
 
 **Details:**
 Verify no non-job consumer before each lib deletion: `jobs-db.ts`, `job-actions.ts`, `job-constants.ts`, `job-freshness.ts`, `jobs-schemas.ts`, `webhooks.ts`, `regenerate-predicates.ts`, `attach-freshness.ts`. ~13 job test files under `src/__tests__/`. Evaluate `@hello-pangea/dnd` (kanban) for removal. Remove `scripts/check-jobs-schema.ts`, the `test:schema` npm script, the pre-push hook, and `scripts/install-hooks.sh`, plus their CLAUDE.md mentions.

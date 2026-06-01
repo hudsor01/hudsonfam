@@ -27,11 +27,11 @@ Each requirement maps to a roadmap phase and is observationally verifiable after
 
 - [ ] **JOB-01**: All job-search admin UI removed — `src/app/(admin)/admin/jobs/` deleted in full; the "Jobs" entry is gone from admin nav; no `/admin/jobs*` route resolves
 - [ ] **JOB-02**: Job API routes removed — `src/app/api/jobs/` deleted (including the PDF cover-letter / tailored-resume routes)
-- [ ] **JOB-03**: Job lib modules removed — `jobs-db.ts`, `job-actions.ts`, `job-constants.ts`, `job-freshness.ts`, `jobs-schemas.ts`, `webhooks.ts`, `regenerate-predicates.ts`, `attach-freshness.ts` deleted (each verified to have no non-job consumer before deletion)
-- [ ] **JOB-04**: Job env vars purged — `JOBS_DATABASE_URL` and `N8N_WEBHOOK_SECRET` removed from `.env.example`, CLAUDE.md, and all docs
-- [ ] **JOB-05**: All job-related tests removed; the remaining Vitest suite runs green (0 failures, no orphaned mocks/imports)
-- [ ] **JOB-06**: Schema-drift tooling removed — `scripts/check-jobs-schema.ts`, the `test:schema` npm script, the pre-push hook, and `scripts/install-hooks.sh` (plus their CLAUDE.md mentions) deleted
-- [ ] **JOB-07**: Job-only dependencies pruned from `package.json` (e.g. `@hello-pangea/dnd` kanban) where no non-job code imports them; `next build` stays green
+- [x] **JOB-03**: Job lib modules removed — `jobs-db.ts`, `job-actions.ts`, `job-constants.ts`, `job-freshness.ts`, `jobs-schemas.ts`, `webhooks.ts`, `regenerate-predicates.ts`, `attach-freshness.ts` deleted (each verified to have no non-job consumer before deletion)
+- [x] **JOB-04**: Job env vars purged — `JOBS_DATABASE_URL` and `N8N_WEBHOOK_SECRET` removed from `.env.example`, CLAUDE.md, and all docs
+- [x] **JOB-05**: All job-related tests removed; the remaining Vitest suite runs green (0 failures, no orphaned mocks/imports)
+- [x] **JOB-06**: Schema-drift tooling removed — `scripts/check-jobs-schema.ts`, the `test:schema` npm script, the pre-push hook, and `scripts/install-hooks.sh` (plus their CLAUDE.md mentions) deleted
+- [x] **JOB-07**: Job-only dependencies pruned from `package.json` (e.g. `@hello-pangea/dnd` kanban) where no non-job code imports them; `next build` stays green
 
 ### Phase 30 — Cloud Re-platform (CLOUD-XX)
 
