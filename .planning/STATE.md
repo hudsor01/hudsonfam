@@ -3,15 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Cloud Re-platform & Recipes Experience
 status: active
-started: "2026-06-01"
-last_updated: "2026-06-01T00:00:00.000Z"
-last_activity: "2026-06-01 — v4.0 milestone opened. Stack locked (Vercel + Neon + Cloudflare R2 + better-auth-on-Postgres). Neon project created by owner. PROJECT.md / REQUIREMENTS.md / ROADMAP.md written; STATE.md reset. Next: /gsd:plan-phase 29."
+last_updated: "2026-06-01T23:45:00.000Z"
 progress:
   total_phases: 3
   completed_phases: 0
-  total_plans: 8
-  completed_plans: 0
-  percent: 0
+  total_plans: 4
+  completed_plans: 1
+  percent: 25
 ---
 
 # State
@@ -32,20 +30,21 @@ The K3s homelab is offline indefinitely (flood; equipment in storage). All data 
 | Sessions | better-auth on Postgres (Redis dropped) |
 | DNS | Cloudflare → Vercel |
 
-Phase: none planned yet
-Plan: none
-Status: milestone scaffolding written; ready to plan Phase 29.
+Phase: 29 — Decommission Job Pipeline
+Plan: 29-01 COMPLETE; 29-02 is next
+Status: Phase 29 Plan 01 executed 2026-06-01. Job admin UI + API routes deleted; Jobs nav removed from both owner layouts; next build green.
 
 ## What's Done
 
 - Recipes digitization (superpowers track, pre-v4.0): 1,000 recipes in `content/recipes/` — categorized, book-ordered, text-only, public.
 - v4.0 planning artifacts: PROJECT.md updated, REQUIREMENTS.md (JOB-01..07, CLOUD-01..08, RECIPE-01..05), ROADMAP.md §v4.0 (phases 29-31), STATE.md reset.
+- **Phase 29 Plan 01 (2026-06-01):** Deleted job admin UI dir (14 files) + job API PDF routes (2 files); removed Jobs nav from admin layout and owner dashboard layout. Build green. Commits: 9530118, 9df610c.
 
 ## What's Next
 
 ### Immediate next step
 
-`/gsd:plan-phase 29` — plan the job-pipeline decommission (the cleanest, lowest-risk phase; shrinks surface area before the re-platform).
+Plan 29-02 — delete job lib modules, test files, and tooling (the rest of the job-pipeline surface).
 
 ### Sequenced phase order
 
