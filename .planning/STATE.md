@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Cloud Re-platform & Recipes Experience
-status: active
-last_updated: "2026-06-01T23:45:00.000Z"
+status: Phase 29 Plan 01 executed 2026-06-01. Job admin UI + API routes deleted; Jobs nav removed from both owner layouts; next build green.
+last_updated: "2026-06-01T23:46:42.643Z"
 progress:
   total_phases: 3
-  completed_phases: 0
-  total_plans: 4
-  completed_plans: 1
-  percent: 25
+  completed_phases: 1
+  total_plans: 2
+  completed_plans: 2
+  percent: 33
 ---
 
 # State
