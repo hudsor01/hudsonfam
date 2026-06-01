@@ -65,40 +65,10 @@ export default async function RecipePage({ params }: PageProps) {
     reviewNotes,
   } = frontmatter;
 
-  // schema.org Recipe JSON-LD — built from frontmatter for SEO + preservation.
-  const jsonLd: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "Recipe",
-    name: title,
-    recipeCategory: category,
-    author: { "@type": "Person", name: contributor },
-    datePublished: frontmatter.dateAdded,
-    ...(sourceNote ? { description: sourceNote } : {}),
-    ...(servings ? { recipeYield: servings } : {}),
-    ...(prepTime ? { prepTime } : {}),
-    ...(cookTime ? { cookTime } : {}),
-    ...(ingredients.length > 0 ? { recipeIngredient: ingredients } : {}),
-    ...(instructions.length > 0
-      ? {
-          recipeInstructions: instructions.map((step, i) => ({
-            "@type": "HowToStep",
-            position: i + 1,
-            text: step,
-          })),
-        }
-      : {}),
-  };
-
   const hasMeta = Boolean(servings || prepTime || cookTime);
 
   return (
     <article className="max-w-3xl mx-auto px-5 sm:px-7 py-10 sm:py-14">
-      {/* JSON-LD for SEO / preservation */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
       {/* Draft review banner — only ever rendered in dev (drafts 404 in prod). */}
       {status === "draft" && (
         <div className="mb-8 rounded-xl border border-warning/50 bg-warning/10 p-5">
