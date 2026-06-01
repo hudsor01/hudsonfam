@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/blog";
+import { getPublishedRecipes } from "@/lib/recipes";
 import prisma from "@/lib/prisma";
 
 const SITE_URL = "https://thehudsonfam.com";
@@ -21,6 +22,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${SITE_URL}/photos`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/recipes`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
@@ -54,6 +61,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  // Recipes (published only — drafts are excluded by getPublishedRecipes)
+  const recipes = await getPublishedRecipes();
+  const recipePages: MetadataRoute.Sitemap = recipes.map((recipe) => ({
+    url: `${SITE_URL}/recipes/${recipe.slug}`,
+    lastModified: new Date(recipe.frontmatter.dateAdded),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
   // Photo albums
   let albumPages: MetadataRoute.Sitemap = [];
   try {
@@ -70,5 +86,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // DB not available during build — skip albums
   }
 
-  return [...staticPages, ...blogPages, ...albumPages];
+  return [...staticPages, ...blogPages, ...recipePages, ...albumPages];
 }
