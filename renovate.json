@@ -1,0 +1,32 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "description": "Security-only updates. Routine version bumps are disabled; only vulnerability-driven updates are applied. minimumReleaseAge mirrors the Aikido Safe Chain 48h gate.",
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"],
+      "enabled": false
+    },
+    {
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "vulnerabilityAlerts": true,
+      "enabled": true,
+      "automerge": true,
+      "minimumReleaseAge": "48 hours",
+      "labels": ["security"]
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "automerge": true,
+    "minimumReleaseAge": "48 hours",
+    "labels": ["security"]
+  },
+  "osvVulnerabilityAlerts": true,
+  "minimumReleaseAge": "48 hours",
+  "prCreation": "not-pending",
+  "rebaseWhen": "behind-base-branch"
+}
