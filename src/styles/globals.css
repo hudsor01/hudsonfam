@@ -216,9 +216,36 @@
     line-height: 1.5 !important;
   }
 
-  /* Hide checkbox/step-number indicator circles in print */
+  /* Hide checkbox/step-number indicator circles in print.
+     A checkbox conveys nothing on paper, and the circular number chrome
+     plus its checked-state checkmark should not print. */
   .print-recipe button span[aria-hidden="true"] {
     display: none !important;
+  }
+
+  /* Re-show the STEP NUMBER only — steps live in <ol>, ingredients in <ul>,
+     so this rule never touches ingredient checkboxes. The indicator span
+     (aria-hidden, hidden above) is re-shown for steps but stripped of its
+     circle: no border, background, or fixed size — just a plain bold number.
+     The checked-state checkmark SVG inside it stays hidden so a printed
+     numbered list shows the number, never a checkmark. */
+  .print-recipe ol button span[aria-hidden="true"] {
+    display: inline !important;
+    width: auto !important;
+    height: auto !important;
+    border: none !important;
+    background: transparent !important;
+    margin: 0 0.5em 0 0 !important;
+    padding: 0 !important;
+  }
+  .print-recipe ol button span[aria-hidden="true"] svg {
+    display: none !important;
+  }
+  .print-recipe .print-step-number {
+    display: inline !important;
+    font-weight: 700 !important;
+    color: black !important;
+    font-size: 11pt !important;
   }
 
   /* No page break inside a recipe section */

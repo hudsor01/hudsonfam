@@ -230,7 +230,7 @@ export function RecipeChecklist({ slug, ingredients, instructions }: RecipeCheck
                           : "border-border bg-transparent text-muted-foreground",
                       ].join(" ")}
                     >
-                      {checked ? (
+                      {checked && (
                         <svg
                           viewBox="0 0 12 12"
                           className="w-3.5 h-3.5 text-success"
@@ -242,9 +242,18 @@ export function RecipeChecklist({ slug, ingredients, instructions }: RecipeCheck
                         >
                           <polyline points="1.5,6 4.5,9 10.5,3" />
                         </svg>
-                      ) : (
-                        <span>{i + 1}</span>
                       )}
+                      {/* Step number — hidden on screen when checked (checkmark
+                          shows instead), but always rendered so the print
+                          stylesheet can re-show it as a plain numbered list. */}
+                      <span
+                        className={[
+                          "print-step-number",
+                          checked ? "hidden print:inline" : "",
+                        ].join(" ")}
+                      >
+                        {i + 1}
+                      </span>
                     </span>
                     <span
                       className={[
