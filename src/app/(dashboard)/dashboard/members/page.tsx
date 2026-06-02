@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
+import { connection } from "next/server";
 import { SectionHeader } from "@/components/ui/section-header";
 import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +8,7 @@ import { InviteForm } from "./invite-form";
 import { MembersDataTable } from "./members-data-table";
 
 export default async function MembersPage() {
+  await connection();
   await requireRole(["owner"]);
 
   const [users, invites] = await Promise.all([

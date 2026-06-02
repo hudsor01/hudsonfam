@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { SectionHeader } from "@/components/ui/section-header";
 import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { EventForm } from "../event-form";
@@ -19,6 +18,7 @@ function toLocalDatetime(date: Date): string {
 }
 
 export default async function EditEventPage({ params }: Props) {
+  await connection();
   const { id } = await params;
 
   const event = await prisma.event.findUnique({

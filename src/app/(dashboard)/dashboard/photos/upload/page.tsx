@@ -1,11 +1,11 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { SectionHeader } from "@/components/ui/section-header";
+import { connection } from "next/server";
 import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { UploadForm } from "./upload-form";
 
 export default async function UploadPage() {
+  await connection();
   const albums = await prisma.album.findMany({
     orderBy: { title: "asc" },
     select: { id: true, title: true },

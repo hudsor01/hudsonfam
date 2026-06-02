@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import Image from "next/image";
 import Link from "next/link";
+import { connection } from "next/server";
 import prisma from "@/lib/prisma";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Card } from "@/components/ui/card";
@@ -9,6 +8,7 @@ import { deletePhoto } from "@/lib/dashboard-actions";
 import { PhotoActions } from "./photo-actions";
 
 export default async function PhotosPage() {
+  await connection();
   const photos = await prisma.photo.findMany({
     orderBy: { createdAt: "desc" },
     include: {

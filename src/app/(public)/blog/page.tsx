@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   description: "Stories, thoughts, and updates from the Hudson family.",
 };
 
-export const revalidate = 300; // ISR: revalidate every 5 minutes
 
 const POSTS_PER_PAGE = 6;
 

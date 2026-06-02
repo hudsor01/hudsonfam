@@ -1,12 +1,12 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
+import { connection } from "next/server";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export default async function MemorialAdminPage() {
+  await connection();
   await requireRole(["owner"]);
 
   const [totalMemories, approvedMemories, pendingMemories, totalMedia] =

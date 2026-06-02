@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import Image from "next/image";
 import prisma from "@/lib/prisma";
+import { connection } from "next/server";
 import { Metadata } from "next";
 import { MemoryForm } from "./memory-form";
 import Link from "next/link";
@@ -201,6 +200,7 @@ function MemorialJsonLd({ memoryCount }: { memoryCount: number }) {
 }
 
 export default async function RichardHudsonSrMemorialPage() {
+  await connection();
   const [memories, videos] = await Promise.all([
     prisma.memory.findMany({
       where: { approved: true },

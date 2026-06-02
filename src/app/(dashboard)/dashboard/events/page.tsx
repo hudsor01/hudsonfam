@@ -1,12 +1,12 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { SectionHeader } from "@/components/ui/section-header";
+import { connection } from "next/server";
 import { Card } from "@/components/ui/card";
 import { deleteEvent } from "@/lib/dashboard-actions";
 import { EventsDataTable } from "./events-data-table";
 
 export default async function EventsPage() {
+  await connection();
   const now = new Date();
 
   const [upcomingEvents, pastEvents] = await Promise.all([

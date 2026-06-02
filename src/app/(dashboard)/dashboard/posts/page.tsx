@@ -1,13 +1,13 @@
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
 import prisma from "@/lib/prisma";
+import { connection } from "next/server";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Card } from "@/components/ui/card";
 import { deletePost } from "@/lib/dashboard-actions";
 import { PostsDataTable } from "./posts-data-table";
 
 export default async function PostsPage() {
+  await connection();
   const posts = await prisma.blogPost.findMany({
     orderBy: { updatedAt: "desc" },
   });

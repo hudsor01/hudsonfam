@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import Image from "next/image";
 import prisma from "@/lib/prisma";
+import { connection } from "next/server";
 import Link from "next/link";
 import { SectionHeader } from "@/components/ui/section-header";
 
@@ -11,6 +10,7 @@ export const metadata = {
 };
 
 export default async function PhotosPage() {
+  await connection();
   const albums = await prisma.album.findMany({
     orderBy: { date: "desc" },
     include: {

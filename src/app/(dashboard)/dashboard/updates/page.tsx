@@ -1,13 +1,13 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { SectionHeader } from "@/components/ui/section-header";
+import { connection } from "next/server";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { deleteUpdate } from "@/lib/dashboard-actions";
 import { DeleteButton } from "@/components/ui/delete-button";
 
 export default async function UpdatesPage() {
+  await connection();
   const updates = await prisma.familyUpdate.findMany({
     orderBy: { createdAt: "desc" },
     take: 50,

@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
+import { cacheLife, cacheTag } from "next/cache";
 
 const BLOG_DIR = path.join(process.cwd(), "content", "blog");
 
@@ -31,6 +32,12 @@ function calculateReadingTime(content: string): string {
 }
 
 export async function getAllPosts(): Promise<BlogPostMeta[]> {
+  "use cache";
+  // Blog content is filesystem MDX committed to the repo — it only changes on
+  // deploy, so cache it and tag it for explicit invalidation if ever needed.
+  cacheLife("hours");
+  cacheTag("blog");
+
   let files: string[];
   try {
     files = await fs.readdir(BLOG_DIR);
@@ -86,6 +93,10 @@ export async function getAllPosts(): Promise<BlogPostMeta[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("blog", `blog:${slug}`);
+
   // Prevent path traversal: reject slugs with path separators or dot sequences
   if (!slug || slug.includes("/") || slug.includes("\\") || slug.includes("..")) {
     return null;

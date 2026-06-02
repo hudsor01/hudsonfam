@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { Hero } from "@/components/public/hero";
+import { connection } from "next/server";
 import { FeaturedPost } from "@/components/public/featured-post";
 import { PostCard } from "@/components/public/post-card";
 import { Sidebar } from "@/components/public/sidebar";
@@ -18,6 +17,7 @@ function formatDate(date: Date | string): string {
 }
 
 export default async function HomePage() {
+  await connection();
   // Fetch blog posts from MDX files
   const allPosts = await getAllPosts();
   const publishedPosts = allPosts.filter(

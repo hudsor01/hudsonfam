@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import Link from "next/link";
 import { SectionHeader } from "@/components/ui/section-header";
 import AlbumPhotoGrid from "./album-photo-grid";
@@ -10,20 +9,28 @@ interface AlbumPageProps {
   params: Promise<{ album: string }>;
 }
 
+/**
+ * Metadata is derived from the slug rather than the DB. Under Cache Components,
+ * `generateMetadata` feeds the static <head> shell, so an uncached DB read here
+ * would block the route from prerendering (and metadata can't stream like body
+ * content). The real album title still renders in the page body below.
+ */
 export async function generateMetadata({ params }: AlbumPageProps) {
   const { album: slug } = await params;
-  const album = await prisma.album.findUnique({
-    where: { slug },
-    select: { title: true, description: true },
-  });
-  if (!album) return { title: "Album Not Found" };
+  const title = slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
   return {
-    title: `${album.title} | Photos | The Hudson Family`,
-    description: album.description || `Photo album: ${album.title}`,
+    title: `${title} | Photos | The Hudson Family`,
+    description: `Photo album: ${title}`,
   };
 }
 
 export default async function AlbumPage({ params }: AlbumPageProps) {
+  // Fully dynamic (like the other auth-aware/DB-backed public pages): opt out of
+  // prerendering before the uncached album+photos read under Cache Components.
+  await connection();
   const { album: slug } = await params;
 
   const album = await prisma.album.findUnique({

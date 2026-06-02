@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
 import prisma from "@/lib/prisma";
+import { connection } from "next/server";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +8,7 @@ import { CollapsibleCard } from "@/components/dashboard/collapsible-card";
 import { QuickEventDialog, QuickUpdateDialog } from "./quick-actions";
 
 export default async function DashboardPage() {
+  await connection();
   const [postCount, publishedPostCount, photoCount, albumCount, eventCount, updateCount] =
     await Promise.all([
       prisma.blogPost.count(),

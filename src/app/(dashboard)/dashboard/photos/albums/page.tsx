@@ -1,11 +1,11 @@
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
 import prisma from "@/lib/prisma";
+import { connection } from "next/server";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Card } from "@/components/ui/card";
 
 export default async function AlbumsPage() {
+  await connection();
   const albums = await prisma.album.findMany({
     orderBy: { date: "desc" },
     include: {

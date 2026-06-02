@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import Image from "next/image";
 import prisma from "@/lib/prisma";
+import { connection } from "next/server";
 import { requireRole } from "@/lib/session";
 import { SectionHeader } from "@/components/ui/section-header";
 import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
@@ -9,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { AddMediaForm, MediaDeleteButton } from "./media-form";
 
 export default async function MemorialMediaPage() {
+  await connection();
   await requireRole(["owner"]);
 
   const media = await prisma.memorialMedia.findMany({

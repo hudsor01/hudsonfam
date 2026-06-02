@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import Image from "next/image";
 import prisma from "@/lib/prisma";
+import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import { SectionHeader } from "@/components/ui/section-header";
 import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
@@ -13,6 +12,7 @@ interface Props {
 }
 
 export default async function EditAlbumPage({ params }: Props) {
+  await connection();
   const { id } = await params;
 
   const album = await prisma.album.findUnique({

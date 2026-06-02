@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
+import { connection } from "next/server";
 import { SectionHeader } from "@/components/ui/section-header";
 import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { ContentSectionForm } from "./content-form";
@@ -40,6 +39,7 @@ const SECTIONS = [
 ];
 
 export default async function MemorialContentPage() {
+  await connection();
   await requireRole(["owner"]);
 
   const contentRecords = await prisma.memorialContent.findMany();

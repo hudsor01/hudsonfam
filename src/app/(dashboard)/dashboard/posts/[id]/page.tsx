@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { SectionHeader } from "@/components/ui/section-header";
 import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { PostForm } from "../post-form";
@@ -12,6 +11,7 @@ interface Props {
 }
 
 export default async function EditPostPage({ params }: Props) {
+  await connection();
   const { id } = await params;
 
   const post = await prisma.blogPost.findUnique({

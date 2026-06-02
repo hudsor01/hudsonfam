@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
+import { connection } from "next/server";
 import { SectionHeader } from "@/components/ui/section-header";
 import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MemoryActions } from "./memory-actions";
 
 export default async function MemoriesModPage() {
+  await connection();
   await requireRole(["owner"]);
 
   const [pending, approved] = await Promise.all([

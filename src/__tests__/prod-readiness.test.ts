@@ -21,6 +21,11 @@ const mockRevalidatePath = vi.fn();
 
 vi.mock('next/cache', () => ({
   revalidatePath: (...args: unknown[]) => mockRevalidatePath(...args),
+  // Cache Components directives — no-ops (require Next's cacheComponents runtime).
+  cacheLife: () => {},
+  cacheTag: () => {},
+  unstable_cacheLife: () => {},
+  unstable_cacheTag: () => {},
 }));
 
 vi.mock('next/navigation', () => ({

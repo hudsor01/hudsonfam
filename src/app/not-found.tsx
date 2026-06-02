@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CopyrightYear } from "@/components/public/copyright-year";
 
 export default function NotFound() {
   return (
@@ -64,7 +65,7 @@ export default function NotFound() {
 
       {/* Footer */}
       <footer className="border-t border-border px-5 sm:px-7 py-3 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-text-dim">
-        <span>&copy; {new Date().getFullYear()} The Hudson Family</span>
+        <span>&copy; <CopyrightYear /> The Hudson Family</span>
         <span>
           Built by{" "}
           <a

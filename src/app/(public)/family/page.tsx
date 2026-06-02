@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
 import prisma from "@/lib/prisma";
+import { connection } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -16,6 +15,7 @@ export const metadata = {
 const PAGE_SIZE = 10;
 
 export default async function FamilyPage() {
+  await connection();
   // Check if user is authenticated (to show FAMILY updates)
   const session = await auth.api.getSession({
     headers: await headers(),

@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { connection } from "next/server";
 import { headers } from "next/headers";
 import { SectionHeader } from "@/components/ui/section-header";
 import EventCard from "@/components/public/event-card";
@@ -13,6 +12,7 @@ export const metadata = {
 };
 
 export default async function EventsPage() {
+  await connection();
   const now = new Date();
 
   // Check if user is authenticated (to show FAMILY events)
