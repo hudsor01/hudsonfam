@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Cloud Re-platform & Recipes Experience
-status: Phase 30 Plan 01 executed 2026-06-02. Redis removed; Neon runtime verified; deps aged-pinned; bun.lock regenerated; renovate.json created. Build + tests + lint green.
-last_updated: "2026-06-02T03:12:00Z"
+status: verifying
+last_updated: "2026-06-02T03:42:15.576Z"
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 5
   completed_plans: 4
-  percent: 40
+  percent: 33
 ---
 
 # State
@@ -31,8 +31,8 @@ The K3s homelab is offline indefinitely (flood; equipment in storage). All data 
 | DNS | Cloudflare → Vercel |
 
 Phase: 30 — Cloud Re-platform
-Plan: 30-01 COMPLETE; 30-02 is next
-Status: Phase 30 Plan 01 executed 2026-06-02. Redis removed from auth.ts (CLOUD-02); Neon runtime connection verified via integration test (CLOUD-01); deps aged-pinned to clear Aikido Safe Chain 48h gate; renovate.json security-only policy added; bun.lock regenerated clean (CLOUD-09). Build + 275 tests + lint all green.
+Plan: 30-02 COMPLETE; 30-03 is next
+Status: Phase 30 Plan 02 executed 2026-06-01. R2 photo pipeline wired (CLOUD-03): processImage PutObjects 3 keys, /api/images route GetObjects from R2, NoSuchKey → 307 placeholder fallback, @aws-sdk/client-s3@3.1057.0 added. Homelab admin removed (CLOUD-04): /admin 404s, lib/dashboard/ + 7 widgets + 4 tests deleted, Admin nav link removed, SONARR/RADARR/JELLYFIN unreferenced. Build + 238 tests + lint all green. Live R2 upload deferred to owner via Task 4 checkpoint.
 
 ## What's Done
 
@@ -40,12 +40,13 @@ Status: Phase 30 Plan 01 executed 2026-06-02. Redis removed from auth.ts (CLOUD-
 - v4.0 planning artifacts: PROJECT.md updated, REQUIREMENTS.md (JOB-01..07, CLOUD-01..08, RECIPE-01..05), ROADMAP.md §v4.0 (phases 29-31), STATE.md reset.
 - **Phase 29 Plan 01 (2026-06-01):** Deleted job admin UI dir (14 files) + job API PDF routes (2 files); removed Jobs nav from admin layout and owner dashboard layout. Build green. Commits: 9530118, 9df610c.
 - **Phase 30 Plan 01 (2026-06-02):** CLOUD-02 Redis stripped from auth.ts + ioredis removed; CLOUD-01 Neon runtime verified (integration test + live seed counts); CLOUD-09 deps aged-pinned, bun.lock regenerated, renovate.json security-only. Deviations: eslint pinned to 9.x (10.x broke plugin-react), kysely resolution-pinned to 0.28.17 (0.29.x broke better-auth adapter), @prisma/adapter-pg + @prisma/client added as explicit deps. Commits: 09ffc25, 622e1f8, 0602bfc.
+- **Phase 30 Plan 02 (2026-06-01):** CLOUD-03 photo pipeline to R2: processImage PutObjects 3 keys, read route GetObjects from R2, NoSuchKey->307 placeholder. CLOUD-04 homelab admin removed: /admin 404s, lib/dashboard + 7 widgets + 4 tests + api/dashboard route deleted, Admin nav link removed, SONARR/RADARR/JELLYFIN env vars purged from src. @aws-sdk/client-s3@3.1057.0 aged-pinned. Commits: d29cb04 (RED), a872fe1 (CLOUD-03), 1b7fad1 (CLOUD-04).
 
 ## What's Next
 
 ### Immediate next step
 
-Plan 30-02 — homelab admin removal (CLOUD-04) + K8s/Docker/Flux artifacts removal (CLOUD-05) + `output: standalone` removal from next.config.ts.
+Plan 30-03 — Vercel deploy + DNS cut-over (CLOUD-06/07/08); K8s/Docker/Flux artifacts removal (CLOUD-05); `output: standalone` removal from next.config.ts.
 
 ### Sequenced phase order
 
@@ -81,7 +82,7 @@ Mapped 2026-06-01 — verify no non-job consumer before each deletion:
 - Host Vercel; DB Neon; images Cloudflare R2 — all free tier (2026-06-01)
 - Drop Redis; better-auth sessions on Postgres
 - Delete job pipeline outright (not migrate)
-- Park homelab-monitoring admin behind an offline-safe guard, don't delete
+- Delete homelab-monitoring admin entirely (CLOUD-04 decision confirmed) — /admin 404s, FUTURE-02 tracks re-enable when cluster returns
 - TanStack Form (not react-hook-form); TanStack Table for admin tables
 - All colors via globals.css @theme tokens
 - Recipes: file-based MDX, text-only, public, no DB/login
