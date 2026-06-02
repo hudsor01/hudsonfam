@@ -417,7 +417,12 @@ Plans:
   3. The homepage renders correctly with `content/blog/` deleted and the `BlogPost`/`FamilyUpdate` Prisma models absent — no errors, no placeholder content
   4. `npm run build` succeeds with the new homepage; no console errors on load in production
 
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+**Wave 1**
+
+- [ ] 33-01-PLAN.md — Recipes-first homepage: rework Hero (CTA + RecipeSearch), FEATURED_RECIPE_SLUGS constant + Wave-0 test, rewrite page.tsx into Hero → Recipes → Photos → Events stacked sections, retire Sidebar + WeatherWidget (HOME-01, HOME-02, HOME-03)
+
 **UI hint**: yes
 
 ### Phase 34: Photo Pipeline Fix
@@ -469,7 +474,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 32. Prune & Dashboard Cleanup | 3/3 | Complete    | 2026-06-02 |
-| 33. Homepage Restructure | 0/TBD | Not started | - |
+| 33. Homepage Restructure | 0/1 | Planned | - |
 | 34. Photo Pipeline Fix | 0/TBD | Not started | - |
 | 35. Navbar & Footer IA | 0/TBD | Not started | - |
 | 36. Quality Gate | 0/TBD | Not started | - |
