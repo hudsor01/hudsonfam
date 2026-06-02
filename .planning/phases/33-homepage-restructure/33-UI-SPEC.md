@@ -1,7 +1,8 @@
 ---
 phase: 33
 slug: homepage-restructure
-status: draft
+status: approved
+reviewed_at: 2026-06-02T00:00:00Z
 shadcn_initialized: true
 preset: new-york
 created: 2026-06-02
@@ -42,7 +43,7 @@ Declared values (must be multiples of 4):
 | 3xl | 64px | Hero top/bottom padding on desktop (`sm:py-20` = 80px; nearest token at 64px) |
 
 Exceptions:
-- Hero `py-16` (64px) / `sm:py-20` (80px) — inherits existing hero.tsx rhythm; keep as-is
+- Hero `py-16` = 64px / `sm:py-20` = 80px — existing hero.tsx rhythm; 80px is a multiple of 4 but outside the standard set; keep as-is
 - Touch targets on RecipeSearch trigger: min-height 44px (`min-h-11`) — existing component, keep
 - Date badge in event rows: `size-10` (40px) square — existing pattern from sidebar.tsx, keep
 
@@ -52,18 +53,19 @@ Exceptions:
 
 | Role | Size | Weight | Line Height | Font | Token |
 |------|------|--------|-------------|------|-------|
-| Body / card meta | 14px | 400 (regular) | 1.5 | sans | `text-sm` |
-| Body / section text | 16px | 400 (regular) | 1.5 | sans | `text-base` |
-| Section label / eyebrow | 12px | 600 (semibold) | 1.0 | sans, uppercase, tracking-[3px] | `text-xs font-semibold tracking-[3px] uppercase` |
-| Recipe card title / event title | 18–20px | 400 (regular) | 1.2 | serif | `text-lg font-serif` or `text-xl font-serif` |
-| Hero h1 | 36px / 48px (sm) | 400 (regular) | 1.2 | serif | `text-4xl sm:text-5xl font-serif` |
+| Eyebrow labels / card meta | 14px | 600 (semibold) for eyebrows; 400 (regular) for meta | 1.5 | sans | `text-sm` |
+| Body / section subcopy | 16px | 400 (regular) | 1.5 | sans | `text-base` |
+| Card titles / section titles | 18px | 400 (regular) | 1.2 | serif | `text-lg font-serif` |
+| Hero H1 | 36px / 48px (sm) | 400 (regular) | 1.2 | serif | `text-4xl sm:text-5xl font-serif` |
 
 Rules:
 - Only two weights in use: 400 (regular) and 600 (semibold). No 500/700.
-- Serif font (`--font-serif`) for all headings: Hero h1, recipe card titles, event card titles.
+- Serif font (`--font-serif`) for all headings: Hero H1, recipe card titles, event card titles.
 - Sans font (`--font-sans`) for all body copy, labels, metadata, section eyebrows.
 - `text-balance` on all headings; `text-pretty` on all body paragraphs with >1 line.
-- Eyebrow / section label: `text-xs font-sans font-semibold tracking-[3px] text-primary uppercase` — matches existing SectionHeader `label` mode.
+- Eyebrow / section label: `text-sm font-sans font-semibold tracking-[3px] text-primary uppercase` — the visual weight of the tracking + uppercase does the eyebrow work; no separate `text-xs` tier needed.
+- Hero eyebrow (`Est. 2024 • Dallas, Texas`): `text-sm tracking-[4px] text-accent font-sans uppercase mb-3` — same `text-sm` tier.
+- Card titles: `text-lg font-serif` only — no `text-xl` variant.
 
 Source: existing hero.tsx, sidebar.tsx, section-header.tsx, event-card.tsx patterns
 
@@ -87,7 +89,7 @@ Accent (`text-accent` / `bg-accent/10` / `bg-accent/15`) reserved for:
 2. Date display text inside event rows (`text-accent text-sm`)
 3. Date icon inside EventCard (`text-accent`)
 4. Relative-label badge on EventCard (`text-xs text-accent bg-accent/10 px-2.5 py-1 rounded-full`)
-5. Section label eyebrow in Hero (`text-xs tracking-[4px] text-accent` — existing eyebrow "Est. 2024 • Dallas, Texas")
+5. Section label eyebrow in Hero (`text-sm tracking-[4px] text-accent` — existing eyebrow "Est. 2024 • Dallas, Texas")
 
 Primary (`text-primary` / `bg-primary` / `bg-primary/10`) reserved for:
 1. SectionHeader `label` text (all three section labels: RECIPES / PHOTOS / EVENTS)
@@ -121,7 +123,7 @@ Single-column, full-width, stacked. Order locked by D-03:
 **Section container pattern** (applies to Recipes, Photos, Events):
 ```
 <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-  <SectionHeader label="..." action={{ text: "View all", href: "..." }} />
+  <SectionHeader label="..." action={{ text: "View all ...", href: "..." }} />
   {/* section content */}
 </section>
 ```
@@ -139,9 +141,9 @@ Single-column, full-width, stacked. Order locked by D-03:
 Layout: centered, `text-center`, full-width, `py-16 sm:py-20 px-5`, `motion-safe:animate-fade-in-up`
 
 Elements (top to bottom):
-1. **Eyebrow** — `text-xs tracking-[4px] text-accent font-sans uppercase mb-3` → copy: `Est. 2024 • Dallas, Texas`
+1. **Eyebrow** — `text-sm tracking-[4px] text-accent font-sans uppercase mb-3` → copy: `Est. 2024 • Dallas, Texas`
 2. **H1** — `text-4xl sm:text-5xl font-serif text-foreground font-normal mb-3 text-balance` → copy: `The Hudson Family`
-3. **Subcopy** — `text-muted-foreground italic text-base sm:text-lg max-w-xl mx-auto text-pretty mb-8` → copy: `Grandma Hudson's recipes, family photos, and moments that matter — all in one place.` (replaces blog-era "Stories, photos, and life updates...")
+3. **Subcopy** — `text-muted-foreground italic text-base max-w-xl mx-auto text-pretty mb-8` → copy: `Grandma Hudson's recipes, family photos, and moments that matter — all in one place.` (replaces blog-era "Stories, photos, and life updates...")
 4. **CTA row** — `flex flex-col sm:flex-row items-center justify-center gap-3 mt-2`
    - Primary button: `Browse Recipes` → `/recipes` — `bg-primary text-primary-foreground px-6 py-2.5 rounded-lg text-sm font-sans font-semibold hover:bg-primary/90 transition-colors min-h-11`
    - `RecipeSearch` trigger — existing component, rendered inline; already `min-h-11 w-full sm:w-auto sm:max-w-xs`
@@ -154,7 +156,7 @@ The RecipeSearch receives the recipe index passed from the Server Component pare
 
 **Locked by D-01 / D-02**
 
-SectionHeader: `label="RECIPES"` + `action={{ text: "View all", href: "/recipes" }}`
+SectionHeader: `label="RECIPES"` + `action={{ text: "View all recipes", href: "/recipes" }}`
 
 Featured card row:
 - **4–6 curated recipe cards** resolved from `FEATURED_RECIPE_SLUGS` constant (defined in `page.tsx` or a co-located constants file, e.g. `src/lib/featured-recipes.ts`). Default slugs chosen at implementation time from known crowd-pleaser categories (e.g. Cakes, Salads, Main Dishes, Soups).
@@ -162,10 +164,10 @@ Featured card row:
 - **Each card** — `<Link href="/recipes/[slug]">` wrapping:
   ```
   <div className="bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:shadow-card transition-all group">
-    <p className="text-xs text-accent font-sans font-semibold tracking-[2px] uppercase mb-1.5">
+    <p className="text-sm text-accent font-sans font-semibold tracking-[2px] uppercase mb-1.5">
       {recipe.category}
     </p>
-    <h3 className="text-base font-serif text-foreground leading-snug text-balance group-hover:text-primary transition-colors">
+    <h3 className="text-lg font-serif text-foreground leading-snug text-balance group-hover:text-primary transition-colors">
       {recipe.title}
     </h3>
   </div>
@@ -179,7 +181,7 @@ Featured card row:
 
 **Locked by D-05**
 
-SectionHeader: `label="PHOTOS"` + `action={{ text: "View all", href: "/photos" }}`
+SectionHeader: `label="PHOTOS"` + `action={{ text: "View all photos", href: "/photos" }}`
 
 Container: `bg-card border border-border rounded-xl p-5`
 
@@ -199,7 +201,7 @@ Source: existing Sidebar pattern, D-05
 
 **Locked by D-05**
 
-SectionHeader: `label="EVENTS"` + `action={{ text: "View all", href: "/events" }}`
+SectionHeader: `label="EVENTS"` + `action={{ text: "View all events", href: "/events" }}`
 
 Container: `bg-card border border-border rounded-xl p-5`
 
@@ -209,13 +211,13 @@ Content (events.length > 0):
   ```
   <li className="flex gap-3">
     <div className="flex-shrink-0 size-10 rounded-lg bg-accent/15 flex items-center justify-center">
-      <span className="text-accent text-xs font-bold font-sans">
+      <span className="text-accent text-sm font-bold font-sans">
         {day number}
       </span>
     </div>
     <div className="min-w-0">
       <p className="text-sm text-foreground font-medium truncate">{title}</p>
-      <p className="text-xs text-text-dim">{month short + day} • {location}</p>
+      <p className="text-sm text-text-dim">{month short + day} • {location}</p>
     </div>
   </li>
   ```
@@ -237,9 +239,9 @@ Source: existing Sidebar pattern, D-05
 | RecipeSearch trigger click | Opens cmdk CommandDialog (existing RecipeSearch behavior) |
 | Cmd/Ctrl+K (anywhere on page) | Opens RecipeSearch dialog (existing global keybind) |
 | Featured recipe card click | Navigate to `/recipes/[slug]` |
-| "View all" → /recipes | Navigate to `/recipes` index |
-| "View all" → /photos | Navigate to `/photos` index |
-| "View all" → /events | Navigate to `/events` index |
+| "View all recipes" link | Navigate to `/recipes` index |
+| "View all photos" link | Navigate to `/photos` index |
+| "View all events" link | Navigate to `/events` index |
 | PhotoGridPreview click | Navigate to `/photos` (existing group-link behavior) |
 | Hover: recipe card | `border-accent/40 + shadow-card` reveal; `text-primary` on title |
 | Hover: photo thumbnail | `opacity-80` fade (existing group-hover pattern) |
@@ -266,7 +268,9 @@ Animations: `motion-safe:animate-fade-in-up` on Hero section only (existing). No
 | Recipes section label | `RECIPES` |
 | Photos section label | `PHOTOS` |
 | Events section label | `EVENTS` |
-| Section "View all" link | `View all` (all three sections) |
+| Recipes "View all" link | `View all recipes` |
+| Photos "View all" link | `View all photos` |
+| Events "View all" link | `View all events` |
 | Photos empty state | `No photos yet` |
 | Events empty state | `No upcoming events` |
 | Error state (data fetch fails) | Page-level: Next.js error.tsx boundary — "Something went wrong. Try refreshing the page." (existing (public) error.tsx) |
