@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
-status: active
-last_updated: "2026-06-02"
-last_activity: 2026-06-02
+status: planning
+last_updated: "2026-06-02T20:05:55.106Z"
+last_activity: 2026-06-02 — v5.0 roadmap created (phases 32-36)
 progress:
   total_phases: 5
   completed_phases: 0
