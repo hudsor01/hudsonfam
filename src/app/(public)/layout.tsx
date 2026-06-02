@@ -9,11 +9,9 @@ import { MenuIndicator } from "@/components/public/menu-indicator";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/blog", label: "Blog" },
   { href: "/photos", label: "Photos" },
   { href: "/recipes", label: "Grandma Hudson's Recipes" },
   { href: "/events", label: "Events" },
-  { href: "/family", label: "Family" },
   { href: "/richard-hudson-sr", label: "In Memory" },
 ];
 
@@ -67,17 +65,11 @@ export default function PublicLayout({
             <span className="text-xs text-text-dim">Dallas, TX</span>
           </div>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-text-dim">
-            <Link href="/blog" className="hover:text-muted-foreground transition-colors">
-              Blog
-            </Link>
             <Link href="/photos" className="hover:text-muted-foreground transition-colors">
               Photos
             </Link>
             <Link href="/events" className="hover:text-muted-foreground transition-colors">
               Events
-            </Link>
-            <Link href="/family" className="hover:text-muted-foreground transition-colors">
-              Family
             </Link>
           </div>
         </div>

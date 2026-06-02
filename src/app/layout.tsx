@@ -23,11 +23,6 @@ export const metadata: Metadata = {
     title: "The Hudson Family",
     description: "Stories, photos, and life updates from our corner of the world",
   },
-  alternates: {
-    types: {
-      "application/rss+xml": "/api/blog/rss",
-    },
-  },
 };
 
 export default function RootLayout({

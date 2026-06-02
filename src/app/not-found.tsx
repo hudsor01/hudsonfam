@@ -16,7 +16,6 @@ export default function NotFound() {
         </Link>
         <div className="hidden sm:flex items-center gap-6 text-sm tracking-wide">
           <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">Home</Link>
-          <Link href="/blog" className="text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
           <Link href="/photos" className="text-muted-foreground hover:text-foreground transition-colors">Photos</Link>
         </div>
       </nav>
@@ -46,12 +45,6 @@ export default function NotFound() {
               className="w-full sm:w-auto px-6 py-3 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors text-center"
             >
               Back to Home
-            </Link>
-            <Link
-              href="/blog"
-              className="w-full sm:w-auto px-6 py-3 bg-card text-muted-foreground text-sm font-medium rounded-lg border border-border hover:text-foreground hover:border-primary/30 transition-colors text-center"
-            >
-              Read the Blog
             </Link>
             <Link
               href="/photos"
