@@ -397,7 +397,7 @@ Plans:
 **Wave 1**
 
 - [x] 32-01-PLAN.md — Remove blog/family public surface (routes, content, lib, RSS, components), strip homepage blog dep, clean cross-cutting refs, add 308 redirects (PRUNE-01, PRUNE-02, PRUNE-05)
-- [ ] 32-02-PLAN.md — Remove dashboard posts/updates CRUD + server actions, drop BlogPost/FamilyUpdate models + PostStatus enum via verify-then-drop migration, test surgery (PRUNE-03, PRUNE-04)
+- [x] 32-02-PLAN.md — Remove dashboard posts/updates CRUD + server actions, drop BlogPost/FamilyUpdate models + PostStatus enum via verify-then-drop migration, test surgery (PRUNE-03, PRUNE-04)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -468,7 +468,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 32. Prune & Dashboard Cleanup | 1/3 | In Progress|  |
+| 32. Prune & Dashboard Cleanup | 2/3 | In Progress|  |
 | 33. Homepage Restructure | 0/TBD | Not started | - |
 | 34. Photo Pipeline Fix | 0/TBD | Not started | - |
 | 35. Navbar & Footer IA | 0/TBD | Not started | - |
