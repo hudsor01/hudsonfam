@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
-status: executing
-last_updated: "2026-06-02T22:44:31.907Z"
-last_activity: 2026-06-02 -- Phase 33 planning complete
+status: verifying
+last_updated: "2026-06-02T22:55:23.853Z"
+last_activity: 2026-06-02
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
-  completed_plans: 3
-  percent: 20
+  completed_plans: 4
+  percent: 40
 ---
 
 # State
@@ -20,19 +20,19 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 **Core value:** A single home for the Hudson family — content for everyone, and Grandma Hudson's recipes preserved and made readable for even the oldest relatives.
-**Current focus:** Phase 33 — homepage restructure
+**Current focus:** Phase 34 — Photo Pipeline Fix
 
 ## Current Position
 
-Phase: 33
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-06-02 -- Phase 33 planning complete
+Phase: 33 (Homepage Restructure) — COMPLETE
+Plan: 1 of 1 (all plans done)
+Status: Phase 33 complete; next = Phase 34
+Last activity: 2026-06-02 -- Phase 33 Plan 01 complete (Homepage Restructure)
 
 ```
-v5.0 progress: [##░░░░░░░░] 20% (1/5 phases)
+v5.0 progress: [####░░░░░░] 40% (2/5 phases)
 Phase 32 [##########] COMPLETE (3/3 plans)
-Phase 33 [░░░░░░░░░░] Not started
+Phase 33 [##########] COMPLETE (1/1 plans)
 Phase 34 [░░░░░░░░░░] Not started
 Phase 35 [░░░░░░░░░░] Not started
 Phase 36 [░░░░░░░░░░] Not started
@@ -52,12 +52,13 @@ Phase 36 [░░░░░░░░░░] Not started
 - **Phase 32 Plan 01 (2026-06-02):** PRUNE-01/02/05 blog+family public surface removed: deleted 11 files (MDX content, lib/blog.ts, RSS route, blog/family public routes+components, blog.test.ts); stripped homepage to Hero+Sidebar (D-05); cleaned nav/footer/sitemap/command-palette/not-found/root-layout; added 308 redirects for /blog, /blog/:slug*, /family → /. Build 1041 pages + 220 tests green. Commits: ae82bce, 92d669a, 77b499e.
 - **Phase 32 Plan 02 (COMPLETE, 2026-06-02):** Deleted dashboard posts/ (7 files) + updates/ (3 files) CRUD routes; removed createPost/updatePost/deletePost/createUpdate/deleteUpdate/quickCreateUpdate from dashboard-actions.ts; removed QuickUpdateDialog from quick-actions.tsx; surgical test cleanup in dashboard-actions.test.ts, mocks/prisma.ts, production-bugs.test.ts; de-blogged dashboard/page.tsx data layer (3-stat grid, Recent Photos card, QuickEventDialog only). D-01 verify-then-drop: BlogPost=0, FamilyUpdate=0 — no dump needed. Migration 20260602212415_remove_blog_familyupdate applied to Neon (DROP TABLE BlogPost; DROP TABLE FamilyUpdate; DROP TYPE PostStatus). Rule 1 auto-fix: album.name → album.title in dashboard/page.tsx. Build exits 0; 194 tests green. Commits: cf8939c, f23cbd7, 51b2fbb, 975c086, 7972112, 468b7ed.
 - **Phase 32 Plan 03 (COMPLETE, 2026-06-02):** DASH-01/02/03 — removed Posts/Updates from navLinks in layout.tsx and iconMap in app-sidebar.tsx (FileText+Bell imports gone); upgraded Upcoming Events empty state to heading+body spec form per UI-SPEC copywriting contract. Build exits 0; 194 tests green. Commits: b6d5dd5, 60948c7.
+- **Phase 33 Plan 01 (COMPLETE, 2026-06-02):** HOME-01/02/03 — recipes-first homepage: FEATURED_RECIPE_SLUGS constant (6 slugs) + Wave-0 regression test; Hero reworked (Browse Recipes CTA + RecipeSearch + text-sm eyebrow + new subcopy); page.tsx rewritten with Promise.all fetch (Hero → Recipes featured cards → Photos → Events), Sidebar + WeatherWidget deleted. Build exits 0; 196 tests green. Commits: 7e1764e, 06cb829, 5bc7c2d.
 
 ## What's Next
 
 ### Immediate next step
 
-Phase 33 (Homepage Restructure): HOME-01/02 — restructure homepage to lead with Recipes + Photos + Events, drop hero-only state.
+Phase 34 (Photo Pipeline Fix): PHOTO-01..04 — debug and fix the broken R2 image render; verify the upload→R2→/api/images→display pipeline end-to-end.
 
 ## Deferred Items
 
@@ -89,6 +90,7 @@ Phase 33 (Homepage Restructure): HOME-01/02 — restructure homepage to lead wit
 - D-02 redirects: /blog, /blog/:slug*, /family → / (permanent 308) in next.config.ts (not middleware, no runtime cost)
 - D-05 homepage stripped to Hero + Sidebar only; Phase 33 adds recipes content
 - D-03 dashboard consolidation complete: Posts/Updates nav entries removed, iconMap cleaned, Upcoming Events empty state upgraded to spec heading+body form (DASH-01/02/03 all complete)
+- Phase 33: recipes-first homepage — featured recipes via FEATURED_RECIPE_SLUGS constant in src/lib/featured-recipes.ts (family-editable); resolved via in-memory getRecipeIndex() lookup (zero extra I/O); Sidebar + WeatherWidget retired; SectionHeader text-xs accepted (deferred Phase 35)
 
 ## Blockers
 

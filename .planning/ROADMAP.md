@@ -372,7 +372,7 @@ Plans:
 ### Phases
 
 - [x] **Phase 32: Prune & Dashboard Cleanup** — remove Blog + Family Updates end-to-end (public routes, content, Prisma models, dashboard CRUD, API routes, all cross-cutting references) and strip dead dashboard management areas (completed 2026-06-02)
-- [ ] **Phase 33: Homepage Restructure** — rebuild the homepage to lead with Recipes, surface Photos + Events from live data, zero blog/updates dependency
+- [x] **Phase 33: Homepage Restructure** — recipes-first homepage: Hero with Browse Recipes CTA + RecipeSearch, 6-slug featured card row, live Photos + Events sections with empty states, Sidebar + WeatherWidget retired (completed 2026-06-02)
 - [ ] **Phase 34: Photo Pipeline Fix** — debug and fix the broken R2 image render; verify the upload→R2→/api/images→display pipeline end-to-end; clean empty states
 - [ ] **Phase 35: Navbar & Footer IA** — rebuild navbar to surface only surviving sections with mobile/responsive polish and active-route + a11y; rebuild footer to match real IA
 - [ ] **Phase 36: Quality Gate** — build clean, tests pass, lint/dead-code sweep, every surviving page polished and responsive
@@ -421,7 +421,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 33-01-PLAN.md — Recipes-first homepage: rework Hero (CTA + RecipeSearch), FEATURED_RECIPE_SLUGS constant + Wave-0 test, rewrite page.tsx into Hero → Recipes → Photos → Events stacked sections, retire Sidebar + WeatherWidget (HOME-01, HOME-02, HOME-03)
+- [x] 33-01-PLAN.md — Recipes-first homepage: rework Hero (CTA + RecipeSearch), FEATURED_RECIPE_SLUGS constant + Wave-0 test, rewrite page.tsx into Hero → Recipes → Photos → Events stacked sections, retire Sidebar + WeatherWidget (HOME-01, HOME-02, HOME-03)
 
 **UI hint**: yes
 
@@ -474,7 +474,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 32. Prune & Dashboard Cleanup | 3/3 | Complete    | 2026-06-02 |
-| 33. Homepage Restructure | 0/1 | Planned | - |
+| 33. Homepage Restructure | 1/1 | Complete    | 2026-06-02 |
 | 34. Photo Pipeline Fix | 0/TBD | Not started | - |
 | 35. Navbar & Footer IA | 0/TBD | Not started | - |
 | 36. Quality Gate | 0/TBD | Not started | - |
