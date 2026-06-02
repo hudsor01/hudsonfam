@@ -27,8 +27,8 @@ import type { NextRequest } from "next/server";
  *   frame-ancestors 'none'                             (clickjacking defense)
  *   base-uri   'self'                                  (blocks base-tag injection)
  *
- * Scope: /admin/* only (D-05). Public site (blog MDX, photo OG tags, memorial
- * media embeds) is NOT hardened here to avoid breaking existing inline patterns.
+ * Scope: /admin/* only (D-05). Public site (photo OG tags, memorial, and other
+ * public pages) is NOT hardened here to avoid breaking existing inline patterns.
  *
  * Enforcement: real CSP from day one, NOT Report-Only (D-06).
  */
@@ -78,7 +78,8 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // D-05: scope strictly to /admin — do NOT expand to /(.*) because blog MDX
-  // and other public surfaces may rely on inline patterns CSP would break.
+  // D-05: scope strictly to /admin — do NOT expand to /(.*) because photo OG tags,
+  // memorial, and public pages use inline styles / external images that a broader
+  // CSP would block.
   matcher: ["/admin/:path*"],
 };
