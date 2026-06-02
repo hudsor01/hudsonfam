@@ -11,8 +11,6 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { server } from './mocks/server';
-import { http, HttpResponse } from 'msw';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -529,7 +527,3 @@ describe('Cache Components dynamic rendering correctness', () => {
   }
 });
 
-// MSW handler needed to suppress unused import warning
-void server;
-void http;
-void HttpResponse;
