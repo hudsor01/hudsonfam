@@ -25,15 +25,10 @@ import { prismaMock } from '../mocks/prisma';
 
 // Import the actions under test
 import {
-  createPost,
-  updatePost,
-  deletePost,
   createAlbum,
   updateAlbum,
   createEvent,
   deleteEvent,
-  createUpdate,
-  deleteUpdate,
   updateUserRole,
   banUser,
   unbanUser,
@@ -59,168 +54,15 @@ describe('dashboard-actions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireRole.mockResolvedValue(fakeSession);
-    prismaMock.blogPost.create.mockResolvedValue({ id: 'post-1' });
-    prismaMock.blogPost.update.mockResolvedValue({ id: 'post-1' });
-    prismaMock.blogPost.delete.mockResolvedValue({ id: 'post-1' });
-    prismaMock.blogPost.findUnique.mockResolvedValue(null);
     prismaMock.album.create.mockResolvedValue({ id: 'album-1' });
     prismaMock.album.update.mockResolvedValue({ id: 'album-1' });
     prismaMock.event.create.mockResolvedValue({ id: 'event-1' });
     prismaMock.event.update.mockResolvedValue({ id: 'event-1' });
     prismaMock.event.delete.mockResolvedValue({ id: 'event-1' });
-    prismaMock.familyUpdate.create.mockResolvedValue({ id: 'update-1' });
-    prismaMock.familyUpdate.delete.mockResolvedValue({ id: 'update-1' });
     prismaMock.user.update.mockResolvedValue({ id: 'user-1' });
     prismaMock.photo.delete.mockResolvedValue({ id: 'photo-1' });
     prismaMock.inviteToken.create.mockResolvedValue({ id: 'invite-1', token: 'abc-123' });
     prismaMock.inviteToken.delete.mockResolvedValue({ id: 'invite-1' });
-  });
-
-  // --------------- Posts ---------------
-
-  describe('createPost', () => {
-    it('creates a post with correct data', async () => {
-      const formData = makeFormData({
-        title: 'My Post',
-        slug: 'my-post',
-        excerpt: 'A short excerpt',
-        tags: 'family, travel',
-        status: 'PUBLISHED',
-        coverImage: '/images/cover.jpg',
-      });
-
-      await createPost(formData);
-
-      expect(mockRequireRole).toHaveBeenCalledWith(['owner', 'admin', 'member']);
-      expect(prismaMock.blogPost.create).toHaveBeenCalledWith({
-        data: expect.objectContaining({
-          title: 'My Post',
-          slug: 'my-post',
-          excerpt: 'A short excerpt',
-          tags: ['family', 'travel'],
-          status: 'PUBLISHED',
-          coverImage: '/images/cover.jpg',
-          authorId: 'user-1',
-        }),
-      });
-      // publishedAt should be set when status is PUBLISHED
-      const callArgs = prismaMock.blogPost.create.mock.calls[0][0].data;
-      expect(callArgs.publishedAt).toBeInstanceOf(Date);
-    });
-
-    it('sets publishedAt to null for DRAFT status', async () => {
-      const formData = makeFormData({
-        title: 'Draft Post',
-        slug: 'draft-post',
-        tags: '',
-        status: 'DRAFT',
-      });
-
-      await createPost(formData);
-
-      const callArgs = prismaMock.blogPost.create.mock.calls[0][0].data;
-      expect(callArgs.publishedAt).toBeNull();
-      expect(callArgs.status).toBe('DRAFT');
-    });
-
-    it('revalidates paths and redirects after creation', async () => {
-      const formData = makeFormData({ title: 'Post', slug: 'post', tags: '' });
-
-      await createPost(formData);
-
-      expect(mockRevalidatePath).toHaveBeenCalledWith('/dashboard/posts');
-      expect(mockRevalidatePath).toHaveBeenCalledWith('/blog');
-      expect(mockRedirect).toHaveBeenCalledWith('/dashboard/posts');
-    });
-
-    it('handles empty tags gracefully', async () => {
-      const formData = makeFormData({ title: 'Post', slug: 'post', tags: '' });
-
-      await createPost(formData);
-
-      const callArgs = prismaMock.blogPost.create.mock.calls[0][0].data;
-      expect(callArgs.tags).toEqual([]);
-    });
-  });
-
-  describe('updatePost', () => {
-    it('updates post fields', async () => {
-      prismaMock.blogPost.findUnique.mockResolvedValue({
-        id: 'post-1',
-        status: 'DRAFT',
-        publishedAt: null,
-      });
-
-      const formData = makeFormData({
-        title: 'Updated Title',
-        slug: 'updated-slug',
-        excerpt: 'Updated excerpt',
-        tags: 'updated',
-        status: 'DRAFT',
-      });
-
-      await updatePost('post-1', formData);
-
-      expect(prismaMock.blogPost.update).toHaveBeenCalledWith({
-        where: { id: 'post-1' },
-        data: expect.objectContaining({
-          title: 'Updated Title',
-          slug: 'updated-slug',
-        }),
-      });
-    });
-
-    it('sets publishedAt when transitioning from DRAFT to PUBLISHED', async () => {
-      prismaMock.blogPost.findUnique.mockResolvedValue({
-        id: 'post-1',
-        status: 'DRAFT',
-        publishedAt: null,
-      });
-
-      const formData = makeFormData({
-        title: 'Title',
-        slug: 'slug',
-        tags: '',
-        status: 'PUBLISHED',
-      });
-
-      await updatePost('post-1', formData);
-
-      const callArgs = prismaMock.blogPost.update.mock.calls[0][0].data;
-      expect(callArgs.publishedAt).toBeInstanceOf(Date);
-    });
-
-    it('keeps existing publishedAt when already PUBLISHED', async () => {
-      const existingDate = new Date('2026-01-01');
-      prismaMock.blogPost.findUnique.mockResolvedValue({
-        id: 'post-1',
-        status: 'PUBLISHED',
-        publishedAt: existingDate,
-      });
-
-      const formData = makeFormData({
-        title: 'Title',
-        slug: 'slug',
-        tags: '',
-        status: 'PUBLISHED',
-      });
-
-      await updatePost('post-1', formData);
-
-      const callArgs = prismaMock.blogPost.update.mock.calls[0][0].data;
-      expect(callArgs.publishedAt).toEqual(existingDate);
-    });
-  });
-
-  describe('deletePost', () => {
-    it('deletes post and revalidates paths', async () => {
-      await deletePost('post-1');
-
-      expect(mockRequireRole).toHaveBeenCalledWith(['owner', 'admin']);
-      expect(prismaMock.blogPost.delete).toHaveBeenCalledWith({ where: { id: 'post-1' } });
-      expect(mockRevalidatePath).toHaveBeenCalledWith('/dashboard/posts');
-      expect(mockRevalidatePath).toHaveBeenCalledWith('/blog');
-    });
   });
 
   // --------------- Albums ---------------
@@ -377,36 +219,6 @@ describe('dashboard-actions', () => {
     });
   });
 
-  // --------------- Family Updates ---------------
-
-  describe('createUpdate', () => {
-    it('creates a family update', async () => {
-      const formData = makeFormData({
-        content: 'We had a great day!',
-        visibility: 'PUBLIC',
-      });
-
-      await createUpdate(formData);
-
-      expect(prismaMock.familyUpdate.create).toHaveBeenCalledWith({
-        data: {
-          content: 'We had a great day!',
-          visibility: 'PUBLIC',
-          postedById: 'user-1',
-        },
-      });
-    });
-  });
-
-  describe('deleteUpdate', () => {
-    it('deletes update (owner/admin only)', async () => {
-      await deleteUpdate('update-1');
-
-      expect(mockRequireRole).toHaveBeenCalledWith(['owner', 'admin']);
-      expect(prismaMock.familyUpdate.delete).toHaveBeenCalledWith({ where: { id: 'update-1' } });
-    });
-  });
-
   // --------------- Members ---------------
 
   describe('updateUserRole', () => {
@@ -524,14 +336,6 @@ describe('dashboard-actions', () => {
   // --------------- Auth checks ---------------
 
   describe('auth enforcement', () => {
-    it('calls requireRole before creating post', async () => {
-      mockRequireRole.mockRejectedValue(new Error('Unauthorized'));
-      const formData = makeFormData({ title: 'Post', slug: 'post', tags: '' });
-
-      await expect(createPost(formData)).rejects.toThrow('Unauthorized');
-      expect(prismaMock.blogPost.create).not.toHaveBeenCalled();
-    });
-
     it('calls requireRole before deleting event', async () => {
       mockRequireRole.mockRejectedValue(new Error('Unauthorized'));
 

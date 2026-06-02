@@ -6,7 +6,6 @@
  * - Auth guard bypass scenarios
  * - Invite token security (expired, used, invalid)
  * - Photo upload validation (size, MIME type, auth)
- * - Blog edge cases (missing files, invalid frontmatter)
  * - ISR/force-dynamic rendering correctness
  * - Database schema field alignment
  */
@@ -68,13 +67,9 @@ import { prismaMock } from './mocks/prisma';
 // ============================================================
 
 import {
-  createPost,
-  deletePost,
   createAlbum,
   createEvent,
   deleteEvent,
-  createUpdate,
-  deleteUpdate,
   updateUserRole,
   banUser,
   deletePhoto,
@@ -117,30 +112,8 @@ describe('FormData validation (formerly null coercion bugs)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireRole.mockResolvedValue(fakeOwnerSession);
-    prismaMock.blogPost.create.mockResolvedValue({ id: 'post-1' });
     prismaMock.event.create.mockResolvedValue({ id: 'event-1' });
     prismaMock.album.create.mockResolvedValue({ id: 'album-1' });
-    prismaMock.familyUpdate.create.mockResolvedValue({ id: 'update-1' });
-  });
-
-  it('FIXED: createPost throws when title is missing from FormData', async () => {
-    const formData = new FormData();
-    formData.set('slug', 'test-slug');
-    formData.set('status', 'DRAFT');
-    formData.set('tags', '');
-
-    await expect(createPost(formData)).rejects.toThrow('Title and slug are required');
-    expect(prismaMock.blogPost.create).not.toHaveBeenCalled();
-  });
-
-  it('FIXED: createPost throws when slug is missing from FormData', async () => {
-    const formData = new FormData();
-    formData.set('title', 'A Title');
-    formData.set('status', 'DRAFT');
-    formData.set('tags', '');
-
-    await expect(createPost(formData)).rejects.toThrow('Title and slug are required');
-    expect(prismaMock.blogPost.create).not.toHaveBeenCalled();
   });
 
   it('FIXED: createEvent throws when startDate is missing', async () => {
@@ -166,13 +139,6 @@ describe('FormData validation (formerly null coercion bugs)', () => {
     await expect(createAlbum(formData)).rejects.toThrow('Title and slug are required');
     expect(prismaMock.album.create).not.toHaveBeenCalled();
   });
-
-  it('FIXED: createUpdate throws when content is missing', async () => {
-    const formData = new FormData();
-
-    await expect(createUpdate(formData)).rejects.toThrow('Content is required');
-    expect(prismaMock.familyUpdate.create).not.toHaveBeenCalled();
-  });
 });
 
 // ============================================================
@@ -182,23 +148,6 @@ describe('FormData validation (formerly null coercion bugs)', () => {
 describe('Auth guard enforcement', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  it('server actions do not execute Prisma operations when auth throws', async () => {
-    mockRequireRole.mockRejectedValue(new Error('Redirect to /login'));
-
-    const formData = makeFormData({ title: 'Post', slug: 'slug', tags: '' });
-    await expect(createPost(formData)).rejects.toThrow();
-
-    // Prisma should never have been called
-    expect(prismaMock.blogPost.create).not.toHaveBeenCalled();
-  });
-
-  it('deletePost does not delete when auth fails', async () => {
-    mockRequireRole.mockRejectedValue(new Error('Unauthorized'));
-
-    await expect(deletePost('post-1')).rejects.toThrow();
-    expect(prismaMock.blogPost.delete).not.toHaveBeenCalled();
   });
 
   it('createEvent does not create when auth fails', async () => {
@@ -214,13 +163,6 @@ describe('Auth guard enforcement', () => {
 
     await expect(deleteEvent('event-1')).rejects.toThrow();
     expect(prismaMock.event.delete).not.toHaveBeenCalled();
-  });
-
-  it('deleteUpdate does not delete when auth fails', async () => {
-    mockRequireRole.mockRejectedValue(new Error('Unauthorized'));
-
-    await expect(deleteUpdate('update-1')).rejects.toThrow();
-    expect(prismaMock.familyUpdate.delete).not.toHaveBeenCalled();
   });
 
   it('updateUserRole does not update when auth fails (owner-only action)', async () => {
@@ -250,25 +192,6 @@ describe('Auth guard enforcement', () => {
     const formData = makeFormData({ email: 'test@test.com', role: 'member' });
     await expect(createInvite(formData)).rejects.toThrow();
     expect(prismaMock.inviteToken.create).not.toHaveBeenCalled();
-  });
-
-  it('createPost passes correct role list to requireRole', async () => {
-    mockRequireRole.mockResolvedValue(fakeOwnerSession);
-    prismaMock.blogPost.create.mockResolvedValue({ id: 'post-1' });
-
-    const formData = makeFormData({ title: 'Post', slug: 'slug', tags: '' });
-    await createPost(formData);
-
-    expect(mockRequireRole).toHaveBeenCalledWith(['owner', 'admin', 'member']);
-  });
-
-  it('deletePost requires owner or admin only (no member)', async () => {
-    mockRequireRole.mockResolvedValue(fakeOwnerSession);
-    prismaMock.blogPost.delete.mockResolvedValue({ id: 'post-1' });
-
-    await deletePost('post-1');
-
-    expect(mockRequireRole).toHaveBeenCalledWith(['owner', 'admin']);
   });
 
   it('updateUserRole requires owner only', async () => {
@@ -473,77 +396,15 @@ describe('Photo upload validation', () => {
 });
 
 // ============================================================
-// 5. Blog Edge Cases
-// ============================================================
-
-describe('Blog edge cases', () => {
-  // These tests use the actual blog module via the existing fs mock
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  // Note: blog.ts already handles these gracefully (we verified by reading the source).
-  // These tests document that the error handling IS present and working.
-
-  it('getAllPosts handles directory with no .mdx files', async () => {
-    // The fs mock from the blog.test.ts covers this, but let's also verify
-    // that the function itself does not throw with an imported call
-    // We re-import to test via the existing mock in blog.test.ts
-
-    // Since fs is mocked at the module level in blog.test.ts but not here,
-    // we test the contract: getAllPosts returns BlogPostMeta[] (never throws)
-    // This is validated by the type system and the existing blog tests.
-    expect(true).toBe(true); // Placeholder — covered by blog.test.ts
-  });
-});
-
-// ============================================================
-// 6. Database Schema Validation
+// 5. Database Schema Validation
 // ============================================================
 
 describe('Database schema field alignment', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireRole.mockResolvedValue(fakeOwnerSession);
-    prismaMock.blogPost.create.mockResolvedValue({ id: 'post-1' });
     prismaMock.event.create.mockResolvedValue({ id: 'event-1' });
-    prismaMock.familyUpdate.create.mockResolvedValue({ id: 'update-1' });
     prismaMock.inviteToken.create.mockResolvedValue({ id: 'invite-1', token: 'abc' });
-  });
-
-  it('createPost data shape matches BlogPost schema fields', async () => {
-    const formData = makeFormData({
-      title: 'Test',
-      slug: 'test',
-      excerpt: 'An excerpt',
-      tags: 'a, b',
-      status: 'PUBLISHED',
-      coverImage: '/img.jpg',
-    });
-
-    await createPost(formData);
-
-    const callArgs = prismaMock.blogPost.create.mock.calls[0][0].data;
-    // Required schema fields
-    expect(callArgs).toHaveProperty('title');
-    expect(callArgs).toHaveProperty('slug');
-    expect(callArgs).toHaveProperty('authorId');
-    expect(callArgs).toHaveProperty('status');
-    expect(callArgs).toHaveProperty('tags');
-    // Optional schema fields
-    expect(callArgs).toHaveProperty('excerpt');
-    expect(callArgs).toHaveProperty('coverImage');
-    expect(callArgs).toHaveProperty('publishedAt');
-
-    // tags must be an array (Prisma String[])
-    expect(Array.isArray(callArgs.tags)).toBe(true);
-
-    // status must be a valid PostStatus enum value
-    expect(['DRAFT', 'PUBLISHED']).toContain(callArgs.status);
-
-    // authorId must be a string
-    expect(typeof callArgs.authorId).toBe('string');
   });
 
   it('createEvent startDate is a Date object (not a string)', async () => {
@@ -611,25 +472,10 @@ describe('Database schema field alignment', () => {
     expect(callArgs.expiresAt).toBeInstanceOf(Date);
     expect(callArgs.expiresAt.getTime()).toBeGreaterThan(Date.now());
   });
-
-  it('createUpdate data includes all required FamilyUpdate fields', async () => {
-    const formData = makeFormData({
-      content: 'A family update!',
-      visibility: 'FAMILY',
-    });
-
-    await createUpdate(formData);
-
-    const callArgs = prismaMock.familyUpdate.create.mock.calls[0][0].data;
-    expect(callArgs).toHaveProperty('content');
-    expect(callArgs).toHaveProperty('visibility');
-    expect(callArgs).toHaveProperty('postedById');
-    expect(typeof callArgs.postedById).toBe('string');
-  });
 });
 
 // ============================================================
-// 7. ISR/Dynamic Rendering Correctness
+// 6. ISR/Dynamic Rendering Correctness
 // ============================================================
 
 describe('Cache Components dynamic rendering correctness', () => {
@@ -643,20 +489,16 @@ describe('Cache Components dynamic rendering correctness', () => {
   // Pages that import prisma and MUST opt into dynamic rendering via connection()
   const PAGES_USING_PRISMA = [
     '(public)/page.tsx',
-    '(public)/family/page.tsx',
     '(public)/events/page.tsx',
     '(public)/photos/page.tsx',
     '(public)/photos/[album]/page.tsx',
     '(dashboard)/dashboard/page.tsx',
-    '(dashboard)/dashboard/posts/page.tsx',
-    '(dashboard)/dashboard/posts/[id]/page.tsx',
     '(dashboard)/dashboard/events/page.tsx',
     '(dashboard)/dashboard/events/[id]/page.tsx',
     '(dashboard)/dashboard/photos/page.tsx',
     '(dashboard)/dashboard/photos/albums/page.tsx',
     '(dashboard)/dashboard/photos/albums/[id]/page.tsx',
     '(dashboard)/dashboard/photos/upload/page.tsx',
-    '(dashboard)/dashboard/updates/page.tsx',
     '(dashboard)/dashboard/members/page.tsx',
   ];
 
