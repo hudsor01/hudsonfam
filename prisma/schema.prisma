@@ -8,28 +8,6 @@ datasource db {
   provider = "postgresql"
 }
 
-model BlogPost {
-  id          String     @id @default(cuid())
-  slug        String     @unique
-  title       String
-  excerpt     String?
-  coverImage  String?
-  authorId    String
-  publishedAt DateTime?
-  tags        String[]
-  status      PostStatus @default(DRAFT)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  @@index([status, publishedAt])
-  @@index([authorId])
-}
-
-enum PostStatus {
-  DRAFT
-  PUBLISHED
-}
-
 model Album {
   id           String    @id @default(cuid())
   title        String
@@ -79,17 +57,6 @@ model Event {
 enum Visibility {
   PUBLIC
   FAMILY
-}
-
-model FamilyUpdate {
-  id         String     @id @default(cuid())
-  content    String
-  images     String[]
-  postedById String
-  visibility Visibility @default(PUBLIC)
-  createdAt  DateTime   @default(now())
-
-  @@index([createdAt])
 }
 
 model Memory {
