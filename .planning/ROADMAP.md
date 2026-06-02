@@ -352,7 +352,11 @@ Plans:
   3. `/dashboard/posts*` and `/dashboard/updates*` routes are gone; dashboard navigation shows only Photos, Events, Members, Memorial with no Posts or Updates entries
   4. `npm run build` succeeds with zero references to the removed models, routes, or components — no dead imports, no TypeScript errors from the removal
   5. The dashboard overview page shows only surviving content areas (no blog/updates counts, cards, or widgets) and shared dashboard primitives are intact
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 32-01-PLAN.md — Remove blog/family public surface (routes, content, lib, RSS, components), strip homepage blog dep, clean cross-cutting refs, add 308 redirects (PRUNE-01, PRUNE-02, PRUNE-05)
+- [ ] 32-02-PLAN.md — Remove dashboard posts/updates CRUD + server actions, drop BlogPost/FamilyUpdate models + PostStatus enum via verify-then-drop migration, test surgery (PRUNE-03, PRUNE-04)
+- [ ] 32-03-PLAN.md — Consolidate dashboard: clean nav (layout + sidebar iconMap), rework overview (3-stat grid + Recent Photos card) per UI-SPEC (DASH-01, DASH-02, DASH-03)
 **UI hint**: yes
 
 ### Phase 33: Homepage Restructure
@@ -406,7 +410,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 32. Prune & Dashboard Cleanup | 0/TBD | Not started | - |
+| 32. Prune & Dashboard Cleanup | 0/3 | Not started | - |
 | 33. Homepage Restructure | 0/TBD | Not started | - |
 | 34. Photo Pipeline Fix | 0/TBD | Not started | - |
 | 35. Navbar & Footer IA | 0/TBD | Not started | - |
