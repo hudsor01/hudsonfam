@@ -5,6 +5,7 @@ import { getRecipeBySlug, getAllRecipes, getChapterNeighbors, anchor } from "@/l
 import { mdxComponents } from "@/components/public/mdx-components";
 import { RecipeChecklist } from "@/components/public/recipe-checklist";
 import { RecipePrintButton } from "@/components/public/recipe-print-button";
+import { AddToMenuButton } from "@/components/public/add-to-menu-button";
 import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
@@ -103,7 +104,7 @@ export default async function RecipePage({ params }: PageProps) {
       )}
 
       {/* Breadcrumbs: Recipes › Category › Recipe */}
-      <div className="no-print flex items-center justify-between mb-8 gap-4">
+      <div className="no-print flex items-center justify-between mb-8 gap-4 flex-wrap">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -121,7 +122,10 @@ export default async function RecipePage({ params }: PageProps) {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <RecipePrintButton />
+        <div className="flex items-center gap-2 shrink-0">
+          <AddToMenuButton slug={slug} title={title} category={category} />
+          <RecipePrintButton />
+        </div>
       </div>
 
       {/* Recipe header */}

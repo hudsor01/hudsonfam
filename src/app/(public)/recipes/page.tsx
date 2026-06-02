@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import type { Metadata } from "next";
 import { RecipeSearch } from "@/components/public/recipe-search";
+import { AddToMenuButton } from "@/components/public/add-to-menu-button";
 
 export const metadata: Metadata = {
   title: "Grandma Hudson's Recipes | Hudson Family",
@@ -84,15 +85,20 @@ export default async function RecipesPage() {
                       {items.length}
                     </span>
                   </h2>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-1.5">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2">
                     {items.map((r) => (
-                      <li key={r.slug} className="leading-relaxed">
+                      <li key={r.slug} className="flex items-center justify-between gap-2">
                         <Link
                           href={`/recipes/${r.slug}`}
-                          className="text-foreground hover:text-primary transition-colors"
+                          className="text-foreground hover:text-primary transition-colors leading-relaxed min-w-0 flex-1"
                         >
                           {r.frontmatter.title}
                         </Link>
+                        <AddToMenuButton
+                          slug={r.slug}
+                          title={r.frontmatter.title}
+                          category={r.frontmatter.category || "Other"}
+                        />
                       </li>
                     ))}
                   </ul>

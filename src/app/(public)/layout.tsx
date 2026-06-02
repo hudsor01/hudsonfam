@@ -3,6 +3,8 @@ import Link from "next/link";
 import { MobileNav } from "@/components/public/mobile-nav";
 import { UserNav } from "@/components/public/user-nav";
 import { CopyrightYear } from "@/components/public/copyright-year";
+import { MenuProvider } from "@/components/public/menu-provider";
+import { MenuIndicator } from "@/components/public/menu-indicator";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -49,7 +51,10 @@ export default function PublicLayout({
         </Suspense>
       </nav>
 
-      <main className="flex-1">{children}</main>
+      <MenuProvider>
+        <main className="flex-1">{children}</main>
+        <MenuIndicator />
+      </MenuProvider>
 
       <footer className="border-t border-border">
         <div className="px-5 sm:px-7 py-6 flex flex-col sm:flex-row justify-between gap-4">
