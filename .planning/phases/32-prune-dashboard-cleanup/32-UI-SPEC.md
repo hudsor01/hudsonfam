@@ -1,7 +1,8 @@
 ---
 phase: 32
 slug: prune-dashboard-cleanup
-status: draft
+status: approved
+reviewed_at: 2026-06-02T00:00:00Z
 shadcn_initialized: true
 preset: new-york / zinc / cssVariables
 created: 2026-06-02
