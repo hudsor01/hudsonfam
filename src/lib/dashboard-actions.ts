@@ -2,6 +2,7 @@
 
 import { requireRole } from "@/lib/session";
 import prisma from "@/lib/prisma";
+import { deleteImageFiles } from "@/lib/images";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -172,7 +173,20 @@ export async function unbanUser(userId: string) {
 
 export async function deletePhoto(id: string) {
   await requireRole(["owner", "admin"]);
+
+  // Read paths before deletion so we can clean R2 objects
+  const photo = await prisma.photo.findUnique({
+    where: { id },
+    select: { originalPath: true, thumbnailPath: true },
+  });
+
   await prisma.photo.delete({ where: { id } });
+
+  // Delete R2 objects after the DB row is gone (best-effort; missing keys are silently ignored)
+  if (photo?.originalPath) {
+    await deleteImageFiles(id, photo.originalPath);
+  }
+
   revalidatePath("/dashboard/photos");
   revalidatePath("/photos");
 }
