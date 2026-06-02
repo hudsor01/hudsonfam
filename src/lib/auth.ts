@@ -6,13 +6,13 @@ import prisma from "@/lib/prisma";
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   // Both the apex and www are valid origins (the non-canonical one 308-redirects
-  // to the canonical), plus localhost for dev. Without this, better-auth only
-  // trusts baseURL's origin and rejects sign-in requests from the other host
-  // with a 403 on /api/auth/sign-in/*.
+  // to the canonical). Without this, better-auth only trusts baseURL's origin and
+  // rejects sign-in requests from the other host with a 403 on /api/auth/sign-in/*.
+  // localhost is dev-only — never a trusted origin in production.
   trustedOrigins: [
     "https://thehudsonfam.com",
     "https://www.thehudsonfam.com",
-    "http://localhost:3000",
+    ...(process.env.NODE_ENV !== "production" ? ["http://localhost:3000"] : []),
   ],
   secret: process.env.BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
