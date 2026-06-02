@@ -38,11 +38,30 @@ export const auth = betterAuth({
         after: async (user) => {
           const ownerEmail = process.env.OWNER_EMAIL;
           if (ownerEmail && user.email === ownerEmail) {
-            if (process.env.NODE_ENV !== "production") {
-              console.log(`[auth] Auto-promoting ${user.email} to owner role`);
-            }
             await prisma.user.update({
               where: { id: user.id },
+              data: { role: "owner" },
+            });
+          }
+        },
+      },
+    },
+    // Self-heal the owner role on sign-in too. The create hook above only fires
+    // when a user is first created — a user RESTORED from a backup (or one that
+    // existed before OWNER_EMAIL was configured) links via OAuth without ever
+    // running it, leaving the owner stuck as "member". This idempotent check
+    // promotes on session creation, writing only when the role is actually wrong.
+    session: {
+      create: {
+        after: async (session) => {
+          const ownerEmail = process.env.OWNER_EMAIL;
+          if (!ownerEmail) return;
+          const u = await prisma.user.findUnique({
+            where: { id: session.userId },
+          });
+          if (u && u.email === ownerEmail && u.role !== "owner") {
+            await prisma.user.update({
+              where: { id: u.id },
               data: { role: "owner" },
             });
           }
