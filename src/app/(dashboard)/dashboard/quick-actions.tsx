@@ -11,7 +11,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -141,11 +140,11 @@ export function QuickEventDialog() {
             required
           />
         </div>
-        <DialogFooter>
+        <div className="flex justify-end pt-2">
           <Button type="submit" disabled={isPending}>
             {isPending ? "Creating..." : "Create Event"}
           </Button>
-        </DialogFooter>
+        </div>
       </form>
     </ResponsiveDialog>
   );
