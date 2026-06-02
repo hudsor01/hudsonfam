@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
-status: verifying
-last_updated: "2026-06-02T21:31:05.261Z"
+status: ready_to_plan
+last_updated: 2026-06-02T21:54:09.814Z
 last_activity: 2026-06-02
 progress:
   total_phases: 5
@@ -11,6 +11,7 @@ progress:
   total_plans: 3
   completed_plans: 3
   percent: 20
+stopped_at: Phase 32 complete (3/3) — ready to discuss Phase 33
 ---
 
 # State
@@ -20,13 +21,13 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 **Core value:** A single home for the Hudson family — content for everyone, and Grandma Hudson's recipes preserved and made readable for even the oldest relatives.
-**Current focus:** Phase 32 — Prune & Dashboard Cleanup (COMPLETE) → Phase 33 next
+**Current focus:** Phase 33 — homepage restructure
 
 ## Current Position
 
-Phase: 32 (Prune & Dashboard Cleanup) — COMPLETE (3/3 plans done)
-Plan: 3 of 3 — DONE
-Status: Phase 32 complete — ready for Phase 33 (Homepage Restructure)
+Phase: 33
+Plan: Not started
+Status: Ready to plan
 Last activity: 2026-06-02
 
 ```

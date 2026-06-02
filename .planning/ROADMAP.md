@@ -468,7 +468,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 32. Prune & Dashboard Cleanup | 3/3 | Complete   | 2026-06-02 |
+| 32. Prune & Dashboard Cleanup | 3/3 | Complete    | 2026-06-02 |
 | 33. Homepage Restructure | 0/TBD | Not started | - |
 | 34. Photo Pipeline Fix | 0/TBD | Not started | - |
 | 35. Navbar & Footer IA | 0/TBD | Not started | - |
