@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 interface CheckState {
   ingredients: number[];
@@ -65,63 +65,66 @@ export function RecipeChecklist({ slug, ingredients, instructions }: RecipeCheck
     ingredients: new Set<number>(),
     steps: new Set<number>(),
   }));
+  const [hydrated, setHydrated] = useState(false);
 
   const { ingredients: checkedIngredients, steps: checkedSteps } = checked;
 
-  // Hydrate from localStorage after mount only.
-  // This is the canonical SSR-safe external-store sync pattern: state starts empty
-  // (server render), then a single setState call after mount hydrates from the
-  // external system (localStorage). The eslint-disable below is required because
-  // the React Compiler rule flags all setState-in-effect; this use case is explicitly
-  // valid per React docs ("Subscribe for updates from some external system").
+  // Hydrate from localStorage after mount only (SSR-safe).
+  // Canonical pattern (mirrors menu-provider.tsx): state starts empty on the
+  // server render, then a single setState call after mount hydrates from the
+  // external system (localStorage). The `hydrated` flag gates the persist
+  // effect below so this initial load doesn't immediately rewrite storage.
+  // The react-hooks/set-state-in-effect rule is overly broad here — this is the
+  // only valid approach for SSR-safe localStorage hydration.
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     const saved = loadFromStorage(slug);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setChecked({
       ingredients: new Set(saved.ingredients),
       steps: new Set(saved.steps),
     });
+    setHydrated(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [slug]);
 
-  const persist = useCallback(
-    (ingredients: Set<number>, steps: Set<number>) => {
-      saveToStorage(slug, {
-        ingredients: Array.from(ingredients),
-        steps: Array.from(steps),
-      });
-    },
-    [slug]
-  );
+  // Persist on every change after hydration. Guarded by `hydrated` so the
+  // post-mount load above doesn't trigger an immediate rewrite of storage.
+  useEffect(() => {
+    if (!hydrated) return;
+    saveToStorage(slug, {
+      ingredients: Array.from(checked.ingredients),
+      steps: Array.from(checked.steps),
+    });
+  }, [checked, slug, hydrated]);
 
   function toggleIngredient(index: number) {
-    // Compute next state outside the updater so the persist side effect stays
-    // out of setState (updaters must be pure; StrictMode double-invokes them).
-    const nextIngredients = new Set(checked.ingredients);
-    if (nextIngredients.has(index)) {
-      nextIngredients.delete(index);
-    } else {
-      nextIngredients.add(index);
-    }
-    setChecked({ ingredients: nextIngredients, steps: checked.steps });
-    persist(nextIngredients, checked.steps);
+    setChecked((prev) => {
+      const nextIngredients = new Set(prev.ingredients);
+      if (nextIngredients.has(index)) {
+        nextIngredients.delete(index);
+      } else {
+        nextIngredients.add(index);
+      }
+      return { ingredients: nextIngredients, steps: prev.steps };
+    });
   }
 
   function toggleStep(index: number) {
-    // Compute next state outside the updater so the persist side effect stays
-    // out of setState (updaters must be pure; StrictMode double-invokes them).
-    const nextSteps = new Set(checked.steps);
-    if (nextSteps.has(index)) {
-      nextSteps.delete(index);
-    } else {
-      nextSteps.add(index);
-    }
-    setChecked({ ingredients: checked.ingredients, steps: nextSteps });
-    persist(checked.ingredients, nextSteps);
+    setChecked((prev) => {
+      const nextSteps = new Set(prev.steps);
+      if (nextSteps.has(index)) {
+        nextSteps.delete(index);
+      } else {
+        nextSteps.add(index);
+      }
+      return { ingredients: prev.ingredients, steps: nextSteps };
+    });
   }
 
   function resetAll() {
+    // Persist effect (keyed on `checked`) writes the cleared state — which,
+    // being empty, removes the storage key via saveToStorage's empty-state path.
     setChecked({ ingredients: new Set(), steps: new Set() });
-    saveToStorage(slug, { ingredients: [], steps: [] });
   }
 
   const hasAnyChecked = checkedIngredients.size > 0 || checkedSteps.size > 0;

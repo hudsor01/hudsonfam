@@ -6,15 +6,9 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { resolveImageKey, getS3Client } from "@/lib/images";
 
-// Content type map for serving images
-const CONTENT_TYPES: Record<string, string> = {
-  ".webp": "image/webp",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".png": "image/png",
-  ".gif": "image/gif",
-  ".avif": "image/avif",
-};
+// Processed images are always served as WebP; used as the fallback when the
+// R2 object lacks a ContentType.
+const DEFAULT_CONTENT_TYPE = "image/webp";
 
 /**
  * GET /api/images/[photoId]
@@ -141,10 +135,7 @@ export async function GET(
   const fileBuffer = Buffer.concat(chunks);
 
   // Determine content type (R2 objects are all .webp for processed images)
-  const contentType =
-    r2Response.ContentType ||
-    CONTENT_TYPES[".webp"] ||
-    "image/webp";
+  const contentType = r2Response.ContentType || DEFAULT_CONTENT_TYPE;
 
   // Cache headers for Cloudflare edge caching
   const cacheControl =
