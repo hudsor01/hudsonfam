@@ -934,9 +934,9 @@ describe('Integration -- Page Rendering', () => {
     );
     expect(layout).toContain('hudsondigitalsolutions.com');
     expect(layout).toContain('Hudson Digital Solutions');
-    // Should open in new tab with noopener
+    // Should open in new tab with noopener noreferrer
     expect(layout).toContain('target="_blank"');
-    expect(layout).toContain('rel="noopener"');
+    expect(layout).toContain('rel="noopener noreferrer"');
   });
 
 });
