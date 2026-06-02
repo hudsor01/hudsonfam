@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { MobileNav } from "@/components/public/mobile-nav";
 import { UserNav } from "@/components/public/user-nav";
+import { ThemeToggle } from "@/components/public/theme-toggle";
 import { CopyrightYear } from "@/components/public/copyright-year";
 import { MenuProvider } from "@/components/public/menu-provider";
 import { MenuIndicator } from "@/components/public/menu-indicator";
@@ -40,6 +41,7 @@ export default function PublicLayout({
               {link.label}
             </NavLink>
           ))}
+          <ThemeToggle />
           <UserNav />
         </div>
 

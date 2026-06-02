@@ -10,6 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/public/theme-toggle";
 import { useState } from "react";
 
 interface NavLink {
@@ -22,7 +23,8 @@ export function MobileNav({ links }: { links: NavLink[] }) {
   const pathname = usePathname();
 
   return (
-    <div className="md:hidden">
+    <div className="md:hidden flex items-center gap-1">
+      <ThemeToggle />
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <button

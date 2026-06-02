@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { Providers } from "@/components/providers";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: {
@@ -35,11 +36,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
+    <html lang="en" suppressHydrationWarning>
       <body className="bg-background text-foreground font-sans antialiased min-h-screen">
-        <Providers>
-          {children}
-        </Providers>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <Providers>
+            {children}
+          </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );
