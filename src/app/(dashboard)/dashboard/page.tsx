@@ -1,28 +1,29 @@
 import Link from "next/link";
+import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { connection } from "next/server";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
-import { Badge } from "@/components/ui/badge";
 import { CollapsibleCard } from "@/components/dashboard/collapsible-card";
-import { QuickEventDialog, QuickUpdateDialog } from "./quick-actions";
+import { QuickEventDialog } from "./quick-actions";
 
 export default async function DashboardPage() {
   await connection();
-  const [postCount, publishedPostCount, photoCount, albumCount, eventCount, updateCount] =
-    await Promise.all([
-      prisma.blogPost.count(),
-      prisma.blogPost.count({ where: { status: "PUBLISHED" } }),
-      prisma.photo.count(),
-      prisma.album.count(),
-      prisma.event.count(),
-      prisma.familyUpdate.count(),
-    ]);
+  const [photoCount, albumCount, eventCount] = await Promise.all([
+    prisma.photo.count(),
+    prisma.album.count(),
+    prisma.event.count(),
+  ]);
 
-  const recentPosts = await prisma.blogPost.findMany({
-    orderBy: { updatedAt: "desc" },
-    take: 5,
-    select: { id: true, title: true, status: true, updatedAt: true },
+  const recentPhotos = await prisma.photo.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 4,
+    select: {
+      id: true,
+      thumbnailPath: true,
+      createdAt: true,
+      album: { select: { name: true } },
+    },
   });
 
   const upcomingEvents = await prisma.event.findMany({
@@ -33,11 +34,9 @@ export default async function DashboardPage() {
   });
 
   const stats = [
-    { label: "Posts", value: postCount, published: publishedPostCount, href: "/dashboard/posts" },
     { label: "Photos", value: photoCount, href: "/dashboard/photos" },
     { label: "Albums", value: albumCount, href: "/dashboard/photos/albums" },
     { label: "Events", value: eventCount, href: "/dashboard/events" },
-    { label: "Updates", value: updateCount, href: "/dashboard/updates" },
   ];
 
   return (
@@ -48,7 +47,7 @@ export default async function DashboardPage() {
       />
 
       {/* Stats grid */}
-      <div className="@container grid grid-cols-2 @sm:grid-cols-3 @lg:grid-cols-5 gap-4 mt-6">
+      <div className="@container grid grid-cols-2 @sm:grid-cols-3 gap-4 mt-6">
         {stats.map((stat) => (
           <a key={stat.label} href={stat.href}>
             <Card hover padding="md" className="text-center">
@@ -58,11 +57,6 @@ export default async function DashboardPage() {
               <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
                 {stat.label}
               </div>
-              {"published" in stat && (
-                <div className="text-xs text-text-dim mt-0.5">
-                  {stat.published} published
-                </div>
-              )}
             </Card>
           </a>
         ))}
@@ -74,12 +68,6 @@ export default async function DashboardPage() {
           Quick Actions
         </h2>
         <div className="flex flex-wrap gap-3">
-          <Link
-            href="/dashboard/posts/new"
-            className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
-          >
-            New Post
-          </Link>
           <a
             href="/dashboard/photos/upload"
             className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
@@ -98,43 +86,41 @@ export default async function DashboardPage() {
           >
             New Event
           </Link>
-          <a
-            href="/dashboard/updates/new"
-            className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
-          >
-            New Update
-          </a>
           <QuickEventDialog />
-          <QuickUpdateDialog />
         </div>
       </div>
 
       {/* Recent activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-        {/* Recent posts */}
-        <CollapsibleCard title="Recent Posts">
+        {/* Recent photos */}
+        <CollapsibleCard title="Recent Photos">
           <div>
-            {recentPosts.length === 0 ? (
-              <div className="px-5 py-4 text-sm text-muted-foreground">
-                No posts yet.
+            {recentPhotos.length === 0 ? (
+              <div className="px-5 py-8 text-center">
+                <p className="text-sm font-medium text-foreground">No photos yet</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Upload your first photo to get started.
+                </p>
               </div>
             ) : (
-              recentPosts.map((post) => (
-                <a
-                  key={post.id}
-                  href={`/dashboard/posts/${post.id}`}
-                  className="flex items-center justify-between px-5 py-3 not-last:border-b not-last:border-border/50 hover:bg-background/50 transition-colors"
-                >
-                  <span className="text-sm text-foreground truncate mr-3">
-                    {post.title}
-                  </span>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Badge variant={post.status === "PUBLISHED" ? "primary" : "outline"}>
-                      {post.status.toLowerCase()}
-                    </Badge>
-                  </div>
-                </a>
-              ))
+              <div className="grid grid-cols-4 gap-1.5 p-3">
+                {recentPhotos.map((photo) => (
+                  <a
+                    key={photo.id}
+                    href="/dashboard/photos"
+                    className="aspect-square rounded-md overflow-hidden bg-background block"
+                  >
+                    <Image
+                      src={`/api/images/${photo.id}?size=thumbnail`}
+                      alt={photo.album?.name ?? "Photo"}
+                      width={200}
+                      height={200}
+                      className="w-full h-full object-cover hover:opacity-80 transition-opacity"
+                      unoptimized
+                    />
+                  </a>
+                ))}
+              </div>
             )}
           </div>
         </CollapsibleCard>
