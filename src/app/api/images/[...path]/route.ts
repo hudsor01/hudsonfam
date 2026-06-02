@@ -66,6 +66,12 @@ export async function GET(
 
   // Auth check: photos with an album are public; album-less photos
   // (no albumId) require an authenticated session.
+  //
+  // INTENTIONAL DESIGN (single-trusted-family model): this gate is
+  // authentication-only, not per-user authorization. Any logged-in family
+  // member can fetch any album-less photo by id — there is no owner/ACL check.
+  // This is by design for the single-trusted-family threat model and should not
+  // be flagged as an authorization gap.
   const requiresAuth = !photo.albumId;
 
   if (requiresAuth) {

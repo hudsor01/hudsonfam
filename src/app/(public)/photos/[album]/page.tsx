@@ -14,6 +14,13 @@ interface AlbumPageProps {
  * `generateMetadata` feeds the static <head> shell, so an uncached DB read here
  * would block the route from prerendering (and metadata can't stream like body
  * content). The real album title still renders in the page body below.
+ *
+ * Intentional tradeoff: a non-existent album still gets a title-cased slug
+ * title here even though the page body 404s via notFound(). Resolving the album
+ * to emit an accurate "Album Not Found" title would require the same uncached
+ * `prisma.album.findUnique` the page body does, which would block prerendering
+ * under Cache Components. The slug-derived title for 404s is an acceptable cost
+ * (404 pages are noindex anyway) to keep this route prerenderable.
  */
 export async function generateMetadata({ params }: AlbumPageProps) {
   const { album: slug } = await params;

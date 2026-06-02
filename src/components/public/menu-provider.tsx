@@ -98,11 +98,14 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     [items]
   );
 
-  // Memoize the context value so unrelated re-renders of the provider don't
-  // recreate the value object. add/remove/clear are stable (functional
-  // setState, []-dep), so the value only changes when items (and thus has)
-  // change. The recipes listing renders ~1000 AddToMenuButton consumers, so
-  // value-identity churn here would cascade across all of them.
+  // Memoize the context value so a re-render of the provider for an unrelated
+  // reason doesn't recreate the value object (which would force every consumer
+  // to re-render even when items haven't changed). add/remove/clear are stable
+  // (functional setState, []-dep), so the value identity only changes when
+  // items (and thus has) change. Note: when items DO change, all context
+  // consumers re-render regardless of memoization — that is inherent to
+  // context and useMemo cannot prevent it. This memo only guards against
+  // value-identity churn caused by unrelated provider re-renders.
   const value = useMemo<MenuContextValue>(
     () => ({ items, add, remove, clear, has, count: items.length }),
     [items, add, remove, clear, has]

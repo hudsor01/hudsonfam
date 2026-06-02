@@ -27,19 +27,19 @@ vi.mock('@aws-sdk/client-s3', () => {
     send = mockSend;
   }
   class PutObjectCommandMock {
-    Bucket: string; Key: string; Body: unknown; ContentType: string;
+    Bucket!: string; Key!: string; Body!: unknown; ContentType!: string;
     constructor(args: { Bucket: string; Key: string; Body: unknown; ContentType: string }) {
       Object.assign(this, args);
     }
   }
   class GetObjectCommandMock {
-    Bucket: string; Key: string;
+    Bucket!: string; Key!: string;
     constructor(args: { Bucket: string; Key: string }) {
       Object.assign(this, args);
     }
   }
   class DeleteObjectsCommandMock {
-    Bucket: string; Delete: unknown;
+    Bucket!: string; Delete!: unknown;
     constructor(args: { Bucket: string; Delete: unknown }) {
       Object.assign(this, args);
     }

@@ -12,13 +12,10 @@ import { describe, it, expect, afterAll } from "vitest";
 const hasDb = !!process.env.DATABASE_URL;
 
 describe("Neon runtime connection (CLOUD-01)", () => {
-  let prismaClient: Awaited<ReturnType<typeof import("@/lib/prisma")["default"]["$connect"]>> extends void
-    ? import("@/lib/prisma")["default"]
-    : never;
+  let prismaClient: typeof import("@/lib/prisma")["default"] | undefined;
 
   afterAll(async () => {
     if (hasDb && prismaClient) {
-      // @ts-expect-error -- prismaClient type resolved dynamically
       await prismaClient.$disconnect();
     }
   });
@@ -29,7 +26,6 @@ describe("Neon runtime connection (CLOUD-01)", () => {
       // Dynamic import so the module (and its pool) is only created when DB is available
       const { default: prisma } = await import("@/lib/prisma");
       // Assign for afterAll cleanup
-      // @ts-expect-error -- dynamic assign
       prismaClient = prisma;
 
       const [userCount, albumCount, photoCount, eventCount] = await Promise.all([

@@ -5,6 +5,10 @@ import type { NextRequest } from "next/server";
  * Next.js 16 Proxy (renamed from the deprecated Middleware convention —
  * https://nextjs.org/docs/messages/middleware-to-proxy).
  *
+ * DORMANT: currently a runtime no-op — the `/admin/*` matcher matches nothing
+ * because `/admin` was removed in Phase 30. Kept as security infrastructure;
+ * re-activates under FUTURE-02 when the admin returns.
+ *
  * Location matters: because this app lives in `src/app`, the proxy file MUST be
  * at `src/proxy.ts` (same level as `app`), NOT the repo root — a root-level
  * `proxy.ts` is silently ignored (empty middleware-manifest.json). The export

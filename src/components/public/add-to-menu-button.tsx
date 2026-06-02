@@ -10,8 +10,11 @@ interface AddToMenuButtonProps {
   category: string;
 }
 
-// Memoized: the recipes listing renders ~1000 of these. Props are primitives,
-// so React.memo prevents re-render unless slug/title/category actually change.
+// Memoized: the recipes listing renders many of these. React.memo guards
+// against parent-driven re-renders — props are primitives, so the component
+// skips re-rendering when a parent re-renders without changing slug/title/
+// category. It does NOT prevent re-renders triggered by useMenu(): when the
+// menu context value changes, every consumer re-renders regardless of memo.
 export const AddToMenuButton = memo(function AddToMenuButton({
   slug,
   title,

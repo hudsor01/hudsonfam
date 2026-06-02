@@ -94,29 +94,29 @@ export function RecipeChecklist({ slug, ingredients, instructions }: RecipeCheck
   );
 
   function toggleIngredient(index: number) {
-    setChecked((prev) => {
-      const nextIngredients = new Set(prev.ingredients);
-      if (nextIngredients.has(index)) {
-        nextIngredients.delete(index);
-      } else {
-        nextIngredients.add(index);
-      }
-      persist(nextIngredients, prev.steps);
-      return { ingredients: nextIngredients, steps: prev.steps };
-    });
+    // Compute next state outside the updater so the persist side effect stays
+    // out of setState (updaters must be pure; StrictMode double-invokes them).
+    const nextIngredients = new Set(checked.ingredients);
+    if (nextIngredients.has(index)) {
+      nextIngredients.delete(index);
+    } else {
+      nextIngredients.add(index);
+    }
+    setChecked({ ingredients: nextIngredients, steps: checked.steps });
+    persist(nextIngredients, checked.steps);
   }
 
   function toggleStep(index: number) {
-    setChecked((prev) => {
-      const nextSteps = new Set(prev.steps);
-      if (nextSteps.has(index)) {
-        nextSteps.delete(index);
-      } else {
-        nextSteps.add(index);
-      }
-      persist(prev.ingredients, nextSteps);
-      return { ingredients: prev.ingredients, steps: nextSteps };
-    });
+    // Compute next state outside the updater so the persist side effect stays
+    // out of setState (updaters must be pure; StrictMode double-invokes them).
+    const nextSteps = new Set(checked.steps);
+    if (nextSteps.has(index)) {
+      nextSteps.delete(index);
+    } else {
+      nextSteps.add(index);
+    }
+    setChecked({ ingredients: checked.ingredients, steps: nextSteps });
+    persist(checked.ingredients, nextSteps);
   }
 
   function resetAll() {
