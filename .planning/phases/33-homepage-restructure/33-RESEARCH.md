@@ -457,16 +457,18 @@ Step 2.6: SKIPPED — this phase is code/config changes only. No external CLI to
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **SectionHeader label size: `text-xs` vs `text-sm`**
    - What we know: `section-header.tsx` uses hardcoded `text-xs` in the label `h3`. UI-SPEC calls for `text-sm`.
    - What's unclear: Whether the planner should update `section-header.tsx` (affects all usages) or accept the deviation.
    - Recommendation: Accept `text-xs` for Phase 33. Document as a candidate fix for Phase 35 (navbar/footer UI pass) where the component may be revisited.
+   - **RESOLVED:** Plan 33-01 accepts `text-xs` for Phase 33 (documented as a known deviation; shared component untouched). Deferred to Phase 35.
 
 2. **`src/lib/featured-recipes.ts` vs inline constant**
    - What we know: UI-SPEC says "in `page.tsx` or `src/lib/featured-recipes.ts`". CONTEXT.md says "Claude's Discretion."
    - Recommendation: `src/lib/featured-recipes.ts` for discoverability — the family can find and edit it without navigating to a Server Component file.
+   - **RESOLVED:** Plan 33-01 Task 1 creates `src/lib/featured-recipes.ts` (`FEATURED_RECIPE_SLUGS` constant), family-editable.
 
 ---
 
