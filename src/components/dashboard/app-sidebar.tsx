@@ -9,10 +9,8 @@ import {
   Users,
   Heart,
   Home,
-  Settings,
   LogOut,
   ChevronsUpDown,
-  AppWindow,
 } from "lucide-react";
 
 import {
@@ -37,7 +35,6 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Overview: LayoutDashboard,
   Photos: Image,
   Events: CalendarDays,
-  Services: AppWindow,
   Members: Users,
   Memorial: Heart,
 };
@@ -139,13 +136,6 @@ export function AppSidebar({ navLinks, userName, userEmail, userRole }: AppSideb
                   >
                     <Home className="size-4" />
                     Home
-                  </Link>
-                  <Link
-                    href="/dashboard"
-                    className="flex items-center gap-2 rounded-sm px-3 py-2 text-sm text-popover-foreground hover:bg-accent/10 transition-colors"
-                  >
-                    <Settings className="size-4" />
-                    Settings
                   </Link>
                 </div>
                 <Separator />
