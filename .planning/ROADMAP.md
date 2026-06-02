@@ -1,6 +1,7 @@
 # Roadmap
 
 ## v1.0 — Core Site (Complete)
+
 - Plan 1: Project scaffolding + auth ✅
 - Plan 2: Public site (design system, homepage, blog) ✅
 - Plan 3: Photos, events, family updates ✅
@@ -13,6 +14,7 @@
 - Quick wins (RSS, iCal, sitemap, SEO, favicon, 404, loading states) ✅
 
 ## v1.1 — UI Enhancement (Complete)
+
 - Phase 1: Foundation (theme tokens, OKLCH, shadcn bridge) ✅
 - Phase 2: Core shadcn components (sonner, avatar, alert-dialog, sheet, tooltip, skeleton, select, switch) ✅
 - Phase 3: Dashboard overhaul (breadcrumbs, tabs, dropdown menus) ✅
@@ -20,6 +22,7 @@
 - Phase 5: Advanced (command palette, photo effects) ✅
 
 ## v1.2 — Integration Solidification (Complete)
+
 - Phase 6: Theme alignment — fix CSS variable naming to shadcn standard, hardcoded colors, cn() patterns ✅
 - Phase 7: Tailwind v4 quick wins — text-balance, text-pretty, field-sizing, accent-color, caret-color, open/not-* variants ✅
 - Phase 8: Tailwind v4 advanced — container queries, shadow colors, scroll snap, 3D effects, accessibility variants, logical properties ✅
@@ -31,6 +34,7 @@
 - Phase 12: Ecosystem tooling — shadcn skills, radix migration, blocks evaluation, additional components ✅
 
 ## v1.3 — Services, Infra & Job Search (Complete)
+
 - Family services page (/dashboard/services) with live health status ✅
 - Google OAuth redirect fix (callbackURL) ✅
 - Photo auto-compression (2400px WebP q85) ✅
@@ -42,6 +46,7 @@
 - .env.example updated with all required vars ✅
 
 ## v1.4 — Admin Dashboard Production Readiness (Complete)
+
 - 3 phases (13-15), 15/15 requirements, completed 2026-04-08 — [archive](milestones/v1.4-ROADMAP.md)
 
 ## v2.0 — Code Quality Enhancement (✅ Shipped 2026-04-08)
@@ -75,48 +80,60 @@
 ### Phase Details
 
 #### Phase 16: useEffect Audit
+
 **Goal**: Zero unnecessary useEffects remain in the codebase — every remaining useEffect is genuinely synchronizing with an external system
 **Depends on**: Nothing (first phase)
 **Requirements**: EFFECT-01, EFFECT-02, EFFECT-03, EFFECT-04, EFFECT-05, EFFECT-06, EFFECT-07, EFFECT-08
 **Success Criteria** (what must be TRUE):
+
   1. No useEffect derives state from props or other state — useMemo or inline calculation used instead
   2. No useEffect adjusts/resets state on prop change — key prop or render-time adjustment used instead
   3. No chained useEffects that trigger each other — consolidated into event handlers
   4. No useEffect for parent notification, POST requests, or shared event logic — moved to event handlers
   5. Every remaining useEffect has proper cleanup or synchronizes with a genuine external system
+
 **Plans**: 1 plan
 
 #### Phase 17: Component Structure & State Patterns
+
 **Goal**: Clean component architecture — no nested definitions, no direct mutation, optimal "use client" placement
 **Depends on**: Phase 16
 **Requirements**: COMP-01, COMP-02, BOUNDARY-01, BOUNDARY-02, BOUNDARY-03, BOUNDARY-04, BOUNDARY-05
 **Success Criteria** (what must be TRUE):
+
   1. No component is defined inside another component
   2. All state updates create new object/array references
   3. "use client" is at the lowest possible leaf component
   4. No non-serializable props cross the server/client boundary
   5. Data fetching happens in server components, not client useEffect/SWR
+
 **Plans**: 1 plan
 
 #### Phase 18: Server/Client Boundaries & Hydration
+
 **Goal**: Zero hydration mismatches and full error/loading boundary coverage
 **Depends on**: Phase 17
 **Requirements**: HYDRATION-01, HYDRATION-02, RESILIENCE-01, RESILIENCE-02
 **Success Criteria** (what must be TRUE):
+
   1. No browser-dependent rendering that differs between SSR and client
   2. All date/time formatting uses explicit timezone
   3. Every route group has loading.tsx
   4. Every route group has error.tsx
+
 **Plans**: 1 plan
 
 #### Phase 19: Verification & Production Deploy
+
 **Goal**: Ship the clean codebase to production and verify nothing broke
 **Depends on**: Phase 18
 **Requirements**: VERIFY-01, VERIFY-02, VERIFY-03
 **Success Criteria** (what must be TRUE):
+
   1. `npm run build` passes with zero errors
   2. All 268+ tests pass
   3. Production deployment verified with no new console errors
+
 **Plans**: 1 plan
 
 ### Progress
@@ -167,17 +184,21 @@
 ### Phase Details
 
 #### Phase 20: Foundation (Freshness + Zod + Tailored Resume)
+
 **Goal**: Owner can read the 6 existing tailored resumes rendered as sanitized markdown with a trustworthy generated-at/model badge, and every LLM artifact row is runtime-validated at the DB boundary so schema drift never crashes the page.
 **Depends on**: Nothing (first phase of milestone; builds on v2.0 baseline)
 **Requirements**: AI-RENDER-01, AI-RENDER-02, AI-SAFETY-01, AI-SAFETY-05, AI-SAFETY-06, AI-DATA-03, AI-DATA-04
 **Success Criteria** (what must be TRUE):
+
   1. Owner opens the job detail sheet for a job with a tailored resume and sees the markdown content rendered with headings, lists, and bold — not `whitespace-pre-wrap` plaintext
   2. A `<script>alert(1)</script>` payload pasted into any artifact's content field renders as literal visible text in the browser (mitigates Pitfall 1 — LLM output XSS)
   3. Every existing AI section (cover letter, company research, tailored resume) shows a "Generated {relative time} ago · {model_used}" badge under its heading (mitigates Pitfall 6 — stale cache mistaken for fresh)
   4. Owner loads /admin/jobs with a database row that is missing a column `jobs-db.ts` expects; the page does not crash, the affected section shows an error-boundary fallback, and `console.error` logs the Zod parse failure with jobId (mitigates Pitfall 4 — schema drift)
   5. Browser DevTools shows a `Content-Security-Policy` response header on `/admin/*` including `object-src 'none'` and `frame-ancestors 'none'`; `npm test` includes a passing test that calls `information_schema.columns` and fails loudly if a column `jobs-db.ts` reads has been removed upstream
+
 **Plans:** 8 plans
 Plans:
+
 - [x] 20-01-PLAN.md — Install streamdown + Tailwind v4 @source directive (foundation; unblocks Plans 02, 04, 05) — 2026-04-21
 - [x] 20-02-PLAN.md — Pure isStale util + STALE_THRESHOLDS constants + Vitest coverage (AI-DATA-03) — 2026-04-21
 - [x] 20-03-PLAN.md — Zod schemas (jobs-schemas.ts) + parseOrLog fail-open wrapper at jobs-db.ts return boundary + Vitest (AI-SAFETY-06) — 2026-04-21
@@ -188,17 +209,21 @@ Plans:
 - [x] 20-08-PLAN.md — scripts/check-jobs-schema.ts + pre-push hook + install-hooks.sh (AI-DATA-04) — 2026-04-21
 
 #### Phase 21: Polish (Copy + PDF + Empty States + Link-out)
+
 **Goal**: Owner can act on a tailored resume (copy, download PDF) in one click, and every missing AI artifact shows a distinct, explanatory empty state instead of a silent blank section. Scope includes an end-to-end PDF pipeline extension (n8n `Job Search: Application Packager` extended with a parallel resume-PDF branch + `ALTER TABLE tailored_resumes ADD COLUMN pdf_data TEXT` migration), a company-website link-out on the sheet header, a color-coded quality-score badge on cover letters, and a bundled Phase 20 revision replacing FreshnessBadge relative-time with a formal America/Chicago M/D/YY date.
 **Depends on**: Phase 20
 **Requirements**: AI-ACTION-01, AI-ACTION-02, AI-RENDER-04, AI-RENDER-05, AI-RENDER-06
 **Success Criteria** (what must be TRUE):
+
   1. Owner clicks the copy-icon button next to the tailored resume heading, sees a sonner toast confirming success, and finds the resume markdown on their clipboard ready to paste into an ATS
   2. Owner clicks "Download PDF" on the tailored resume and receives a `.pdf` file named `tailored-resume-job-<id>.pdf` (served by the new `/api/jobs/[id]/tailored-resume-pdf` route handler; the `tailored_resumes.pdf_data` column is populated by the extended n8n Application Packager workflow — PDF-only per owner override, no `.md` fallback)
   3. Owner opens a job whose `company_research` is empty and sees "No company research yet." (distinct from a row where research was attempted but returned an empty body, which shows "Company research was generated but is empty." — AI-RENDER-04)
   4. Owner sees a quality-score badge (color-coded destructive/warning/success via theme tokens) on any cover letter whose `quality_score` column is populated
   5. Owner clicks the company name in the sheet header and is taken to the company's website in a new tab (with `rel="noopener noreferrer"` and an ExternalLink icon)
+
 **Plans:** 10 plans
 Plans:
+
 - [x] 21-00-PLAN.md — Phase 20 revision: FreshnessBadge relativeTime → generatedDate + attachFreshness Intl.DateTimeFormat(America/Chicago) — 2026-04-22
 - [x] 21-01-PLAN.md — Homelab: ALTER TABLE tailored_resumes ADD COLUMN pdf_data + n8n Application Packager workflow extension (AI-ACTION-02 pipeline, autonomous=false) — 2026-04-22
 - [x] 21-02-PLAN.md — Zod TailoredResumeSchema.pdf_data + schema-drift EXPECTED map (AI-ACTION-02) — 2026-04-22
@@ -211,17 +236,21 @@ Plans:
 - [x] 21-09-PLAN.md — Meta-doc finalization + v3.5 deferral capture (ROADMAP + REQUIREMENTS + STATE + notes + seed updates) — 2026-04-22
 
 #### Phase 22: Salary Intelligence (Defensive Render)
+
 **Goal**: Owner sees salary intelligence rendered in the job detail sheet with every figure source-tagged, and the data layer tolerates both the `job_id`-keyed and `company_name`-keyed shapes the upstream workflow may produce — the section ships before homelab task #11 lands.
 **Depends on**: Phase 20
 **Requirements**: AI-RENDER-03, AI-RENDER-07, AI-DATA-01, AI-DATA-02
 **Success Criteria** (what must be TRUE):
+
   1. Once a `salary_intelligence` row exists for a job, owner opens the detail sheet and sees a Salary Intelligence section with the LLM analysis prose (rendered via Streamdown) plus structured headline figures (min/median/max or p25/p50/p75 — whichever the row provides)
   2. Every dollar figure rendered anywhere in the detail sheet (base salary, salary range, salary-intel headline, company_research salary range) carries a source tag — "scraped (jobicy)", "LLM estimate", "company research" — and no figure appears without a label (mitigates Pitfall 5 — scraped numbers displayed as authoritative)
   3. When zero `salary_intelligence` rows exist for a job, the detail sheet shows the AI-RENDER-04 empty-state messaging for that section and does NOT crash — the defensive `LEFT JOIN LATERAL` skeleton (WHERE FALSE) returns null cleanly today, and tolerates any future schema shape the n8n workflow produces via a 1-line predicate edit (the live `salary_intelligence` table is keyed on `search_date` with no `job_id` / `company_name` columns; the original SC wording was based on a pre-CONTEXT.md assumption about upstream — corrected 2026-04-22 during Phase 22 planning per `.planning/phases/22-salary-intelligence-defensive-render/22-CONTEXT.md` §Phase Boundary)
   4. `src/lib/jobs-db.ts` exports both a `SalaryIntelligence` TypeScript type and a matching Zod schema; a Vitest test constructs a malformed row and asserts the Zod parse returns a fail-open result with a logged warning rather than throwing
   5. The `?? "USD"` currency default at `jobs-db.ts:349` is removed; when `salary_currency` is null the salary block hides entirely rather than mislabeling a GBP/EUR figure with `$`
+
 **Plans:** 8 plans
 Plans:
+
 - [x] 22-01-PLAN.md — SalaryIntelligenceSchema + CompanyResearchSchema nullable cascade (AI-DATA-02; D-01 + D-12 prep) — 2026-04-22
 - [x] 22-02-PLAN.md — LEFT JOIN LATERAL + SalaryIntelligence type + tri-field attachFreshness (AI-DATA-01 + AI-DATA-02) — 2026-04-22
 - [x] 22-03-PLAN.md — Remove `?? "USD"` + flip CompanyResearch.salary_currency nullable (D-12 cascade; grep gate G-6) — 2026-04-22
@@ -232,18 +261,22 @@ Plans:
 - [x] 22-08-PLAN.md — Meta-doc finalization (ROADMAP SC #3 wording + SC #5 line 328→349 + REQUIREMENTS traceability + STATE + SUMMARY) — 2026-04-22
 
 #### Phase 23: Owner-Triggered Workflows (Pattern Setter)
+
 **Goal**: Owner can manually trigger the company-research workflow and regenerate a cover letter for any job; every webhook leaving the app is HMAC-signed, idempotency-keyed, and returns only sanitized error sentinels — establishing the pattern Phase 24 will copy.
 **Depends on**: Phase 20
 **Requirements**: AI-ACTION-03, AI-ACTION-04, AI-SAFETY-02, AI-SAFETY-03, AI-SAFETY-04
 **Success Criteria** (what must be TRUE):
+
   1. Owner opens a job with no company research, clicks "Research this company", sees an in-progress spinner + disabled button, and after the n8n workflow completes (poll every 3s, cap 60) the Company Intel section populates with the new row — closing the company_research TRIGGER gap without auto-scheduling across 467 jobs
   2. Owner clicks "Regenerate cover letter" on a job; button shows pessimistic spinner, polling waits for `cover_letters.generated_at` to advance past the click timestamp, then sheet re-renders with the new content and a fresh timestamp badge (mitigates Pitfall 6 — stale cache)
   3. An inspector capturing the POST from `hudsonfam` to `n8n.cloud.svc.cluster.local` sees an `X-Hudsonfam-Signature` HMAC-SHA256 header and an `X-Hudsonfam-Timestamp`; replaying the same body with the same `X-Idempotency-Key` does not produce a second LLM run in n8n execution history (mitigates Pitfall 3 — webhook unsigned + replayable)
   4. When an n8n call fails (network error, 500, connect-refused), the owner sees one of four fixed strings — "timeout", "auth", "rate limit", or "unavailable" — and the server-side log captures the full error with stack (no raw `e.message`, no internal cluster IPs, leak to the browser)
   5. Existing `fireWebhook` call sites (`job-feedback-sync` × 2 for reject/dismiss, `job-company-intel` for interested-status auto-trigger) are retrofit to the new signed + idempotency-keyed helper in the same PR; `job-outreach` mention was stale — grep confirmed zero active call sites in `src/`; a CI grep rule in `src/__tests__/lib/job-actions.requireRole.test.ts` asserts every exported function in `src/lib/job-actions.ts` contains `requireRole(["owner"])` within 10 lines and that `fireWebhook` is fully deleted (Pitfall 9 + G-7)
+
 **Plans**: 8 plans — Code complete 2026-04-23; prod UAT deferred to v3.5-P4 (n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern)
 
 Plans:
+
 - [x] 23-01-PLAN.md — sendSignedWebhook primitive + HMAC-SHA256 + sentinel cascade (AI-SAFETY-02/-03/-04) — 2026-04-22
 - [x] 23-02-PLAN.md — triggerCompanyResearch + regenerateCoverLetter Server Actions (AI-ACTION-03/-04) — 2026-04-23
 - [x] 23-03-PLAN.md — retrofit 3 fireWebhook call sites; delete helper (G-7) — 2026-04-23
@@ -254,17 +287,21 @@ Plans:
 - [x] 23-08-PLAN.md — meta-doc finalization (ROADMAP + REQUIREMENTS + STATE + SUMMARY) — 2026-04-23
 
 #### Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)
+
 **Goal**: Owner can regenerate every AI artifact the app renders, and any regenerate that completes "successfully" without actually updating the artifact produces a visible warning instead of silent failure.
 **Depends on**: Phase 22, Phase 23
 **Requirements**: AI-ACTION-05, AI-ACTION-06, AI-ACTION-07
 **Success Criteria** (what must be TRUE):
+
   1. Owner clicks "Regenerate" on the tailored resume section; follows the Phase 23 pattern (pessimistic spinner → poll for `tailored_resumes.generated_at` advance → re-render with new timestamp badge)
   2. Owner clicks "Regenerate" on the salary intelligence section; same pattern — polls `salary_intelligence.search_date` until it advances or the 60-poll cap expires (NOTE: search_date is date-granular YYYY-MM-DD; same-day regenerate triggers the silent-success warning — see 24-CONTEXT.md D-04)
   3. When a regenerate webhook returns 200 but the artifact's `generated_at` timestamp does not advance within the polling window, owner sees a distinct warning banner — "Regeneration reported success but no new content was written — check n8n logs" — not a silent revert to pre-click state (AI-ACTION-07)
   4. All three regenerate actions (cover letter from Phase 23, tailored resume, salary intelligence) share the same `regenerate-button.tsx` component and the same signed-webhook helper; adding a fourth regenerate action in the future requires one Server Action + one button prop, not a new pattern
+
 **Plans**: 4 plans — Code complete 2026-04-23; prod UAT deferred to v3.5-P4 (n8n webhook endpoints regenerate-tailored-resume + regenerate-salary-intelligence are homelab-repo PR concern per Phase 22/23 pattern)
 
 Plans:
+
 - [x] 24-01-PLAN.md — Generalize regenerate-button.tsx (4-state machine + silent-success) + predicates + 32+ tests — 2026-04-23
 - [x] 24-02-PLAN.md — regenerateTailoredResume + regenerateSalaryIntelligence Server Actions + 10 contract tests — 2026-04-23
 - [x] 24-03-PLAN.md — Mount RegenerateButton in tailored-resume + salary-intelligence sections; rewire CL mount — 2026-04-23
@@ -343,67 +380,88 @@ Plans:
 ## Phase Details
 
 ### Phase 32: Prune & Dashboard Cleanup
+
 **Goal**: Blog and Family Updates are gone from the entire codebase — no public routes, no Prisma models, no dashboard CRUD, no residual references — and the site builds and deploys cleanly after the removal
 **Depends on**: Phase 31 (v4.0 baseline)
 **Requirements**: PRUNE-01, PRUNE-02, PRUNE-03, PRUNE-04, PRUNE-05, DASH-01, DASH-02, DASH-03
 **Success Criteria** (what must be TRUE):
+
   1. Navigating to `/blog`, `/blog/[slug]`, and `/family` returns 404; no blog or family link appears anywhere on the public site or in the command palette
   2. `npx prisma generate` succeeds against the migrated schema with `BlogPost` and `FamilyUpdate` models absent; the app boots and all surviving DB queries work
   3. `/dashboard/posts*` and `/dashboard/updates*` routes are gone; dashboard navigation shows only Photos, Events, Members, Memorial with no Posts or Updates entries
   4. `npm run build` succeeds with zero references to the removed models, routes, or components — no dead imports, no TypeScript errors from the removal
   5. The dashboard overview page shows only surviving content areas (no blog/updates counts, cards, or widgets) and shared dashboard primitives are intact
+
 **Plans**: 3 plans
 Plans:
+**Wave 1**
+
 - [ ] 32-01-PLAN.md — Remove blog/family public surface (routes, content, lib, RSS, components), strip homepage blog dep, clean cross-cutting refs, add 308 redirects (PRUNE-01, PRUNE-02, PRUNE-05)
 - [ ] 32-02-PLAN.md — Remove dashboard posts/updates CRUD + server actions, drop BlogPost/FamilyUpdate models + PostStatus enum via verify-then-drop migration, test surgery (PRUNE-03, PRUNE-04)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 32-03-PLAN.md — Consolidate dashboard: clean nav (layout + sidebar iconMap), rework overview (3-stat grid + Recent Photos card) per UI-SPEC (DASH-01, DASH-02, DASH-03)
+
 **UI hint**: yes
 
 ### Phase 33: Homepage Restructure
+
 **Goal**: The homepage leads with Grandma Hudson's Recipes and surfaces live Photos and Events data — with no dependency whatsoever on the removed blog or updates subsystems
 **Depends on**: Phase 32
 **Requirements**: HOME-01, HOME-02, HOME-03
 **Success Criteria** (what must be TRUE):
+
   1. A visitor landing on the homepage sees the Recipes entry point above the fold — the blog featured-post section is gone
   2. The homepage renders live Photos (albums/thumbnails) and Events data, each with a clean, intentional empty state when there is nothing to show
   3. The homepage renders correctly with `content/blog/` deleted and the `BlogPost`/`FamilyUpdate` Prisma models absent — no errors, no placeholder content
   4. `npm run build` succeeds with the new homepage; no console errors on load in production
+
 **Plans**: TBD
 **UI hint**: yes
 
 ### Phase 34: Photo Pipeline Fix
+
 **Goal**: Every photo stored in R2 renders as a real image everywhere it is surfaced — no broken images, no placeholder fallbacks for photos that actually exist in storage
 **Depends on**: Phase 32
 **Requirements**: PHOTO-01, PHOTO-02, PHOTO-03, PHOTO-04
 **Success Criteria** (what must be TRUE):
+
   1. A photo uploaded through the dashboard appears on its album page and on the homepage without showing the SVG placeholder fallback
   2. The known broken seed image (`d9c2e950…`) either renders correctly (file migrated to R2) or is cleanly removed from the database — no broken/placeholder image is visible anywhere on the public site
   3. The `/api/images/[...path]` proxy route correctly retrieves objects from R2 and streams them to the browser; a GetObject for a key that exists never triggers the 307 placeholder redirect
   4. The album-with-zero-photos page and the no-albums-exist state each show an intentional, non-broken empty state (not a broken image or a React error)
+
 **Plans**: TBD
 
 ### Phase 35: Navbar & Footer IA
+
 **Goal**: The navbar and footer reflect only the surviving site sections, work perfectly on mobile, and provide accessible navigation with active-route indication
 **Depends on**: Phase 32
 **Requirements**: NAV-01, NAV-02, NAV-03, FOOT-01, FOOT-02
 **Success Criteria** (what must be TRUE):
+
   1. The navbar links are exactly: Home, Recipes, Photos, Events, In Memory — no dead or removed section links appear at any viewport width
   2. On a 375px-wide screen the mobile menu/drawer opens, all five nav links are reachable, and no layout overflow or clipping occurs
   3. The active route is visually indicated in both desktop nav and mobile menu; Tab key moves focus through all nav items without getting trapped
   4. The footer links match the real IA (Recipes, Photos, Events, In Memory) with no Blog, Family, or other removed section links
   5. The footer is responsive and visually consistent with the navbar (column stacking on mobile, no overflow)
+
 **Plans**: TBD
 **UI hint**: yes
 
 ### Phase 36: Quality Gate
+
 **Goal**: The site is production-ready — clean build, full test suite green, zero dead code from the prune, and every surviving public page polished and responsive
 **Depends on**: Phase 33, Phase 34, Phase 35
 **Requirements**: QUAL-01, QUAL-02, QUAL-03, QUAL-04
 **Success Criteria** (what must be TRUE):
+
   1. `npm run build` completes with zero errors and zero references to removed features (no TypeScript errors, no missing module errors)
   2. `npm test` passes — tests for removed features are deleted, and tests for surviving features (photos, events, recipes, auth) remain green
   3. `npm run lint` passes with zero warnings; a grep for removed identifiers (`BlogPost`, `FamilyUpdate`, `/blog`, `/family`, `lib/blog`) finds zero matches in `src/`
   4. Every surviving public page (Home, Recipes, recipe detail, Photos, album detail, Events, In Memory, My Menu) loads without console errors and is usable on a 375px-wide mobile screen
+
 **Plans**: TBD
 
 ## Progress
