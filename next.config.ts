@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Standalone output for Docker — produces minimal server.js + dependencies
-  output: "standalone",
-
   // Transpile MDX package for server components
   transpilePackages: ["next-mdx-remote"],
 
