@@ -43,7 +43,7 @@ Each requirement maps to a roadmap phase and is observationally verifiable after
 - [x] **CLOUD-09**: Dependency versions are pinned to releases that satisfy the **Aikido Safe Chain minimum-package-age** gate — no same-day bleeding-edge versions. `bun install` (under the Safe Chain shim, no `--safe-chain-skip-minimum-package-age` flag) resolves cleanly with zero suppression errors, and the regenerated `bun.lock` matches `package.json`. Identify and stop whatever is auto-bumping `package.json`/`bun.lock` to latest (Renovate/Dependabot/local agent) so the pins hold.
 - [x] **CLOUD-06**: Vercel deploy is live — the project builds and deploys on Vercel with all required env vars set; Next.js output config is reconciled with Vercel (no standalone-only assumptions break)
 - [x] **CLOUD-07**: DNS cut to Vercel — `thehudsonfam.com` resolves to the Vercel deployment over valid HTTPS via Cloudflare DNS; the Cloudflare Tunnel path is retired
-- [ ] **CLOUD-08**: App boots clean on the cloud stack — Google OAuth + email/password sign-in works, DB reads/writes work, all 1,000 recipes render, and photos load from R2, verified on the live Vercel URL
+- [x] **CLOUD-08**: App boots clean on the cloud stack — Google OAuth + email/password sign-in works, DB reads/writes work, all 1,000 recipes render, and photos load from R2, verified on the live Vercel URL
 
 ### Phase 31 — Recipes Experience (RECIPE-XX)
 
