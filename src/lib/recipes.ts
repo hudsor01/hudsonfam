@@ -180,6 +180,78 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Search index + chapter navigation helpers
+// ---------------------------------------------------------------------------
+
+/** Lightweight shape used by the search index and RecipeSearch component. */
+export type RecipeIndexEntry = {
+  slug: string;
+  title: string;
+  category: string;
+};
+
+/**
+ * Slug-safe anchor fragment — converts a category string to a URL hash that
+ * matches the `id` attributes rendered on listing section headings.
+ * Single source of truth: both the listing and breadcrumb category links import
+ * this so they can never drift.
+ */
+export function anchor(category: string): string {
+  return category
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/**
+ * Pure helper: given a pre-sorted RecipeMeta[] find the prev/next slugs within
+ * the same category as `slug`. IO-free so it's directly unit-testable.
+ */
+export function computeChapterNeighbors(
+  recipes: RecipeMeta[],
+  slug: string
+): { prev: { slug: string; title: string } | null; next: { slug: string; title: string } | null } {
+  const target = recipes.find((r) => r.slug === slug);
+  if (!target) return { prev: null, next: null };
+
+  const chapter = recipes.filter(
+    (r) => r.frontmatter.category === target.frontmatter.category
+  );
+  const idx = chapter.findIndex((r) => r.slug === slug);
+
+  const prev = idx > 0
+    ? { slug: chapter[idx - 1].slug, title: chapter[idx - 1].frontmatter.title }
+    : null;
+  const next = idx < chapter.length - 1
+    ? { slug: chapter[idx + 1].slug, title: chapter[idx + 1].frontmatter.title }
+    : null;
+
+  return { prev, next };
+}
+
+/** Returns a lightweight `{slug, title, category}` array for all published recipes in book order. */
+export async function getRecipeIndex(): Promise<RecipeIndexEntry[]> {
+  const recipes = await getPublishedRecipes();
+  return recipes.map((r) => ({
+    slug: r.slug,
+    title: r.frontmatter.title,
+    category: r.frontmatter.category,
+  }));
+}
+
+/**
+ * Returns chapter prev/next for a given slug (server-side, with IO).
+ * Delegates neighbor math to the pure `computeChapterNeighbors` helper.
+ */
+export async function getChapterNeighbors(slug: string): Promise<{
+  prev: { slug: string; title: string } | null;
+  next: { slug: string; title: string } | null;
+}> {
+  const recipes = await getPublishedRecipes();
+  return computeChapterNeighbors(recipes, slug);
+}
+
 /** Categories in book order (first appearance), since recipes are order-sorted. */
 export async function getAllCategories(): Promise<string[]> {
   const recipes = await getPublishedRecipes();

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normalizeFrontmatter, filterByVisibility } from "@/lib/recipes";
+import { normalizeFrontmatter, filterByVisibility, computeChapterNeighbors, anchor } from "@/lib/recipes";
 import type { RecipeMeta } from "@/lib/recipes";
 
 describe("normalizeFrontmatter", () => {
@@ -44,5 +44,69 @@ describe("filterByVisibility", () => {
   it("returns everything when drafts included", () => {
     const r = filterByVisibility(recipes, { includeDrafts: true });
     expect(r.map((x) => x.slug)).toEqual(["a", "b", "c"]);
+  });
+});
+
+function chapterMeta(slug: string, category: string, order: number): RecipeMeta {
+  return {
+    slug,
+    frontmatter: normalizeFrontmatter(
+      { title: `${slug} title`, status: "published", category, order },
+      slug
+    ),
+  };
+}
+
+describe("computeChapterNeighbors", () => {
+  // Two categories: "Soups" (order 1,2,3) and "Desserts" (order 4,5)
+  const recipes: RecipeMeta[] = [
+    chapterMeta("soup-a", "Soups", 1),
+    chapterMeta("soup-b", "Soups", 2),
+    chapterMeta("soup-c", "Soups", 3),
+    chapterMeta("dessert-a", "Desserts", 4),
+    chapterMeta("dessert-b", "Desserts", 5),
+  ];
+
+  it("returns prev=null for the first item in a chapter", () => {
+    const result = computeChapterNeighbors(recipes, "soup-a");
+    expect(result.prev).toBeNull();
+    expect(result.next).toEqual({ slug: "soup-b", title: "soup-b title" });
+  });
+
+  it("returns next=null for the last item in a chapter", () => {
+    const result = computeChapterNeighbors(recipes, "soup-c");
+    expect(result.prev).toEqual({ slug: "soup-b", title: "soup-b title" });
+    expect(result.next).toBeNull();
+  });
+
+  it("returns both prev and next for a middle item", () => {
+    const result = computeChapterNeighbors(recipes, "soup-b");
+    expect(result.prev).toEqual({ slug: "soup-a", title: "soup-a title" });
+    expect(result.next).toEqual({ slug: "soup-c", title: "soup-c title" });
+  });
+
+  it("returns { prev: null, next: null } for an unknown slug", () => {
+    const result = computeChapterNeighbors(recipes, "does-not-exist");
+    expect(result.prev).toBeNull();
+    expect(result.next).toBeNull();
+  });
+
+  it("does not cross chapter boundaries", () => {
+    // dessert-a is first in Desserts — prev should be null, not soup-c
+    const result = computeChapterNeighbors(recipes, "dessert-a");
+    expect(result.prev).toBeNull();
+    expect(result.next).toEqual({ slug: "dessert-b", title: "dessert-b title" });
+  });
+});
+
+describe("anchor", () => {
+  it("lowercases and replaces non-alphanumeric with hyphens", () => {
+    expect(anchor("Main Dishes")).toBe("main-dishes");
+    expect(anchor("Soups & Stews")).toBe("soups-stews");
+  });
+
+  it("trims leading and trailing hyphens", () => {
+    expect(anchor("  Breakfast  ")).toBe("breakfast");
+    expect(anchor("(Cakes)")).toBe("cakes");
   });
 });

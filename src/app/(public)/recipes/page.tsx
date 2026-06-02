@@ -2,6 +2,8 @@ import {
   getPublishedRecipes,
   getDraftRecipes,
   getAllCategories,
+  getRecipeIndex,
+  anchor,
   includeDrafts,
   type RecipeMeta,
 } from "@/lib/recipes";
@@ -14,17 +16,11 @@ export const metadata: Metadata = {
     "Grandma Hudson's recipes, digitized and typed out clear and easy to read, in the order they appear in the book.",
 };
 
-function anchor(category: string): string {
-  return category
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
 export default async function RecipesPage() {
   const published = await getPublishedRecipes();
   const categories = await getAllCategories();
   const drafts = includeDrafts() ? await getDraftRecipes() : [];
+  const index = await getRecipeIndex();
 
   // Group published recipes by category, preserving book order within each.
   const groups = new Map<string, RecipeMeta[]>();
