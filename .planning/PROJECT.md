@@ -105,4 +105,6 @@ This document evolves at phase transitions and milestone boundaries.
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
-Last updated: 2026-06-02 — started v5.0 Site Consolidation & Navigation Redesign milestone
+**v5.0 progress:** Phase 32 (Prune & Dashboard Cleanup) complete 2026-06-02 — Blog + Family Updates removed end-to-end (routes, MDX, `BlogPost`/`FamilyUpdate` models via migration, dashboard CRUD, all residual refs); homepage de-blogged; dashboard consolidated; 308 redirects. On branch `v5.0-site-consolidation`. PRUNE-01..05 + DASH-01..03 verified (8/8). Remaining: phases 33–36.
+
+Last updated: 2026-06-02 — Phase 32 complete (v5.0 Site Consolidation & Navigation Redesign)
