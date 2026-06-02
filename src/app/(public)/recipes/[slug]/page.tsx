@@ -1,9 +1,17 @@
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
-import { getRecipeBySlug, getAllRecipes } from "@/lib/recipes";
+import { getRecipeBySlug, getAllRecipes, getChapterNeighbors, anchor } from "@/lib/recipes";
 import { mdxComponents } from "@/components/public/mdx-components";
 import { Badge } from "@/components/ui/badge";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -44,7 +52,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function RecipePage({ params }: PageProps) {
   const { slug } = await params;
-  const recipe = await getRecipeBySlug(slug);
+  const [recipe, neighbors] = await Promise.all([
+    getRecipeBySlug(slug),
+    getChapterNeighbors(slug),
+  ]);
 
   if (!recipe) {
     notFound();
@@ -89,27 +100,24 @@ export default async function RecipePage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Back link */}
-      <Link
-        href="/recipes"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-        Back to Grandma Hudson&rsquo;s Recipes
-      </Link>
+      {/* Breadcrumbs: Recipes › Category › Recipe */}
+      <Breadcrumb className="mb-8">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/recipes">Recipes</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href={`/recipes#${anchor(category)}`}>
+              {category}
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{title}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       {/* Recipe header */}
       <header className="mb-8">
@@ -204,8 +212,39 @@ export default async function RecipePage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="mt-12 pt-6 border-t border-border">
+      {/* Footer: prev/next chapter navigation + back link */}
+      <footer className="mt-12 pt-6 border-t border-border space-y-6">
+        {/* Chapter prev/next — only rendered when neighbors exist */}
+        {(neighbors.prev || neighbors.next) && (
+          <nav
+            aria-label="Chapter navigation"
+            className="flex items-stretch justify-between gap-4"
+          >
+            {neighbors.prev ? (
+              <Link
+                href={`/recipes/${neighbors.prev.slug}`}
+                className="flex-1 inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground hover:border-primary/40 hover:text-primary transition-colors min-h-11"
+              >
+                <span aria-hidden="true" className="shrink-0">&larr;</span>
+                <span className="line-clamp-1">{neighbors.prev.title}</span>
+              </Link>
+            ) : (
+              <div className="flex-1" />
+            )}
+            {neighbors.next ? (
+              <Link
+                href={`/recipes/${neighbors.next.slug}`}
+                className="flex-1 inline-flex items-center justify-end gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground hover:border-primary/40 hover:text-primary transition-colors min-h-11 text-right"
+              >
+                <span className="line-clamp-1">{neighbors.next.title}</span>
+                <span aria-hidden="true" className="shrink-0">&rarr;</span>
+              </Link>
+            ) : (
+              <div className="flex-1" />
+            )}
+          </nav>
+        )}
+
         <div className="flex items-center justify-between">
           <Link
             href="/recipes"
