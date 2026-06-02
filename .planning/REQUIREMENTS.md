@@ -86,36 +86,36 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PRUNE-01 | — | Pending |
-| PRUNE-02 | — | Pending |
-| PRUNE-03 | — | Pending |
-| PRUNE-04 | — | Pending |
-| PRUNE-05 | — | Pending |
-| HOME-01 | — | Pending |
-| HOME-02 | — | Pending |
-| HOME-03 | — | Pending |
-| PHOTO-01 | — | Pending |
-| PHOTO-02 | — | Pending |
-| PHOTO-03 | — | Pending |
-| PHOTO-04 | — | Pending |
-| NAV-01 | — | Pending |
-| NAV-02 | — | Pending |
-| NAV-03 | — | Pending |
-| FOOT-01 | — | Pending |
-| FOOT-02 | — | Pending |
-| DASH-01 | — | Pending |
-| DASH-02 | — | Pending |
-| DASH-03 | — | Pending |
-| QUAL-01 | — | Pending |
-| QUAL-02 | — | Pending |
-| QUAL-03 | — | Pending |
-| QUAL-04 | — | Pending |
+| PRUNE-01 | Phase 32 | Pending |
+| PRUNE-02 | Phase 32 | Pending |
+| PRUNE-03 | Phase 32 | Pending |
+| PRUNE-04 | Phase 32 | Pending |
+| PRUNE-05 | Phase 32 | Pending |
+| DASH-01 | Phase 32 | Pending |
+| DASH-02 | Phase 32 | Pending |
+| DASH-03 | Phase 32 | Pending |
+| HOME-01 | Phase 33 | Pending |
+| HOME-02 | Phase 33 | Pending |
+| HOME-03 | Phase 33 | Pending |
+| PHOTO-01 | Phase 34 | Pending |
+| PHOTO-02 | Phase 34 | Pending |
+| PHOTO-03 | Phase 34 | Pending |
+| PHOTO-04 | Phase 34 | Pending |
+| NAV-01 | Phase 35 | Pending |
+| NAV-02 | Phase 35 | Pending |
+| NAV-03 | Phase 35 | Pending |
+| FOOT-01 | Phase 35 | Pending |
+| FOOT-02 | Phase 35 | Pending |
+| QUAL-01 | Phase 36 | Pending |
+| QUAL-02 | Phase 36 | Pending |
+| QUAL-03 | Phase 36 | Pending |
+| QUAL-04 | Phase 36 | Pending |
 
 **Coverage:**
 - v5.0 requirements: 24 total
-- Mapped to phases: 0 (roadmap pending)
-- Unmapped: 24 ⚠️
+- Mapped to phases: 24 ✓
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-06-02*
-*Last updated: 2026-06-02 after v5.0 milestone definition*
+*Last updated: 2026-06-02 — traceability filled after roadmap creation (phases 32-36)*

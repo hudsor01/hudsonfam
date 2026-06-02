@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
-status: planning
-last_updated: "2026-06-02T19:39:50.541Z"
+status: active
+last_updated: "2026-06-02"
 last_activity: 2026-06-02
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -24,10 +24,19 @@ See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 32 — Prune & Dashboard Cleanup
 Plan: —
-Status: Defining requirements
-Last activity: 2026-06-02 — Milestone v5.0 started
+Status: Ready to plan (roadmap defined 2026-06-02)
+Last activity: 2026-06-02 — v5.0 roadmap created (phases 32-36)
+
+```
+v5.0 progress: [░░░░░░░░░░] 0% (0/5 phases)
+Phase 32 [░░░░░░░░░░] Not started
+Phase 33 [░░░░░░░░░░] Not started
+Phase 34 [░░░░░░░░░░] Not started
+Phase 35 [░░░░░░░░░░] Not started
+Phase 36 [░░░░░░░░░░] Not started
+```
 
 ## What's Done
 
@@ -39,12 +48,13 @@ Last activity: 2026-06-02 — Milestone v5.0 started
 - **Phase 31 Plan 01 (2026-06-02):** RECIPE-01 cmdk search (RecipeSearch client component, Cmd/Ctrl+K, visible button, dual-field filter by title+category, router navigation). RECIPE-04 breadcrumbs (Recipes › Category › Recipe, shared anchor() helper) + chapter prev/next (computeChapterNeighbors, IO-free pure helper, 13 unit tests). Build 1047 pages + 245 tests green. Commits: 41c8802, 752a2cd, b3a3594.
 - **Phase 31 Plan 02 (2026-06-02):** RECIPE-02 tap-to-cross-off checklist (RecipeChecklist, per-slug localStorage, SSR-safe useEffect hydration, ≥44px tap targets, reset affordance). RECIPE-03 print view (RecipePrintButton, window.print(), @media print rules in globals.css hiding chrome, clean black-on-white one-page output). Build 1047 pages + 245 tests green. Commits: 67fd27a, 3dcad07, 12f7c16.
 - **Phase 31 Plan 03 (2026-06-02):** RECIPE-05 build-your-own-menu (MenuProvider React Context + localStorage hudson-menu key, AddToMenuButton toggle on listing + detail, floating MenuIndicator in layout, /my-menu server wrapper with metadata + client view grouped by category with remove/clear/print). Build 1048 pages + 245 tests green. Commits: 62881a4, 13529d9, 0ac58e5, 3c5e2f1.
+- **v5.0 roadmap defined (2026-06-02):** Phases 32-36 created. 24/24 requirements mapped. Ready to plan Phase 32.
 
 ## What's Next
 
 ### Immediate next step
 
-v5.0 Site Consolidation & Navigation Redesign started 2026-06-02. Requirements + roadmap being defined (phase numbering continues from 31 → 32+). After roadmap approval: `/gsd:plan-phase 32`.
+`/gsd:plan-phase 32` — Prune & Dashboard Cleanup (PRUNE-01..05, DASH-01..03)
 
 ## Deferred Items
 
@@ -54,7 +64,7 @@ v5.0 Site Consolidation & Navigation Redesign started 2026-06-02. Requirements +
 | future | FUTURE-02: Re-enable live homelab monitoring (un-park CLOUD-04 dashboard) | when cluster returns |
 | future | FUTURE-03: Remaining recipe back-matter (Menu Making, Menus section ~100, Table Service) | pairs with build-your-own-menu (shipped — preset menus future idea) |
 | future | FUTURE-04: Recipe full-text search (ingredients/steps) | post-v4.0 (search is name-only) |
-| data | Migrate restored seed photo `d9c2e950…` NAS → R2 (renders placeholder) | pairs with FUTURE-01 |
+| data | Migrate restored seed photo `d9c2e950…` NAS → R2 (renders placeholder) | addressed in Phase 34 (PHOTO-02) |
 | seed | SEED-001/002/003/004 | dormant — homelab-dependent AI/media ideas, blocked until cluster returns |
 | seed | SEED-006/007 | obsolete — tied to the deleted n8n/job pipeline |
 
@@ -71,6 +81,8 @@ v5.0 Site Consolidation & Navigation Redesign started 2026-06-02. Requirements +
 - Pin eslint to 9.39.4 (10.x incompatible with eslint-plugin-react 7.x; wait for plugin update)
 - Pin kysely via resolutions to 0.28.17 (better-auth 1.6.x adapter requires 0.28.x export layout)
 - Dep churn source: interactive bun install resolving carets; fix = exact-version pins for Safe Chain gate packages
+- v5.0 surviving public IA: Home · Recipes · Photos · Events · In Memory (My Menu contextual only)
+- v5.0 YAGNI: no new blog/CMS, no new social feed, no visual rebrand — remove dead surfaces, make survivors work
 
 ## Blockers
 

@@ -319,3 +319,95 @@ Plans:
 - Post-100% enhancements: global light/dark theme (Ivory & Terracotta default / navy dark, next-themes), full-recipe menu printout, photo-thumbnail proxy fix
 
 </details>
+
+---
+
+## v5.0 — Site Consolidation & Navigation Redesign
+
+**Milestone:** v5.0 Site Consolidation & Navigation Redesign
+**Started:** 2026-06-02
+**Phases:** 32-36 (5 phases)
+**REQs:** 24 (PRUNE-01..05, HOME-01..03, PHOTO-01..04, NAV-01..03, FOOT-01..02, DASH-01..03, QUAL-01..04)
+**Principle:** YAGNI — remove everything we have no content for; make what survives work perfectly.
+
+**Surviving public IA:** Home · Recipes · Photos · Events · In Memory (My Menu stays contextual — floating indicator from recipes, not top-level nav).
+
+### Phases
+
+- [ ] **Phase 32: Prune & Dashboard Cleanup** — remove Blog + Family Updates end-to-end (public routes, content, Prisma models, dashboard CRUD, API routes, all cross-cutting references) and strip dead dashboard management areas
+- [ ] **Phase 33: Homepage Restructure** — rebuild the homepage to lead with Recipes, surface Photos + Events from live data, zero blog/updates dependency
+- [ ] **Phase 34: Photo Pipeline Fix** — debug and fix the broken R2 image render; verify the upload→R2→/api/images→display pipeline end-to-end; clean empty states
+- [ ] **Phase 35: Navbar & Footer IA** — rebuild navbar to surface only surviving sections with mobile/responsive polish and active-route + a11y; rebuild footer to match real IA
+- [ ] **Phase 36: Quality Gate** — build clean, tests pass, lint/dead-code sweep, every surviving page polished and responsive
+
+## Phase Details
+
+### Phase 32: Prune & Dashboard Cleanup
+**Goal**: Blog and Family Updates are gone from the entire codebase — no public routes, no Prisma models, no dashboard CRUD, no residual references — and the site builds and deploys cleanly after the removal
+**Depends on**: Phase 31 (v4.0 baseline)
+**Requirements**: PRUNE-01, PRUNE-02, PRUNE-03, PRUNE-04, PRUNE-05, DASH-01, DASH-02, DASH-03
+**Success Criteria** (what must be TRUE):
+  1. Navigating to `/blog`, `/blog/[slug]`, and `/family` returns 404; no blog or family link appears anywhere on the public site or in the command palette
+  2. `npx prisma generate` succeeds against the migrated schema with `BlogPost` and `FamilyUpdate` models absent; the app boots and all surviving DB queries work
+  3. `/dashboard/posts*` and `/dashboard/updates*` routes are gone; dashboard navigation shows only Photos, Events, Members, Memorial with no Posts or Updates entries
+  4. `npm run build` succeeds with zero references to the removed models, routes, or components — no dead imports, no TypeScript errors from the removal
+  5. The dashboard overview page shows only surviving content areas (no blog/updates counts, cards, or widgets) and shared dashboard primitives are intact
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 33: Homepage Restructure
+**Goal**: The homepage leads with Grandma Hudson's Recipes and surfaces live Photos and Events data — with no dependency whatsoever on the removed blog or updates subsystems
+**Depends on**: Phase 32
+**Requirements**: HOME-01, HOME-02, HOME-03
+**Success Criteria** (what must be TRUE):
+  1. A visitor landing on the homepage sees the Recipes entry point above the fold — the blog featured-post section is gone
+  2. The homepage renders live Photos (albums/thumbnails) and Events data, each with a clean, intentional empty state when there is nothing to show
+  3. The homepage renders correctly with `content/blog/` deleted and the `BlogPost`/`FamilyUpdate` Prisma models absent — no errors, no placeholder content
+  4. `npm run build` succeeds with the new homepage; no console errors on load in production
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 34: Photo Pipeline Fix
+**Goal**: Every photo stored in R2 renders as a real image everywhere it is surfaced — no broken images, no placeholder fallbacks for photos that actually exist in storage
+**Depends on**: Phase 32
+**Requirements**: PHOTO-01, PHOTO-02, PHOTO-03, PHOTO-04
+**Success Criteria** (what must be TRUE):
+  1. A photo uploaded through the dashboard appears on its album page and on the homepage without showing the SVG placeholder fallback
+  2. The known broken seed image (`d9c2e950…`) either renders correctly (file migrated to R2) or is cleanly removed from the database — no broken/placeholder image is visible anywhere on the public site
+  3. The `/api/images/[...path]` proxy route correctly retrieves objects from R2 and streams them to the browser; a GetObject for a key that exists never triggers the 307 placeholder redirect
+  4. The album-with-zero-photos page and the no-albums-exist state each show an intentional, non-broken empty state (not a broken image or a React error)
+**Plans**: TBD
+
+### Phase 35: Navbar & Footer IA
+**Goal**: The navbar and footer reflect only the surviving site sections, work perfectly on mobile, and provide accessible navigation with active-route indication
+**Depends on**: Phase 32
+**Requirements**: NAV-01, NAV-02, NAV-03, FOOT-01, FOOT-02
+**Success Criteria** (what must be TRUE):
+  1. The navbar links are exactly: Home, Recipes, Photos, Events, In Memory — no dead or removed section links appear at any viewport width
+  2. On a 375px-wide screen the mobile menu/drawer opens, all five nav links are reachable, and no layout overflow or clipping occurs
+  3. The active route is visually indicated in both desktop nav and mobile menu; Tab key moves focus through all nav items without getting trapped
+  4. The footer links match the real IA (Recipes, Photos, Events, In Memory) with no Blog, Family, or other removed section links
+  5. The footer is responsive and visually consistent with the navbar (column stacking on mobile, no overflow)
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 36: Quality Gate
+**Goal**: The site is production-ready — clean build, full test suite green, zero dead code from the prune, and every surviving public page polished and responsive
+**Depends on**: Phase 33, Phase 34, Phase 35
+**Requirements**: QUAL-01, QUAL-02, QUAL-03, QUAL-04
+**Success Criteria** (what must be TRUE):
+  1. `npm run build` completes with zero errors and zero references to removed features (no TypeScript errors, no missing module errors)
+  2. `npm test` passes — tests for removed features are deleted, and tests for surviving features (photos, events, recipes, auth) remain green
+  3. `npm run lint` passes with zero warnings; a grep for removed identifiers (`BlogPost`, `FamilyUpdate`, `/blog`, `/family`, `lib/blog`) finds zero matches in `src/`
+  4. Every surviving public page (Home, Recipes, recipe detail, Photos, album detail, Events, In Memory, My Menu) loads without console errors and is usable on a 375px-wide mobile screen
+**Plans**: TBD
+
+## Progress
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 32. Prune & Dashboard Cleanup | 0/TBD | Not started | - |
+| 33. Homepage Restructure | 0/TBD | Not started | - |
+| 34. Photo Pipeline Fix | 0/TBD | Not started | - |
+| 35. Navbar & Footer IA | 0/TBD | Not started | - |
+| 36. Quality Gate | 0/TBD | Not started | - |
