@@ -353,12 +353,12 @@ CLOUD-01 migrate+seed already executed on Neon during discuss-phase (2026-06-01)
 
 **Goal:** Ship the UI/UX layer over the finished 1,000-recipe collection: search, ingredient/step checkboxes, print/kitchen view, breadcrumbs + prev/next, and build-your-own-menu.
 **Depends on:** Phase 30 (app live on cloud)
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 **REQs:** RECIPE-01, RECIPE-02, RECIPE-03, RECIPE-04, RECIPE-05
 
 Plans:
 - [x] 31-01: Recipe search (cmdk, instant name filter/jump) + breadcrumbs (`Recipes › Chapter › Recipe`) + prev/next within chapter in book order
-- [ ] 31-02: Ingredient/step checkboxes with large tap targets, persisted per recipe in localStorage + print/kitchen view (clean one-page printout)
+- [x] 31-02: Ingredient/step checkboxes with large tap targets, persisted per recipe in localStorage + print/kitchen view (clean one-page printout)
 - [ ] 31-03: Build-your-own-menu — "Add to menu" on cards + detail, floating "My Menu (N)" indicator, `/my-menu` page grouped by course with remove/clear/print, localStorage-persisted, no login
 
 **Details:**

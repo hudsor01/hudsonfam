@@ -48,8 +48,8 @@ Each requirement maps to a roadmap phase and is observationally verifiable after
 ### Phase 31 — Recipes Experience (RECIPE-XX)
 
 - [x] **RECIPE-01**: Recipe search — an instant client-side filter/jump across all recipes by name (cmdk, already installed), reachable from the recipes listing and keyboard-accessible
-- [ ] **RECIPE-02**: Ingredient + step checkboxes — tap to cross off ingredients and steps while cooking, with large tap targets for older readers; checked state persists per recipe in localStorage
-- [ ] **RECIPE-03**: Print / kitchen view — a clean one-page printout per recipe (title, ingredients, steps only) via print CSS or a dedicated print route
+- [x] **RECIPE-02**: Ingredient + step checkboxes — tap to cross off ingredients and steps while cooking, with large tap targets for older readers; checked state persists per recipe in localStorage
+- [x] **RECIPE-03**: Print / kitchen view — a clean one-page printout per recipe (title, ingredients, steps only) via print CSS or a dedicated print route
 - [x] **RECIPE-04**: Breadcrumbs + prev/next — each recipe shows `Recipes › <Chapter> › <Recipe>` breadcrumbs and prev/next navigation within its chapter, in book order
 - [ ] **RECIPE-05**: Build-your-own-menu — "Add to menu" on recipe cards and detail pages; a floating "My Menu (N)" indicator; a `/my-menu` page grouping picked recipes by course with remove / clear / print; persisted in localStorage, no login required
 
