@@ -371,7 +371,7 @@ Plans:
 
 ### Phases
 
-- [ ] **Phase 32: Prune & Dashboard Cleanup** — remove Blog + Family Updates end-to-end (public routes, content, Prisma models, dashboard CRUD, API routes, all cross-cutting references) and strip dead dashboard management areas
+- [x] **Phase 32: Prune & Dashboard Cleanup** — remove Blog + Family Updates end-to-end (public routes, content, Prisma models, dashboard CRUD, API routes, all cross-cutting references) and strip dead dashboard management areas (completed 2026-06-02)
 - [ ] **Phase 33: Homepage Restructure** — rebuild the homepage to lead with Recipes, surface Photos + Events from live data, zero blog/updates dependency
 - [ ] **Phase 34: Photo Pipeline Fix** — debug and fix the broken R2 image render; verify the upload→R2→/api/images→display pipeline end-to-end; clean empty states
 - [ ] **Phase 35: Navbar & Footer IA** — rebuild navbar to surface only surviving sections with mobile/responsive polish and active-route + a11y; rebuild footer to match real IA
@@ -401,7 +401,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 32-03-PLAN.md — Consolidate dashboard: clean nav (layout + sidebar iconMap), rework overview (3-stat grid + Recent Photos card) per UI-SPEC (DASH-01, DASH-02, DASH-03)
+- [x] 32-03-PLAN.md — Consolidate dashboard: clean nav (layout + sidebar iconMap), rework overview (3-stat grid + Recent Photos card) per UI-SPEC (DASH-01, DASH-02, DASH-03)
 
 **UI hint**: yes
 
@@ -468,7 +468,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 32. Prune & Dashboard Cleanup | 2/3 | In Progress|  |
+| 32. Prune & Dashboard Cleanup | 3/3 | Complete   | 2026-06-02 |
 | 33. Homepage Restructure | 0/TBD | Not started | - |
 | 34. Photo Pipeline Fix | 0/TBD | Not started | - |
 | 35. Navbar & Footer IA | 0/TBD | Not started | - |

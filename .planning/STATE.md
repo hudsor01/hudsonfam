@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
-status: executing
-last_updated: "2026-06-02T21:30:00.000Z"
+status: verifying
+last_updated: "2026-06-02T21:31:05.261Z"
 last_activity: 2026-06-02
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 1
-  percent: 0
+  completed_plans: 3
+  percent: 20
 ---
 
 # State
@@ -20,18 +20,18 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 **Core value:** A single home for the Hudson family — content for everyone, and Grandma Hudson's recipes preserved and made readable for even the oldest relatives.
-**Current focus:** Phase 32 — Prune & Dashboard Cleanup
+**Current focus:** Phase 32 — Prune & Dashboard Cleanup (COMPLETE) → Phase 33 next
 
 ## Current Position
 
-Phase: 32 (Prune & Dashboard Cleanup) — EXECUTING
-Plan: 3 of 3
-Status: Executing — Plan 02 complete, Plan 03 (Wave 2) next
+Phase: 32 (Prune & Dashboard Cleanup) — COMPLETE (3/3 plans done)
+Plan: 3 of 3 — DONE
+Status: Phase 32 complete — ready for Phase 33 (Homepage Restructure)
 Last activity: 2026-06-02
 
 ```
-v5.0 progress: [░░░░░░░░░░] 0% (0/5 phases)
-Phase 32 [░░░░░░░░░░] Not started
+v5.0 progress: [##░░░░░░░░] 20% (1/5 phases)
+Phase 32 [##########] COMPLETE (3/3 plans)
 Phase 33 [░░░░░░░░░░] Not started
 Phase 34 [░░░░░░░░░░] Not started
 Phase 35 [░░░░░░░░░░] Not started
@@ -51,12 +51,13 @@ Phase 36 [░░░░░░░░░░] Not started
 - **v5.0 roadmap defined (2026-06-02):** Phases 32-36 created. 24/24 requirements mapped. Ready to plan Phase 32.
 - **Phase 32 Plan 01 (2026-06-02):** PRUNE-01/02/05 blog+family public surface removed: deleted 11 files (MDX content, lib/blog.ts, RSS route, blog/family public routes+components, blog.test.ts); stripped homepage to Hero+Sidebar (D-05); cleaned nav/footer/sitemap/command-palette/not-found/root-layout; added 308 redirects for /blog, /blog/:slug*, /family → /. Build 1041 pages + 220 tests green. Commits: ae82bce, 92d669a, 77b499e.
 - **Phase 32 Plan 02 (COMPLETE, 2026-06-02):** Deleted dashboard posts/ (7 files) + updates/ (3 files) CRUD routes; removed createPost/updatePost/deletePost/createUpdate/deleteUpdate/quickCreateUpdate from dashboard-actions.ts; removed QuickUpdateDialog from quick-actions.tsx; surgical test cleanup in dashboard-actions.test.ts, mocks/prisma.ts, production-bugs.test.ts; de-blogged dashboard/page.tsx data layer (3-stat grid, Recent Photos card, QuickEventDialog only). D-01 verify-then-drop: BlogPost=0, FamilyUpdate=0 — no dump needed. Migration 20260602212415_remove_blog_familyupdate applied to Neon (DROP TABLE BlogPost; DROP TABLE FamilyUpdate; DROP TYPE PostStatus). Rule 1 auto-fix: album.name → album.title in dashboard/page.tsx. Build exits 0; 194 tests green. Commits: cf8939c, f23cbd7, 51b2fbb, 975c086, 7972112, 468b7ed.
+- **Phase 32 Plan 03 (COMPLETE, 2026-06-02):** DASH-01/02/03 — removed Posts/Updates from navLinks in layout.tsx and iconMap in app-sidebar.tsx (FileText+Bell imports gone); upgraded Upcoming Events empty state to heading+body spec form per UI-SPEC copywriting contract. Build exits 0; 194 tests green. Commits: b6d5dd5, 60948c7.
 
 ## What's Next
 
 ### Immediate next step
 
-Phase 32 Plan 03 (Wave 2): Consolidate dashboard — clean nav (layout + sidebar iconMap), rework overview presentation (3-stat grid + Recent Photos card per UI-SPEC), DASH-01/02/03.
+Phase 33 (Homepage Restructure): HOME-01/02 — restructure homepage to lead with Recipes + Photos + Events, drop hero-only state.
 
 ## Deferred Items
 
@@ -87,6 +88,7 @@ Phase 32 Plan 03 (Wave 2): Consolidate dashboard — clean nav (layout + sidebar
 - v5.0 YAGNI: no new blog/CMS, no new social feed, no visual rebrand — remove dead surfaces, make survivors work
 - D-02 redirects: /blog, /blog/:slug*, /family → / (permanent 308) in next.config.ts (not middleware, no runtime cost)
 - D-05 homepage stripped to Hero + Sidebar only; Phase 33 adds recipes content
+- D-03 dashboard consolidation complete: Posts/Updates nav entries removed, iconMap cleaned, Upcoming Events empty state upgraded to spec heading+body form (DASH-01/02/03 all complete)
 
 ## Blockers
 

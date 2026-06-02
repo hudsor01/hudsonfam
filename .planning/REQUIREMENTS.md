@@ -42,9 +42,9 @@ Requirements for the v5.0 milestone. Each maps to exactly one roadmap phase.
 
 ### Dashboard — Cleanup to Match Surviving Content
 
-- [ ] **DASH-01**: Dashboard navigation lists only surviving management areas — Photos, Events, Members, Memorial — with Posts and Updates removed
-- [ ] **DASH-02**: The dashboard overview reflects only surviving content (no blog/updates counts, cards, or widgets)
-- [ ] **DASH-03**: Dashboard structure is refactored — shared primitives reused, dead components/actions removed, and no orphaned routes remain
+- [x] **DASH-01**: Dashboard navigation lists only surviving management areas — Photos, Events, Members, Memorial — with Posts and Updates removed
+- [x] **DASH-02**: The dashboard overview reflects only surviving content (no blog/updates counts, cards, or widgets)
+- [x] **DASH-03**: Dashboard structure is refactored — shared primitives reused, dead components/actions removed, and no orphaned routes remain
 
 ### Quality — Everything Left Works Perfectly
 
@@ -91,9 +91,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 | PRUNE-03 | Phase 32 | Pending |
 | PRUNE-04 | Phase 32 | Pending |
 | PRUNE-05 | Phase 32 | Complete |
-| DASH-01 | Phase 32 | Pending |
-| DASH-02 | Phase 32 | Pending |
-| DASH-03 | Phase 32 | Pending |
+| DASH-01 | Phase 32 | Complete |
+| DASH-02 | Phase 32 | Complete |
+| DASH-03 | Phase 32 | Complete |
 | HOME-01 | Phase 33 | Pending |
 | HOME-02 | Phase 33 | Pending |
 | HOME-03 | Phase 33 | Pending |
