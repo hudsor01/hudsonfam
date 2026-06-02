@@ -44,21 +44,18 @@ src/
 │   │       ├── posts/photos/events/updates/  # CRUD pages
 │   │       ├── members/memorial/             # Owner-only
 │   │       └── services/                     # Family services portal
-│   ├── (admin)/         # Owner-only admin panel
-│   │   └── admin/
-│   │       └── page.tsx           # Homelab dashboard (Glance replacement)
+│   ├── (admin)/         # Owner-only admin panel (FUTURE-02: homelab monitoring parked)
 │   └── api/             # API routes
 ├── components/
 │   ├── ui/              # 41 shadcn primitives
-│   ├── dashboard/       # 14 dashboard widgets
+│   ├── dashboard/       # Shared dashboard primitives (collapsible-card, metric-card, app-sidebar, etc.)
 │   └── public/          # 13 public site components
 ├── lib/
 │   ├── prisma.ts        # Prisma singleton with pool config
-│   ├── auth.ts          # Better Auth + Redis with graceful fallback
+│   ├── auth.ts          # Better Auth + Google OAuth + email/password
 │   ├── session.ts       # requireRole() / requireSession()
-│   ├── images.ts        # Photo processing (2400px WebP q85 cap)
-│   ├── dashboard-actions.ts  # Dashboard CRUD server actions
-│   └── dashboard/       # Prometheus, health checks, weather, UPS, media stats
+│   ├── images.ts        # Photo processing (2400px WebP q85) — writes to Cloudflare R2
+│   └── dashboard-actions.ts  # Dashboard CRUD server actions
 ├── styles/
 │   └── globals.css      # Single source of truth for ALL colors
 └── __tests__/           # Vitest + Testing Library + MSW
@@ -88,7 +85,7 @@ src/
 
 ### Auth
 - Better Auth with Google OAuth + email/password
-- Redis session cache with graceful fallback (if Redis down, falls back to DB)
+- Postgres-backed sessions (Redis removed in Phase 30)
 - `callbackURL: "/dashboard"` on all OAuth sign-in calls
 - Roles: `owner`, `admin`, `member`
 
@@ -142,7 +139,7 @@ Push to main (GitHub) → GitHub Actions builds Docker image → GHCR
 - **Image tags:** `YYYYMMDDHHmmss` UTC timestamp + `latest` per build (Flux ImagePolicy filters on regex `^\d{14}$` and picks the highest numerical value).
 - **Cluster pull credentials:** `ghcr-pull-credentials` Secret (`kubernetes.io/dockerconfigjson` type) materialized in BOTH `homepage` (kubelet pull) and `flux-system` (ImageRepository scan auth) namespaces via two ExternalSecrets sharing a single vault key. Vault key holds `username: hudsor01` + `pat: <classic PAT, scope read:packages, 1-year expiry>`. ExternalSecrets `spec.target.template` reconstructs dockerconfigjson from those two raw fields at sync time. PAT rotation = single vault-write event; both Secrets resync within `refreshInterval: 1h`.
 - **Manifest source:** homelab manifests repo (`dev-projects/homelab` on Forgejo SSH at `192.168.4.236:30022`); Flux source-controller polls every 1 min. ImageUpdateAutomation commits tag bumps as user `Flux Image Automation` to `main` directly. Hudsonfam-specific manifests live at `apps/hudsonfam/` (Deployment + Service + HTTPRoute + 2 PVCs + ExternalSecret + GHCR pull-secret ExternalSecret).
-- **Namespace:** `homepage`. **Volumes:** NFS mount for photo originals (writable, NFS server `192.168.4.164`), local-path PVCs for thumbnails + Next.js cache. **Secrets:** ExternalSecrets from `secrets` namespace via `kubernetes-secrets` ClusterSecretStore (raw K8s Secrets, not external vault).
+- **Namespace:** `homepage`. **Volumes:** local-path PVC for Next.js cache (photos now in Cloudflare R2). **Secrets:** ExternalSecrets from `secrets` namespace via `kubernetes-secrets` ClusterSecretStore (raw K8s Secrets, not external vault).
 - **Public URL:** <https://thehudsonfam.com> via Cloudflare Tunnel.
 
 ### Manual deploy + reconcile
@@ -174,29 +171,41 @@ kubectl scale deployment hudsonfam -n homepage --replicas=1
 ## Environment Variables
 
 ```
-DATABASE_URL          # Direct PostgreSQL (CloudNativePG postgres-rw)
-DIRECT_DATABASE_URL   # Direct PostgreSQL (migrations only)
+DATABASE_URL          # Neon PostgreSQL (pooled, @prisma/adapter-pg)
+DIRECT_DATABASE_URL   # Neon PostgreSQL direct (migrations only)
 BETTER_AUTH_SECRET
 BETTER_AUTH_URL
 GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET
-REDIS_URL             # redis://:password@host:6379
-SONARR_API_KEY
-RADARR_API_KEY
-JELLYFIN_API_KEY
 OWNER_EMAIL           # Email auto-promoted to owner role on signup
+N8N_WEBHOOK_SECRET    # HMAC-SHA256 shared secret for n8n webhook POSTs
+
+# Cloudflare R2 — photo object storage (replaces NAS/PVC)
+R2_ACCOUNT_ID
+R2_ACCESS_KEY_ID
+R2_SECRET_ACCESS_KEY
+R2_BUCKET
+R2_ENDPOINT           # https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com
+R2_PUBLIC_URL         # optional — public bucket URL; omit to proxy through /api/images
 ```
+
+> **FUTURE-02:** Homelab monitoring admin (Glance replacement) is parked. The
+> `/admin` route 404s. SONARR_API_KEY / RADARR_API_KEY / JELLYFIN_API_KEY are
+> no longer referenced — app boots without them.
 
 ## Photo Upload Pipeline
 
 ```
-Upload → sharp resize (2400px max, WebP q85) → save to NAS
-       → generate thumbnail (400px, WebP q80) → save to PVC
-       → generate medium (1200px, WebP q85) → save to PVC
-       → store metadata in Photo model
+Upload → sharp resize (2400px max, WebP q85) → PutObject to R2: originals/{albumId}/{id}.webp
+       → generate thumbnail (400px, WebP q80) → PutObject to R2: derived/{id}-thumbnail.webp
+       → generate medium (1200px, WebP q85)  → PutObject to R2: derived/{id}-medium.webp
+       → store R2 object keys in Photo.originalPath / thumbnailPath
+       → /api/images/[id]?size=... → GetObject from R2 → stream to browser
+       → NoSuchKey → 307 redirect to /api/images/placeholder/{id} (SVG fallback)
 ```
 
-Originals are always `.webp` regardless of upload format.
+Originals are always `.webp` regardless of upload format. Photo reads are proxied
+through `/api/images/[...path]/route.ts` (never a direct public bucket URL).
 
 ## Testing
 

@@ -5,8 +5,6 @@
  * - FormData null coercion (the `as string` on null bug)
  * - Auth guard bypass scenarios
  * - Invite token security (expired, used, invalid)
- * - Service resilience (all K8s services down simultaneously)
- * - Health check timeout handling
  * - Photo upload validation (size, MIME type, auth)
  * - Blog edge cases (missing files, invalid frontmatter)
  * - ISR/force-dynamic rendering correctness
@@ -28,6 +26,11 @@ const mockRedirect = vi.fn();
 
 vi.mock('next/cache', () => ({
   revalidatePath: (...args: unknown[]) => mockRevalidatePath(...args),
+  // Cache Components directives — no-ops (require Next's cacheComponents runtime).
+  cacheLife: () => {},
+  cacheTag: () => {},
+  unstable_cacheLife: () => {},
+  unstable_cacheTag: () => {},
 }));
 
 vi.mock('next/navigation', () => ({
@@ -80,10 +83,6 @@ import {
 
 import { GET as validateInviteGET } from '@/app/api/invite/validate/route';
 import { NextRequest } from 'next/server';
-import { checkAllServices } from '@/lib/dashboard/health';
-import { getMediaStats } from '@/lib/dashboard/media';
-import { getWeather } from '@/lib/dashboard/weather';
-import { getClusterMetrics, queryPrometheus } from '@/lib/dashboard/prometheus';
 
 // ============================================================
 // Helpers
@@ -420,149 +419,7 @@ describe('Invite token security', () => {
 });
 
 // ============================================================
-// 4. Service Resilience — catches crashes when K8s services are down
-// ============================================================
-
-describe('Service resilience when K8s services are down', () => {
-  it('getMediaStats returns zeros when ALL services are down simultaneously', async () => {
-    server.use(
-      // Sonarr down
-      http.get('http://sonarr.media.svc.cluster.local:8989/api/v3/series', () => HttpResponse.error()),
-      http.get('http://sonarr.media.svc.cluster.local:8989/api/v3/queue', () => HttpResponse.error()),
-      http.get('http://sonarr.media.svc.cluster.local:8989/api/v3/wanted/missing', () => HttpResponse.error()),
-      // Radarr down
-      http.get('http://radarr.media.svc.cluster.local:7878/api/v3/movie', () => HttpResponse.error()),
-      http.get('http://radarr.media.svc.cluster.local:7878/api/v3/queue', () => HttpResponse.error()),
-      http.get('http://radarr.media.svc.cluster.local:7878/api/v3/wanted/missing', () => HttpResponse.error()),
-      // Jellyfin down
-      http.get('http://jellyfin.media.svc.cluster.local:8096/emby/Items/Counts', () => HttpResponse.error()),
-      http.get('http://jellyfin.media.svc.cluster.local:8096/Sessions', () => HttpResponse.error()),
-    );
-
-    // Should NOT throw — dashboard must degrade gracefully
-    const stats = await getMediaStats();
-
-    expect(stats.sonarr.series).toBe(0);
-    expect(stats.sonarr.queue).toBe(0);
-    expect(stats.sonarr.missing).toBe(0);
-    expect(stats.radarr.movies).toBe(0);
-    expect(stats.radarr.queue).toBe(0);
-    expect(stats.radarr.missing).toBe(0);
-    expect(stats.jellyfin.movies).toBe(0);
-    expect(stats.jellyfin.shows).toBe(0);
-    expect(stats.jellyfin.episodes).toBe(0);
-    expect(stats.jellyfin.activeSessions).toBe(0);
-  });
-
-  it('getWeather returns fallback when API returns malformed JSON', async () => {
-    server.use(
-      http.get('https://api.open-meteo.com/v1/forecast', () => {
-        return new HttpResponse('not valid json{{', {
-          status: 200,
-          headers: { 'content-type': 'application/json' },
-        });
-      }),
-    );
-
-    const weather = await getWeather();
-
-    // Should return fallback, not crash
-    expect(weather.temperature).toBe(0);
-    expect(weather.condition).toBe('Unavailable');
-    expect(weather.location).toBe('Dallas, TX');
-  });
-
-  it('getClusterMetrics returns zeros when Prometheus returns malformed data', async () => {
-    server.use(
-      http.get('http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/query', () => {
-        return HttpResponse.json({
-          status: 'success',
-          data: { resultType: 'vector', result: [{ value: [] }] }, // value array too short
-        });
-      }),
-    );
-
-    const metrics = await getClusterMetrics();
-
-    // Should not crash, should return 0s
-    expect(metrics.pods).toBe(0);
-    expect(metrics.namespaces).toBe(0);
-    expect(metrics.cpuRequestPercent).toBe(0);
-    expect(metrics.memoryUsagePercent).toBe(0);
-  });
-
-  it('queryPrometheus returns null when response has error status', async () => {
-    server.use(
-      http.get('http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/query', () => {
-        return HttpResponse.json({
-          status: 'error',
-          errorType: 'bad_data',
-          error: 'invalid query',
-        });
-      }),
-    );
-
-    const result = await queryPrometheus('invalid{');
-
-    expect(result).toBeNull();
-  });
-
-  it('checkAllServices does not throw when ALL services are down', async () => {
-    server.use(
-      // Override the catch-all handler to return errors
-      http.head(/\.svc\.cluster\.local/, () => HttpResponse.error()),
-    );
-
-    // Must not throw — should return all services marked as down
-    const services = await checkAllServices();
-
-    expect(services.length).toBe(18);
-    for (const service of services) {
-      expect(service.status).toBe('down');
-    }
-  });
-
-  it('checkAllServices handles 503 Service Unavailable as down', async () => {
-    server.use(
-      http.head(/\.svc\.cluster\.local/, () => {
-        return new HttpResponse(null, { status: 503 });
-      }),
-    );
-
-    const services = await checkAllServices();
-
-    for (const service of services) {
-      expect(service.status).toBe('down');
-    }
-  });
-
-  it('getMediaStats handles Jellyfin returning empty sessions array', async () => {
-    server.use(
-      http.get('http://jellyfin.media.svc.cluster.local:8096/Sessions', () => {
-        return HttpResponse.json([]);
-      }),
-    );
-
-    const stats = await getMediaStats();
-
-    expect(stats.jellyfin.activeSessions).toBe(0);
-  });
-
-  it('getMediaStats handles Sonarr returning empty series array', async () => {
-    server.use(
-      http.get('http://sonarr.media.svc.cluster.local:8989/api/v3/series', () => {
-        return HttpResponse.json([]);
-      }),
-    );
-
-    const stats = await getMediaStats();
-
-    expect(stats.sonarr.series).toBe(0);
-  });
-});
-
-// ============================================================
-// 5. Photo Upload Validation
+// 4. Photo Upload Validation
 // ============================================================
 
 describe('Photo upload validation', () => {
@@ -616,7 +473,7 @@ describe('Photo upload validation', () => {
 });
 
 // ============================================================
-// 6. Blog Edge Cases
+// 5. Blog Edge Cases
 // ============================================================
 
 describe('Blog edge cases', () => {
@@ -642,7 +499,7 @@ describe('Blog edge cases', () => {
 });
 
 // ============================================================
-// 7. Database Schema Validation
+// 6. Database Schema Validation
 // ============================================================
 
 describe('Database schema field alignment', () => {
@@ -772,17 +629,18 @@ describe('Database schema field alignment', () => {
 });
 
 // ============================================================
-// 8. ISR/Dynamic Rendering Correctness
+// 7. ISR/Dynamic Rendering Correctness
 // ============================================================
 
-describe('ISR/force-dynamic rendering correctness', () => {
-  // These tests verify that pages with Prisma queries are force-dynamic
-  // so they don't try to pre-render during Docker build (which crashes
-  // because there's no database connection at build time)
+describe('Cache Components dynamic rendering correctness', () => {
+  // Under Cache Components (cacheComponents: true), `force-dynamic` is removed.
+  // Pages with Prisma queries must instead opt out of static prerendering via
+  // `await connection()` (the v16 equivalent) so they don't try to pre-render
+  // their DB reads during Docker build (which crashes — no DB at build time).
 
   const APP_DIR = path.join(process.cwd(), 'src', 'app');
 
-  // Pages that import prisma and MUST have force-dynamic or revalidate
+  // Pages that import prisma and MUST opt into dynamic rendering via connection()
   const PAGES_USING_PRISMA = [
     '(public)/page.tsx',
     '(public)/family/page.tsx',
@@ -803,7 +661,7 @@ describe('ISR/force-dynamic rendering correctness', () => {
   ];
 
   for (const pagePath of PAGES_USING_PRISMA) {
-    it(`${pagePath} exports force-dynamic or revalidate`, async () => {
+    it(`${pagePath} opts into dynamic rendering via connection()`, async () => {
       const fullPath = path.join(APP_DIR, pagePath);
       let content: string;
       try {
@@ -813,130 +671,23 @@ describe('ISR/force-dynamic rendering correctness', () => {
         return;
       }
 
-      const hasForceDynamic = content.includes('export const dynamic = "force-dynamic"');
-      const hasRevalidate = content.includes('export const revalidate');
-
+      // force-dynamic is incompatible with cacheComponents and must NOT be present
       expect(
-        hasForceDynamic || hasRevalidate,
-        `${pagePath} imports prisma but does NOT export force-dynamic or revalidate. ` +
-        `This will cause build failures in Docker (no DB at build time).`
+        content.includes('export const dynamic = "force-dynamic"'),
+        `${pagePath} still exports force-dynamic, which is incompatible with cacheComponents.`
+      ).toBe(false);
+
+      // Must use connection() to avoid prerendering Prisma reads at build time
+      expect(
+        content.includes('connection()'),
+        `${pagePath} imports prisma but does NOT call connection(). ` +
+        `Under cacheComponents this will try to prerender DB reads (no DB at build time).`
       ).toBe(true);
     });
   }
-
-  it('admin page exports force-dynamic', async () => {
-    const fullPath = path.join(APP_DIR, '(admin)/admin/page.tsx');
-    let content: string;
-    try {
-      content = await fs.readFile(fullPath, 'utf-8');
-    } catch {
-      return;
-    }
-
-    expect(content).toContain('export const dynamic = "force-dynamic"');
-  });
 });
 
-// ============================================================
-// 9. Environment Variable Safety
-// ============================================================
-
-describe('Environment variable safety', () => {
-  it('getMediaStats does not crash when API keys are empty strings', async () => {
-    // The code uses `process.env.SONARR_API_KEY || ""` which means
-    // missing env vars get empty string — fetch should still work
-    // (just returns unauthorized from the service)
-    const originalSonarr = process.env.SONARR_API_KEY;
-    const originalRadarr = process.env.RADARR_API_KEY;
-    const originalJellyfin = process.env.JELLYFIN_API_KEY;
-
-    delete process.env.SONARR_API_KEY;
-    delete process.env.RADARR_API_KEY;
-    delete process.env.JELLYFIN_API_KEY;
-
-    try {
-      // Should not throw even with missing API keys
-      const stats = await getMediaStats();
-
-      // The MSW handlers don't check API keys, so this should still work
-      expect(stats).toBeDefined();
-      expect(stats.sonarr).toBeDefined();
-      expect(stats.radarr).toBeDefined();
-      expect(stats.jellyfin).toBeDefined();
-    } finally {
-      // Restore
-      if (originalSonarr) process.env.SONARR_API_KEY = originalSonarr;
-      if (originalRadarr) process.env.RADARR_API_KEY = originalRadarr;
-      if (originalJellyfin) process.env.JELLYFIN_API_KEY = originalJellyfin;
-    }
-  });
-});
-
-// ============================================================
-// 10. Concurrent Failure Scenarios
-// ============================================================
-
-describe('Concurrent failure scenarios', () => {
-  it('getMediaStats does not crash when one service is slow and others fail', async () => {
-    server.use(
-      // Sonarr returns data normally
-      http.get('http://sonarr.media.svc.cluster.local:8989/api/v3/series', () => {
-        return HttpResponse.json([{ id: 1 }]);
-      }),
-      http.get('http://sonarr.media.svc.cluster.local:8989/api/v3/queue', () => {
-        return HttpResponse.json({ totalRecords: 0 });
-      }),
-      http.get('http://sonarr.media.svc.cluster.local:8989/api/v3/wanted/missing', () => {
-        return HttpResponse.json({ totalRecords: 0 });
-      }),
-      // Radarr returns 500
-      http.get('http://radarr.media.svc.cluster.local:7878/api/v3/movie', () => {
-        return new HttpResponse(null, { status: 500 });
-      }),
-      http.get('http://radarr.media.svc.cluster.local:7878/api/v3/queue', () => {
-        return new HttpResponse(null, { status: 500 });
-      }),
-      http.get('http://radarr.media.svc.cluster.local:7878/api/v3/wanted/missing', () => {
-        return new HttpResponse(null, { status: 500 });
-      }),
-      // Jellyfin network error
-      http.get('http://jellyfin.media.svc.cluster.local:8096/emby/Items/Counts', () => HttpResponse.error()),
-      http.get('http://jellyfin.media.svc.cluster.local:8096/Sessions', () => HttpResponse.error()),
-    );
-
-    const stats = await getMediaStats();
-
-    // Sonarr should still have data
-    expect(stats.sonarr.series).toBe(1);
-    // Radarr and Jellyfin should be zeros (not throw)
-    expect(stats.radarr.movies).toBe(0);
-    expect(stats.jellyfin.movies).toBe(0);
-  });
-
-  it('getClusterMetrics handles mixed success/failure across Prometheus queries', async () => {
-    server.use(
-      http.get('http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/query', ({ request }) => {
-        const url = new URL(request.url);
-        const query = url.searchParams.get('query') || '';
-
-        // First two queries succeed, last two fail
-        if (query.includes('kube_pod_status_phase')) {
-          return HttpResponse.json({
-            status: 'success',
-            data: { resultType: 'vector', result: [{ value: [0, '42'] }] },
-          });
-        }
-        return HttpResponse.error();
-      }),
-    );
-
-    const metrics = await getClusterMetrics();
-
-    // Pods should work, others should be 0
-    expect(metrics.pods).toBe(42);
-    // The rest depend on whether Prometheus errors gracefully
-    expect(typeof metrics.namespaces).toBe('number');
-    expect(typeof metrics.cpuRequestPercent).toBe('number');
-    expect(typeof metrics.memoryUsagePercent).toBe('number');
-  });
-});
+// MSW handler needed to suppress unused import warning
+void server;
+void http;
+void HttpResponse;

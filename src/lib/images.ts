@@ -2,7 +2,6 @@ import sharp from "sharp";
 import {
   S3Client,
   PutObjectCommand,
-  GetObjectCommand,
   DeleteObjectsCommand,
 } from "@aws-sdk/client-s3";
 

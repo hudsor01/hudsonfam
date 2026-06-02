@@ -38,7 +38,6 @@ async function DashboardShell({ children }: { children: React.ReactNode }) {
   if (userRole === "owner") {
     navLinks.push({ href: "/dashboard/members", label: "Members" });
     navLinks.push({ href: "/dashboard/memorial", label: "Memorial" });
-    navLinks.push({ href: "/admin", label: "Admin" });
   }
 
   return (
