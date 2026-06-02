@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Cloud Re-platform & Recipes Experience
-status: verifying
-last_updated: "2026-06-02T03:42:15.576Z"
+status: "Phase 31 Plan 01 executed 2026-06-02. RECIPE-01 search: cmdk RecipeSearch dialog (Cmd/Ctrl+K + visible button, dual-field title+category filter), server-built RecipeIndexEntry[] prop. RECIPE-04 nav: Recipes > Category > Recipe breadcrumbs + chapter prev/next via computeChapterNeighbors, shared anchor() helper. anchor() extracted to recipes.ts as single source. 13 new unit tests (computeChapterNeighbors + anchor). Build 1047 pages + 245 tests + lint all green. Commits: 41c8802 (helpers+tests), 752a2cd (RecipeSearch), b3a3594 (breadcrumbs+nav)."
+last_updated: "2026-06-02T15:43:26.406Z"
 progress:
   total_phases: 3
-  completed_phases: 1
-  total_plans: 5
-  completed_plans: 4
-  percent: 33
+  completed_phases: 2
+  total_plans: 8
+  completed_plans: 6
+  percent: 67
 ---
 
 # State
@@ -30,9 +30,9 @@ The K3s homelab is offline indefinitely (flood; equipment in storage). All data 
 | Sessions | better-auth on Postgres (Redis dropped) |
 | DNS | Cloudflare → Vercel |
 
-Phase: 30 — Cloud Re-platform
-Plan: 30-02 COMPLETE; 30-03 is next
-Status: Phase 30 Plan 02 executed 2026-06-01. R2 photo pipeline wired (CLOUD-03): processImage PutObjects 3 keys, /api/images route GetObjects from R2, NoSuchKey → 307 placeholder fallback, @aws-sdk/client-s3@3.1057.0 added. Homelab admin removed (CLOUD-04): /admin 404s, lib/dashboard/ + 7 widgets + 4 tests deleted, Admin nav link removed, SONARR/RADARR/JELLYFIN unreferenced. Build + 238 tests + lint all green. Live R2 upload deferred to owner via Task 4 checkpoint.
+Phase: 31 — Recipes Experience
+Plan: 31-01 COMPLETE; 31-02 is next (RECIPE-02 checkboxes + RECIPE-03 print)
+Status: Phase 31 Plan 01 executed 2026-06-02. RECIPE-01 + RECIPE-04 complete. Search + breadcrumbs + prev/next shipped.
 
 ## What's Done
 
@@ -41,12 +41,13 @@ Status: Phase 30 Plan 02 executed 2026-06-01. R2 photo pipeline wired (CLOUD-03)
 - **Phase 29 Plan 01 (2026-06-01):** Deleted job admin UI dir (14 files) + job API PDF routes (2 files); removed Jobs nav from admin layout and owner dashboard layout. Build green. Commits: 9530118, 9df610c.
 - **Phase 30 Plan 01 (2026-06-02):** CLOUD-02 Redis stripped from auth.ts + ioredis removed; CLOUD-01 Neon runtime verified (integration test + live seed counts); CLOUD-09 deps aged-pinned, bun.lock regenerated, renovate.json security-only. Deviations: eslint pinned to 9.x (10.x broke plugin-react), kysely resolution-pinned to 0.28.17 (0.29.x broke better-auth adapter), @prisma/adapter-pg + @prisma/client added as explicit deps. Commits: 09ffc25, 622e1f8, 0602bfc.
 - **Phase 30 Plan 02 (2026-06-01):** CLOUD-03 photo pipeline to R2: processImage PutObjects 3 keys, read route GetObjects from R2, NoSuchKey->307 placeholder. CLOUD-04 homelab admin removed: /admin 404s, lib/dashboard + 7 widgets + 4 tests + api/dashboard route deleted, Admin nav link removed, SONARR/RADARR/JELLYFIN env vars purged from src. @aws-sdk/client-s3@3.1057.0 aged-pinned. Commits: d29cb04 (RED), a872fe1 (CLOUD-03), 1b7fad1 (CLOUD-04).
+- **Phase 31 Plan 01 (2026-06-02):** RECIPE-01 cmdk search (RecipeSearch client component, Cmd/Ctrl+K, visible button, dual-field filter by title+category, router navigation). RECIPE-04 breadcrumbs (Recipes › Category › Recipe, shared anchor() helper) + chapter prev/next (computeChapterNeighbors, IO-free pure helper, 13 unit tests). Build 1047 pages + 245 tests green. Commits: 41c8802, 752a2cd, b3a3594.
 
 ## What's Next
 
 ### Immediate next step
 
-Plan 30-03 — Vercel deploy + DNS cut-over (CLOUD-06/07/08); K8s/Docker/Flux artifacts removal (CLOUD-05); `output: standalone` removal from next.config.ts.
+Plan 31-02 — Ingredient/step checkboxes (RECIPE-02) + print/kitchen view (RECIPE-03).
 
 ### Sequenced phase order
 
