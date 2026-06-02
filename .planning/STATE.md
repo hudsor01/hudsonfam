@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Cloud Re-platform & Recipes Experience
-status: Phase 29 Plan 01 executed 2026-06-01. Job admin UI + API routes deleted; Jobs nav removed from both owner layouts; next build green.
-last_updated: "2026-06-01T23:46:42.643Z"
+status: Phase 30 Plan 01 executed 2026-06-02. Redis removed; Neon runtime verified; deps aged-pinned; bun.lock regenerated; renovate.json created. Build + tests + lint green.
+last_updated: "2026-06-02T03:12:00Z"
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 33
+  total_plans: 5
+  completed_plans: 4
+  percent: 40
 ---
 
 # State
@@ -30,21 +30,22 @@ The K3s homelab is offline indefinitely (flood; equipment in storage). All data 
 | Sessions | better-auth on Postgres (Redis dropped) |
 | DNS | Cloudflare → Vercel |
 
-Phase: 29 — Decommission Job Pipeline
-Plan: 29-01 COMPLETE; 29-02 is next
-Status: Phase 29 Plan 01 executed 2026-06-01. Job admin UI + API routes deleted; Jobs nav removed from both owner layouts; next build green.
+Phase: 30 — Cloud Re-platform
+Plan: 30-01 COMPLETE; 30-02 is next
+Status: Phase 30 Plan 01 executed 2026-06-02. Redis removed from auth.ts (CLOUD-02); Neon runtime connection verified via integration test (CLOUD-01); deps aged-pinned to clear Aikido Safe Chain 48h gate; renovate.json security-only policy added; bun.lock regenerated clean (CLOUD-09). Build + 275 tests + lint all green.
 
 ## What's Done
 
 - Recipes digitization (superpowers track, pre-v4.0): 1,000 recipes in `content/recipes/` — categorized, book-ordered, text-only, public.
 - v4.0 planning artifacts: PROJECT.md updated, REQUIREMENTS.md (JOB-01..07, CLOUD-01..08, RECIPE-01..05), ROADMAP.md §v4.0 (phases 29-31), STATE.md reset.
 - **Phase 29 Plan 01 (2026-06-01):** Deleted job admin UI dir (14 files) + job API PDF routes (2 files); removed Jobs nav from admin layout and owner dashboard layout. Build green. Commits: 9530118, 9df610c.
+- **Phase 30 Plan 01 (2026-06-02):** CLOUD-02 Redis stripped from auth.ts + ioredis removed; CLOUD-01 Neon runtime verified (integration test + live seed counts); CLOUD-09 deps aged-pinned, bun.lock regenerated, renovate.json security-only. Deviations: eslint pinned to 9.x (10.x broke plugin-react), kysely resolution-pinned to 0.28.17 (0.29.x broke better-auth adapter), @prisma/adapter-pg + @prisma/client added as explicit deps. Commits: 09ffc25, 622e1f8, 0602bfc.
 
 ## What's Next
 
 ### Immediate next step
 
-Plan 29-02 — delete job lib modules, test files, and tooling (the rest of the job-pipeline surface).
+Plan 30-02 — homelab admin removal (CLOUD-04) + K8s/Docker/Flux artifacts removal (CLOUD-05) + `output: standalone` removal from next.config.ts.
 
 ### Sequenced phase order
 
@@ -85,7 +86,10 @@ Mapped 2026-06-01 — verify no non-job consumer before each deletion:
 - All colors via globals.css @theme tokens
 - Recipes: file-based MDX, text-only, public, no DB/login
 - Single PR branch per milestone
+- Pin eslint to 9.39.4 (10.x incompatible with eslint-plugin-react 7.x; wait for plugin update)
+- Pin kysely via resolutions to 0.28.17 (better-auth 1.6.x adapter requires 0.28.x export layout)
+- Dep churn source: interactive bun install resolving carets; fix = exact-version pins for Safe Chain gate packages
 
 ## Blockers
 
-- **bun install blocked locally (2026-06-01):** Aikido Safe Chain shim suppresses same-day-latest versions via its minimum-package-age cooldown. `package.json` is being auto-bumped to bleeding-edge (`next 16.2.7`, `react 19.2.7`, `better-auth ^1.6.13`, `vitest ^4.1.8`…), which Safe Chain hides → `bun install` errors "No version matching … (but package exists)". Captured as CLOUD-09 / Plan 30-01. Immediate unblock options: (a) pin deps back to aged-stable + regen lockfile (clean, no flag — recommended), or (b) one-time `bun install --safe-chain-skip-minimum-package-age` to regen the lockfile. Root irritant: an auto-bumper keeps re-churning package.json after pins — must be identified + stopped.
+(none)
