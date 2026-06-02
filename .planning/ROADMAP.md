@@ -336,18 +336,18 @@ Verify no non-job consumer before each lib deletion: `jobs-db.ts`, `job-actions.
 
 ### Phase 30: Cloud Re-platform
 
-**Goal:** De-homelab the app: Prisma → Neon, drop Redis, images → Cloudflare R2, park the homelab-monitoring admin behind an offline-safe guard, fix the lockfile, remove K8s/Flux/Docker deploy artifacts, deploy to Vercel, and cut Cloudflare DNS to Vercel.
+**Goal:** De-homelab the app: verify Prisma runtime on Neon, drop Redis, images → Cloudflare R2, remove the homelab-monitoring admin entirely, fix the dependency/lockfile situation permanently, remove K8s/Flux/Docker deploy artifacts, deploy to Vercel, and cut Cloudflare DNS to Vercel.
 **Depends on:** Phase 29 (smaller surface to migrate)
 **Plans:** 3
-**REQs:** CLOUD-01, CLOUD-02, CLOUD-03, CLOUD-04, CLOUD-05, CLOUD-06, CLOUD-07, CLOUD-08
+**REQs:** CLOUD-01, CLOUD-02, CLOUD-03, CLOUD-04, CLOUD-05, CLOUD-06, CLOUD-07, CLOUD-08, CLOUD-09
 
 Plans:
-- [ ] 30-01: Prisma → Neon (pooled + direct URLs, migrate deploy); drop Redis (`ioredis`, `REDIS_URL`, secondaryStorage) → better-auth on Postgres; pin deps to Aikido Safe Chain age-gate-passing versions (no same-day-latest) and regenerate `bun.lock` so `bun install` resolves clean (no skip flag) and `--frozen-lockfile` passes; stop the auto-bumper
-- [ ] 30-02: Images → Cloudflare R2 (`src/lib/images.ts` write path + read path); park homelab-monitoring admin (Prometheus/health/weather/UPS/media-stats) behind an offline-safe guard
-- [ ] 30-03: Remove K8s/Flux/Docker artifacts (Dockerfile, GHCR workflows, Flux refs); deploy to Vercel; Cloudflare DNS → Vercel; verify live boot (auth, DB, recipes, R2 photos)
+- [ ] 30-01-PLAN.md — Verify app runtime connects to Neon via `@prisma/adapter-pg` (pooled URL); drop Redis (`ioredis`, `REDIS_URL`, secondaryStorage) → better-auth on Postgres; aged-pin deps + security-only Renovate (48h cooldown) and regenerate `bun.lock` so `bun install` resolves with no skip flag [CLOUD-01, CLOUD-02, CLOUD-09]
+- [ ] 30-02-PLAN.md — Images → Cloudflare R2 (`src/lib/images.ts` + read/upload routes); remove the homelab-monitoring admin route/widgets/lib/tests entirely and drop SONARR/RADARR/JELLYFIN as required env [CLOUD-03, CLOUD-04]
+- [ ] 30-03-PLAN.md — Delete K8s/Flux/Docker artifacts + `output: standalone`; deploy to Vercel (owner env entry); Cloudflare DNS → Vercel (owner); verify live boot (auth, DB, 1000 recipes, R2 photos) [CLOUD-05, CLOUD-06, CLOUD-07, CLOUD-08]
 
 **Details:**
-Neon project created by owner 2026-06-01. `@prisma/adapter-pg` connects to Neon pooled URL; migrations use direct URL. better-auth already falls back to DB when Redis is down — removing Redis just deletes that path. R2 free tier 10 GB. Homelab dashboard renders an "offline" state, not a crash; `SONARR_API_KEY`/`RADARR_API_KEY`/`JELLYFIN_API_KEY` become optional. Cloudflare Tunnel retired.
+CLOUD-01 migrate+seed already executed on Neon during discuss-phase (2026-06-01); 30-01 only verifies the running app connects via the pooled `DATABASE_URL`. Per CONTEXT locked decisions, the homelab-monitoring admin is REMOVED entirely (not parked behind a guard) and re-added when the cluster returns (FUTURE-02). Deploy artifacts are DELETED outright. R2 free tier 10 GB receives new uploads. Cloudflare Tunnel retired. CLOUD-09 uses aged-pin + Renovate security-only to hold versions against the Aikido Safe Chain 48h age gate.
 
 ### Phase 31: Recipes Experience
 
