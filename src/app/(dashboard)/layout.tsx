@@ -29,10 +29,8 @@ async function DashboardShell({ children }: { children: React.ReactNode }) {
 
   const navLinks = [
     { href: "/dashboard", label: "Overview" },
-    { href: "/dashboard/posts", label: "Posts" },
     { href: "/dashboard/photos", label: "Photos" },
     { href: "/dashboard/events", label: "Events" },
-    { href: "/dashboard/updates", label: "Updates" },
   ];
 
   if (userRole === "owner") {

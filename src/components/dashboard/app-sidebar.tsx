@@ -4,10 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  FileText,
   Image,
   CalendarDays,
-  Bell,
   Users,
   Heart,
   Home,
@@ -37,10 +35,8 @@ import { authClient } from "@/lib/auth-client";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Overview: LayoutDashboard,
-  Posts: FileText,
   Photos: Image,
   Events: CalendarDays,
-  Updates: Bell,
   Services: AppWindow,
   Members: Users,
   Memorial: Heart,
