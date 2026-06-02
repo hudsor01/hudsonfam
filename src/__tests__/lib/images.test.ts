@@ -22,13 +22,37 @@ vi.mock('sharp', () => ({
 
 // Mock @aws-sdk/client-s3
 const mockSend = vi.fn();
-vi.mock('@aws-sdk/client-s3', () => ({
-  S3Client: vi.fn(() => ({ send: mockSend })),
-  PutObjectCommand: vi.fn((args) => ({ _type: 'PutObject', ...args })),
-  GetObjectCommand: vi.fn((args) => ({ _type: 'GetObject', ...args })),
-  DeleteObjectsCommand: vi.fn((args) => ({ _type: 'DeleteObjects', ...args })),
-  NoSuchKey: class NoSuchKey extends Error { name = 'NoSuchKey'; },
-}));
+vi.mock('@aws-sdk/client-s3', () => {
+  class S3ClientMock {
+    send = mockSend;
+  }
+  class PutObjectCommandMock {
+    Bucket: string; Key: string; Body: unknown; ContentType: string;
+    constructor(args: { Bucket: string; Key: string; Body: unknown; ContentType: string }) {
+      Object.assign(this, args);
+    }
+  }
+  class GetObjectCommandMock {
+    Bucket: string; Key: string;
+    constructor(args: { Bucket: string; Key: string }) {
+      Object.assign(this, args);
+    }
+  }
+  class DeleteObjectsCommandMock {
+    Bucket: string; Delete: unknown;
+    constructor(args: { Bucket: string; Delete: unknown }) {
+      Object.assign(this, args);
+    }
+  }
+  class NoSuchKeyMock extends Error { override name = 'NoSuchKey'; }
+  return {
+    S3Client: S3ClientMock,
+    PutObjectCommand: PutObjectCommandMock,
+    GetObjectCommand: GetObjectCommandMock,
+    DeleteObjectsCommand: DeleteObjectsCommandMock,
+    NoSuchKey: NoSuchKeyMock,
+  };
+});
 
 import { processImage, resolveImageKey, deleteImageFiles } from '@/lib/images';
 

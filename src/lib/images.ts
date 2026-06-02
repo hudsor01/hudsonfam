@@ -1,14 +1,31 @@
 import sharp from "sharp";
-import path from "path";
-import fs from "fs/promises";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectsCommand,
+} from "@aws-sdk/client-s3";
 
-// NAS mount path for originals (NFS mounted in K8s deployment)
-// Falls back to /tmp for local dev
-const ORIGINALS_DIR =
-  process.env.ORIGINALS_DIR || "/data/hudsonfam/originals";
-// Local PVC path for processed thumbnails/medium
-const THUMBNAILS_DIR =
-  process.env.THUMBNAILS_DIR || "/data/thumbnails";
+// ---------------------------------------------------------------------------
+// R2 client — configured from env; region must be "auto" for Cloudflare R2
+// ---------------------------------------------------------------------------
+
+function getR2Client(): S3Client {
+  return new S3Client({
+    region: "auto",
+    endpoint: process.env.R2_ENDPOINT!,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    },
+  });
+}
+
+const R2_BUCKET = () => process.env.R2_BUCKET!;
+
+// ---------------------------------------------------------------------------
+// Exports
+// ---------------------------------------------------------------------------
 
 export interface ImageMetadata {
   originalPath: string;
@@ -47,19 +64,16 @@ async function extractExifDate(buffer: Buffer): Promise<Date | null> {
 }
 
 /**
- * Ensure a directory exists, creating it recursively if needed.
- */
-async function ensureDir(dirPath: string): Promise<void> {
-  await fs.mkdir(dirPath, { recursive: true });
-}
-
-/**
- * Process an uploaded image file:
- * 1. Save original to NAS at /data/hudsonfam/originals/{albumId}/{photoId}.{ext}
- * 2. Generate thumbnail (400px wide, WebP) at /data/thumbnails/{photoId}-thumbnail.webp
- * 3. Generate medium (1200px wide, WebP) at /data/thumbnails/{photoId}-medium.webp
- * 4. Extract EXIF data (dimensions, date taken)
- * 5. Return metadata object
+ * Process an uploaded image and write original + derivatives to Cloudflare R2.
+ *
+ * R2 key layout:
+ *   originals/{albumId}/{photoId}.webp  — capped at 2400px, WebP q85
+ *   derived/{photoId}-thumbnail.webp    — 400px, WebP q80
+ *   derived/{photoId}-medium.webp       — 1200px, WebP q85
+ *
+ * Returns ImageMetadata whose originalPath/thumbnailPath/mediumPath are R2 object
+ * keys (NOT URLs or filesystem paths). The /api/images/[...path] route uses these
+ * keys to fetch from R2 via GetObjectCommand.
  */
 export async function processImage(
   buffer: Buffer,
@@ -68,42 +82,70 @@ export async function processImage(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _originalFilename?: string
 ): Promise<ImageMetadata> {
-  // Extract EXIF date before any processing
   const takenAt = await extractExifDate(buffer);
 
-  // 1. Compress and save original to NAS (cap at 2400px wide, WebP q85)
-  const originalDir = path.join(ORIGINALS_DIR, albumId);
-  await ensureDir(originalDir);
-  const originalPath = path.join(originalDir, `${photoId}.webp`);
-  const originalInfo = await sharp(buffer)
+  const s3 = getR2Client();
+  const bucket = R2_BUCKET();
+
+  // R2 object keys
+  const originalKey = `originals/${albumId}/${photoId}.webp`;
+  const thumbnailKey = `derived/${photoId}-thumbnail.webp`;
+  const mediumKey = `derived/${photoId}-medium.webp`;
+
+  // 1. Original: capped at 2400px, WebP q85
+  const originalBuffer = await sharp(buffer)
     .resize(2400, null, { withoutEnlargement: true })
     .webp({ quality: 85 })
-    .toFile(originalPath);
-  const width = originalInfo.width;
-  const height = originalInfo.height;
+    .toBuffer();
 
-  // 2. Generate thumbnail (400px wide, WebP)
-  await ensureDir(THUMBNAILS_DIR);
-  const thumbnailPath = path.join(
-    THUMBNAILS_DIR,
-    `${photoId}-thumbnail.webp`
+  // Get dimensions from the resized original
+  const originalMeta = await sharp(originalBuffer).metadata();
+  const width = originalMeta.width ?? 0;
+  const height = originalMeta.height ?? 0;
+
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: originalKey,
+      Body: originalBuffer,
+      ContentType: "image/webp",
+    })
   );
-  await sharp(buffer)
+
+  // 2. Thumbnail: 400px, WebP q80
+  const thumbnailBuffer = await sharp(buffer)
     .resize(400, null, { withoutEnlargement: true })
     .webp({ quality: 80 })
-    .toFile(thumbnailPath);
+    .toBuffer();
 
-  // 3. Generate medium (1200px wide, WebP)
-  const mediumPath = path.join(THUMBNAILS_DIR, `${photoId}-medium.webp`);
-  await sharp(buffer)
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: thumbnailKey,
+      Body: thumbnailBuffer,
+      ContentType: "image/webp",
+    })
+  );
+
+  // 3. Medium: 1200px, WebP q85
+  const mediumBuffer = await sharp(buffer)
     .resize(1200, null, { withoutEnlargement: true })
     .webp({ quality: 85 })
-    .toFile(mediumPath);
+    .toBuffer();
+
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: mediumKey,
+      Body: mediumBuffer,
+      ContentType: "image/webp",
+    })
+  );
 
   return {
-    originalPath,
-    thumbnailPath,
-    mediumPath,
+    originalPath: originalKey,
+    thumbnailPath: thumbnailKey,
+    mediumPath: mediumKey,
     width,
     height,
     takenAt,
@@ -111,46 +153,75 @@ export async function processImage(
 }
 
 /**
- * Resolve an image path for a given photo ID and size.
- * Returns the absolute filesystem path to serve.
+ * Resolve the R2 object key for a given photo ID and size.
+ * Replaces the old resolveImagePath (filesystem-based) function.
+ *
+ * The function name changes to resolveImageKey; the signature shape is preserved
+ * so existing call sites only need a rename.
  */
-export function resolveImagePath(
+export function resolveImageKey(
   photoId: string,
   size: "thumbnail" | "medium" | "original",
-  originalPath?: string
+  originalKey?: string
 ): string {
   switch (size) {
     case "thumbnail":
-      return path.join(THUMBNAILS_DIR, `${photoId}-thumbnail.webp`);
+      return `derived/${photoId}-thumbnail.webp`;
     case "medium":
-      return path.join(THUMBNAILS_DIR, `${photoId}-medium.webp`);
+      return `derived/${photoId}-medium.webp`;
     case "original":
-      return originalPath || "";
+      // Fall back to medium key when no original key available (NAS-era path)
+      return originalKey && !originalKey.startsWith("/data/")
+        ? originalKey
+        : `derived/${photoId}-medium.webp`;
     default:
-      return path.join(THUMBNAILS_DIR, `${photoId}-medium.webp`);
+      return `derived/${photoId}-medium.webp`;
   }
 }
 
 /**
- * Delete all image files for a photo (original + thumbnail + medium).
+ * Delete all three R2 objects for a photo (original + thumbnail + medium).
+ * Missing keys (NoSuchKey) are silently ignored per S3 DeleteObjects semantics.
  */
 export async function deleteImageFiles(
   photoId: string,
-  originalPath: string
+  originalKey: string
 ): Promise<void> {
-  const paths = [
-    originalPath,
-    path.join(THUMBNAILS_DIR, `${photoId}-thumbnail.webp`),
-    path.join(THUMBNAILS_DIR, `${photoId}-medium.webp`),
-  ];
+  const s3 = getR2Client();
+  const bucket = R2_BUCKET();
 
-  await Promise.all(
-    paths.map(async (p) => {
-      try {
-        await fs.unlink(p);
-      } catch {
-        // File may not exist — ignore
-      }
-    })
-  );
+  // Derive the keys to delete
+  const derivedOriginalKey =
+    originalKey && !originalKey.startsWith("/data/")
+      ? originalKey
+      : `originals/unassigned/${photoId}.webp`;
+
+  try {
+    await s3.send(
+      new DeleteObjectsCommand({
+        Bucket: bucket,
+        Delete: {
+          Objects: [
+            { Key: derivedOriginalKey },
+            { Key: `derived/${photoId}-thumbnail.webp` },
+            { Key: `derived/${photoId}-medium.webp` },
+          ],
+          Quiet: true,
+        },
+      })
+    );
+  } catch (err: unknown) {
+    // NoSuchKey on delete is not an error condition — swallow it
+    const code = (err as { name?: string; Code?: string })?.name ?? (err as { Code?: string })?.Code;
+    if (code !== "NoSuchKey" && code !== "NotFound") {
+      throw err;
+    }
+  }
+}
+
+/**
+ * Get the R2 S3 client for external use (e.g., the image read route).
+ */
+export function getS3Client(): S3Client {
+  return getR2Client();
 }

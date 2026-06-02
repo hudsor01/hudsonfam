@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import type { Readable } from "stream";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { resolveImagePath } from "@/lib/images";
+import { resolveImageKey, getS3Client } from "@/lib/images";
 
 // Content type map for serving images
 const CONTENT_TYPES: Record<string, string> = {
@@ -19,15 +19,19 @@ const CONTENT_TYPES: Record<string, string> = {
 /**
  * GET /api/images/[photoId]
  *
- * Serves images from NAS/local storage.
+ * Serves images from Cloudflare R2 (object storage).
  * Query params:
  *   - size: "thumbnail" | "medium" | "original" (default: "medium")
  *
  * Cache headers set for Cloudflare edge caching:
- *   - public, max-age=31536000 for thumbnails/medium (immutable — filename includes photoId)
+ *   - public, max-age=31536000 for thumbnails/medium (immutable — key includes photoId)
  *   - public, max-age=86400 for originals
  *
  * Auth: FAMILY-visibility album photos require authenticated session.
+ *
+ * Graceful degradation (CLOUD-03): if the R2 object is missing (NoSuchKey / 404),
+ * returns a 307 redirect to /api/images/placeholder/{photoId} — which serves an
+ * SVG placeholder. This covers the 1 restored NAS-era photo whose object is not in R2.
  */
 export async function GET(
   request: NextRequest,
@@ -44,9 +48,10 @@ export async function GET(
   // Validate size parameter against allowed values
   const rawSize = request.nextUrl.searchParams.get("size");
   const allowedSizes = ["thumbnail", "medium", "original"] as const;
-  const size = rawSize && allowedSizes.includes(rawSize as typeof allowedSizes[number])
-    ? (rawSize as "thumbnail" | "medium" | "original")
-    : "medium";
+  const size =
+    rawSize && allowedSizes.includes(rawSize as (typeof allowedSizes)[number])
+      ? (rawSize as "thumbnail" | "medium" | "original")
+      : "medium";
 
   // Look up photo in database
   const photo = await prisma.photo.findUnique({
@@ -70,43 +75,70 @@ export async function GET(
     }
   }
 
-  // Resolve file path
-  const filePath = resolveImagePath(
-    photoId,
-    size,
-    photo.originalPath
-  );
+  // Resolve R2 object key (server-generated from photoId/albumId — no client path)
+  const objectKey = resolveImageKey(photoId, size, photo.originalPath ?? undefined);
 
-  // Path traversal protection: normalize and verify the resolved path
-  // stays within allowed directories
-  const ORIGINALS_DIR = process.env.ORIGINALS_DIR || "/data/hudsonfam/originals";
-  const THUMBNAILS_DIR = process.env.THUMBNAILS_DIR || "/data/thumbnails";
-  const normalizedPath = path.resolve(filePath);
-  const isWithinOriginals = normalizedPath.startsWith(path.resolve(ORIGINALS_DIR) + path.sep);
-  const isWithinThumbnails = normalizedPath.startsWith(path.resolve(THUMBNAILS_DIR) + path.sep);
-
-  if (!isWithinOriginals && !isWithinThumbnails) {
-    return NextResponse.json({ error: "Invalid image path" }, { status: 400 });
-  }
-
-  // Verify file exists
+  // Fetch from R2
+  const s3 = getS3Client();
+  let r2Response;
   try {
-    await fs.access(normalizedPath);
-  } catch {
+    r2Response = await s3.send(
+      new GetObjectCommand({
+        Bucket: process.env.R2_BUCKET!,
+        Key: objectKey,
+      })
+    );
+  } catch (err: unknown) {
+    // GRACEFUL DEGRADATION (CLOUD-03 / T-30-12):
+    // When R2 returns NoSuchKey (the 1 unmigrated NAS photo, or any missing
+    // derivative), redirect to the SVG placeholder route. Never let this surface
+    // as an unhandled 5xx — the gallery renders a placeholder instead.
+    const errName = (err as { name?: string })?.name;
+    const httpStatus = (err as { $metadata?: { httpStatusCode?: number } })
+      ?.$metadata?.httpStatusCode;
+    const isNotFound =
+      errName === "NoSuchKey" ||
+      errName === "NotFound" ||
+      httpStatus === 404;
+
+    if (isNotFound) {
+      return NextResponse.redirect(
+        new URL(`/api/images/placeholder/${photoId}`, request.url),
+        307
+      );
+    }
+
+    // Unexpected error (auth/network) — surface as 502
+    console.error("[images] R2 GetObject failed:", err);
     return NextResponse.json(
-      { error: "Image file not found" },
-      { status: 404 }
+      { error: "Image storage unavailable" },
+      { status: 502 }
     );
   }
 
-  // Read file
-  const fileBuffer = await fs.readFile(normalizedPath);
-  const ext = path.extname(normalizedPath).toLowerCase();
-  const contentType = CONTENT_TYPES[ext] || "application/octet-stream";
+  if (!r2Response.Body) {
+    // Empty body — treat as missing
+    return NextResponse.redirect(
+      new URL(`/api/images/placeholder/${photoId}`, request.url),
+      307
+    );
+  }
+
+  // Stream R2 body to response
+  // In Node.js runtime, Body is a SdkStreamMixin / Readable; collect to buffer.
+  const chunks: Uint8Array[] = [];
+  for await (const chunk of r2Response.Body as Readable) {
+    chunks.push(chunk as Uint8Array);
+  }
+  const fileBuffer = Buffer.concat(chunks);
+
+  // Determine content type (R2 objects are all .webp for processed images)
+  const contentType =
+    r2Response.ContentType ||
+    CONTENT_TYPES[".webp"] ||
+    "image/webp";
 
   // Cache headers for Cloudflare edge caching
-  // Thumbnails and medium are immutable (filename includes photoId + size)
-  // Originals get shorter cache (might be re-uploaded)
   const cacheControl =
     size === "original"
       ? "public, max-age=86400, s-maxage=604800"
