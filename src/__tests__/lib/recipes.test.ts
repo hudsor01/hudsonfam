@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { normalizeFrontmatter, filterByVisibility, computeChapterNeighbors, anchor } from "@/lib/recipes";
+import { normalizeFrontmatter, filterByVisibility, computeChapterNeighbors, anchor, getRecipeIndex } from "@/lib/recipes";
 import type { RecipeMeta } from "@/lib/recipes";
+import { FEATURED_RECIPE_SLUGS } from "@/lib/featured-recipes";
 
 describe("normalizeFrontmatter", () => {
   it("defaults status to draft when missing or unknown", () => {
@@ -108,5 +109,22 @@ describe("anchor", () => {
   it("trims leading and trailing hyphens", () => {
     expect(anchor("  Breakfast  ")).toBe("breakfast");
     expect(anchor("(Cakes)")).toBe("cakes");
+  });
+});
+
+describe("FEATURED_RECIPE_SLUGS", () => {
+  it("every curated slug resolves to a published recipe in the index with non-empty title and category", async () => {
+    const index = await getRecipeIndex();
+    for (const slug of FEATURED_RECIPE_SLUGS) {
+      const entry = index.find((e) => e.slug === slug);
+      expect(entry, `slug "${slug}" not found in published index`).toBeDefined();
+      expect(entry!.title, `slug "${slug}" has empty title`).toBeTruthy();
+      expect(entry!.category, `slug "${slug}" has empty category`).toBeTruthy();
+    }
+  });
+
+  it("has between 1 and 6 slugs inclusive", () => {
+    expect(FEATURED_RECIPE_SLUGS.length).toBeGreaterThanOrEqual(1);
+    expect(FEATURED_RECIPE_SLUGS.length).toBeLessThanOrEqual(6);
   });
 });
