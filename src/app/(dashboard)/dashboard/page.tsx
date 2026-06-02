@@ -129,8 +129,11 @@ export default async function DashboardPage() {
         <CollapsibleCard title="Upcoming Events">
           <div>
             {upcomingEvents.length === 0 ? (
-              <div className="px-5 py-4 text-sm text-muted-foreground">
-                No upcoming events.
+              <div className="px-5 py-8 text-center">
+                <p className="text-sm font-medium text-foreground">No upcoming events</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Create an event to see it here.
+                </p>
               </div>
             ) : (
               upcomingEvents.map((event) => (
