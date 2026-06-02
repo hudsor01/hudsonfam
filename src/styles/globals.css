@@ -142,3 +142,90 @@
     transform: translateX(0);
   }
 }
+
+/* Print styles — clean one-page recipe output */
+@media print {
+  /* Hide all chrome: nav, footer, breadcrumbs, buttons, etc. */
+  nav,
+  footer,
+  header,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset page to white/black for printing */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Constrain article width and reset shadows/borders */
+  article {
+    max-width: 100% !important;
+    padding: 0.5in 0.75in !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Ensure the printable recipe section is visible */
+  .print-recipe {
+    display: block !important;
+  }
+
+  /* Recipe title — keep large and readable */
+  h1 {
+    font-size: 22pt !important;
+    margin-bottom: 12pt !important;
+    color: black !important;
+  }
+
+  /* Section headings */
+  h2 {
+    font-size: 14pt !important;
+    margin-top: 16pt !important;
+    margin-bottom: 8pt !important;
+    color: black !important;
+  }
+
+  /* Ingredient / step rows — reset interactive styles */
+  .print-recipe button {
+    display: flex !important;
+    width: 100% !important;
+    text-align: left !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 2pt 0 !important;
+    min-height: unset !important;
+    cursor: default !important;
+    pointer-events: none !important;
+    color: black !important;
+  }
+
+  /* Restore struck-through items to fully legible text in print */
+  .print-recipe button span {
+    text-decoration: none !important;
+    color: black !important;
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Hide checkbox/step-number indicator circles in print */
+  .print-recipe button span[aria-hidden="true"] {
+    display: none !important;
+  }
+
+  /* No page break inside a recipe section */
+  .print-recipe section {
+    page-break-inside: avoid;
+  }
+
+  /* Remove background colors and rounded corners */
+  * {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+}
