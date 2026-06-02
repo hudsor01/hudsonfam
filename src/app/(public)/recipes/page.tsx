@@ -9,6 +9,7 @@ import {
 } from "@/lib/recipes";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { RecipeSearch } from "@/components/public/recipe-search";
 
 export const metadata: Metadata = {
   title: "Grandma Hudson's Recipes | Hudson Family",
@@ -41,6 +42,11 @@ export default async function RecipesPage() {
           to read, kept in the order they appear in the book.{" "}
           {published.length > 0 ? `${published.length} recipes.` : ""}
         </p>
+        {index.length > 0 && (
+          <div className="mt-4">
+            <RecipeSearch index={index} />
+          </div>
+        )}
       </header>
 
       {published.length === 0 ? (
