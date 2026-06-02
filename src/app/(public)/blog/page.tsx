@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   description: "Stories, thoughts, and updates from the Hudson family.",
 };
 
-
 const POSTS_PER_PAGE = 6;
 
 interface PageProps {

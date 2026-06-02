@@ -70,7 +70,7 @@ export function normalizeFrontmatter(
   };
 }
 
-/** Whether drafts are visible in the current environment (true under `bun dev`). */
+/** Whether drafts are visible in the current environment (true in development). */
 export function includeDrafts(): boolean {
   return process.env.NODE_ENV !== "production";
 }
@@ -125,7 +125,7 @@ async function readAllRecipes(): Promise<RecipeMeta[]> {
   return recipes;
 }
 
-/** Public listing source: published always; drafts also included under `bun dev`. */
+/** Public listing source: published always; drafts also included in development. */
 export async function getAllRecipes(): Promise<RecipeMeta[]> {
   const all = await readAllRecipes();
   return filterByVisibility(all, { includeDrafts: includeDrafts() });
@@ -169,7 +169,7 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
 
     const frontmatter = normalizeFrontmatter(data, slug);
 
-    // Drafts are visible only under `bun dev`; 404 them in production.
+    // Drafts are visible only in development; 404 them in production.
     if (frontmatter.status === "draft" && !includeDrafts()) {
       return null;
     }
