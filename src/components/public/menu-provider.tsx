@@ -49,9 +49,15 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   // Hydrate from localStorage after first mount only (SSR-safe).
+  // Canonical pattern: state empty on server (avoids hydration mismatch),
+  // populated client-side in useEffect. The react-hooks/set-state-in-effect
+  // rule is overly broad here — this is the only valid approach for SSR-safe
+  // localStorage hydration (same pattern as recipe-checklist.tsx in plan 31-02).
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setItems(loadFromStorage());
     setHydrated(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   // Persist on every change after hydration.

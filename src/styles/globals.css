@@ -170,8 +170,9 @@
     box-shadow: none !important;
   }
 
-  /* Ensure the printable recipe section is visible */
-  .print-recipe {
+  /* Ensure the printable recipe/menu section is visible */
+  .print-recipe,
+  .print-menu {
     display: block !important;
   }
 
