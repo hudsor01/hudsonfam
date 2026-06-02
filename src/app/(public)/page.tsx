@@ -53,7 +53,7 @@ export default async function HomePage() {
       {/* Recipes section */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <SectionHeader label="RECIPES" action={{ text: "View all recipes", href: "/recipes" }} />
-        {featuredRecipes.length > 0 && (
+        {featuredRecipes.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {featuredRecipes.map((recipe) => (
               <Link key={recipe.slug} href={`/recipes/${recipe.slug}`}>
@@ -68,6 +68,8 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
+        ) : (
+          <p className="text-sm text-text-dim italic">No featured recipes</p>
         )}
       </section>
 
@@ -97,13 +99,14 @@ export default async function HomePage() {
                 <li key={event.id} className="flex gap-3">
                   <div className="flex-shrink-0 size-10 rounded-lg bg-accent/15 flex items-center justify-center">
                     <span className="text-accent text-sm font-bold font-sans">
-                      {new Date(event.startDate).toLocaleDateString("en-US", { day: "numeric" })}
+                      {event.startDate.toLocaleDateString("en-US", { timeZone: "America/Chicago", day: "numeric" })}
                     </span>
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm text-foreground font-medium truncate">{event.title}</p>
                     <p className="text-sm text-text-dim">
-                      {new Date(event.startDate).toLocaleDateString("en-US", {
+                      {event.startDate.toLocaleDateString("en-US", {
+                        timeZone: "America/Chicago",
                         month: "short",
                         day: "numeric",
                       })}
