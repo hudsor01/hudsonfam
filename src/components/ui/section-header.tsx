@@ -1,4 +1,5 @@
 import { type HTMLAttributes, forwardRef } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface SectionHeaderProps extends HTMLAttributes<HTMLDivElement> {
@@ -27,12 +28,12 @@ const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-serif text-foreground text-balance">{title}</h1>
             {action && (
-              <a
+              <Link
                 href={action.href}
                 className="text-xs text-text-dim hover:text-muted-foreground transition-colors"
               >
                 {action.text}
-              </a>
+              </Link>
             )}
           </div>
           {subtitle && (
@@ -53,12 +54,12 @@ const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
           {label}
         </h3>
         {action && (
-          <a
+          <Link
             href={action.href}
             className="text-xs text-text-dim hover:text-muted-foreground transition-colors"
           >
             {action.text}
-          </a>
+          </Link>
         )}
       </div>
     );
