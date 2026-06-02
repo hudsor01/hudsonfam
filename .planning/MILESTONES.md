@@ -6,6 +6,51 @@ Newest at top. Earlier milestones (v1.0–v1.4, v2.0, v3.0) closed informally pr
 
 ---
 
+## v4.0 — Cloud Re-platform & Recipes Experience
+
+**Shipped:** 2026-06-02
+**Phases:** 29-31 (3 phases, 8 plans)
+**Tag:** `v4.0`
+**Archive:** [v4.0-ROADMAP.md](milestones/v4.0-ROADMAP.md) · [v4.0-REQUIREMENTS.md](milestones/v4.0-REQUIREMENTS.md) · [v4.0-MILESTONE-AUDIT.md](milestones/v4.0-MILESTONE-AUDIT.md)
+
+### Delivered
+
+Got thehudsonfam.com back online on managed cloud after the K3s homelab went offline indefinitely (flood; equipment in storage, data safe but disconnected). The site now runs entirely on free-tier managed providers — Vercel (host) + Neon (Postgres) + Cloudflare R2 (images) + better-auth on Postgres (Redis dropped) + Cloudflare DNS → Vercel — with zero self-hosted dependency. The now-irrelevant job-search subsystem and the homelab-monitoring admin were deleted outright. Over the finished 1,000-recipe collection, shipped the full recipes UX layer: search, ingredient/step checkboxes, print/kitchen view, breadcrumbs + prev/next, and build-your-own-menu. Milestone audit verdict: **PASSED, 21/21 requirements, zero blocking gaps.**
+
+### Key Accomplishments
+
+1. **Phase 29 — Decommission Job Pipeline:** deleted all job-search admin UI, API routes, lib modules, ~13 tests, schema-drift tooling, env vars, and the `@hello-pangea/dnd` dep; build + Vitest suite green after removal
+2. **Phase 30 — Cloud Re-platform:** Prisma→Neon via `@prisma/adapter-pg` (pooled + direct URLs); Redis fully removed (better-auth Postgres sessions); photo pipeline → Cloudflare R2 with `/api/images` proxy + graceful NoSuchKey placeholder; homelab admin deleted (`/admin` 404s); K8s/Flux/Docker artifacts removed; deps aged-pinned + Renovate security-only to satisfy the Aikido Safe Chain age gate; live on Vercel with Cloudflare DNS + valid Let's Encrypt TLS
+3. **Phase 31 — Recipes Experience:** cmdk instant search (Cmd/Ctrl+K) + `Recipes › Chapter › Recipe` breadcrumbs + in-chapter prev/next; per-recipe localStorage ingredient/step checkboxes with ≥44px tap targets; clean one-page print view; build-your-own-menu (`/my-menu`) grouped by course with remove/clear/print, no login
+4. **Post-100% polish:** global light/dark theme system (next-themes — Ivory & Terracotta light default / navy dark, adaptive nav+footer+toggle); menu print emits full cookable recipes (ingredients + instructions); homepage photo thumbnails fixed to use the `/api/images` proxy
+5. **Operational recovery:** restored a minimal seed (1 user / 1 album / 1 photo / 5 events) into Neon from the 2026-04 backup; resolved DNS (Cloudflare 1033 dead tunnel → Vercel records), CAA (amazon-only → letsencrypt.org), better-auth `trustedOrigins`, and owner-role self-heal
+
+### Stats
+
+- **Phases:** 3 (29, 30, 31)
+- **Plans:** 8 total (29-01/02, 30-01/02/03, 31-01/02/03)
+- **REQs satisfied:** 21/21 (JOB-01..07, CLOUD-01..09, RECIPE-01..05)
+- **Timeline:** 2026-06-01 → 2026-06-02 (~2 days)
+- **Diff vs pre-milestone:** 177 files changed, +6,060 / −11,974 (net deletion — job pipeline + homelab removed, recipes UX + cloud config added)
+- **Build:** ~1,048 pages, 245 tests green
+- **PR review:** ended on two consecutive clean comprehensive reviews
+
+### Known Deferred Items
+
+| Item | Status |
+|------|--------|
+| FUTURE-01 | Restore homelab Postgres → migrate data into Neon when equipment returns |
+| FUTURE-02 | Re-enable live homelab monitoring (un-park the CLOUD-04 dashboard) |
+| FUTURE-03 | Remaining recipe back-matter (Menu Making, ~100-menu Menus section, Table Service) |
+| FUTURE-04 | Recipe full-text search across ingredients/steps (RECIPE-01 is name-only) |
+| photo `d9c2e950…` | Restored seed photo renders SVG placeholder — original file never migrated off the offline NAS to R2 (pairs with FUTURE-01) |
+| SEED-001/002/003/004 | dormant — homelab-dependent AI/media ideas, blocked until cluster returns |
+| SEED-006/007 | obsolete — tied to the deleted n8n/job pipeline |
+
+See `.planning/STATE.md` §"Deferred Items" for full rationale.
+
+---
+
 ## v3.5 — CI/CD Hardening
 
 **Shipped:** 2026-04-25

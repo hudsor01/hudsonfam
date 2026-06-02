@@ -1,7 +1,7 @@
 # thehudsonfam.com
 
 ## What This Is
-Custom family website. Next.js 16 App Router with Tailwind CSS v4, shadcn/ui, Prisma v7, Better Auth. As of v4.0, **re-platformed onto managed cloud** (Vercel + Neon + Cloudflare R2) after the K3s homelab went offline indefinitely (flood). Serves as the family content hub (blog, photos, events, memorial) plus a digitized 1,000-recipe collection ("Grandma Hudson's Recipes"). The job-search pipeline is being removed in v4.0; homelab monitoring is parked until the cluster returns.
+Custom family website. Next.js 16 App Router with Tailwind CSS v4, shadcn/ui, Prisma v7, Better Auth. As of v4.0, **re-platformed onto managed cloud** (Vercel + Neon + Cloudflare R2) after the K3s homelab went offline indefinitely (flood). Serves as the family content hub (blog, photos, events, memorial) plus a digitized 1,000-recipe collection ("Grandma Hudson's Recipes") with a full UX layer (search, checkboxes, print, breadcrumbs, build-your-own-menu) and a global light/dark theme. The job-search pipeline was removed in v4.0; homelab monitoring is parked until the cluster returns.
 
 ## Core Value
 A single home for the Hudson family — content for everyone, and Grandma Hudson's recipes preserved and made readable for even the oldest relatives.
@@ -31,9 +31,9 @@ _(Pre-v4.0 the app deployed via GitHub Actions → GHCR → Flux → K3s behind 
 
 ## Current State
 
-**Shipped:** v3.5 CI/CD Hardening — closed 2026-04-25 (tag `v3.5-complete`, commit `f02440c`). Also shipped between v3.5 and v4.0 on the superpowers track: **Grandma Hudson's Recipes digitization** — 1,000 public-domain recipes (Modern Priscilla Cook Book, 1924) transcribed to MDX in `content/recipes/`, categorized in book order, text-only.
-**Current milestone:** **v4.0 Cloud Re-platform & Recipes Experience — ACTIVE (started 2026-06-01).**
-**Re-platform trigger:** K3s homelab offline indefinitely (flood; equipment in storage). Data is safe but disconnected. Moving to managed cloud: Vercel + Neon + Cloudflare R2.
+**Shipped:** **v4.0 Cloud Re-platform & Recipes Experience — closed 2026-06-02 (tag `v4.0`).** The site is fully live on managed cloud — Vercel + Neon + Cloudflare R2, no self-hosted dependency — at https://thehudsonfam.com over valid HTTPS. The job-search subsystem and homelab-monitoring admin are deleted; the 1,000-recipe collection has its full UX layer; the site has a global light/dark theme. Milestone audit PASSED (21/21 REQs).
+**Current milestone:** none active — planning next milestone.
+**Re-platform context:** K3s homelab offline indefinitely (flood; equipment in storage). Data is safe but disconnected — recoverable later via FUTURE-01.
 
 ### Validated (all milestones)
 - v1.0: Core site, auth, CRUD, homelab dashboard, K8s deployment, memorial
@@ -45,20 +45,20 @@ _(Pre-v4.0 the app deployed via GitHub Actions → GHCR → Flux → K3s behind 
 - v3.0: Freshness + Zod safeParse at DB boundary (Phase 20); empty-state copy + link-out polish (Phase 21); salary_intelligence defensive render (Phase 22); HMAC-signed + idempotency-keyed owner-triggered webhooks with sentinel errors (Phase 23); generalized regenerate pattern across all 3 AI artifacts + silent-success warning (Phase 24). 23 REQs shipped; 564/564 tests green. Production UAT for all 5 phases deferred to v3.5-P4 (deploy pipeline broken; see SEED-005).
 - v3.5: Migrated deploy from Forgejo+Woodpecker to GitHub Actions + GHCR + Flux (Phases 25-28); 13 CICD REQs; cleared v3.0 prod-UAT debt. _(This entire pipeline is now retired in v4.0's cloud move.)_
 - Recipes digitization (superpowers track): 1,000 recipes typed from the 1924 Modern Priscilla Cook Book into `content/recipes/`, categorized in book order, text-only, public.
+- **v4.0 (2026-06-02):** Cloud re-platform (Vercel + Neon + Cloudflare R2, no self-hosted dep; Redis dropped) · job-search subsystem + homelab-monitoring admin deleted · recipes UX layer (cmdk search, localStorage checkboxes, print/kitchen view, breadcrumbs + prev/next, build-your-own-menu) · global light/dark theme (Ivory & Terracotta default / navy dark) · 21/21 REQs (JOB-01..07, CLOUD-01..09, RECIPE-01..05), audit PASSED.
 
-## Current Milestone: v4.0 Cloud Re-platform & Recipes Experience
+## Next Milestone
 
-**Goal:** Get thehudsonfam.com back online on managed cloud (homelab down indefinitely after a flood), remove the job-search subsystem entirely, and make the 1,000-recipe collection genuinely usable for the family.
+None active. v4.0 shipped 2026-06-02. Start the next milestone with `/gsd:new-milestone`.
 
-**Locked stack (all free tier):** Vercel (host) · Neon (Postgres) · Cloudflare R2 (images) · better-auth on Postgres (no Redis) · Cloudflare DNS → Vercel.
+**Carried forward (FUTURE backlog):**
+- **FUTURE-01:** Restore homelab Postgres → migrate data into Neon once equipment is back online (data safe but disconnected).
+- **FUTURE-02:** Re-enable live homelab monitoring (un-park the CLOUD-04 admin dashboard) when the cluster returns. `src/proxy.ts` CSP scaffold kept dormant for this.
+- **FUTURE-03:** Remaining recipe back-matter from the physical book — Menu Making prose, the ~100-menu Menus section (pairs with build-your-own-menu), Table Service.
+- **FUTURE-04:** Recipe full-text search across ingredients/steps (v4.0 search is name-only).
+- Migrate the one restored seed photo (`d9c2e950…`) NAS → R2 so it stops rendering the placeholder.
 
-**Three phases (29-31):**
-- **Phase 29 — Decommission Job Pipeline:** delete all job-search code, deps, env, tests, admin UI, and schema-drift tooling. (JOB-01..07)
-- **Phase 30 — Cloud Re-platform:** Prisma → Neon; drop Redis; images → Cloudflare R2; park homelab-monitoring admin; fix lockfile; remove K8s/Flux/Docker artifacts; deploy to Vercel; cut Cloudflare DNS. (CLOUD-01..08)
-- **Phase 31 — Recipes Experience:** search, ingredient/step checkboxes, print/kitchen view, breadcrumbs + prev/next, build-your-own-menu (localStorage). (RECIPE-01..05)
-
-**Out of scope (explicit):** restoring/re-platforming the homelab itself (awaiting physical recovery); migrating the n8n job pipeline (it is deleted, not moved); new family-content features beyond recipes; any paid provider tier.
-**Canonical refs:** `.planning/REQUIREMENTS.md`, `.planning/ROADMAP.md` §v4.0, `.planning/ui-enhancement-analysis.md`, CLAUDE.md.
+**Canonical refs:** `.planning/ROADMAP.md`, `.planning/milestones/v4.0-*.md`, CLAUDE.md.
 
 ## Key Decisions
 - TanStack Form (NOT react-hook-form) for all forms
@@ -90,4 +90,4 @@ This document evolves at phase transitions and milestone boundaries.
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
-Last updated: 2026-06-01 — v4.0 Cloud Re-platform & Recipes Experience milestone started
+Last updated: 2026-06-02 — after v4.0 Cloud Re-platform & Recipes Experience milestone (shipped, tag `v4.0`)

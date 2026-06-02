@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Cloud Re-platform & Recipes Experience
-status: completed
-last_updated: "2026-06-02T11:35:00Z"
+status: shipped
+last_updated: "2026-06-02T19:30:00Z"
 progress:
   total_phases: 3
   completed_phases: 3
@@ -14,11 +14,20 @@ progress:
 
 # State
 
+## Project Reference
+
+See: `.planning/PROJECT.md` (updated 2026-06-02)
+
+**Core value:** A single home for the Hudson family — content for everyone, and Grandma Hudson's recipes preserved and made readable for even the oldest relatives.
+**Current focus:** No active milestone — v4.0 shipped. Start the next with `/gsd:new-milestone`.
+
 ## Current Position
 
-**Milestone v4.0 — Cloud Re-platform & Recipes Experience — ACTIVE (opened 2026-06-01).**
+**Milestone v4.0 — Cloud Re-platform & Recipes Experience — SHIPPED + ARCHIVED 2026-06-02 (tag `v4.0`).**
 
-The K3s homelab is offline indefinitely (flood; equipment in storage). All data is **safe but disconnected** — recoverable later, not lost. v4.0 moves the app onto managed cloud with no self-hosted dependency, deletes the now-irrelevant job-search subsystem, and ships the recipes UI/UX layer over the finished 1,000-recipe collection.
+Archived to `.planning/milestones/v4.0-{ROADMAP,REQUIREMENTS,MILESTONE-AUDIT}.md`; ledger entry in `.planning/MILESTONES.md`; `.planning/REQUIREMENTS.md` removed (fresh one created by the next milestone).
+
+The K3s homelab is offline indefinitely (flood; equipment in storage). All data is **safe but disconnected** — recoverable later via FUTURE-01, not lost. v4.0 moved the app onto managed cloud (Vercel + Neon + Cloudflare R2) with no self-hosted dependency, deleted the job-search subsystem + homelab admin, shipped the recipes UX layer over the 1,000-recipe collection, and added a global light/dark theme. Live at https://thehudsonfam.com.
 
 **Locked stack (all free tier):**
 
@@ -49,36 +58,21 @@ Status: Phase 31 complete (2026-06-02). All RECIPE-01..RECIPE-05 delivered. Sear
 
 ### Immediate next step
 
-Phase 31 complete. All RECIPE-01..05 shipped. Next: deploy to Vercel + DNS cut (Phase 30 cloud work already done).
+v4.0 is shipped, archived, and tagged. No active milestone. Start the next one with `/gsd:new-milestone` (questioning → research → requirements → roadmap; phase numbering continues from 31).
 
-### Sequenced phase order
-
-1. **Phase 29 — Decommission Job Pipeline** (JOB-01..07) — delete job UI/API/lib/tests/tooling/env; build + suite green after.
-2. **Phase 30 — Cloud Re-platform** (CLOUD-01..08) — Prisma→Neon, drop Redis, images→R2, park homelab admin, fix lockfile, remove K8s/Flux/Docker, Vercel deploy, DNS cut.
-3. **Phase 31 — Recipes Experience** (RECIPE-01..05) — search, checkboxes, print view, breadcrumbs+prev/next, build-your-own-menu.
-
-## Job-decommission surface (Phase 29 reference)
-
-Mapped 2026-06-01 — verify no non-job consumer before each deletion:
-
-- **UI:** `src/app/(admin)/admin/jobs/` (15 files) + admin nav "Jobs" entry
-- **API:** `src/app/api/jobs/` (PDF cover-letter + tailored-resume routes)
-- **Lib:** `jobs-db.ts`, `job-actions.ts`, `job-constants.ts`, `job-freshness.ts`, `jobs-schemas.ts`, `webhooks.ts`, `regenerate-predicates.ts`, `attach-freshness.ts`
-- **Tests:** ~13 files under `src/__tests__/` (job-actions, webhooks, jobs-db-*, regenerate-*, trigger-company-research, empty-states, tailored-resume, is-company-research-empty)
-- **Tooling:** `scripts/check-jobs-schema.ts`, `test:schema` npm script, pre-push hook, `scripts/install-hooks.sh`
-- **Env:** `JOBS_DATABASE_URL`, `N8N_WEBHOOK_SECRET`
-- **Deps to evaluate:** `@hello-pangea/dnd` (kanban — confirm no other consumer)
+Candidate next-milestone seeds: the FUTURE backlog below (esp. FUTURE-03 recipe back-matter / preset menus, FUTURE-04 full-text recipe search) plus any new family-content ideas.
 
 ## Deferred Items
 
 | Category | Item | Status |
 |----------|------|--------|
-| future | Restore homelab Postgres → migrate data into Neon | when cluster returns |
-| future | Re-enable live homelab monitoring (un-park CLOUD-04 dashboard) | when cluster returns |
-| future | Remaining recipe back-matter (Menu Making, Menus section ~100, Table Service) | pairs with RECIPE-05 (now shipped — preset menus future idea) |
-| future | Recipe full-text search (ingredients/steps) | post-v4.0 |
+| future | FUTURE-01: Restore homelab Postgres → migrate data into Neon | when cluster returns |
+| future | FUTURE-02: Re-enable live homelab monitoring (un-park CLOUD-04 dashboard) | when cluster returns |
+| future | FUTURE-03: Remaining recipe back-matter (Menu Making, Menus section ~100, Table Service) | pairs with build-your-own-menu (shipped — preset menus future idea) |
+| future | FUTURE-04: Recipe full-text search (ingredients/steps) | post-v4.0 (search is name-only) |
+| data | Migrate restored seed photo `d9c2e950…` NAS → R2 (renders placeholder) | pairs with FUTURE-01 |
 | seed | SEED-001/002/003/004 | dormant — homelab-dependent AI/media ideas, blocked until cluster returns |
-| seed | SEED-006/007 | obsolete — tied to the n8n/job pipeline being deleted |
+| seed | SEED-006/007 | obsolete — tied to the deleted n8n/job pipeline |
 
 ## Key Decisions
 

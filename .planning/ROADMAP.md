@@ -304,62 +304,18 @@ Plans:
 
 </details>
 
----
+## v4.0 — Cloud Re-platform & Recipes Experience (✅ Shipped 2026-06-02)
 
-# Milestone v4.0: Cloud Re-platform & Recipes Experience
+3 phases (29-31), 8 plans, 21/21 REQs. Took thehudsonfam.com off the flooded K3s homelab onto managed cloud (Vercel + Neon + Cloudflare R2, no self-hosted dependency), deleted the job-search subsystem and homelab-monitoring admin entirely, and shipped the recipes UX layer (search, checkboxes, print, breadcrumbs+prev/next, build-your-own-menu) over the 1,000-recipe collection. Milestone audit PASSED. Tag `v4.0`.
 
-**Status:** 🚧 Active — started 2026-06-01
-**Phases:** 29-31
-**Total Plans:** 8 (29-01, 29-02, 30-01, 30-02, 30-03, 31-01, 31-02, 31-03)
+→ Full archive: [milestones/v4.0-ROADMAP.md](milestones/v4.0-ROADMAP.md) · requirements: [v4.0-REQUIREMENTS.md](milestones/v4.0-REQUIREMENTS.md) · audit: [v4.0-MILESTONE-AUDIT.md](milestones/v4.0-MILESTONE-AUDIT.md)
 
-## Overview
+<details>
+<summary>Phase one-liners (collapsed)</summary>
 
-Get thehudsonfam.com back online on managed cloud (the K3s homelab is offline indefinitely after a flood; data is safe but disconnected), remove the now-irrelevant job-search subsystem entirely, and make the 1,000-recipe collection genuinely usable for the family.
+- Phase 29 (Decommission Job Pipeline): job admin UI + API + lib + tests + schema-drift tooling + env deleted; build + suite green — 2 plans, 7 REQs (JOB-01..07), 2026-06-01
+- Phase 30 (Cloud Re-platform): Prisma→Neon, Redis dropped, images→Cloudflare R2, homelab admin removed (`/admin` 404s), deps aged-pinned, K8s/Flux/Docker deleted, Vercel deploy + Cloudflare DNS cut over valid HTTPS — 3 plans, 9 REQs (CLOUD-01..09), 2026-06-02
+- Phase 31 (Recipes Experience): cmdk search + breadcrumbs/prev-next, localStorage checkboxes, print/kitchen view, build-your-own-menu (`/my-menu`) — 3 plans, 5 REQs (RECIPE-01..05), 2026-06-02
+- Post-100% enhancements: global light/dark theme (Ivory & Terracotta default / navy dark, next-themes), full-recipe menu printout, photo-thumbnail proxy fix
 
-**Locked stack (all free tier):** Vercel (host) · Neon (Postgres) · Cloudflare R2 (images) · better-auth on Postgres (Redis dropped) · Cloudflare DNS → Vercel. Phase numbering continues from v3.5 (last phase 28).
-
-## Phases
-
-### Phase 29: Decommission Job Pipeline
-
-**Goal:** Remove all job-search code, deps, env, tests, admin UI, and schema-drift tooling. Self-contained: the app must build and the Vitest suite stay green after the subsystem is gone.
-**Depends on:** Nothing (pure deletion; shrinks surface before the re-platform)
-**Plans:** 2/2 plans complete
-**REQs:** JOB-01, JOB-02, JOB-03, JOB-04, JOB-05, JOB-06, JOB-07
-
-Plans:
-- [x] 29-01: Delete job admin UI (`src/app/(admin)/admin/jobs/`) + API routes (`src/app/api/jobs/`) + admin nav "Jobs" entry
-- [x] 29-02: Delete job lib modules + job tests + schema-drift tooling (check-jobs-schema, test:schema, pre-push hook); prune job-only deps; purge JOBS_DATABASE_URL + N8N_WEBHOOK_SECRET
-
-**Details:**
-Verify no non-job consumer before each lib deletion: `jobs-db.ts`, `job-actions.ts`, `job-constants.ts`, `job-freshness.ts`, `jobs-schemas.ts`, `webhooks.ts`, `regenerate-predicates.ts`, `attach-freshness.ts`. ~13 job test files under `src/__tests__/`. Evaluate `@hello-pangea/dnd` (kanban) for removal. Remove `scripts/check-jobs-schema.ts`, the `test:schema` npm script, the pre-push hook, and `scripts/install-hooks.sh`, plus their CLAUDE.md mentions.
-
-### Phase 30: Cloud Re-platform
-
-**Goal:** De-homelab the app: verify Prisma runtime on Neon, drop Redis, images → Cloudflare R2, remove the homelab-monitoring admin entirely, fix the dependency/lockfile situation permanently, remove K8s/Flux/Docker deploy artifacts, deploy to Vercel, and cut Cloudflare DNS to Vercel.
-**Depends on:** Phase 29 (smaller surface to migrate)
-**Plans:** 3
-**REQs:** CLOUD-01, CLOUD-02, CLOUD-03, CLOUD-04, CLOUD-05, CLOUD-06, CLOUD-07, CLOUD-08, CLOUD-09
-
-Plans:
-- [ ] 30-01-PLAN.md — Verify app runtime connects to Neon via `@prisma/adapter-pg` (pooled URL); drop Redis (`ioredis`, `REDIS_URL`, secondaryStorage) → better-auth on Postgres; aged-pin deps + security-only Renovate (48h cooldown) and regenerate `bun.lock` so `bun install` resolves with no skip flag [CLOUD-01, CLOUD-02, CLOUD-09]
-- [ ] 30-02-PLAN.md — Images → Cloudflare R2 (`src/lib/images.ts` + read/upload routes); remove the homelab-monitoring admin route/widgets/lib/tests entirely and drop SONARR/RADARR/JELLYFIN as required env [CLOUD-03, CLOUD-04]
-- [ ] 30-03-PLAN.md — Delete K8s/Flux/Docker artifacts + `output: standalone`; deploy to Vercel (owner env entry); Cloudflare DNS → Vercel (owner); verify live boot (auth, DB, 1000 recipes, R2 photos) [CLOUD-05, CLOUD-06, CLOUD-07, CLOUD-08]
-
-**Details:**
-CLOUD-01 migrate+seed already executed on Neon during discuss-phase (2026-06-01); 30-01 only verifies the running app connects via the pooled `DATABASE_URL`. Per CONTEXT locked decisions, the homelab-monitoring admin is REMOVED entirely (not parked behind a guard) and re-added when the cluster returns (FUTURE-02). Deploy artifacts are DELETED outright. R2 free tier 10 GB receives new uploads. Cloudflare Tunnel retired. CLOUD-09 uses aged-pin + Renovate security-only to hold versions against the Aikido Safe Chain 48h age gate.
-
-### Phase 31: Recipes Experience
-
-**Goal:** Ship the UI/UX layer over the finished 1,000-recipe collection: search, ingredient/step checkboxes, print/kitchen view, breadcrumbs + prev/next, and build-your-own-menu.
-**Depends on:** Phase 30 (app live on cloud)
-**Plans:** 3/3 plans executed
-**REQs:** RECIPE-01, RECIPE-02, RECIPE-03, RECIPE-04, RECIPE-05
-
-Plans:
-- [x] 31-01: Recipe search (cmdk, instant name filter/jump) + breadcrumbs (`Recipes › Chapter › Recipe`) + prev/next within chapter in book order
-- [x] 31-02: Ingredient/step checkboxes with large tap targets, persisted per recipe in localStorage + print/kitchen view (clean one-page printout)
-- [x] 31-03: Build-your-own-menu — "Add to menu" on cards + detail, floating "My Menu (N)" indicator, `/my-menu` page grouped by course with remove/clear/print, localStorage-persisted, no login
-
-**Details:**
-`cmdk` already installed. Conventions researched from Mealie/Tandoor/RecipeSage (meal-planner "add to plan" pattern) + lightweight no-login apps (localStorage + React Context). Must stay text-only and highly readable for older relatives. The recipe content/import work is already done — this milestone is purely the UI/UX layer.
+</details>
