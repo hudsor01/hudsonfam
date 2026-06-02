@@ -28,6 +28,27 @@ const nextConfig: NextConfig = {
   // Enable React strict mode
   reactStrictMode: true,
 
+  // 308 permanent redirects for removed public routes (D-02)
+  async redirects() {
+    return [
+      {
+        source: "/blog",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/blog/:slug*",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/family",
+        destination: "/",
+        permanent: true,
+      },
+    ];
+  },
+
   // Cache Components (Next.js 16): caching is explicit + opt-in. All dynamic
   // code runs at request time by default; cacheable work is marked with the
   // `'use cache'` directive (+ cacheLife/cacheTag). Also enables Partial

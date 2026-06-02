@@ -69,8 +69,6 @@ import {
   updateMemorialContent,
 } from '@/lib/memorial-actions';
 
-import { getAllPosts, getPostBySlug } from '@/lib/blog';
-
 import { GET as validateInviteGET } from '@/app/api/invite/validate/route';
 import { NextRequest } from 'next/server';
 
@@ -494,16 +492,6 @@ describe('Bug Fix Verification', () => {
     }
   });
 
-  // Bug 2: MDX tables render with remark-gfm
-  it('blog page uses remark-gfm plugin for GFM table support', async () => {
-    const blogPage = await fs.readFile(
-      path.join(process.cwd(), 'src', 'app', '(public)', 'blog', '[slug]', 'page.tsx'),
-      'utf-8'
-    );
-    expect(blogPage).toContain('import remarkGfm from "remark-gfm"');
-    expect(blogPage).toContain('remarkPlugins: [remarkGfm]');
-  });
-
   // Bug 4: Event relative time formatting
   describe('event card relative time formatting', () => {
     // We test the getRelativeLabel logic by rendering EventCard and checking the badge.
@@ -721,26 +709,6 @@ describe('SEO -- Sitemap', () => {
     expect(sitemapFile).toContain('priority: 0.95');
   });
 
-  it('sitemap includes all static pages', async () => {
-    const sitemapFile = await fs.readFile(
-      path.join(process.cwd(), 'src', 'app', 'sitemap.ts'),
-      'utf-8'
-    );
-    const requiredPaths = ['/blog', '/photos', '/events', '/family', '/richard-hudson-sr'];
-    for (const p of requiredPaths) {
-      expect(sitemapFile).toContain(p);
-    }
-  });
-
-  it('sitemap generates blog post entries from getAllPosts', async () => {
-    const sitemapFile = await fs.readFile(
-      path.join(process.cwd(), 'src', 'app', 'sitemap.ts'),
-      'utf-8'
-    );
-    // Verify the sitemap uses blog slugs
-    expect(sitemapFile).toContain('`${SITE_URL}/blog/${post.slug}`');
-  });
-
   it('sitemap gracefully handles DB errors for albums', async () => {
     const sitemapFile = await fs.readFile(
       path.join(process.cwd(), 'src', 'app', 'sitemap.ts'),
@@ -749,49 +717,6 @@ describe('SEO -- Sitemap', () => {
     // Should have try/catch around album query
     expect(sitemapFile).toContain('catch');
     expect(sitemapFile).toContain('DB not available during build');
-  });
-});
-
-describe('SEO -- RSS Feed', () => {
-  it('RSS feed source returns application/rss+xml content type', async () => {
-    const rssFile = await fs.readFile(
-      path.join(process.cwd(), 'src', 'app', 'api', 'blog', 'rss', 'route.ts'),
-      'utf-8'
-    );
-    expect(rssFile).toContain('application/rss+xml');
-  });
-
-  it('RSS feed generates valid XML structure', async () => {
-    const rssFile = await fs.readFile(
-      path.join(process.cwd(), 'src', 'app', 'api', 'blog', 'rss', 'route.ts'),
-      'utf-8'
-    );
-    expect(rssFile).toContain('<?xml version="1.0"');
-    expect(rssFile).toContain('<rss version="2.0"');
-    expect(rssFile).toContain('</channel>');
-    expect(rssFile).toContain('</rss>');
-  });
-
-  it('RSS feed escapes XML special characters', async () => {
-    const rssFile = await fs.readFile(
-      path.join(process.cwd(), 'src', 'app', 'api', 'blog', 'rss', 'route.ts'),
-      'utf-8'
-    );
-    // Should have escapeXml function that handles &, <, >, ", '
-    expect(rssFile).toContain('&amp;');
-    expect(rssFile).toContain('&lt;');
-    expect(rssFile).toContain('&gt;');
-    expect(rssFile).toContain('&quot;');
-    expect(rssFile).toContain('&apos;');
-  });
-
-  it('RSS feed includes atom:link self-reference', async () => {
-    const rssFile = await fs.readFile(
-      path.join(process.cwd(), 'src', 'app', 'api', 'blog', 'rss', 'route.ts'),
-      'utf-8'
-    );
-    expect(rssFile).toContain('atom:link');
-    expect(rssFile).toContain('rel="self"');
   });
 });
 
@@ -1014,54 +939,5 @@ describe('Integration -- Page Rendering', () => {
     expect(layout).toContain('rel="noopener"');
   });
 
-  it('blog getPostBySlug prevents path traversal attacks', async () => {
-    // These should all return null (path traversal attempts)
-    const traversalSlugs = ['../etc/passwd', '..\\windows\\system32', 'foo/../../bar'];
-    for (const slug of traversalSlugs) {
-      const result = await getPostBySlug(slug);
-      expect(result).toBeNull();
-    }
-  });
-
-  it('blog getPostBySlug returns null for empty slug', async () => {
-    const result = await getPostBySlug('');
-    expect(result).toBeNull();
-  });
 });
 
-// ============================================================
-// 6. Blog Content Tests
-// ============================================================
-
-describe('Blog -- Content Handling', () => {
-  it('getAllPosts returns posts sorted by date descending', async () => {
-    // This test uses the actual blog files on disk
-    const posts = await getAllPosts();
-    if (posts.length >= 2) {
-      for (let i = 1; i < posts.length; i++) {
-        const prevDate = new Date(posts[i - 1].frontmatter.date).getTime();
-        const currDate = new Date(posts[i].frontmatter.date).getTime();
-        expect(prevDate).toBeGreaterThanOrEqual(currDate);
-      }
-    }
-  });
-
-  it('getAllPosts returns BlogPostMeta with all required fields', async () => {
-    const posts = await getAllPosts();
-    for (const post of posts) {
-      expect(post.slug).toBeDefined();
-      expect(typeof post.slug).toBe('string');
-      expect(post.frontmatter.title).toBeDefined();
-      expect(post.frontmatter.date).toBeDefined();
-      expect(Array.isArray(post.frontmatter.tags)).toBe(true);
-      expect(post.readingTime).toMatch(/\d+ min read/);
-    }
-  });
-
-  it('blog post frontmatter tags are always arrays (never strings)', async () => {
-    const posts = await getAllPosts();
-    for (const post of posts) {
-      expect(Array.isArray(post.frontmatter.tags)).toBe(true);
-    }
-  });
-});
