@@ -45,6 +45,9 @@ async function extractExifDate(buffer: Buffer): Promise<Date | null> {
     if (metadata.exif) {
       // sharp exposes EXIF via metadata — parse DateTimeOriginal
       const exifStr = metadata.exif.toString("binary");
+      // KNOWN LIMITATION: this regex scans the raw binary EXIF blob and can
+      // miss/misparse some encodings. A robust fix needs a dedicated EXIF
+      // parser (e.g. exifr); not adding that dependency now (out of scope).
       // EXIF DateTimeOriginal format: "YYYY:MM:DD HH:MM:SS"
       const dateMatch = exifStr.match(
         /DateTimeOriginal\x00.{8}(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})/

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { useMenu } from "@/components/public/menu-provider";
 import { Button } from "@/components/ui/button";
 
@@ -9,7 +10,13 @@ interface AddToMenuButtonProps {
   category: string;
 }
 
-export function AddToMenuButton({ slug, title, category }: AddToMenuButtonProps) {
+// Memoized: the recipes listing renders ~1000 of these. Props are primitives,
+// so React.memo prevents re-render unless slug/title/category actually change.
+export const AddToMenuButton = memo(function AddToMenuButton({
+  slug,
+  title,
+  category,
+}: AddToMenuButtonProps) {
   const { has, add, remove } = useMenu();
   const inMenu = has(slug);
 
@@ -33,4 +40,4 @@ export function AddToMenuButton({ slug, title, category }: AddToMenuButtonProps)
       {inMenu ? "In menu ✓" : "+ Add to menu"}
     </Button>
   );
-}
+});

@@ -60,11 +60,11 @@ export function proxy(request: NextRequest) {
     .replace(/\s{2,}/g, " ")
     .trim();
 
-  // Set on BOTH request (so Server Components can read via headers()) AND
-  // response (so the browser enforces). Setting only one is a silent miss.
+  // Pass the nonce to Server Components via a request header (read with
+  // headers()). The CSP itself is a *response* header — the browser only
+  // enforces it there — so we set CSP on the response below, not the request.
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
-  requestHeaders.set("Content-Security-Policy", cspHeader);
 
   const response = NextResponse.next({
     request: { headers: requestHeaders },

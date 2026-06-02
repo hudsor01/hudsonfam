@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 
 export interface MenuItem {
   slug: string;
@@ -85,18 +92,23 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     setItems([]);
   }, []);
 
+  // `has` legitimately changes with items, so it carries an [items] dep.
   const has = useCallback(
     (slug: string) => items.some((i) => i.slug === slug),
     [items]
   );
 
-  return (
-    <MenuContext.Provider
-      value={{ items, add, remove, clear, has, count: items.length }}
-    >
-      {children}
-    </MenuContext.Provider>
+  // Memoize the context value so unrelated re-renders of the provider don't
+  // recreate the value object. add/remove/clear are stable (functional
+  // setState, []-dep), so the value only changes when items (and thus has)
+  // change. The recipes listing renders ~1000 AddToMenuButton consumers, so
+  // value-identity churn here would cascade across all of them.
+  const value = useMemo<MenuContextValue>(
+    () => ({ items, add, remove, clear, has, count: items.length }),
+    [items, add, remove, clear, has]
   );
+
+  return <MenuContext.Provider value={value}>{children}</MenuContext.Provider>;
 }
 
 export function useMenu(): MenuContextValue {

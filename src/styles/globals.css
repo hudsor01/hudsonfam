@@ -145,10 +145,13 @@
 
 /* Print styles — clean one-page recipe output */
 @media print {
-  /* Hide all chrome: nav, footer, breadcrumbs, buttons, etc. */
+  /* Hide site chrome: nav, footer, breadcrumbs, buttons, etc.
+     Do NOT hide bare <header> — the recipe detail page wraps its <h1> title,
+     category badge, contributor, and prep/cook/servings in a <header>. The
+     site's top chrome is a <nav> (already hidden) and breadcrumb/action bars
+     are .no-print, so the recipe header still prints. */
   nav,
   footer,
-  header,
   .no-print {
     display: none !important;
   }

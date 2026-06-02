@@ -27,7 +27,8 @@ const CONTENT_TYPES: Record<string, string> = {
  *   - public, max-age=31536000 for thumbnails/medium (immutable — key includes photoId)
  *   - public, max-age=86400 for originals
  *
- * Auth: FAMILY-visibility album photos require authenticated session.
+ * Auth: photos that belong to an album are public; album-less photos
+ *   (no albumId) require an authenticated session.
  *
  * Graceful degradation (CLOUD-03): if the R2 object is missing (NoSuchKey / 404),
  * returns a 307 redirect to /api/images/placeholder/{photoId} — which serves an
@@ -63,10 +64,11 @@ export async function GET(
     return NextResponse.json({ error: "Photo not found" }, { status: 404 });
   }
 
-  // Auth check: photos without an album are treated as FAMILY by default.
-  const isFamilyOnly = !photo.albumId;
+  // Auth check: photos with an album are public; album-less photos
+  // (no albumId) require an authenticated session.
+  const requiresAuth = !photo.albumId;
 
-  if (isFamilyOnly) {
+  if (requiresAuth) {
     const session = await auth.api.getSession({
       headers: await headers(),
     });

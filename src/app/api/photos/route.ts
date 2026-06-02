@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
   // Read file buffer
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  // Process image (generates thumbnail + medium, saves original to NAS)
+  // Process image (generates thumbnail + medium, saves original to Cloudflare R2)
   const targetAlbumId = albumId || "unassigned";
   let imageMetadata;
   try {
