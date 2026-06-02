@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarPlus, MessageSquarePlus } from "lucide-react";
+import { CalendarPlus } from "lucide-react";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +26,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { quickCreateEvent, quickCreateUpdate } from "@/lib/dashboard-actions";
+import { quickCreateEvent } from "@/lib/dashboard-actions";
 
 // ---------------------------------------------------------------------------
 // Responsive wrapper: Dialog on desktop, Drawer on mobile
@@ -152,62 +151,3 @@ export function QuickEventDialog() {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Quick Update
-// ---------------------------------------------------------------------------
-
-export function QuickUpdateDialog() {
-  const [open, setOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setIsPending(true);
-    try {
-      const formData = new FormData(e.currentTarget);
-      await quickCreateUpdate(formData);
-      toast.success("Update posted");
-      setOpen(false);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Something went wrong";
-      toast.error(msg);
-    } finally {
-      setIsPending(false);
-    }
-  }
-
-  const trigger = (
-    <button className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors">
-      <MessageSquarePlus className="size-4" />
-      Quick Update
-    </button>
-  );
-
-  return (
-    <ResponsiveDialog
-      open={open}
-      onOpenChange={setOpen}
-      trigger={trigger}
-      title="Quick Update"
-      description="Post a family update without leaving the dashboard."
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="quick-update-content">What&apos;s happening?</Label>
-          <Textarea
-            id="quick-update-content"
-            name="content"
-            placeholder="Share a quick update with the family..."
-            rows={3}
-            required
-          />
-        </div>
-        <DialogFooter>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? "Posting..." : "Post Update"}
-          </Button>
-        </DialogFooter>
-      </form>
-    </ResponsiveDialog>
-  );
-}

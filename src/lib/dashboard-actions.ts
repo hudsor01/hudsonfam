@@ -5,85 +5,6 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-// --------------- Posts ---------------
-
-export async function createPost(formData: FormData) {
-  const session = await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title");
-  const slug = formData.get("slug");
-  if (!title || !slug) throw new Error("Title and slug are required");
-
-  const excerpt = formData.get("excerpt") as string | null;
-  const tags = (formData.get("tags") as string || "")
-    .split(",")
-    .map((t) => t.trim())
-    .filter(Boolean);
-  const rawStatus = formData.get("status") as string | null;
-  const status = rawStatus === "PUBLISHED" ? "PUBLISHED" : "DRAFT";
-  const coverImage = formData.get("coverImage") as string | null;
-
-  await prisma.blogPost.create({
-    data: {
-      title: title as string,
-      slug: slug as string,
-      excerpt: excerpt || null,
-      tags,
-      status,
-      coverImage: coverImage || null,
-      authorId: session.user.id,
-      publishedAt: status === "PUBLISHED" ? new Date() : null,
-    },
-  });
-
-  revalidatePath("/dashboard/posts");
-  revalidatePath("/blog");
-  redirect("/dashboard/posts");
-}
-
-export async function updatePost(id: string, formData: FormData) {
-  await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title");
-  const slug = formData.get("slug");
-  if (!title || !slug) throw new Error("Title and slug are required");
-
-  const excerpt = formData.get("excerpt") as string | null;
-  const tags = (formData.get("tags") as string || "")
-    .split(",")
-    .map((t) => t.trim())
-    .filter(Boolean);
-  const rawStatus = formData.get("status") as string | null;
-  const status = rawStatus === "PUBLISHED" ? "PUBLISHED" : "DRAFT";
-  const coverImage = formData.get("coverImage") as string | null;
-
-  const existing = await prisma.blogPost.findUnique({ where: { id } });
-  const isNewlyPublished =
-    status === "PUBLISHED" && existing?.status !== "PUBLISHED";
-
-  await prisma.blogPost.update({
-    where: { id },
-    data: {
-      title: title as string,
-      slug: slug as string,
-      excerpt: excerpt || null,
-      tags,
-      status,
-      coverImage: coverImage || null,
-      publishedAt: isNewlyPublished ? new Date() : existing?.publishedAt,
-    },
-  });
-
-  revalidatePath("/dashboard/posts");
-  revalidatePath("/blog");
-  redirect("/dashboard/posts");
-}
-
-export async function deletePost(id: string) {
-  await requireRole(["owner", "admin"]);
-  await prisma.blogPost.delete({ where: { id } });
-  revalidatePath("/dashboard/posts");
-  revalidatePath("/blog");
-}
-
 // --------------- Albums ---------------
 
 export async function createAlbum(formData: FormData) {
@@ -220,36 +141,6 @@ export async function deleteEvent(id: string) {
   revalidatePath("/events");
 }
 
-// --------------- Family Updates ---------------
-
-export async function createUpdate(formData: FormData) {
-  const session = await requireRole(["owner", "admin", "member"]);
-  const content = formData.get("content");
-  if (!content) throw new Error("Content is required");
-
-  const rawVisibility = formData.get("visibility") as string | null;
-  const visibility = rawVisibility === "FAMILY" ? "FAMILY" : "PUBLIC";
-
-  await prisma.familyUpdate.create({
-    data: {
-      content: content as string,
-      visibility,
-      postedById: session.user.id,
-    },
-  });
-
-  revalidatePath("/dashboard/updates");
-  revalidatePath("/family");
-  redirect("/dashboard/updates");
-}
-
-export async function deleteUpdate(id: string) {
-  await requireRole(["owner", "admin"]);
-  await prisma.familyUpdate.delete({ where: { id } });
-  revalidatePath("/dashboard/updates");
-  revalidatePath("/family");
-}
-
 // --------------- Members (owner-only) ---------------
 
 export async function updateUserRole(userId: string, role: string) {
@@ -311,24 +202,6 @@ export async function quickCreateEvent(formData: FormData) {
   revalidatePath("/dashboard/events");
   revalidatePath("/dashboard");
   revalidatePath("/events");
-}
-
-export async function quickCreateUpdate(formData: FormData) {
-  const session = await requireRole(["owner", "admin", "member"]);
-  const content = formData.get("content");
-  if (!content) throw new Error("Content is required");
-
-  await prisma.familyUpdate.create({
-    data: {
-      content: content as string,
-      visibility: "PUBLIC",
-      postedById: session.user.id,
-    },
-  });
-
-  revalidatePath("/dashboard/updates");
-  revalidatePath("/dashboard");
-  revalidatePath("/family");
 }
 
 // --------------- Invites ---------------
