@@ -1,15 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v4.0
-milestone_name: Cloud Re-platform & Recipes Experience
-status: shipped
-last_updated: "2026-06-02T19:30:00Z"
+milestone: v5.0
+milestone_name: Site Consolidation & Navigation Redesign
+status: planning
+last_updated: "2026-06-02T19:39:50.541Z"
+last_activity: 2026-06-02
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 8
-  completed_plans: 8
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # State
@@ -19,29 +20,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 **Core value:** A single home for the Hudson family — content for everyone, and Grandma Hudson's recipes preserved and made readable for even the oldest relatives.
-**Current focus:** No active milestone — v4.0 shipped. Start the next with `/gsd:new-milestone`.
+**Current focus:** v5.0 Site Consolidation & Navigation Redesign — prune Blog + Family Updates, restructure homepage around recipes/photos/events, fix photo rendering, rebuild navbar + footer IA, dashboard cleanup. YAGNI: build for what we have content for now.
 
 ## Current Position
 
-**Milestone v4.0 — Cloud Re-platform & Recipes Experience — SHIPPED + ARCHIVED 2026-06-02 (tag `v4.0`).**
-
-Archived to `.planning/milestones/v4.0-{ROADMAP,REQUIREMENTS,MILESTONE-AUDIT}.md`; ledger entry in `.planning/MILESTONES.md`; `.planning/REQUIREMENTS.md` removed (fresh one created by the next milestone).
-
-The K3s homelab is offline indefinitely (flood; equipment in storage). All data is **safe but disconnected** — recoverable later via FUTURE-01, not lost. v4.0 moved the app onto managed cloud (Vercel + Neon + Cloudflare R2) with no self-hosted dependency, deleted the job-search subsystem + homelab admin, shipped the recipes UX layer over the 1,000-recipe collection, and added a global light/dark theme. Live at https://thehudsonfam.com.
-
-**Locked stack (all free tier):**
-
-| Concern | Provider |
-|---------|----------|
-| Host | Vercel |
-| Postgres | Neon (project created by owner 2026-06-01) |
-| Images | Cloudflare R2 |
-| Sessions | better-auth on Postgres (Redis dropped) |
-| DNS | Cloudflare → Vercel |
-
-Phase: 31 — Recipes Experience
-Plan: 31-03 COMPLETE
-Status: Phase 31 complete (2026-06-02). All RECIPE-01..RECIPE-05 delivered. Search + breadcrumbs + prev/next + checklist + print + build-your-own-menu shipped.
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-06-02 — Milestone v5.0 started
 
 ## What's Done
 
@@ -58,9 +44,7 @@ Status: Phase 31 complete (2026-06-02). All RECIPE-01..RECIPE-05 delivered. Sear
 
 ### Immediate next step
 
-v4.0 is shipped, archived, and tagged. No active milestone. Start the next one with `/gsd:new-milestone` (questioning → research → requirements → roadmap; phase numbering continues from 31).
-
-Candidate next-milestone seeds: the FUTURE backlog below (esp. FUTURE-03 recipe back-matter / preset menus, FUTURE-04 full-text recipe search) plus any new family-content ideas.
+v5.0 Site Consolidation & Navigation Redesign started 2026-06-02. Requirements + roadmap being defined (phase numbering continues from 31 → 32+). After roadmap approval: `/gsd:plan-phase 32`.
 
 ## Deferred Items
 

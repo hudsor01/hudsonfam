@@ -29,10 +29,25 @@ Single Next.js monolith with 4 route groups:
 Postgres on Neon; images on Cloudflare R2.
 _(Pre-v4.0 the app deployed via GitHub Actions → GHCR → Flux → K3s behind a Cloudflare Tunnel; that pipeline is retired in Phase 30.)_
 
+## Current Milestone: v5.0 Site Consolidation & Navigation Redesign
+
+**Goal:** Refactor the site down to what it actually has content for (YAGNI) — remove dead/redundant surfaces, make the survivors work perfectly, and rebuild the navbar + footer IA around them. No new content/features unless a gap forces one.
+
+**Target features:**
+- Prune Blog (both MDX *and* DB `BlogPost`) and Family Updates (`/family`, `FamilyUpdate`) end-to-end — public routes, content, Prisma models, dashboard CRUD (`/dashboard/posts`, `/dashboard/updates`), `/api/blog/rss`, and all references (command-palette, sitemap, not-found, layouts, components, libs, tests)
+- Restructure the homepage to lead with Recipes + Photos + Events (drop the blog dependency)
+- Fix the broken photo render end-to-end (debug the R2 image that shows a placeholder; rebuild the pipeline if it proves fundamentally broken) — no placeholders
+- Redesign the navbar — IA cleanup (Home · Recipes · Photos · Events · In Memory) + mobile/responsive polish; no visual rebrand
+- Redesign the footer to match the real IA (currently links the dead/thin sections and omits Recipes)
+- Dashboard cleanup — remove dead CRUD and refactor structure to match surviving content (Photos, Events, Members, Memorial)
+- Quality — dead-code sweep, surviving pages polished and working, full test suite green
+
+**Surviving public IA:** Home · Recipes · Photos · Events · In Memory (My Menu stays contextual — floating indicator + from recipes, not top-level nav).
+
 ## Current State
 
 **Shipped:** **v4.0 Cloud Re-platform & Recipes Experience — closed 2026-06-02 (tag `v4.0`).** The site is fully live on managed cloud — Vercel + Neon + Cloudflare R2, no self-hosted dependency — at https://thehudsonfam.com over valid HTTPS. The job-search subsystem and homelab-monitoring admin are deleted; the 1,000-recipe collection has its full UX layer; the site has a global light/dark theme. Milestone audit PASSED (21/21 REQs).
-**Current milestone:** none active — planning next milestone.
+**Current milestone:** v5.0 Site Consolidation & Navigation Redesign — active (started 2026-06-02). See "Current Milestone" section above.
 **Re-platform context:** K3s homelab offline indefinitely (flood; equipment in storage). Data is safe but disconnected — recoverable later via FUTURE-01.
 
 ### Validated (all milestones)
@@ -49,7 +64,7 @@ _(Pre-v4.0 the app deployed via GitHub Actions → GHCR → Flux → K3s behind 
 
 ## Next Milestone
 
-None active. v4.0 shipped 2026-06-02. Start the next milestone with `/gsd:new-milestone`.
+v5.0 Site Consolidation & Navigation Redesign is active (see "Current Milestone" above). Requirements + roadmap defined 2026-06-02.
 
 **Carried forward (FUTURE backlog):**
 - **FUTURE-01:** Restore homelab Postgres → migrate data into Neon once equipment is back online (data safe but disconnected).
@@ -90,4 +105,4 @@ This document evolves at phase transitions and milestone boundaries.
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
-Last updated: 2026-06-02 — after v4.0 Cloud Re-platform & Recipes Experience milestone (shipped, tag `v4.0`)
+Last updated: 2026-06-02 — started v5.0 Site Consolidation & Navigation Redesign milestone
