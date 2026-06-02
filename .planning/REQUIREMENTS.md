@@ -18,9 +18,9 @@ Requirements for the v5.0 milestone. Each maps to exactly one roadmap phase.
 
 ### Homepage — Restructure Around Real Content
 
-- [ ] **HOME-01**: The homepage leads with Grandma Hudson's Recipes — a prominent recipes entry point is above the fold (the blog featured-post is no longer the lead element)
-- [ ] **HOME-02**: The homepage surfaces Photos and Events from live data with clean, intentional empty states when there is nothing to show
-- [ ] **HOME-03**: The homepage has zero dependency on blog/updates data and renders correctly with those subsystems removed
+- [x] **HOME-01**: The homepage leads with Grandma Hudson's Recipes — a prominent recipes entry point is above the fold (the blog featured-post is no longer the lead element)
+- [x] **HOME-02**: The homepage surfaces Photos and Events from live data with clean, intentional empty states when there is nothing to show
+- [x] **HOME-03**: The homepage has zero dependency on blog/updates data and renders correctly with those subsystems removed
 
 ### Photos — Fix Rendering End-to-End
 
@@ -94,9 +94,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 | DASH-01 | Phase 32 | Complete |
 | DASH-02 | Phase 32 | Complete |
 | DASH-03 | Phase 32 | Complete |
-| HOME-01 | Phase 33 | Pending |
-| HOME-02 | Phase 33 | Pending |
-| HOME-03 | Phase 33 | Pending |
+| HOME-01 | Phase 33 | Complete |
+| HOME-02 | Phase 33 | Complete |
+| HOME-03 | Phase 33 | Complete |
 | PHOTO-01 | Phase 34 | Pending |
 | PHOTO-02 | Phase 34 | Pending |
 | PHOTO-03 | Phase 34 | Pending |

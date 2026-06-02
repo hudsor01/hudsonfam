@@ -105,6 +105,9 @@ This document evolves at phase transitions and milestone boundaries.
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
-**v5.0 progress:** Phase 32 (Prune & Dashboard Cleanup) complete 2026-06-02 — Blog + Family Updates removed end-to-end (routes, MDX, `BlogPost`/`FamilyUpdate` models via migration, dashboard CRUD, all residual refs); homepage de-blogged; dashboard consolidated; 308 redirects. On branch `v5.0-site-consolidation`. PRUNE-01..05 + DASH-01..03 verified (8/8). Remaining: phases 33–36.
+**v5.0 progress (branch `v5.0-site-consolidation`):**
+- **Phase 32** complete — Blog + Family Updates removed end-to-end (routes, MDX, `BlogPost`/`FamilyUpdate` models via migration, dashboard CRUD, all residual refs); homepage de-blogged; dashboard consolidated; 308 redirects. PRUNE-01..05 + DASH-01..03 (8/8).
+- **Phase 33** complete — recipes-first homepage: recipes-forward Hero (Browse Recipes CTA + cmdk search), 6 curated featured cards, full-width Photos + Events sections, Sidebar/WeatherWidget retired. HOME-01..03 (6/6 + 3/3 human UAT via browser). _Observed: homepage photo thumbnails render broken — pre-existing R2 bug, fixed in Phase 34._
+- Remaining: phase 34 (photo pipeline fix), 35 (nav/footer), 36 (quality gate).
 
-Last updated: 2026-06-02 — Phase 32 complete (v5.0 Site Consolidation & Navigation Redesign)
+Last updated: 2026-06-02 — Phase 33 complete (v5.0 Site Consolidation & Navigation Redesign)
