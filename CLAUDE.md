@@ -26,7 +26,7 @@ npx prisma migrate dev  # Run migrations (uses DIRECT_DATABASE_URL via prisma.co
 - **Tailwind CSS v4.2** — `@theme` block in globals.css, OKLCH colors
 - **shadcn/ui** — 41 components in `src/components/ui/`
 - **Prisma v7** — `@prisma/adapter-pg` with `pg` Pool, generated to `./generated/prisma/`
-- **Better Auth** — Google OAuth + email/password, Redis session cache
+- **Better Auth** — Google OAuth + email/password, Postgres-backed sessions (Redis removed in Phase 30)
 - **TanStack Form** — `@tanstack/react-form` + zod for all forms
 - **TanStack Table** — `@tanstack/react-table` for data tables
 - **sharp** — Image processing (WebP, thumbnails)
@@ -44,8 +44,8 @@ src/
 │   │       ├── posts/photos/events/updates/  # CRUD pages
 │   │       ├── members/memorial/             # Owner-only
 │   │       └── services/                     # Family services portal
-│   ├── (admin)/         # Owner-only admin panel (FUTURE-02: homelab monitoring parked)
 │   └── api/             # API routes
+# (admin)/ removed in Phase 30 — homelab monitoring dashboard deleted; re-add under FUTURE-02
 ├── components/
 │   ├── ui/              # 41 shadcn primitives
 │   ├── dashboard/       # Shared dashboard primitives (collapsible-card, metric-card, app-sidebar, etc.)
@@ -70,7 +70,6 @@ src/
 - `(public)` — no auth required
 - `(auth)` — login/signup flows
 - `(dashboard)` — `requireRole(["owner", "admin", "member"])`
-- `(admin)` — `requireRole(["owner"])`
 
 ### Server vs Client Components
 - Page files (`page.tsx`) are Server Components by default
@@ -157,7 +156,6 @@ BETTER_AUTH_URL
 GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET
 OWNER_EMAIL           # Email auto-promoted to owner role on signup
-N8N_WEBHOOK_SECRET    # HMAC-SHA256 shared secret for n8n webhook POSTs
 
 # Cloudflare R2 — photo object storage (replaces NAS/PVC)
 R2_ACCOUNT_ID
@@ -168,9 +166,12 @@ R2_ENDPOINT           # https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com
 R2_PUBLIC_URL         # optional — public bucket URL; omit to proxy through /api/images
 ```
 
-> **FUTURE-02:** Homelab monitoring admin (Glance replacement) is parked. The
-> `/admin` route 404s. SONARR_API_KEY / RADARR_API_KEY / JELLYFIN_API_KEY are
-> no longer referenced — app boots without them.
+> **FUTURE-02:** The homelab monitoring admin (Glance replacement) was removed
+> entirely in Phase 30 (route group, `/api/dashboard`, and `src/lib/dashboard/*`
+> deleted; homelab offline indefinitely). `/admin` 404s. SONARR_API_KEY /
+> RADARR_API_KEY / JELLYFIN_API_KEY are no longer referenced — app boots without
+> them. The `src/proxy.ts` CSP middleware (scoped to `/admin/*`) is kept as
+> dormant security infrastructure for when the admin returns. Re-add under FUTURE-02.
 
 ## Photo Upload Pipeline
 
