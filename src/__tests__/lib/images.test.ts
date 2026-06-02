@@ -4,12 +4,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const mockMetadata = vi.fn();
 const mockResize = vi.fn();
 const mockWebp = vi.fn();
-const mockToFile = vi.fn();
+const mockToBuffer = vi.fn();
 const sharpInstance = {
   metadata: mockMetadata,
   resize: mockResize,
   webp: mockWebp,
-  toFile: mockToFile,
+  toBuffer: mockToBuffer,
 };
 
 // Chain returns
@@ -20,63 +20,90 @@ vi.mock('sharp', () => ({
   default: vi.fn(() => sharpInstance),
 }));
 
-// Mock fs/promises
-const mockMkdir = vi.fn();
-const mockWriteFile = vi.fn();
-const mockUnlink = vi.fn();
-
-vi.mock('fs/promises', () => ({
-  default: {
-    mkdir: (...args: unknown[]) => mockMkdir(...args),
-    writeFile: (...args: unknown[]) => mockWriteFile(...args),
-    unlink: (...args: unknown[]) => mockUnlink(...args),
-  },
+// Mock @aws-sdk/client-s3
+const mockSend = vi.fn();
+vi.mock('@aws-sdk/client-s3', () => ({
+  S3Client: vi.fn(() => ({ send: mockSend })),
+  PutObjectCommand: vi.fn((args) => ({ _type: 'PutObject', ...args })),
+  GetObjectCommand: vi.fn((args) => ({ _type: 'GetObject', ...args })),
+  DeleteObjectsCommand: vi.fn((args) => ({ _type: 'DeleteObjects', ...args })),
+  NoSuchKey: class NoSuchKey extends Error { name = 'NoSuchKey'; },
 }));
 
-import { processImage, resolveImagePath, deleteImageFiles } from '@/lib/images';
+import { processImage, resolveImageKey, deleteImageFiles } from '@/lib/images';
 
-describe('image utilities', () => {
+describe('image utilities (R2-backed)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockMkdir.mockResolvedValue(undefined);
-    mockWriteFile.mockResolvedValue(undefined);
-    mockToFile.mockResolvedValue({ width: 2400, height: 1800 });
-    mockUnlink.mockResolvedValue(undefined);
+    mockToBuffer.mockResolvedValue(Buffer.from('webp-data'));
     mockMetadata.mockResolvedValue({
       width: 4000,
       height: 3000,
       exif: null,
     });
+    mockSend.mockResolvedValue({
+      // PutObject returns empty; GetObject returns a Body stream
+      Body: null,
+    });
   });
 
   describe('processImage', () => {
-    it('creates compressed original, thumbnail, and medium files', async () => {
+    it('PutObjects three keys to R2 with correct key paths', async () => {
       const buffer = Buffer.from('fake-image-data');
+      mockToBuffer.mockResolvedValueOnce(Buffer.from('original-webp'))
+        .mockResolvedValueOnce(Buffer.from('thumbnail-webp'))
+        .mockResolvedValueOnce(Buffer.from('medium-webp'));
+
+      await processImage(buffer, 'photo-123', 'album-1', 'photo.jpg');
+
+      // Should send exactly 3 PutObject commands
+      expect(mockSend).toHaveBeenCalledTimes(3);
+
+      const keys = mockSend.mock.calls.map((call) => call[0].Key);
+      expect(keys).toContain('originals/album-1/photo-123.webp');
+      expect(keys).toContain('derived/photo-123-thumbnail.webp');
+      expect(keys).toContain('derived/photo-123-medium.webp');
+    });
+
+    it('returns R2 object keys (not filesystem paths) as originalPath and thumbnailPath', async () => {
+      const buffer = Buffer.from('fake-image-data');
+      mockToBuffer.mockResolvedValue(Buffer.from('webp'));
 
       const result = await processImage(buffer, 'photo-123', 'album-1', 'photo.jpg');
 
-      // Should create directories
-      expect(mockMkdir).toHaveBeenCalledTimes(2);
+      expect(result.originalPath).toBe('originals/album-1/photo-123.webp');
+      expect(result.thumbnailPath).toBe('derived/photo-123-thumbnail.webp');
+      expect(result.mediumPath).toBe('derived/photo-123-medium.webp');
 
-      // Original saved as compressed WebP (no raw writeFile)
-      expect(mockWriteFile).not.toHaveBeenCalled();
-      expect(result.originalPath).toContain('album-1');
-      expect(result.originalPath).toContain('photo-123.webp');
+      // Must NOT be filesystem paths
+      expect(result.originalPath).not.toContain('/data/');
+      expect(result.thumbnailPath).not.toContain('/data/');
+    });
 
-      // Should resize 3 times: original (2400px), thumbnail (400px), medium (1200px)
-      expect(mockResize).toHaveBeenCalledTimes(3);
-      expect(mockToFile).toHaveBeenCalledTimes(3);
+    it('resizes original at 2400px, thumbnail at 400px, medium at 1200px', async () => {
+      const buffer = Buffer.from('fake-image-data');
+      mockToBuffer.mockResolvedValue(Buffer.from('webp'));
+
+      await processImage(buffer, 'photo-123', 'album-1', 'photo.jpg');
 
       expect(mockResize).toHaveBeenCalledWith(2400, null, { withoutEnlargement: true });
       expect(mockResize).toHaveBeenCalledWith(400, null, { withoutEnlargement: true });
       expect(mockResize).toHaveBeenCalledWith(1200, null, { withoutEnlargement: true });
-
-      expect(result.thumbnailPath).toContain('photo-123-thumbnail.webp');
-      expect(result.mediumPath).toContain('photo-123-medium.webp');
     });
 
-    it('returns dimensions from compressed output', async () => {
+    it('returns dimensions from sharp metadata', async () => {
       const buffer = Buffer.from('fake-image-data');
+      // Simulate sharp returning info with width/height via a second metadata call
+      // The implementation calls metadata() once at the start for EXIF, then uses
+      // metadata() again after resizing OR we get it from the buffer directly.
+      // We stub mockToBuffer to return a buffer; the width/height come from a post-resize metadata call.
+      mockToBuffer.mockResolvedValue(Buffer.from('webp'));
+      // processImage calls sharp(originalBuffer).metadata() for EXIF
+      // then later gets width/height from a resize result
+      // We mock it to return dimensions
+      mockMetadata
+        .mockResolvedValueOnce({ exif: null }) // EXIF call
+        .mockResolvedValueOnce({ width: 2400, height: 1800 }); // dimensions after resize
 
       const result = await processImage(buffer, 'photo-123', 'album-1', 'photo.jpg');
 
@@ -86,60 +113,74 @@ describe('image utilities', () => {
 
     it('returns null takenAt when no EXIF data', async () => {
       const buffer = Buffer.from('fake-image-data');
+      mockToBuffer.mockResolvedValue(Buffer.from('webp'));
 
       const result = await processImage(buffer, 'photo-123', 'album-1', 'photo.jpg');
 
       expect(result.takenAt).toBeNull();
     });
 
-    it('always saves original as WebP regardless of input format', async () => {
+    it('PutObjects with ContentType image/webp', async () => {
       const buffer = Buffer.from('fake-image-data');
+      mockToBuffer.mockResolvedValue(Buffer.from('webp'));
 
-      const result = await processImage(buffer, 'photo-123', 'album-1', 'photo.png');
+      await processImage(buffer, 'photo-123', 'album-1', 'photo.jpg');
 
-      expect(result.originalPath).toContain('photo-123.webp');
+      for (const call of mockSend.mock.calls) {
+        expect(call[0].ContentType).toBe('image/webp');
+      }
     });
   });
 
-  describe('resolveImagePath', () => {
-    it('returns thumbnail path', () => {
-      const result = resolveImagePath('photo-123', 'thumbnail');
-
-      expect(result).toContain('photo-123-thumbnail.webp');
+  describe('resolveImageKey', () => {
+    it('returns R2 key for thumbnail', () => {
+      const key = resolveImageKey('photo-123', 'thumbnail');
+      expect(key).toBe('derived/photo-123-thumbnail.webp');
     });
 
-    it('returns medium path', () => {
-      const result = resolveImagePath('photo-123', 'medium');
-
-      expect(result).toContain('photo-123-medium.webp');
+    it('returns R2 key for medium (default)', () => {
+      const key = resolveImageKey('photo-123', 'medium');
+      expect(key).toBe('derived/photo-123-medium.webp');
     });
 
-    it('returns original path when provided', () => {
-      const result = resolveImagePath('photo-123', 'original', '/data/originals/album/photo.jpg');
-
-      expect(result).toBe('/data/originals/album/photo.jpg');
+    it('returns originalKey for original when provided', () => {
+      const key = resolveImageKey('photo-123', 'original', 'originals/album-1/photo-123.webp');
+      expect(key).toBe('originals/album-1/photo-123.webp');
     });
 
-    it('returns empty string for original when no path provided', () => {
-      const result = resolveImagePath('photo-123', 'original');
+    it('falls back to medium key for original when no originalKey provided', () => {
+      const key = resolveImageKey('photo-123', 'original');
+      expect(key).toBe('derived/photo-123-medium.webp');
+    });
 
-      expect(result).toBe('');
+    it('returns medium key by default when size is unrecognized', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const key = resolveImageKey('photo-123', 'unknown' as any);
+      expect(key).toBe('derived/photo-123-medium.webp');
     });
   });
 
   describe('deleteImageFiles', () => {
-    it('deletes original, thumbnail, and medium files', async () => {
-      await deleteImageFiles('photo-123', '/data/originals/album/photo.jpg');
+    it('DeleteObjects all three R2 keys', async () => {
+      mockSend.mockResolvedValue({});
 
-      expect(mockUnlink).toHaveBeenCalledTimes(3);
-      expect(mockUnlink).toHaveBeenCalledWith('/data/originals/album/photo.jpg');
+      await deleteImageFiles('photo-123', 'originals/album-1/photo-123.webp');
+
+      expect(mockSend).toHaveBeenCalledTimes(1);
+      const call = mockSend.mock.calls[0][0];
+      const keys = call.Delete.Objects.map((o: { Key: string }) => o.Key);
+      expect(keys).toContain('originals/album-1/photo-123.webp');
+      expect(keys).toContain('derived/photo-123-thumbnail.webp');
+      expect(keys).toContain('derived/photo-123-medium.webp');
     });
 
-    it('handles missing files gracefully (no throw)', async () => {
-      mockUnlink.mockRejectedValue(new Error('ENOENT'));
+    it('swallows NoSuchKey errors on delete (missing key is not an error)', async () => {
+      const err = new Error('NoSuchKey') as Error & { name: string };
+      err.name = 'NoSuchKey';
+      mockSend.mockRejectedValue(err);
 
       await expect(
-        deleteImageFiles('photo-123', '/data/originals/album/photo.jpg')
+        deleteImageFiles('photo-123', 'originals/album-1/photo-123.webp')
       ).resolves.not.toThrow();
     });
   });
