@@ -1,3 +1,11 @@
+// Vitest (unlike Next.js) does NOT auto-load `.env.local` into process.env, so
+// DB-gated integration tests would skip even when a connection string exists.
+// Load .env.local (then .env) here. Absent in CI → those tests skip cleanly;
+// dotenv never overrides vars already set in the environment.
+import { config as loadEnv } from 'dotenv';
+loadEnv({ path: '.env.local' });
+loadEnv();
+
 import '@testing-library/jest-dom/vitest';
 import { server } from './mocks/server';
 import { beforeAll, afterEach, afterAll, vi } from 'vitest';

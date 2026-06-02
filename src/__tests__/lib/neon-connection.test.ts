@@ -41,13 +41,4 @@ describe("Neon runtime connection (CLOUD-01)", () => {
       expect(eventCount, "at least 5 events in seed (Easter, Dallas, Game, Memorial, Summer)").toBeGreaterThanOrEqual(5);
     }
   );
-
-  it.skipIf(hasDb)(
-    "skips cleanly when DATABASE_URL is not set",
-    () => {
-      // This test exists to document the skip-when-no-secrets behavior.
-      // It never runs when DATABASE_URL is set (that case is handled above).
-      expect(process.env.DATABASE_URL).toBeUndefined();
-    }
-  );
 });
