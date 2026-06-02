@@ -64,7 +64,7 @@ export default function NotFound() {
           <a
             href="https://hudsondigitalsolutions.com"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
             className="text-accent/70 hover:text-accent transition-colors"
           >
             Hudson Digital Solutions
