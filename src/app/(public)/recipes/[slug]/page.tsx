@@ -3,6 +3,8 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { getRecipeBySlug, getAllRecipes, getChapterNeighbors, anchor } from "@/lib/recipes";
 import { mdxComponents } from "@/components/public/mdx-components";
+import { RecipeChecklist } from "@/components/public/recipe-checklist";
+import { RecipePrintButton } from "@/components/public/recipe-print-button";
 import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
@@ -82,7 +84,7 @@ export default async function RecipePage({ params }: PageProps) {
     <article className="max-w-3xl mx-auto px-5 sm:px-7 py-10 sm:py-14">
       {/* Draft review banner — only ever rendered in dev (drafts 404 in prod). */}
       {status === "draft" && (
-        <div className="mb-8 rounded-xl border border-warning/50 bg-warning/10 p-5">
+        <div className="no-print mb-8 rounded-xl border border-warning/50 bg-warning/10 p-5">
           <p className="text-sm font-semibold text-warning mb-1">
             Draft — needs review
           </p>
@@ -101,23 +103,26 @@ export default async function RecipePage({ params }: PageProps) {
       )}
 
       {/* Breadcrumbs: Recipes › Category › Recipe */}
-      <Breadcrumb className="mb-8">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/recipes">Recipes</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/recipes#${anchor(category)}`}>
-              {category}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{title}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <div className="no-print flex items-center justify-between mb-8 gap-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/recipes">Recipes</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`/recipes#${anchor(category)}`}>
+                {category}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <RecipePrintButton />
+      </div>
 
       {/* Recipe header */}
       <header className="mb-8">
@@ -166,44 +171,17 @@ export default async function RecipePage({ params }: PageProps) {
       </header>
 
       {/* The recipe itself — large, clear, easy to read first */}
-      <div className="flex flex-col gap-10">
-        {ingredients.length > 0 && (
-          <section>
-            <h2 className="text-2xl font-serif text-foreground font-normal mb-4">
-              Ingredients
-            </h2>
-            <ul className="list-disc marker:text-primary pl-6 text-foreground text-lg sm:text-xl leading-relaxed space-y-2.5">
-              {ingredients.map((item, i) => (
-                <li key={i} className="pl-1">{item}</li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {instructions.length > 0 && (
-          <section>
-            <h2 className="text-2xl font-serif text-foreground font-normal mb-4">
-              Instructions
-            </h2>
-            <ol className="list-decimal marker:text-primary marker:font-serif pl-6 text-foreground text-lg sm:text-xl leading-relaxed space-y-5">
-              {instructions.map((step, i) => (
-                <li key={i} className="pl-2">{step}</li>
-              ))}
-            </ol>
-          </section>
-        )}
-
-        {ingredients.length === 0 && instructions.length === 0 && (
-          <p className="text-lg text-muted-foreground italic">
-            This recipe hasn&rsquo;t been typed up yet — the original page is
-            shown below.
-          </p>
-        )}
+      <div className="print-recipe">
+        <RecipeChecklist
+          slug={slug}
+          ingredients={ingredients}
+          instructions={instructions}
+        />
       </div>
 
       {/* Story / notes */}
       {content.trim().length > 0 && (
-        <div className="prose-navy mt-12 pt-8 border-t border-border">
+        <div className="no-print prose-navy mt-12 pt-8 border-t border-border">
           <MDXRemote
             source={content}
             components={mdxComponents}
@@ -213,7 +191,7 @@ export default async function RecipePage({ params }: PageProps) {
       )}
 
       {/* Footer: prev/next chapter navigation + back link */}
-      <footer className="mt-12 pt-6 border-t border-border space-y-6">
+      <footer className="no-print mt-12 pt-6 border-t border-border space-y-6">
         {/* Chapter prev/next — only rendered when neighbors exist */}
         {(neighbors.prev || neighbors.next) && (
           <nav
