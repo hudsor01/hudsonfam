@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Cloud Re-platform & Recipes Experience
 status: completed
-last_updated: "2026-06-02T15:54:27.945Z"
+last_updated: "2026-06-02T11:35:00Z"
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 8
   completed_plans: 8
   percent: 100
@@ -31,8 +31,8 @@ The K3s homelab is offline indefinitely (flood; equipment in storage). All data 
 | DNS | Cloudflare → Vercel |
 
 Phase: 31 — Recipes Experience
-Plan: 31-02 COMPLETE
-Status: Phase 31 complete (2026-06-02). All RECIPE-01..RECIPE-04 delivered. Search + breadcrumbs + prev/next + tap-to-cross-off checklist + print view shipped.
+Plan: 31-03 COMPLETE
+Status: Phase 31 complete (2026-06-02). All RECIPE-01..RECIPE-05 delivered. Search + breadcrumbs + prev/next + checklist + print + build-your-own-menu shipped.
 
 ## What's Done
 
@@ -43,12 +43,13 @@ Status: Phase 31 complete (2026-06-02). All RECIPE-01..RECIPE-04 delivered. Sear
 - **Phase 30 Plan 02 (2026-06-01):** CLOUD-03 photo pipeline to R2: processImage PutObjects 3 keys, read route GetObjects from R2, NoSuchKey->307 placeholder. CLOUD-04 homelab admin removed: /admin 404s, lib/dashboard + 7 widgets + 4 tests + api/dashboard route deleted, Admin nav link removed, SONARR/RADARR/JELLYFIN env vars purged from src. @aws-sdk/client-s3@3.1057.0 aged-pinned. Commits: d29cb04 (RED), a872fe1 (CLOUD-03), 1b7fad1 (CLOUD-04).
 - **Phase 31 Plan 01 (2026-06-02):** RECIPE-01 cmdk search (RecipeSearch client component, Cmd/Ctrl+K, visible button, dual-field filter by title+category, router navigation). RECIPE-04 breadcrumbs (Recipes › Category › Recipe, shared anchor() helper) + chapter prev/next (computeChapterNeighbors, IO-free pure helper, 13 unit tests). Build 1047 pages + 245 tests green. Commits: 41c8802, 752a2cd, b3a3594.
 - **Phase 31 Plan 02 (2026-06-02):** RECIPE-02 tap-to-cross-off checklist (RecipeChecklist, per-slug localStorage, SSR-safe useEffect hydration, ≥44px tap targets, reset affordance). RECIPE-03 print view (RecipePrintButton, window.print(), @media print rules in globals.css hiding chrome, clean black-on-white one-page output). Build 1047 pages + 245 tests green. Commits: 67fd27a, 3dcad07, 12f7c16.
+- **Phase 31 Plan 03 (2026-06-02):** RECIPE-05 build-your-own-menu (MenuProvider React Context + localStorage hudson-menu key, AddToMenuButton toggle on listing + detail, floating MenuIndicator in layout, /my-menu server wrapper with metadata + client view grouped by category with remove/clear/print). Build 1048 pages + 245 tests green. Commits: 62881a4, 13529d9, 0ac58e5, 3c5e2f1.
 
 ## What's Next
 
 ### Immediate next step
 
-Phase 31 complete. RECIPE-05 (build-your-own-menu) is deferred to post-v4.0. Next: deploy to Vercel + DNS cut (Phase 30 cloud work already done).
+Phase 31 complete. All RECIPE-01..05 shipped. Next: deploy to Vercel + DNS cut (Phase 30 cloud work already done).
 
 ### Sequenced phase order
 
@@ -74,7 +75,7 @@ Mapped 2026-06-01 — verify no non-job consumer before each deletion:
 |----------|------|--------|
 | future | Restore homelab Postgres → migrate data into Neon | when cluster returns |
 | future | Re-enable live homelab monitoring (un-park CLOUD-04 dashboard) | when cluster returns |
-| future | Remaining recipe back-matter (Menu Making, Menus section ~100, Table Service) | pairs with RECIPE-05 |
+| future | Remaining recipe back-matter (Menu Making, Menus section ~100, Table Service) | pairs with RECIPE-05 (now shipped — preset menus future idea) |
 | future | Recipe full-text search (ingredients/steps) | post-v4.0 |
 | seed | SEED-001/002/003/004 | dormant — homelab-dependent AI/media ideas, blocked until cluster returns |
 | seed | SEED-006/007 | obsolete — tied to the n8n/job pipeline being deleted |
