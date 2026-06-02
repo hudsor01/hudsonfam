@@ -10,11 +10,11 @@ Requirements for the v5.0 milestone. Each maps to exactly one roadmap phase.
 
 ### Prune — Remove Blog & Family Updates
 
-- [ ] **PRUNE-01**: Blog is removed end-to-end — `/blog` and `/blog/[slug]` return 404, MDX content (`content/blog/`), `lib/blog.ts`, `/api/blog/rss`, and blog-only components (featured-post, post-card) are deleted, and no blog link appears anywhere on the public site
-- [ ] **PRUNE-02**: Family Updates is removed end-to-end — `/family` returns 404, the updates feed page + `load-more-updates` + `update-card` are deleted, and no "Family"/"Updates" link appears in nav or footer
+- [x] **PRUNE-01**: Blog is removed end-to-end — `/blog` and `/blog/[slug]` return 404, MDX content (`content/blog/`), `lib/blog.ts`, `/api/blog/rss`, and blog-only components (featured-post, post-card) are deleted, and no blog link appears anywhere on the public site
+- [x] **PRUNE-02**: Family Updates is removed end-to-end — `/family` returns 404, the updates feed page + `load-more-updates` + `update-card` are deleted, and no "Family"/"Updates" link appears in nav or footer
 - [ ] **PRUNE-03**: The `BlogPost` and `FamilyUpdate` Prisma models are removed via a migration; `npx prisma generate` succeeds and the app boots against the migrated schema
 - [ ] **PRUNE-04**: Blog/Updates dashboard CRUD is removed — `/dashboard/posts*` and `/dashboard/updates*` routes are deleted and gone from dashboard navigation, along with their server actions in `dashboard-actions.ts`
-- [ ] **PRUNE-05**: All cross-cutting references to the removed features are cleaned — `command-palette`, `sitemap.ts`, `not-found.tsx`, root layout, and public layout no longer reference blog/family, with no dead imports left behind
+- [x] **PRUNE-05**: All cross-cutting references to the removed features are cleaned — `command-palette`, `sitemap.ts`, `not-found.tsx`, root layout, and public layout no longer reference blog/family, with no dead imports left behind
 
 ### Homepage — Restructure Around Real Content
 
@@ -86,11 +86,11 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PRUNE-01 | Phase 32 | Pending |
-| PRUNE-02 | Phase 32 | Pending |
+| PRUNE-01 | Phase 32 | Complete |
+| PRUNE-02 | Phase 32 | Complete |
 | PRUNE-03 | Phase 32 | Pending |
 | PRUNE-04 | Phase 32 | Pending |
-| PRUNE-05 | Phase 32 | Pending |
+| PRUNE-05 | Phase 32 | Complete |
 | DASH-01 | Phase 32 | Pending |
 | DASH-02 | Phase 32 | Pending |
 | DASH-03 | Phase 32 | Pending |

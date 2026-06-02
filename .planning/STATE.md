@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
 status: executing
-last_updated: "2026-06-02T20:49:19.323Z"
-last_activity: 2026-06-02 -- Phase 32 planning complete
+last_updated: "2026-06-02T21:11:51.077Z"
+last_activity: 2026-06-02
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 3
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -20,14 +20,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 **Core value:** A single home for the Hudson family — content for everyone, and Grandma Hudson's recipes preserved and made readable for even the oldest relatives.
-**Current focus:** v5.0 Site Consolidation & Navigation Redesign — prune Blog + Family Updates, restructure homepage around recipes/photos/events, fix photo rendering, rebuild navbar + footer IA, dashboard cleanup. YAGNI: build for what we have content for now.
+**Current focus:** Phase 32 — Prune & Dashboard Cleanup
 
 ## Current Position
 
-Phase: 32 — Prune & Dashboard Cleanup
-Plan: —
+Phase: 32 (Prune & Dashboard Cleanup) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-06-02 -- Phase 32 planning complete
+Last activity: 2026-06-02
 
 ```
 v5.0 progress: [░░░░░░░░░░] 0% (0/5 phases)
@@ -49,12 +49,13 @@ Phase 36 [░░░░░░░░░░] Not started
 - **Phase 31 Plan 02 (2026-06-02):** RECIPE-02 tap-to-cross-off checklist (RecipeChecklist, per-slug localStorage, SSR-safe useEffect hydration, ≥44px tap targets, reset affordance). RECIPE-03 print view (RecipePrintButton, window.print(), @media print rules in globals.css hiding chrome, clean black-on-white one-page output). Build 1047 pages + 245 tests green. Commits: 67fd27a, 3dcad07, 12f7c16.
 - **Phase 31 Plan 03 (2026-06-02):** RECIPE-05 build-your-own-menu (MenuProvider React Context + localStorage hudson-menu key, AddToMenuButton toggle on listing + detail, floating MenuIndicator in layout, /my-menu server wrapper with metadata + client view grouped by category with remove/clear/print). Build 1048 pages + 245 tests green. Commits: 62881a4, 13529d9, 0ac58e5, 3c5e2f1.
 - **v5.0 roadmap defined (2026-06-02):** Phases 32-36 created. 24/24 requirements mapped. Ready to plan Phase 32.
+- **Phase 32 Plan 01 (2026-06-02):** PRUNE-01/02/05 blog+family public surface removed: deleted 11 files (MDX content, lib/blog.ts, RSS route, blog/family public routes+components, blog.test.ts); stripped homepage to Hero+Sidebar (D-05); cleaned nav/footer/sitemap/command-palette/not-found/root-layout; added 308 redirects for /blog, /blog/:slug*, /family → /. Build 1041 pages + 220 tests green. Commits: ae82bce, 92d669a, 77b499e.
 
 ## What's Next
 
 ### Immediate next step
 
-`/gsd:plan-phase 32` — Prune & Dashboard Cleanup (PRUNE-01..05, DASH-01..03)
+Phase 32 Plan 02 — DB model removal + dashboard CRUD pruning (PRUNE-03, PRUNE-04, DASH-01/02/03)
 
 ## Deferred Items
 
@@ -83,6 +84,8 @@ Phase 36 [░░░░░░░░░░] Not started
 - Dep churn source: interactive bun install resolving carets; fix = exact-version pins for Safe Chain gate packages
 - v5.0 surviving public IA: Home · Recipes · Photos · Events · In Memory (My Menu contextual only)
 - v5.0 YAGNI: no new blog/CMS, no new social feed, no visual rebrand — remove dead surfaces, make survivors work
+- D-02 redirects: /blog, /blog/:slug*, /family → / (permanent 308) in next.config.ts (not middleware, no runtime cost)
+- D-05 homepage stripped to Hero + Sidebar only; Phase 33 adds recipes content
 
 ## Blockers
 
