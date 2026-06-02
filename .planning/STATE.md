@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
 status: executing
-last_updated: "2026-06-02T21:11:51.077Z"
+last_updated: "2026-06-02T21:30:00.000Z"
 last_activity: 2026-06-02
 progress:
   total_phases: 5
@@ -26,7 +26,7 @@ See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 Phase: 32 (Prune & Dashboard Cleanup) — EXECUTING
 Plan: 2 of 3
-Status: Ready to execute
+Status: PAUSED at checkpoint — Task 4 awaiting human authorization (destructive migration)
 Last activity: 2026-06-02
 
 ```
@@ -50,12 +50,13 @@ Phase 36 [░░░░░░░░░░] Not started
 - **Phase 31 Plan 03 (2026-06-02):** RECIPE-05 build-your-own-menu (MenuProvider React Context + localStorage hudson-menu key, AddToMenuButton toggle on listing + detail, floating MenuIndicator in layout, /my-menu server wrapper with metadata + client view grouped by category with remove/clear/print). Build 1048 pages + 245 tests green. Commits: 62881a4, 13529d9, 0ac58e5, 3c5e2f1.
 - **v5.0 roadmap defined (2026-06-02):** Phases 32-36 created. 24/24 requirements mapped. Ready to plan Phase 32.
 - **Phase 32 Plan 01 (2026-06-02):** PRUNE-01/02/05 blog+family public surface removed: deleted 11 files (MDX content, lib/blog.ts, RSS route, blog/family public routes+components, blog.test.ts); stripped homepage to Hero+Sidebar (D-05); cleaned nav/footer/sitemap/command-palette/not-found/root-layout; added 308 redirects for /blog, /blog/:slug*, /family → /. Build 1041 pages + 220 tests green. Commits: ae82bce, 92d669a, 77b499e.
+- **Phase 32 Plan 02 (Tasks 1-3 complete, Task 4 PAUSED at checkpoint, 2026-06-02):** Deleted dashboard posts/ (7 files) + updates/ (3 files) CRUD routes; removed createPost/updatePost/deletePost/createUpdate/deleteUpdate/quickCreateUpdate from dashboard-actions.ts; removed QuickUpdateDialog from quick-actions.tsx; surgical test cleanup in dashboard-actions.test.ts, mocks/prisma.ts, production-bugs.test.ts (prod-readiness.test.ts was already clean); de-blogged dashboard/page.tsx data layer (3-stat grid, Recent Photos card, QuickEventDialog only). Row count: BlogPost=0, FamilyUpdate=0 — no dump needed. Pre-migration sweep: 0 prisma.blogPost/familyUpdate consumers in src/. 194 tests green. Commits: cf8939c, f23cbd7, 51b2fbb, 975c086. AWAITING: authorization to run npx prisma migrate dev --name remove-blog-familyupdate.
 
 ## What's Next
 
 ### Immediate next step
 
-Phase 32 Plan 02 — DB model removal + dashboard CRUD pruning (PRUNE-03, PRUNE-04, DASH-01/02/03)
+Phase 32 Plan 02 — Task 4: Authorize destructive Prisma migration (npx prisma migrate dev --name remove-blog-familyupdate). Row count verified: BlogPost=0, FamilyUpdate=0 (no dump needed). Schema edit + migrate + generate pending human authorization.
 
 ## Deferred Items
 
