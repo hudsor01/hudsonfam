@@ -3,7 +3,7 @@
  *
  * Production-readiness tests covering:
  * - Memorial system (submission, moderation, media, content management)
- * - Bug fix verification (photo URLs, GFM tables, event relative time)
+ * - Bug fix verification (photo URLs, event relative time)
  * - SEO verification (metadata, sitemap, RSS feed)
  * - Auth & security (invite tokens, memorial admin access)
  * - Integration smoke tests (robots.txt, iCal, layout backlink)
