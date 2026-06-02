@@ -179,6 +179,39 @@
     display: block !important;
   }
 
+  /* Build-your-own-menu print: each picked recipe prints in full (ingredients
+     + instructions) so the menu is cookable. Give the menu page its own margins
+     and keep each recipe from splitting across pages. The global `article`
+     padding rule above is for the single recipe-detail <article>, so override it
+     for the per-recipe <article> blocks inside the menu. */
+  .print-menu {
+    padding: 0.5in 0.75in !important;
+  }
+  .print-menu section {
+    margin-bottom: 18pt !important;
+  }
+  .print-menu article.menu-recipe {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 0 14pt 0 !important;
+    break-inside: avoid;
+  }
+  .print-menu h3 {
+    font-size: 13pt !important;
+    color: black !important;
+    margin-bottom: 2pt !important;
+  }
+  .print-menu p,
+  .print-menu li {
+    color: black !important;
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
+  }
+  .print-menu ul,
+  .print-menu ol {
+    margin: 2pt 0 6pt 1.2em !important;
+  }
+
   /* Recipe title — keep large and readable */
   h1 {
     font-size: 22pt !important;
