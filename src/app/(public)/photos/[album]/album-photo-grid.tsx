@@ -32,7 +32,7 @@ export default function AlbumPhotoGrid({ photos }: AlbumPhotoGridProps) {
             className="perspective-midrange max-sm:snap-center max-sm:shrink-0 max-sm:w-[80vw] group relative aspect-square overflow-hidden rounded-lg bg-background border border-border hover:border-primary/40 transition-colors cursor-pointer"
           >
             <Image
-              src={photo.thumbnailPath}
+              src={`/api/images/${photo.id}?size=thumbnail`}
               alt={photo.title || photo.caption || "Photo"}
               width={400}
               height={300}

@@ -180,7 +180,7 @@ export default function Lightbox({
         onClick={(e) => e.stopPropagation()}
       >
         <Image
-          src={photo.originalPath}
+          src={`/api/images/${photo.id}?size=medium`}
           alt={photo.title || photo.caption || "Photo"}
           width={1200}
           height={800}

@@ -23,7 +23,7 @@ export function PhotoGridPreview({ photos }: PhotoGridPreviewProps) {
             className="aspect-square rounded-md overflow-hidden bg-background"
           >
             <Image
-              src={photo.thumbnailPath}
+              src={`/api/images/${photo.id}?size=thumbnail`}
               alt={photo.title || "Photo"}
               width={400}
               height={300}

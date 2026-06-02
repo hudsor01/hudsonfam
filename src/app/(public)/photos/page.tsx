@@ -48,7 +48,7 @@ export default async function PhotosPage() {
                   <div className="aspect-[4/3] bg-background overflow-hidden">
                     {coverPhoto ? (
                       <Image
-                        src={coverPhoto.thumbnailPath}
+                        src={`/api/images/${coverPhoto.id}?size=thumbnail`}
                         alt={album.title}
                         width={800}
                         height={400}
