@@ -33,7 +33,12 @@ import type { Readable } from "stream";
 
 const TEST_PHOTO_ID = randomUUID();
 const TEST_ALBUM_ID = "test-roundtrip";
-const SAMPLE_IMAGE = "public/images/recipes/_inbox/IMG_2716.jpeg";
+// Resolve the sample image relative to THIS script (not the process CWD) so the
+// verifier works regardless of the directory it is invoked from.
+const SAMPLE_IMAGE = new URL(
+  "../public/images/recipes/_inbox/IMG_2716.jpeg",
+  import.meta.url
+);
 
 async function main() {
   console.log(`Round-trip verify — test photoId: ${TEST_PHOTO_ID}`);
