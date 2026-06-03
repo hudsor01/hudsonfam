@@ -16,22 +16,31 @@
  *   - NAV-03 mobile: MobileNav has no aria-current
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import fs from 'fs/promises';
 import path from 'path';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { NavLink } from '@/components/public/nav-link';
 import { MobileNav } from '@/components/public/mobile-nav';
+import { isNavActive } from '@/lib/nav';
 
 // ---------------------------------------------------------------------------
 // Mock next/navigation BEFORE component imports that call usePathname.
-// Default: pathname = '/recipes' (Recipes link is active).
+// usePathname is a vi.fn() so individual tests can re-mock the return value
+// (default: '/recipes' → the Recipes link is active).
 // ---------------------------------------------------------------------------
 
 vi.mock('next/navigation', () => ({
-  usePathname: () => '/recipes',
+  usePathname: vi.fn(() => '/recipes'),
 }));
+
+const mockUsePathname = vi.mocked(usePathname);
+
+beforeEach(() => {
+  mockUsePathname.mockReturnValue('/recipes');
+});
 
 // ---------------------------------------------------------------------------
 // Helper: read layout.tsx source (mirrors prod-readiness.test.ts:930 pattern)
@@ -227,5 +236,79 @@ describe('NAV-02 + NAV-03 mobile: MobileNav render', () => {
     render(React.createElement(MobileNav, { links: testLinks }));
     openDrawer();
     expect(screen.getByText('Sign In')).toBeTruthy();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// IN-01: active-route predicate edge cases (regression guard for WR-01).
+//
+// The shared isNavActive helper is the only real logic in this phase. These
+// unit tests pin the risky branches: the root-path guard and the prefix-
+// sibling collision that WR-01 fixed. They would have caught WR-01.
+// ---------------------------------------------------------------------------
+
+describe('IN-01: isNavActive predicate edge cases', () => {
+  it('root "/" does NOT activate on a non-root path like "/recipes"', () => {
+    expect(isNavActive('/recipes', '/')).toBe(false);
+  });
+
+  it('root "/" activates only on exactly "/"', () => {
+    expect(isNavActive('/', '/')).toBe(true);
+  });
+
+  it('"/recipes" activates on "/recipes" (exact match)', () => {
+    expect(isNavActive('/recipes', '/recipes')).toBe(true);
+  });
+
+  it('"/recipes" activates on a child route "/recipes/chocolate"', () => {
+    expect(isNavActive('/recipes/chocolate', '/recipes')).toBe(true);
+  });
+
+  it('"/recipes" does NOT activate on prefix sibling "/recipes-archive" (WR-01)', () => {
+    expect(isNavActive('/recipes-archive', '/recipes')).toBe(false);
+  });
+
+  it('"/events" does NOT activate on prefix sibling "/events-2026" (WR-01)', () => {
+    expect(isNavActive('/events-2026', '/events')).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// IN-01: component-level aria-current only on a true match.
+//
+// Re-mocks usePathname per-test so the predicate is exercised through the
+// rendered NavLink, not just the helper. Proves the prefix-sibling and
+// root-guard cases reach the DOM correctly.
+// ---------------------------------------------------------------------------
+
+describe('IN-01: NavLink aria-current reflects the fixed predicate', () => {
+  it('emits aria-current="page" on a child route ("/recipes/123" → "/recipes")', () => {
+    mockUsePathname.mockReturnValue('/recipes/123');
+    const { container } = render(
+      React.createElement(NavLink, { href: '/recipes' }, 'Recipes')
+    );
+    expect(container.querySelector('a')!.getAttribute('aria-current')).toBe('page');
+  });
+
+  it('does NOT emit aria-current on prefix sibling ("/recipes-archive" → "/recipes")', () => {
+    mockUsePathname.mockReturnValue('/recipes-archive');
+    const { container } = render(
+      React.createElement(NavLink, { href: '/recipes' }, 'Recipes')
+    );
+    expect(container.querySelector('a')!.getAttribute('aria-current')).toBeNull();
+  });
+
+  it('Home is inactive on "/recipes" but active on "/"', () => {
+    mockUsePathname.mockReturnValue('/recipes');
+    const { container: inactive } = render(
+      React.createElement(NavLink, { href: '/' }, 'Home')
+    );
+    expect(inactive.querySelector('a')!.getAttribute('aria-current')).toBeNull();
+
+    mockUsePathname.mockReturnValue('/');
+    const { container: active } = render(
+      React.createElement(NavLink, { href: '/' }, 'Home')
+    );
+    expect(active.querySelector('a')!.getAttribute('aria-current')).toBe('page');
   });
 });
