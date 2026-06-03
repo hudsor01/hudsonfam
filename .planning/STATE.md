@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
 status: executing
-last_updated: "2026-06-03T00:16:08.328Z"
-last_activity: 2026-06-03 -- Phase 34 planning complete
+last_updated: "2026-06-03T00:36:29.841Z"
+last_activity: 2026-06-03
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 7
-  completed_plans: 4
+  completed_plans: 5
   percent: 40
 ---
 
@@ -20,20 +20,20 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 **Core value:** A single home for the Hudson family — content for everyone, and Grandma Hudson's recipes preserved and made readable for even the oldest relatives.
-**Current focus:** Phase 34 — photo pipeline fix
+**Current focus:** Phase 34 — photo-pipeline-fix
 
 ## Current Position
 
-Phase: 34
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-06-03 -- Phase 34 planning complete
+Phase: 34 (photo-pipeline-fix) — EXECUTING
+Plan: 2 of 3
+Status: Executing Phase 34 — Plan 01 complete, Plan 02 next
+Last activity: 2026-06-03 -- 34-01 complete (endpoint fix + homepage filter + Wave 0 scripts)
 
 ```
 v5.0 progress: [####░░░░░░] 40% (2/5 phases)
 Phase 32 [##########] COMPLETE (3/3 plans)
 Phase 33 [##########] COMPLETE (1/1 plans)
-Phase 34 [░░░░░░░░░░] Not started
+Phase 34 [###░░░░░░░] In Progress (1/3 plans)
 Phase 35 [░░░░░░░░░░] Not started
 Phase 36 [░░░░░░░░░░] Not started
 ```
@@ -58,7 +58,7 @@ Phase 36 [░░░░░░░░░░] Not started
 
 ### Immediate next step
 
-Phase 34 (Photo Pipeline Fix): PHOTO-01..04 — debug and fix the broken R2 image render; verify the upload→R2→/api/images→display pipeline end-to-end.
+Phase 34 Plan 02: Data fix — delete orphan d9c2e950, assign f77dbd54 to Moving to Dallas album. Then run verify-db-state.ts to confirm gate passes.
 
 ## Deferred Items
 
@@ -91,6 +91,7 @@ Phase 34 (Photo Pipeline Fix): PHOTO-01..04 — debug and fix the broken R2 imag
 - D-05 homepage stripped to Hero + Sidebar only; Phase 33 adds recipes content
 - D-03 dashboard consolidation complete: Posts/Updates nav entries removed, iconMap cleaned, Upcoming Events empty state upgraded to spec heading+body form (DASH-01/02/03 all complete)
 - Phase 33: recipes-first homepage — featured recipes via FEATURED_RECIPE_SLUGS constant in src/lib/featured-recipes.ts (family-editable); resolved via in-memory getRecipeIndex() lookup (zero extra I/O); Sidebar + WeatherWidget retired; SectionHeader text-xs accepted (deferred Phase 35)
+- Phase 34 Plan 01: Bug 2 fixed code-side — getR2Client strips trailing /<bucket> from R2_ENDPOINT; homepage filtered to albumId: { not: null }; Wave 0 round-trip script PASSES (37,160 bytes image/webp); auth gate unchanged
 
 ## Blockers
 
