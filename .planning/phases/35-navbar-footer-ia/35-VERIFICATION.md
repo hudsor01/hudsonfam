@@ -1,8 +1,9 @@
 ---
 phase: 35-navbar-footer-ia
 verified: 2026-06-02T21:10:00Z
-status: human_needed
-score: 5/5 must-haves verified (2 manual-only items pending)
+status: passed
+human_approved: 2026-06-03
+score: 5/5 must-haves verified (2 manual-only items human-approved 2026-06-03)
 overrides_applied: 0
 human_verification:
   - test: "375px mobile — drawer opens, all 5 links reachable, no overflow or clipping"
