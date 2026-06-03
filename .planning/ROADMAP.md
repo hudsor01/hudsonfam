@@ -439,7 +439,7 @@ Plans:
 
 **Plans**: 3 plans
 - [x] 34-01-PLAN.md — Code fix: normalize R2 endpoint (Bug 2) + homepage album-less filter + Wave 0 scripts
-- [ ] 34-02-PLAN.md — Data fix: delete d9c2e950 orphan, assign f77dbd54 to Moving to Dallas album (D-01)
+- [x] 34-02-PLAN.md — Data fix: delete d9c2e950 orphan, assign f77dbd54 to Moving to Dallas album (D-01)
 - [ ] 34-03-PLAN.md — End-to-end verification + browser smoke + Vercel env-var checkpoint
 
 ### Phase 35: Navbar & Footer IA
@@ -478,6 +478,6 @@ Plans:
 |-------|----------------|--------|-----------|
 | 32. Prune & Dashboard Cleanup | 3/3 | Complete    | 2026-06-02 |
 | 33. Homepage Restructure | 1/1 | Complete    | 2026-06-02 |
-| 34. Photo Pipeline Fix | 1/3 | In Progress|  |
+| 34. Photo Pipeline Fix | 2/3 | In Progress|  |
 | 35. Navbar & Footer IA | 0/TBD | Not started | - |
 | 36. Quality Gate | 0/TBD | Not started | - |

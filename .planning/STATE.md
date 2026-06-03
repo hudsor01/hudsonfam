@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
 status: executing
-last_updated: "2026-06-03T00:36:29.841Z"
+last_updated: "2026-06-03T00:45:00.000Z"
 last_activity: 2026-06-03
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
   percent: 40
 ---
 
@@ -25,9 +25,9 @@ See: `.planning/PROJECT.md` (updated 2026-06-02)
 ## Current Position
 
 Phase: 34 (photo-pipeline-fix) — EXECUTING
-Plan: 2 of 3
-Status: Executing Phase 34 — Plan 01 complete, Plan 02 next
-Last activity: 2026-06-03 -- 34-01 complete (endpoint fix + homepage filter + Wave 0 scripts)
+Plan: 3 of 3
+Status: Executing Phase 34 — Plan 02 complete, Plan 03 next (round-trip + UAT verify)
+Last activity: 2026-06-03 -- 34-02 complete (D-01 data fix — orphan deleted, f77dbd54 assigned to Moving to Dallas)
 
 ```
 v5.0 progress: [####░░░░░░] 40% (2/5 phases)
@@ -54,11 +54,13 @@ Phase 36 [░░░░░░░░░░] Not started
 - **Phase 32 Plan 03 (COMPLETE, 2026-06-02):** DASH-01/02/03 — removed Posts/Updates from navLinks in layout.tsx and iconMap in app-sidebar.tsx (FileText+Bell imports gone); upgraded Upcoming Events empty state to heading+body spec form per UI-SPEC copywriting contract. Build exits 0; 194 tests green. Commits: b6d5dd5, 60948c7.
 - **Phase 33 Plan 01 (COMPLETE, 2026-06-02):** HOME-01/02/03 — recipes-first homepage: FEATURED_RECIPE_SLUGS constant (6 slugs) + Wave-0 regression test; Hero reworked (Browse Recipes CTA + RecipeSearch + text-sm eyebrow + new subcopy); page.tsx rewritten with Promise.all fetch (Hero → Recipes featured cards → Photos → Events), Sidebar + WeatherWidget deleted. Build exits 0; 196 tests green. Commits: 7e1764e, 06cb829, 5bc7c2d.
 
+- **Phase 34 Plan 02 (COMPLETE, 2026-06-03):** D-01 data fix — deleteMany d9c2e950 (NAS-era orphan, 0 R2 objects, idempotent); update f77dbd54 albumId=cmn8hinqw0005p1ttk12g9wa8 (Moving to Dallas, originalPath unchanged); verify-db-state.ts ALL PASS. Commits: 20cddc3.
+
 ## What's Next
 
 ### Immediate next step
 
-Phase 34 Plan 02: Data fix — delete orphan d9c2e950, assign f77dbd54 to Moving to Dallas album. Then run verify-db-state.ts to confirm gate passes.
+Phase 34 Plan 03: Round-trip end-to-end verification (D-03) + Vercel env var human checkpoint + UAT.
 
 ## Deferred Items
 
@@ -68,7 +70,7 @@ Phase 34 Plan 02: Data fix — delete orphan d9c2e950, assign f77dbd54 to Moving
 | future | FUTURE-02: Re-enable live homelab monitoring (un-park CLOUD-04 dashboard) | when cluster returns |
 | future | FUTURE-03: Remaining recipe back-matter (Menu Making, Menus section ~100, Table Service) | pairs with build-your-own-menu (shipped — preset menus future idea) |
 | future | FUTURE-04: Recipe full-text search (ingredients/steps) | post-v4.0 (search is name-only) |
-| data | Migrate restored seed photo `d9c2e950…` NAS → R2 (renders placeholder) | addressed in Phase 34 (PHOTO-02) |
+| data | Migrate restored seed photo `d9c2e950…` NAS → R2 if FUTURE-01 proceeds | d9c2e950 deleted (D-01); reversible via FUTURE-01 re-seed |
 | seed | SEED-001/002/003/004 | dormant — homelab-dependent AI/media ideas, blocked until cluster returns |
 | seed | SEED-006/007 | obsolete — tied to the deleted n8n/job pipeline |
 
@@ -92,6 +94,7 @@ Phase 34 Plan 02: Data fix — delete orphan d9c2e950, assign f77dbd54 to Moving
 - D-03 dashboard consolidation complete: Posts/Updates nav entries removed, iconMap cleaned, Upcoming Events empty state upgraded to spec heading+body form (DASH-01/02/03 all complete)
 - Phase 33: recipes-first homepage — featured recipes via FEATURED_RECIPE_SLUGS constant in src/lib/featured-recipes.ts (family-editable); resolved via in-memory getRecipeIndex() lookup (zero extra I/O); Sidebar + WeatherWidget retired; SectionHeader text-xs accepted (deferred Phase 35)
 - Phase 34 Plan 01: Bug 2 fixed code-side — getR2Client strips trailing /<bucket> from R2_ENDPOINT; homepage filtered to albumId: { not: null }; Wave 0 round-trip script PASSES (37,160 bytes image/webp); auth gate unchanged
+- Phase 34 Plan 02: Used prisma.photo.deleteMany for idempotent orphan delete (count:0 instead of throw on missing row); changed ONLY albumId on f77dbd54 — originalPath (R2 key) left as originals/unassigned/... per Pitfall 2
 
 ## Blockers
 
