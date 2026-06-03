@@ -59,7 +59,7 @@ vi.mock('@aws-sdk/client-s3', () => {
   };
 });
 
-import { processImage, resolveImageKey, deleteImageFiles } from '@/lib/images';
+import { processImage, resolveImageKey, deleteImageFiles, normalizeR2Endpoint } from '@/lib/images';
 
 describe('image utilities (R2-backed)', () => {
   beforeEach(() => {
@@ -211,6 +211,50 @@ describe('image utilities (R2-backed)', () => {
       await expect(
         deleteImageFiles('photo-123', 'originals/album-1/photo-123.webp')
       ).resolves.not.toThrow();
+    });
+  });
+
+  describe('normalizeR2Endpoint', () => {
+    const BUCKET = 'hudsonfam-photos';
+
+    it('strips an exact trailing /<bucket> segment', () => {
+      expect(
+        normalizeR2Endpoint('https://acct.r2.cloudflarestorage.com/hudsonfam-photos', BUCKET)
+      ).toBe('https://acct.r2.cloudflarestorage.com');
+    });
+
+    it('strips a trailing /<bucket>/ (with trailing slash)', () => {
+      expect(
+        normalizeR2Endpoint('https://acct.r2.cloudflarestorage.com/hudsonfam-photos/', BUCKET)
+      ).toBe('https://acct.r2.cloudflarestorage.com');
+    });
+
+    it('strips a trailing /<bucket>?query (with query string)', () => {
+      expect(
+        normalizeR2Endpoint('https://acct.r2.cloudflarestorage.com/hudsonfam-photos?x=1', BUCKET)
+      ).toBe('https://acct.r2.cloudflarestorage.com');
+    });
+
+    it('leaves an already-correct origin-only endpoint unchanged', () => {
+      expect(
+        normalizeR2Endpoint('https://acct.r2.cloudflarestorage.com', BUCKET)
+      ).toBe('https://acct.r2.cloudflarestorage.com');
+    });
+
+    it('leaves the endpoint unchanged when the trailing segment is not the bucket', () => {
+      expect(
+        normalizeR2Endpoint('https://acct.r2.cloudflarestorage.com/some-other-path', BUCKET)
+      ).toBe('https://acct.r2.cloudflarestorage.com/some-other-path');
+    });
+
+    it('does not strip a bucket name appearing only as a subdomain', () => {
+      expect(
+        normalizeR2Endpoint('https://hudsonfam-photos.acct.r2.cloudflarestorage.com', BUCKET)
+      ).toBe('https://hudsonfam-photos.acct.r2.cloudflarestorage.com');
+    });
+
+    it('returns the raw input unchanged when it is not a parseable URL', () => {
+      expect(normalizeR2Endpoint('not a url', BUCKET)).toBe('not a url');
     });
   });
 

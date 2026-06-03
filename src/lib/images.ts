@@ -9,15 +9,40 @@ import {
 // R2 client — configured from env; region must be "auto" for Cloudflare R2
 // ---------------------------------------------------------------------------
 
+/**
+ * Normalize an R2 endpoint by stripping a trailing `/<bucket>` path segment.
+ *
+ * Guards against R2_ENDPOINT being set as
+ *   https://<account>.r2.cloudflarestorage.com/<bucket>
+ * which causes the SDK to build `/bucket/bucket/key` URLs → NoSuchKey on every
+ * request. Robust to the common copy-paste variants of that mis-configuration:
+ *   - exact `/<bucket>`
+ *   - `/<bucket>/` (trailing slash)
+ *   - `/<bucket>?query` (query string)
+ * Returns an origin-only (or path-trimmed) endpoint. Falls back to the raw
+ * input if it cannot be parsed as a URL.
+ */
+export function normalizeR2Endpoint(rawEndpoint: string, bucket: string): string {
+  try {
+    const u = new URL(rawEndpoint);
+    // Strip a single trailing /<bucket> path segment (with or without trailing slash)
+    const segments = u.pathname.split("/").filter(Boolean);
+    if (segments.length && segments[segments.length - 1] === bucket) {
+      segments.pop();
+    }
+    u.pathname = segments.length ? "/" + segments.join("/") : "/";
+    u.search = "";
+    // R2 virtual-host vs path-style only needs origin; drop trailing slash
+    return u.pathname === "/" ? u.origin : u.origin + u.pathname.replace(/\/$/, "");
+  } catch {
+    return rawEndpoint;
+  }
+}
+
 function getR2Client(): S3Client {
-  // Normalize endpoint: strip trailing /<bucket> segment if present.
-  // Guards against R2_ENDPOINT being set as https://<account>.r2.cloudflarestorage.com/<bucket>
-  // which causes the SDK to build /bucket/bucket/key URLs → NoSuchKey on every request.
   const rawEndpoint = process.env.R2_ENDPOINT!;
   const bucket = process.env.R2_BUCKET!;
-  const endpoint = rawEndpoint.endsWith("/" + bucket)
-    ? rawEndpoint.slice(0, -(bucket.length + 1))
-    : rawEndpoint;
+  const endpoint = normalizeR2Endpoint(rawEndpoint, bucket);
 
   return new S3Client({
     region: "auto",
