@@ -490,4 +490,4 @@ Plans:
 | 33. Homepage Restructure | 1/1 | Complete    | 2026-06-02 |
 | 34. Photo Pipeline Fix | 3/3 | Complete    | 2026-06-03 |
 | 35. Navbar & Footer IA | 2/2 | Complete    | 2026-06-03 |
-| 36. Quality Gate | 2/2 | Complete   | 2026-06-03 |
+| 36. Quality Gate | 2/2 | Complete    | 2026-06-03 |
