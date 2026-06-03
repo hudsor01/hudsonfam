@@ -476,7 +476,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 36-01-PLAN.md — Wave-0 prune-guard test in prod-readiness.test.ts + targeted eslint-disable on data-table.tsx + re-confirm build/test/lint gates (QUAL-01, QUAL-02, QUAL-03)
+- [x] 36-01-PLAN.md — Wave-0 prune-guard test in prod-readiness.test.ts + targeted eslint-disable on data-table.tsx + re-confirm build/test/lint gates (QUAL-01, QUAL-02, QUAL-03)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -490,4 +490,4 @@ Plans:
 | 33. Homepage Restructure | 1/1 | Complete    | 2026-06-02 |
 | 34. Photo Pipeline Fix | 3/3 | Complete    | 2026-06-03 |
 | 35. Navbar & Footer IA | 2/2 | Complete    | 2026-06-03 |
-| 36. Quality Gate | 0/2 | Not started | - |
+| 36. Quality Gate | 1/2 | In Progress|  |

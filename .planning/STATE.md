@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
 status: executing
-last_updated: "2026-06-03T03:16:43.046Z"
-last_activity: 2026-06-03 -- Phase 36 planning complete
+last_updated: "2026-06-03T04:12:00.000Z"
+last_activity: 2026-06-03
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 11
-  completed_plans: 9
+  completed_plans: 10
   percent: 80
 ---
 
@@ -20,14 +20,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 **Core value:** A single home for the Hudson family — content for everyone, and Grandma Hudson's recipes preserved and made readable for even the oldest relatives.
-**Current focus:** Phase 36 — quality gate
+**Current focus:** Phase 36 — quality-gate
 
 ## Current Position
 
-Phase: 36
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-06-03 -- Phase 36 planning complete
+Phase: 36 (quality-gate) — EXECUTING
+Plan: 2 of 2 (36-01 COMPLETE; 36-02 ready)
+Status: Executing
+Last activity: 2026-06-03
 
 ```
 v5.0 progress: [######░░░░] 60% (3/5 phases)
@@ -101,6 +101,7 @@ Phase 36: next in roadmap.
 - Phase 34 Plan 02: Used prisma.photo.deleteMany for idempotent orphan delete (count:0 instead of throw on missing row); changed ONLY albumId on f77dbd54 — originalPath (R2 key) left as originals/unassigned/... per Pitfall 2
 - Phase 34 Plan 03: Checkpoint B resolved as owner action item — getR2Client normalization (Plan 01) makes production correct on any deploy; Vercel R2_ENDPOINT env cleanup is defense-in-depth (owner will clean up independently)
 - Phase 35 Plan 02: Desktop NavLink group wrapped in Suspense — usePathname() is dynamic data; mirrors existing MobileNav Suspense pattern; build failure on /photos/[album] auto-fixed (Rule 1)
+- Phase 36 Plan 01: eslint-disable-next-line (Option A) chosen for react-hooks/incompatible-library in data-table.tsx — targeted, self-documenting, no React Compiler behavior change; prune guard uses pure Node fs and excludes __tests__/ to prevent self-invalidation
 
 ## Blockers
 

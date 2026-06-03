@@ -48,9 +48,9 @@ Requirements for the v5.0 milestone. Each maps to exactly one roadmap phase.
 
 ### Quality — Everything Left Works Perfectly
 
-- [ ] **QUAL-01**: `npm run build` succeeds with no errors and no references to removed features
-- [ ] **QUAL-02**: `npm test` passes — tests for removed features are deleted, and surviving features remain covered
-- [ ] **QUAL-03**: `npm run lint` passes with no warnings, and there are no dead imports, unused exports, or orphaned files left by the prune
+- [x] **QUAL-01**: `npm run build` succeeds with no errors and no references to removed features
+- [x] **QUAL-02**: `npm test` passes — tests for removed features are deleted, and surviving features remain covered
+- [x] **QUAL-03**: `npm run lint` passes with no warnings, and there are no dead imports, unused exports, or orphaned files left by the prune
 - [ ] **QUAL-04**: Every surviving public page (Home, Recipes, recipe detail, Photos, album detail, Events, In Memory, My Menu) loads without errors and is responsive on mobile
 
 ## Future Requirements
@@ -106,9 +106,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 | NAV-03 | Phase 35 | Complete |
 | FOOT-01 | Phase 35 | Complete |
 | FOOT-02 | Phase 35 | Complete |
-| QUAL-01 | Phase 36 | Pending |
-| QUAL-02 | Phase 36 | Pending |
-| QUAL-03 | Phase 36 | Pending |
+| QUAL-01 | Phase 36 | Complete |
+| QUAL-02 | Phase 36 | Complete |
+| QUAL-03 | Phase 36 | Complete |
 | QUAL-04 | Phase 36 | Pending |
 
 **Coverage:**
