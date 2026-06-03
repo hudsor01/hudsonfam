@@ -375,7 +375,7 @@ Plans:
 - [x] **Phase 33: Homepage Restructure** — recipes-first homepage: Hero with Browse Recipes CTA + RecipeSearch, 6-slug featured card row, live Photos + Events sections with empty states, Sidebar + WeatherWidget retired (completed 2026-06-02)
 - [x] **Phase 34: Photo Pipeline Fix** — debug and fix the broken R2 image render; verify the upload→R2→/api/images→display pipeline end-to-end; clean empty states (completed 2026-06-03)
 - [x] **Phase 35: Navbar & Footer IA** — rebuild navbar to surface only surviving sections with mobile/responsive polish and active-route + a11y; rebuild footer to match real IA (completed 2026-06-03)
-- [ ] **Phase 36: Quality Gate** — build clean, tests pass, lint/dead-code sweep, every surviving page polished and responsive
+- [x] **Phase 36: Quality Gate** — build clean, tests pass, lint/dead-code sweep, every surviving page polished and responsive (completed 2026-06-03)
 
 ## Phase Details
 
@@ -480,7 +480,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 36-02-PLAN.md — QUAL-04 per-page browser console sweep (8 pages) + human-UAT 375px responsive check (autonomous=false)
+- [x] 36-02-PLAN.md — QUAL-04 per-page browser console sweep (8 pages) + human-UAT 375px responsive check (autonomous=false)
 
 ## Progress
 
@@ -490,4 +490,4 @@ Plans:
 | 33. Homepage Restructure | 1/1 | Complete    | 2026-06-02 |
 | 34. Photo Pipeline Fix | 3/3 | Complete    | 2026-06-03 |
 | 35. Navbar & Footer IA | 2/2 | Complete    | 2026-06-03 |
-| 36. Quality Gate | 1/2 | In Progress|  |
+| 36. Quality Gate | 2/2 | Complete   | 2026-06-03 |
