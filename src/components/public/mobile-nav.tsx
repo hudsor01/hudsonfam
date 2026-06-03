@@ -11,6 +11,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/public/theme-toggle";
+import { isNavActive } from "@/lib/nav";
 import { useState } from "react";
 
 interface NavLink {
@@ -58,10 +59,7 @@ export function MobileNav({ links }: { links: NavLink[] }) {
           </SheetHeader>
           <nav className="flex flex-col gap-1 mt-6">
             {links.map((link) => {
-              const isActive =
-                link.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(link.href);
+              const isActive = isNavActive(pathname, link.href);
               return (
                 <Link
                   key={link.href}
