@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/public/theme-toggle";
 import { isNavActive } from "@/lib/nav";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 interface NavLink {
@@ -66,10 +67,12 @@ export function MobileNav({ links }: { links: NavLink[] }) {
                   href={link.href}
                   onClick={() => setOpen(false)}
                   aria-current={isActive ? "page" : undefined}
-                  className={`
-                    px-3 py-2.5 rounded-md text-sm transition-colors
-                    ${isActive ? "text-foreground bg-background" : "text-muted-foreground hover:text-foreground hover:bg-background"}
-                  `}
+                  className={cn(
+                    "px-3 py-2.5 rounded-md text-sm transition-colors",
+                    isActive
+                      ? "text-foreground bg-background"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background"
+                  )}
                 >
                   {link.label}
                 </Link>
