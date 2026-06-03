@@ -373,7 +373,7 @@ Plans:
 
 - [x] **Phase 32: Prune & Dashboard Cleanup** — remove Blog + Family Updates end-to-end (public routes, content, Prisma models, dashboard CRUD, API routes, all cross-cutting references) and strip dead dashboard management areas (completed 2026-06-02)
 - [x] **Phase 33: Homepage Restructure** — recipes-first homepage: Hero with Browse Recipes CTA + RecipeSearch, 6-slug featured card row, live Photos + Events sections with empty states, Sidebar + WeatherWidget retired (completed 2026-06-02)
-- [ ] **Phase 34: Photo Pipeline Fix** — debug and fix the broken R2 image render; verify the upload→R2→/api/images→display pipeline end-to-end; clean empty states
+- [x] **Phase 34: Photo Pipeline Fix** — debug and fix the broken R2 image render; verify the upload→R2→/api/images→display pipeline end-to-end; clean empty states (completed 2026-06-03)
 - [ ] **Phase 35: Navbar & Footer IA** — rebuild navbar to surface only surviving sections with mobile/responsive polish and active-route + a11y; rebuild footer to match real IA
 - [ ] **Phase 36: Quality Gate** — build clean, tests pass, lint/dead-code sweep, every surviving page polished and responsive
 
@@ -440,7 +440,7 @@ Plans:
 **Plans**: 3 plans
 - [x] 34-01-PLAN.md — Code fix: normalize R2 endpoint (Bug 2) + homepage album-less filter + Wave 0 scripts
 - [x] 34-02-PLAN.md — Data fix: delete d9c2e950 orphan, assign f77dbd54 to Moving to Dallas album (D-01)
-- [ ] 34-03-PLAN.md — End-to-end verification + browser smoke + Vercel env-var checkpoint
+- [x] 34-03-PLAN.md — End-to-end verification + browser smoke + Vercel env-var checkpoint
 
 ### Phase 35: Navbar & Footer IA
 
@@ -478,6 +478,6 @@ Plans:
 |-------|----------------|--------|-----------|
 | 32. Prune & Dashboard Cleanup | 3/3 | Complete    | 2026-06-02 |
 | 33. Homepage Restructure | 1/1 | Complete    | 2026-06-02 |
-| 34. Photo Pipeline Fix | 2/3 | In Progress|  |
+| 34. Photo Pipeline Fix | 3/3 | Complete    | 2026-06-03 |
 | 35. Navbar & Footer IA | 0/TBD | Not started | - |
 | 36. Quality Gate | 0/TBD | Not started | - |

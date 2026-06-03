@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
 status: executing
-last_updated: "2026-06-03T00:45:00.000Z"
+last_updated: "2026-06-03T20:05:00.000Z"
 last_activity: 2026-06-03
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 7
-  completed_plans: 6
-  percent: 40
+  completed_plans: 7
+  percent: 60
 ---
 
 # State
@@ -24,16 +24,16 @@ See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 ## Current Position
 
-Phase: 34 (photo-pipeline-fix) — EXECUTING
-Plan: 3 of 3
-Status: Executing Phase 34 — Plan 02 complete, Plan 03 next (round-trip + UAT verify)
-Last activity: 2026-06-03 -- 34-02 complete (D-01 data fix — orphan deleted, f77dbd54 assigned to Moving to Dallas)
+Phase: 35 (navbar-ia-cleanup) — NOT STARTED
+Plan: 1 of N
+Status: Phase 34 complete — Phase 35 (NAV-01/02/03, FOOT-01/02) is next
+Last activity: 2026-06-03 -- 34-03 complete (e2e verification — all four PHOTO requirements satisfied, browser smoke PASS)
 
 ```
-v5.0 progress: [####░░░░░░] 40% (2/5 phases)
+v5.0 progress: [######░░░░] 60% (3/5 phases)
 Phase 32 [##########] COMPLETE (3/3 plans)
 Phase 33 [##########] COMPLETE (1/1 plans)
-Phase 34 [###░░░░░░░] In Progress (1/3 plans)
+Phase 34 [##########] COMPLETE (3/3 plans)
 Phase 35 [░░░░░░░░░░] Not started
 Phase 36 [░░░░░░░░░░] Not started
 ```
@@ -55,12 +55,13 @@ Phase 36 [░░░░░░░░░░] Not started
 - **Phase 33 Plan 01 (COMPLETE, 2026-06-02):** HOME-01/02/03 — recipes-first homepage: FEATURED_RECIPE_SLUGS constant (6 slugs) + Wave-0 regression test; Hero reworked (Browse Recipes CTA + RecipeSearch + text-sm eyebrow + new subcopy); page.tsx rewritten with Promise.all fetch (Hero → Recipes featured cards → Photos → Events), Sidebar + WeatherWidget deleted. Build exits 0; 196 tests green. Commits: 7e1764e, 06cb829, 5bc7c2d.
 
 - **Phase 34 Plan 02 (COMPLETE, 2026-06-03):** D-01 data fix — deleteMany d9c2e950 (NAS-era orphan, 0 R2 objects, idempotent); update f77dbd54 albumId=cmn8hinqw0005p1ttk12g9wa8 (Moving to Dallas, originalPath unchanged); verify-db-state.ts ALL PASS. Commits: 20cddc3.
+- **Phase 34 Plan 03 (COMPLETE, 2026-06-03):** E2E verification — 199 tests green (9 files), verify-db-state ALL PASS, round-trip 37,160 bytes image/webp. Browser smoke UAT: f77dbd54 renders as real photo on homepage Photos section (broken-ALT-TEXT symptom resolved); /api/images proxy 200/image/webp/81,950 bytes; /photos album grid + /photos/moving-to-dallas album detail render correctly; empty states intact. PHOTO-04 verified. Vercel R2_ENDPOINT cleanup = owner action item (code guard is primary). Phase 34 COMPLETE — all four PHOTO reqs satisfied.
 
 ## What's Next
 
 ### Immediate next step
 
-Phase 34 Plan 03: Round-trip end-to-end verification (D-03) + Vercel env var human checkpoint + UAT.
+Phase 35: Navbar IA cleanup + mobile polish (NAV-01/02/03, FOOT-01/02).
 
 ## Deferred Items
 
@@ -95,6 +96,7 @@ Phase 34 Plan 03: Round-trip end-to-end verification (D-03) + Vercel env var hum
 - Phase 33: recipes-first homepage — featured recipes via FEATURED_RECIPE_SLUGS constant in src/lib/featured-recipes.ts (family-editable); resolved via in-memory getRecipeIndex() lookup (zero extra I/O); Sidebar + WeatherWidget retired; SectionHeader text-xs accepted (deferred Phase 35)
 - Phase 34 Plan 01: Bug 2 fixed code-side — getR2Client strips trailing /<bucket> from R2_ENDPOINT; homepage filtered to albumId: { not: null }; Wave 0 round-trip script PASSES (37,160 bytes image/webp); auth gate unchanged
 - Phase 34 Plan 02: Used prisma.photo.deleteMany for idempotent orphan delete (count:0 instead of throw on missing row); changed ONLY albumId on f77dbd54 — originalPath (R2 key) left as originals/unassigned/... per Pitfall 2
+- Phase 34 Plan 03: Checkpoint B resolved as owner action item — getR2Client normalization (Plan 01) makes production correct on any deploy; Vercel R2_ENDPOINT env cleanup is defense-in-depth (owner will clean up independently)
 
 ## Blockers
 

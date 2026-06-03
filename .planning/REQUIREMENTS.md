@@ -27,7 +27,7 @@ Requirements for the v5.0 milestone. Each maps to exactly one roadmap phase.
 - [x] **PHOTO-01**: A photo stored in R2 renders correctly on its album page and anywhere it is surfaced — a valid image never shows the placeholder fallback
 - [x] **PHOTO-02**: The current broken seed image either renders correctly or is cleanly removed, so no broken/placeholder image is visible anywhere on the public site
 - [x] **PHOTO-03**: The photo pipeline (upload → R2 → `/api/images/[...path]` → display) is verified working end-to-end, rebuilt if debugging proves it fundamentally broken
-- [ ] **PHOTO-04**: Photos empty states are intentional and unbroken for both an album with zero photos and the no-albums case
+- [x] **PHOTO-04**: Photos empty states are intentional and unbroken for both an album with zero photos and the no-albums case
 
 ### Navbar — IA Cleanup & Mobile Polish
 
@@ -100,7 +100,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | PHOTO-01 | Phase 34 | Complete |
 | PHOTO-02 | Phase 34 | Complete |
 | PHOTO-03 | Phase 34 | Complete |
-| PHOTO-04 | Phase 34 | Pending |
+| PHOTO-04 | Phase 34 | Complete |
 | NAV-01 | Phase 35 | Pending |
 | NAV-02 | Phase 35 | Pending |
 | NAV-03 | Phase 35 | Pending |
