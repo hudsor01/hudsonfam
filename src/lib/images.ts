@@ -217,7 +217,12 @@ export function resolveImageKey(
 
 /**
  * Delete all three R2 objects for a photo (original + thumbnail + medium).
- * Missing keys (NoSuchKey) are silently ignored per S3 DeleteObjects semantics.
+ *
+ * Batch DeleteObjects never throws NoSuchKey: per S3/R2 semantics, missing keys
+ * are reported as successful deletes, and genuine per-object failures come back
+ * in the response's Errors[] array. We therefore set Quiet: false and inspect
+ * result.Errors, ignoring NoSuchKey/NotFound (a missing key is not a failure)
+ * and throwing on any real per-object error so partial failures are not masked.
  */
 export async function deleteImageFiles(
   photoId: string,
@@ -232,26 +237,26 @@ export async function deleteImageFiles(
       ? originalKey
       : `originals/unassigned/${photoId}.webp`;
 
-  try {
-    await s3.send(
-      new DeleteObjectsCommand({
-        Bucket: bucket,
-        Delete: {
-          Objects: [
-            { Key: derivedOriginalKey },
-            { Key: `derived/${photoId}-thumbnail.webp` },
-            { Key: `derived/${photoId}-medium.webp` },
-          ],
-          Quiet: true,
-        },
-      })
-    );
-  } catch (err: unknown) {
-    // NoSuchKey on delete is not an error condition — swallow it
-    const code = (err as { name?: string; Code?: string })?.name ?? (err as { Code?: string })?.Code;
-    if (code !== "NoSuchKey" && code !== "NotFound") {
-      throw err;
-    }
+  const result = await s3.send(
+    new DeleteObjectsCommand({
+      Bucket: bucket,
+      Delete: {
+        Objects: [
+          { Key: derivedOriginalKey },
+          { Key: `derived/${photoId}-thumbnail.webp` },
+          { Key: `derived/${photoId}-medium.webp` },
+        ],
+        Quiet: false,
+      },
+    })
+  );
+
+  // A missing key is not an error; surface any genuine per-object failure.
+  const realErrors = (result.Errors ?? []).filter(
+    (e) => e.Code !== "NoSuchKey" && e.Code !== "NotFound"
+  );
+  if (realErrors.length) {
+    throw new Error(`DeleteObjects failed: ${JSON.stringify(realErrors)}`);
   }
 }
 

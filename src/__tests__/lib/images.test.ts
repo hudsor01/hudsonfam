@@ -190,7 +190,7 @@ describe('image utilities (R2-backed)', () => {
   });
 
   describe('deleteImageFiles', () => {
-    it('DeleteObjects all three R2 keys', async () => {
+    it('DeleteObjects all three R2 keys with Quiet false', async () => {
       mockSend.mockResolvedValue({});
 
       await deleteImageFiles('photo-123', 'originals/album-1/photo-123.webp');
@@ -201,16 +201,33 @@ describe('image utilities (R2-backed)', () => {
       expect(keys).toContain('originals/album-1/photo-123.webp');
       expect(keys).toContain('derived/photo-123-thumbnail.webp');
       expect(keys).toContain('derived/photo-123-medium.webp');
+      // Quiet must be false so per-object Errors[] are returned and inspected
+      expect(call.Delete.Quiet).toBe(false);
     });
 
-    it('swallows NoSuchKey errors on delete (missing key is not an error)', async () => {
-      const err = new Error('NoSuchKey') as Error & { name: string };
-      err.name = 'NoSuchKey';
-      mockSend.mockRejectedValue(err);
+    it('ignores NoSuchKey/NotFound per-object errors (missing key is not a failure)', async () => {
+      mockSend.mockResolvedValue({
+        Errors: [
+          { Key: 'derived/photo-123-thumbnail.webp', Code: 'NoSuchKey' },
+          { Key: 'derived/photo-123-medium.webp', Code: 'NotFound' },
+        ],
+      });
 
       await expect(
         deleteImageFiles('photo-123', 'originals/album-1/photo-123.webp')
       ).resolves.not.toThrow();
+    });
+
+    it('throws on a genuine per-object error (e.g. AccessDenied)', async () => {
+      mockSend.mockResolvedValue({
+        Errors: [
+          { Key: 'originals/album-1/photo-123.webp', Code: 'AccessDenied', Message: 'nope' },
+        ],
+      });
+
+      await expect(
+        deleteImageFiles('photo-123', 'originals/album-1/photo-123.webp')
+      ).rejects.toThrow(/DeleteObjects failed/);
     });
   });
 
