@@ -955,19 +955,26 @@ describe('Integration -- Page Rendering', () => {
 // Scanning __tests__ would cause the guard to self-invalidate.
 
 describe('v5.0 Prune Guard', () => {
-  const DEAD_IDENTIFIERS = [
-    'BlogPost',
-    'FamilyUpdate',
-    'lib/blog',
-    '/blog',
-    '/family',
-    'PostStatus',
+  // Path-like identifiers (/blog, /family, lib/blog) are boundary-matched so a
+  // legit string like '/family-tree', '/blog-archive', or 'https://x/blog' does
+  // NOT false-positive. The bare type identifiers (BlogPost, FamilyUpdate,
+  // PostStatus) are specific enough to stay plain substring matches.
+  // Boundary: the char after the route must be end-of-string, a quote, a slash,
+  // a backtick, or a non-[\w-] char — so '/blog"', "/blog'", '/blog`', '/blog/'
+  // and a trailing '/blog' all fire, but '/blog-archive' / '/family-tree' do not.
+  const DEAD_IDENTIFIERS: Array<{ label: string; test: (c: string) => boolean }> = [
+    { label: 'BlogPost', test: (c) => c.includes('BlogPost') },
+    { label: 'FamilyUpdate', test: (c) => c.includes('FamilyUpdate') },
+    { label: 'PostStatus', test: (c) => c.includes('PostStatus') },
+    { label: 'lib/blog', test: (c) => c.includes('lib/blog') },
+    { label: '/blog', test: (c) => /\/blog(?![\w-])/.test(c) },
+    { label: '/family', test: (c) => /\/family(?![\w-])/.test(c) },
   ];
 
   it('no production source file contains any removed v5.0 identifier', async () => {
     const srcDir = path.join(process.cwd(), 'src');
 
-    // Recursively collect all .ts and .tsx files, excluding __tests__ directories
+    // Recursively collect all scannable source files, excluding __tests__ directories
     async function collectSourceFiles(dir: string): Promise<string[]> {
       const entries = await fs.readdir(dir, { withFileTypes: true });
       const files: string[] = [];
@@ -999,7 +1006,7 @@ describe('v5.0 Prune Guard', () => {
 
     for (const filePath of sourceFiles) {
       const content = await fs.readFile(filePath, 'utf-8');
-      const matched = DEAD_IDENTIFIERS.filter((id) => content.includes(id));
+      const matched = DEAD_IDENTIFIERS.filter((d) => d.test(content)).map((d) => d.label);
       if (matched.length > 0) {
         violations.push({ file: filePath.replace(process.cwd() + '/', ''), matches: matched });
       }
@@ -1012,7 +1019,7 @@ describe('v5.0 Prune Guard', () => {
     expect(
       violations,
       `v5.0 dead identifiers found in production source — re-introduction detected:\n${report}\n` +
-        `Identifiers checked: ${DEAD_IDENTIFIERS.join(', ')}`
+        `Identifiers checked: ${DEAD_IDENTIFIERS.map((d) => d.label).join(', ')}`
     ).toHaveLength(0);
   });
 });
