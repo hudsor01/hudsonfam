@@ -42,6 +42,12 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
+  // useReactTable() from TanStack Table returns functions that React Compiler cannot safely
+  // memoize — the table object closes over mutable state by design. This is a known advisory
+  // incompatibility between React Compiler and TanStack Table; it is not a bug. CLAUDE.md
+  // mandates TanStack Table for all data tables, so the component cannot be removed or replaced.
+  // This suppression is scoped to exactly this call site; the rule remains active everywhere else.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
