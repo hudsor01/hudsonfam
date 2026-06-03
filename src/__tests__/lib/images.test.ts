@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock sharp
 const mockMetadata = vi.fn();
@@ -21,10 +21,15 @@ vi.mock('sharp', () => ({
 }));
 
 // Mock @aws-sdk/client-s3
+// S3ClientMock captures constructor args so endpoint normalization tests can assert the endpoint
 const mockSend = vi.fn();
+let lastS3ClientConfig: { endpoint?: string } = {};
 vi.mock('@aws-sdk/client-s3', () => {
   class S3ClientMock {
     send = mockSend;
+    constructor(config: { endpoint?: string }) {
+      lastS3ClientConfig = config;
+    }
   }
   class PutObjectCommandMock {
     Bucket!: string; Key!: string; Body!: unknown; ContentType!: string;
@@ -206,6 +211,67 @@ describe('image utilities (R2-backed)', () => {
       await expect(
         deleteImageFiles('photo-123', 'originals/album-1/photo-123.webp')
       ).resolves.not.toThrow();
+    });
+  });
+
+  describe('getR2Client endpoint normalization', () => {
+    const originalR2Endpoint = process.env.R2_ENDPOINT;
+    const originalR2Bucket = process.env.R2_BUCKET;
+    const originalR2AccessKey = process.env.R2_ACCESS_KEY_ID;
+    const originalR2SecretKey = process.env.R2_SECRET_ACCESS_KEY;
+
+    afterEach(() => {
+      // Restore env vars to pre-test state
+      if (originalR2Endpoint === undefined) {
+        delete process.env.R2_ENDPOINT;
+      } else {
+        process.env.R2_ENDPOINT = originalR2Endpoint;
+      }
+      if (originalR2Bucket === undefined) {
+        delete process.env.R2_BUCKET;
+      } else {
+        process.env.R2_BUCKET = originalR2Bucket;
+      }
+      process.env.R2_ACCESS_KEY_ID = originalR2AccessKey ?? '';
+      process.env.R2_SECRET_ACCESS_KEY = originalR2SecretKey ?? '';
+    });
+
+    it('strips trailing /<bucket> from R2_ENDPOINT when present', async () => {
+      process.env.R2_ENDPOINT = 'https://acct.r2.cloudflarestorage.com/hudsonfam-photos';
+      process.env.R2_BUCKET = 'hudsonfam-photos';
+      process.env.R2_ACCESS_KEY_ID = 'test-key';
+      process.env.R2_SECRET_ACCESS_KEY = 'test-secret';
+
+      // processImage triggers getR2Client (which constructs S3Client)
+      mockToBuffer.mockResolvedValue(Buffer.from('webp'));
+      await processImage(Buffer.from('fake'), 'photo-norm-1', 'album-1');
+
+      expect(lastS3ClientConfig.endpoint).toBe('https://acct.r2.cloudflarestorage.com');
+    });
+
+    it('leaves R2_ENDPOINT unchanged when it does not contain /<bucket> suffix', async () => {
+      process.env.R2_ENDPOINT = 'https://acct.r2.cloudflarestorage.com';
+      process.env.R2_BUCKET = 'hudsonfam-photos';
+      process.env.R2_ACCESS_KEY_ID = 'test-key';
+      process.env.R2_SECRET_ACCESS_KEY = 'test-secret';
+
+      mockToBuffer.mockResolvedValue(Buffer.from('webp'));
+      await processImage(Buffer.from('fake'), 'photo-norm-2', 'album-1');
+
+      expect(lastS3ClientConfig.endpoint).toBe('https://acct.r2.cloudflarestorage.com');
+    });
+
+    it('does not strip bucket name appearing mid-path (only trailing segment is stripped)', async () => {
+      // e.g. endpoint has bucket name as a subdomain, not path suffix
+      process.env.R2_ENDPOINT = 'https://hudsonfam-photos.acct.r2.cloudflarestorage.com';
+      process.env.R2_BUCKET = 'hudsonfam-photos';
+      process.env.R2_ACCESS_KEY_ID = 'test-key';
+      process.env.R2_SECRET_ACCESS_KEY = 'test-secret';
+
+      mockToBuffer.mockResolvedValue(Buffer.from('webp'));
+      await processImage(Buffer.from('fake'), 'photo-norm-3', 'album-1');
+
+      expect(lastS3ClientConfig.endpoint).toBe('https://hudsonfam-photos.acct.r2.cloudflarestorage.com');
     });
   });
 });

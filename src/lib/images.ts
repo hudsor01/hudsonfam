@@ -10,9 +10,18 @@ import {
 // ---------------------------------------------------------------------------
 
 function getR2Client(): S3Client {
+  // Normalize endpoint: strip trailing /<bucket> segment if present.
+  // Guards against R2_ENDPOINT being set as https://<account>.r2.cloudflarestorage.com/<bucket>
+  // which causes the SDK to build /bucket/bucket/key URLs → NoSuchKey on every request.
+  const rawEndpoint = process.env.R2_ENDPOINT!;
+  const bucket = process.env.R2_BUCKET!;
+  const endpoint = rawEndpoint.endsWith("/" + bucket)
+    ? rawEndpoint.slice(0, -(bucket.length + 1))
+    : rawEndpoint;
+
   return new S3Client({
     region: "auto",
-    endpoint: process.env.R2_ENDPOINT!,
+    endpoint,
     credentials: {
       accessKeyId: process.env.R2_ACCESS_KEY_ID!,
       secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
