@@ -456,7 +456,7 @@ Plans:
   5. The footer is responsive and visually consistent with the navbar (column stacking on mobile, no overflow)
 
 **Plans**: 2 plans
-- [ ] 35-01-PLAN.md — Wave 0: nav-footer.test.ts encoding NAV-01/02/03 + FOOT-01/02 (RED)
+- [x] 35-01-PLAN.md — Wave 0: nav-footer.test.ts encoding NAV-01/02/03 + FOOT-01/02 (RED)
 - [ ] 35-02-PLAN.md — Active-route NavLink leaf, navLinks order/label fix, footer Recipes + In Memory, mobile aria-current (GREEN)
 **UI hint**: yes
 
@@ -481,5 +481,5 @@ Plans:
 | 32. Prune & Dashboard Cleanup | 3/3 | Complete    | 2026-06-02 |
 | 33. Homepage Restructure | 1/1 | Complete    | 2026-06-02 |
 | 34. Photo Pipeline Fix | 3/3 | Complete    | 2026-06-03 |
-| 35. Navbar & Footer IA | 0/TBD | Not started | - |
+| 35. Navbar & Footer IA | 1/2 | In Progress|  |
 | 36. Quality Gate | 0/TBD | Not started | - |

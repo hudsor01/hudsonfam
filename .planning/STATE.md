@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
 status: executing
-last_updated: "2026-06-03T01:38:04.647Z"
-last_activity: 2026-06-03 -- Phase 35 planning complete
+last_updated: "2026-06-03T01:47:22.313Z"
+last_activity: 2026-06-03
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 9
-  completed_plans: 7
+  completed_plans: 8
   percent: 60
 ---
 
@@ -20,14 +20,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 **Core value:** A single home for the Hudson family — content for everyone, and Grandma Hudson's recipes preserved and made readable for even the oldest relatives.
-**Current focus:** Phase 35 — navbar & footer ia
+**Current focus:** Phase 35 — navbar-footer-ia
 
 ## Current Position
 
-Phase: 35
-Plan: Not started
+Phase: 35 (navbar-footer-ia) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-06-03 -- Phase 35 planning complete
+Last activity: 2026-06-03
 
 ```
 v5.0 progress: [######░░░░] 60% (3/5 phases)

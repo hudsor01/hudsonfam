@@ -31,14 +31,14 @@ Requirements for the v5.0 milestone. Each maps to exactly one roadmap phase.
 
 ### Navbar — IA Cleanup & Mobile Polish
 
-- [ ] **NAV-01**: The navbar surfaces only surviving sections — Home, Recipes, Photos, Events, In Memory — with no dead or redundant links
-- [ ] **NAV-02**: The navbar works on mobile — the menu/drawer opens, every link is reachable, and there is no layout breakage across small-to-large widths
-- [ ] **NAV-03**: Active-route indication and keyboard/focus accessibility work in both the desktop nav and the mobile menu
+- [x] **NAV-01**: The navbar surfaces only surviving sections — Home, Recipes, Photos, Events, In Memory — with no dead or redundant links
+- [x] **NAV-02**: The navbar works on mobile — the menu/drawer opens, every link is reachable, and there is no layout breakage across small-to-large widths
+- [x] **NAV-03**: Active-route indication and keyboard/focus accessibility work in both the desktop nav and the mobile menu
 
 ### Footer — Match Real IA
 
-- [ ] **FOOT-01**: The footer links match the real IA (Recipes, Photos, Events, In Memory) and omits all removed sections
-- [ ] **FOOT-02**: The footer is responsive and visually consistent with the navbar (no rebrand — consistency only)
+- [x] **FOOT-01**: The footer links match the real IA (Recipes, Photos, Events, In Memory) and omits all removed sections
+- [x] **FOOT-02**: The footer is responsive and visually consistent with the navbar (no rebrand — consistency only)
 
 ### Dashboard — Cleanup to Match Surviving Content
 
@@ -101,11 +101,11 @@ Which phases cover which requirements. Populated during roadmap creation.
 | PHOTO-02 | Phase 34 | Complete |
 | PHOTO-03 | Phase 34 | Complete |
 | PHOTO-04 | Phase 34 | Complete |
-| NAV-01 | Phase 35 | Pending |
-| NAV-02 | Phase 35 | Pending |
-| NAV-03 | Phase 35 | Pending |
-| FOOT-01 | Phase 35 | Pending |
-| FOOT-02 | Phase 35 | Pending |
+| NAV-01 | Phase 35 | Complete |
+| NAV-02 | Phase 35 | Complete |
+| NAV-03 | Phase 35 | Complete |
+| FOOT-01 | Phase 35 | Complete |
+| FOOT-02 | Phase 35 | Complete |
 | QUAL-01 | Phase 36 | Pending |
 | QUAL-02 | Phase 36 | Pending |
 | QUAL-03 | Phase 36 | Pending |
