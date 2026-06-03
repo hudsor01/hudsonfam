@@ -612,17 +612,19 @@ Note: The round-trip script tests the S3 client directly, not through the HTTP p
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should the upload form require album selection?**
    - What we know: the form allows `selectedAlbum = ""` and sends no `albumId` if no album selected; the API falls back to `"unassigned"` string for the R2 key but stores `albumId = null` in DB
    - What's unclear: whether this "unassigned" case is a legitimate use case for the family site
    - Recommendation: Make album selection required in the upload form (disable submit until album chosen), OR auto-assign to a default album. Album-less uploads cause the auth-gate issue to recur.
+   - **RESOLVED (planning):** Out of scope per 34-CONTEXT.md phase boundary ("Out of scope: new photo content/features"). The public-surface recurrence guard is covered instead by Plan 34-01/T2 (`albumId: { not: null }` filter on the homepage photo query) so album-less photos never render publicly regardless. The upload-form change is captured as a deferred follow-up only.
 
 2. **Should the Vercel env var fix be a blocking task or a follow-up?**
    - What we know: the code-level normalization guard works immediately; the env var is belt-and-suspenders
    - What's unclear: whether the owner prefers to clean up the env var immediately or leave the guard to handle it
    - Recommendation: Plan includes a `checkpoint:human-verify` task for the Vercel env var update before running the round-trip verification script.
+   - **RESOLVED (planning):** The deployable fix is code-side (`getR2Client` runtime endpoint normalization, Plan 34-01/T1). The Vercel `R2_ENDPOINT` cleanup is a non-blocking `autonomous: false` human checkpoint in Plan 34-03 with an explicit skip path (the code guard alone is sufficient). Not a blocker on the code fix.
 
 ---
 
