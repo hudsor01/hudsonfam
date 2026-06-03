@@ -75,6 +75,8 @@ Phase 35: Navbar IA cleanup + mobile polish (NAV-01/02/03, FOOT-01/02).
 | data | Migrate restored seed photo `d9c2e950…` NAS → R2 if FUTURE-01 proceeds | d9c2e950 deleted (D-01); reversible via FUTURE-01 re-seed |
 | seed | SEED-001/002/003/004 | dormant — homelab-dependent AI/media ideas, blocked until cluster returns |
 | seed | SEED-006/007 | obsolete — tied to the deleted n8n/job pipeline |
+| ops | Owner: clean up Vercel `R2_ENDPOINT` env var (drop `/hudsonfam-photos` suffix) | optional — code guard `normalizeR2Endpoint` already fixes prod on merge (Phase 34, owner-chosen) |
+| tech-debt | WR-04: `extractExifDate` parses EXIF datetime as server-local then stores UTC-naive — timestamps shift by server offset | deferred from Phase 34 code review — pre-existing, orthogonal to render bug; needs its own tz-semantics decision |
 
 ## Key Decisions
 
