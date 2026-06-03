@@ -1,19 +1,8 @@
 "use client";
 
-/**
- * nav-link.tsx — STUB (Wave 0 placeholder)
- *
- * This file is a Wave 0 stub created so the test suite can import
- * NavLink and assert its contract. The stub renders a plain link
- * with NO aria-current and NO active styling.
- *
- * Plan 35-02 replaces this file with the real implementation:
- * - usePathname() active detection
- * - aria-current="page" on the active link
- * - text-foreground font-medium active styles
- */
-
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface NavLinkProps {
   href: string;
@@ -21,10 +10,19 @@ interface NavLinkProps {
 }
 
 export function NavLink({ href, children }: NavLinkProps) {
+  const pathname = usePathname();
+  const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
+
   return (
     <Link
       href={href}
-      className="text-muted-foreground hover:text-foreground transition-colors contrast-more:underline"
+      aria-current={isActive ? "page" : undefined}
+      className={cn(
+        "transition-colors contrast-more:underline",
+        isActive
+          ? "text-foreground font-medium border-b border-primary"
+          : "text-muted-foreground hover:text-foreground"
+      )}
     >
       {children}
     </Link>
