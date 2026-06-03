@@ -2,16 +2,15 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
-status: milestone_complete
-last_updated: 2026-06-03T13:48:30.856Z
-last_activity: 2026-06-03
+status: Awaiting next milestone
+last_updated: "2026-06-03T14:18:42.093Z"
+last_activity: 2026-06-03 — Milestone v5.0 completed and archived
 progress:
   total_phases: 5
   completed_phases: 5
   total_plans: 11
   completed_plans: 11
   percent: 100
-stopped_at: Milestone complete (Phase 36 was final phase)
 ---
 
 # State
@@ -25,19 +24,10 @@ See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 ## Current Position
 
-Phase: 36
-Plan: Not started
-Status: Milestone complete
-Last activity: 2026-06-03
-
-```
-v5.0 progress: [######░░░░] 60% (3/5 phases)
-Phase 32 [##########] COMPLETE (3/3 plans)
-Phase 33 [##########] COMPLETE (1/1 plans)
-Phase 34 [##########] COMPLETE (3/3 plans)
-Phase 35 [░░░░░░░░░░] Not started
-Phase 36 [░░░░░░░░░░] Not started
-```
+Phase: Milestone v5.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-06-03 — Milestone v5.0 completed and archived
 
 ## What's Done
 
@@ -108,3 +98,7 @@ Phase 36: next in roadmap.
 ## Blockers
 
 (none)
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone

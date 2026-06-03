@@ -1,5 +1,29 @@
 # Milestones (Shipped)
 
+## v5.0 — Site Consolidation & Navigation Redesign
+
+**Shipped:** 2026-06-03
+**Phases:** 32-36 (5 phases, 11 plans)
+**Tag:** `v5.0`
+**Archive:** [v5.0-ROADMAP.md](milestones/v5.0-ROADMAP.md) · [v5.0-REQUIREMENTS.md](milestones/v5.0-REQUIREMENTS.md)
+
+### Delivered
+
+Consolidated thehudsonfam.com down to the surface it actually has content for. Removed the Blog and Family Updates subsystems entirely (public routes, MDX content, `BlogPost`/`FamilyUpdate` Prisma models + DROP-TABLE migration, dashboard CRUD, every cross-cutting reference; 308 redirects for the old URLs). Rebuilt the homepage to lead with Grandma Hudson's recipes and surface live Photos + Events. Root-caused and fixed the broken R2 photo pipeline. Rebuilt the navbar and footer to the surviving IA (Home · Recipes · Photos · Events · In Memory) with active-route indication, a11y, and a mobile drawer. Closed a clean quality gate, shipped to production, and verified live. 24/24 requirements satisfied.
+
+### Key Accomplishments
+
+- **Pruned two whole subsystems** — Blog + Family Updates gone end-to-end (routes, content, Prisma models + DROP-TABLE migration, dashboard CRUD, redirects); a permanent prune-guard regression test now fails if any dead identifier returns to production source.
+- **Recipes-first homepage** — Hero with Browse Recipes CTA + cmdk search, 6 featured recipe cards, live Photos/Events with intentional empty states; Sidebar + WeatherWidget retired.
+- **Fixed the broken photo pipeline (two root-cause bugs)** — album-less photos hit the intentional auth gate (fixed via D-01: delete orphan, assign the real photo to an album) and `R2_ENDPOINT` carried the bucket name as a path segment causing `/bucket/bucket/key` → NoSuchKey (fixed with runtime normalization in `getR2Client`). Verified live in prod: image proxy returns 200 / image/webp.
+- **Navbar & footer rebuilt to real IA** — exactly Home · Recipes · Photos · Events · In Memory with active-route via a new `nav-link.tsx` client leaf (`usePathname` + `aria-current`, shared prefix-collision-safe `isNavActive` helper) and an accessible mobile drawer; footer matches.
+- **Clean quality gate** — lint 0 warnings, 233 tests, build 1036 pages exit 0, dead-code grep clean, 8-page console sweep with zero errors; 375px responsiveness human-approved.
+- **Shipped + verified live** — merged to main, Vercel deployed, photo pipeline confirmed working on thehudsonfam.com.
+
+**Known deferred items at close:** 6 dormant seeds (homelab/AI backlog), Vercel `R2_ENDPOINT` cleanup (done by owner post-ship), and 2 tech-debt items (WR-04 EXIF timezone; pre-existing `tsc` errors in nav-footer.test.ts). See STATE.md → Deferred Items.
+
+---
+
 Append-only ledger of shipped milestones. Each entry: version, date, scope, accomplishments. Detailed roadmap + requirements snapshots in `.planning/milestones/`.
 
 Newest at top. Earlier milestones (v1.0–v1.4, v2.0, v3.0) closed informally pre-tooling and were retroactively archived during v3.5 close.
@@ -111,9 +135,11 @@ See `.planning/STATE.md` §"Deferred Items" for the full list with rationale.
 **Archive:** [v3.0-ROADMAP.md](milestones/v3.0-ROADMAP.md) · [v3.0-REQUIREMENTS.md](milestones/v3.0-REQUIREMENTS.md)
 
 ### Delivered
+
 Closed the rendering gap between the n8n Job Search pipeline's LLM output and the `/admin/jobs` dashboard. 24/24 v3.0 requirements satisfied across 4 categories (AI Artifact Rendering, Owner-Triggered Actions, Safety & Hardening, Data Layer). v3.0 was deploy-blocked at code-complete because the pipeline was broken; v3.5 cleared the block and Phase 28 retroactive UAT verified everything in production (5/5 PASS for Plan 21-08; 100% hudsonfam-side green for Phase 22/23/24; n8n-side gaps inherited from v3.0 ship state, captured to SEED-006).
 
 ### Pattern-Setting Decisions
+
 - HMAC-SHA256 webhook signing pattern (`src/lib/webhooks.ts:67-76`)
 - 4-bounded sentinel error union (no raw `e.message` across boundary)
 - Silent-success polling state (4th variant; for n8n 200-without-advance)
@@ -129,6 +155,7 @@ Closed the rendering gap between the n8n Job Search pipeline's LLM output and th
 **Archive:** [v2.0-ROADMAP.md](milestones/v2.0-ROADMAP.md) · [v2.0-REQUIREMENTS.md](milestones/v2.0-REQUIREMENTS.md)
 
 ### Delivered
+
 Systematically audited + fixed React/Next.js code smells across the entire codebase. 22/22 requirements satisfied. Eliminated unnecessary useEffects, fixed component-structure anti-patterns (no nested components, immutable state updates, optimal "use client" placement), hardened server/client boundaries (no non-serializable props crossing, server-component data fetching), zero hydration mismatches, full loading.tsx + error.tsx coverage. Production deploy with no console regressions; 268+ tests pass.
 
 ---
