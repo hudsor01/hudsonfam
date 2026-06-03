@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Site Consolidation & Navigation Redesign
-status: executing
-last_updated: "2026-06-03T01:47:22.313Z"
+status: verifying
+last_updated: "2026-06-03T01:52:29.933Z"
 last_activity: 2026-06-03
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 9
-  completed_plans: 8
-  percent: 60
+  completed_plans: 9
+  percent: 80
 ---
 
 # State
@@ -24,9 +24,9 @@ See: `.planning/PROJECT.md` (updated 2026-06-02)
 
 ## Current Position
 
-Phase: 35 (navbar-footer-ia) — EXECUTING
+Phase: 35 (navbar-footer-ia) — COMPLETE
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-03
 
 ```
@@ -61,7 +61,8 @@ Phase 36 [░░░░░░░░░░] Not started
 
 ### Immediate next step
 
-Phase 35: Navbar IA cleanup + mobile polish (NAV-01/02/03, FOOT-01/02).
+Phase 35 COMPLETE — run /gsd:verify-work for visual UAT (375px drawer, active route indicator, footer stacking).
+Phase 36: next in roadmap.
 
 ## Deferred Items
 
@@ -99,6 +100,7 @@ Phase 35: Navbar IA cleanup + mobile polish (NAV-01/02/03, FOOT-01/02).
 - Phase 34 Plan 01: Bug 2 fixed code-side — getR2Client strips trailing /<bucket> from R2_ENDPOINT; homepage filtered to albumId: { not: null }; Wave 0 round-trip script PASSES (37,160 bytes image/webp); auth gate unchanged
 - Phase 34 Plan 02: Used prisma.photo.deleteMany for idempotent orphan delete (count:0 instead of throw on missing row); changed ONLY albumId on f77dbd54 — originalPath (R2 key) left as originals/unassigned/... per Pitfall 2
 - Phase 34 Plan 03: Checkpoint B resolved as owner action item — getR2Client normalization (Plan 01) makes production correct on any deploy; Vercel R2_ENDPOINT env cleanup is defense-in-depth (owner will clean up independently)
+- Phase 35 Plan 02: Desktop NavLink group wrapped in Suspense — usePathname() is dynamic data; mirrors existing MobileNav Suspense pattern; build failure on /photos/[album] auto-fixed (Rule 1)
 
 ## Blockers
 

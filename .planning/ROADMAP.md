@@ -374,7 +374,7 @@ Plans:
 - [x] **Phase 32: Prune & Dashboard Cleanup** — remove Blog + Family Updates end-to-end (public routes, content, Prisma models, dashboard CRUD, API routes, all cross-cutting references) and strip dead dashboard management areas (completed 2026-06-02)
 - [x] **Phase 33: Homepage Restructure** — recipes-first homepage: Hero with Browse Recipes CTA + RecipeSearch, 6-slug featured card row, live Photos + Events sections with empty states, Sidebar + WeatherWidget retired (completed 2026-06-02)
 - [x] **Phase 34: Photo Pipeline Fix** — debug and fix the broken R2 image render; verify the upload→R2→/api/images→display pipeline end-to-end; clean empty states (completed 2026-06-03)
-- [ ] **Phase 35: Navbar & Footer IA** — rebuild navbar to surface only surviving sections with mobile/responsive polish and active-route + a11y; rebuild footer to match real IA
+- [x] **Phase 35: Navbar & Footer IA** — rebuild navbar to surface only surviving sections with mobile/responsive polish and active-route + a11y; rebuild footer to match real IA (completed 2026-06-03)
 - [ ] **Phase 36: Quality Gate** — build clean, tests pass, lint/dead-code sweep, every surviving page polished and responsive
 
 ## Phase Details
@@ -457,7 +457,7 @@ Plans:
 
 **Plans**: 2 plans
 - [x] 35-01-PLAN.md — Wave 0: nav-footer.test.ts encoding NAV-01/02/03 + FOOT-01/02 (RED)
-- [ ] 35-02-PLAN.md — Active-route NavLink leaf, navLinks order/label fix, footer Recipes + In Memory, mobile aria-current (GREEN)
+- [x] 35-02-PLAN.md — Active-route NavLink leaf, navLinks order/label fix, footer Recipes + In Memory, mobile aria-current (GREEN)
 **UI hint**: yes
 
 ### Phase 36: Quality Gate
@@ -481,5 +481,5 @@ Plans:
 | 32. Prune & Dashboard Cleanup | 3/3 | Complete    | 2026-06-02 |
 | 33. Homepage Restructure | 1/1 | Complete    | 2026-06-02 |
 | 34. Photo Pipeline Fix | 3/3 | Complete    | 2026-06-03 |
-| 35. Navbar & Footer IA | 1/2 | In Progress|  |
+| 35. Navbar & Footer IA | 2/2 | Complete   | 2026-06-03 |
 | 36. Quality Gate | 0/TBD | Not started | - |
