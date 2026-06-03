@@ -1009,10 +1009,11 @@ describe('v5.0 Prune Guard', () => {
       .map((v) => `  ${v.file}: [${v.matches.join(', ')}]`)
       .join('\n');
 
-    expect(violations).toHaveLength(0,
+    expect(
+      violations,
       `v5.0 dead identifiers found in production source — re-introduction detected:\n${report}\n` +
-      `Identifiers checked: ${DEAD_IDENTIFIERS.join(', ')}`
-    );
+        `Identifiers checked: ${DEAD_IDENTIFIERS.join(', ')}`
+    ).toHaveLength(0);
   });
 });
 
