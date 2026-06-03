@@ -51,7 +51,7 @@ Requirements for the v5.0 milestone. Each maps to exactly one roadmap phase.
 - [x] **QUAL-01**: `npm run build` succeeds with no errors and no references to removed features
 - [x] **QUAL-02**: `npm test` passes — tests for removed features are deleted, and surviving features remain covered
 - [x] **QUAL-03**: `npm run lint` passes with no warnings, and there are no dead imports, unused exports, or orphaned files left by the prune
-- [x] **QUAL-04**: Every surviving public page (Home, Recipes, recipe detail, Photos, album detail, Events, In Memory, My Menu) loads without errors and is responsive on mobile *(console sweep: PASS — all 8 pages clean; 375px responsiveness: PENDING human UAT — Chrome-automation cannot force true 375px viewport)*
+- [x] **QUAL-04**: Every surviving public page (Home, Recipes, recipe detail, Photos, album detail, Events, In Memory, My Menu) loads without errors and is responsive on mobile *(console sweep: PASS — all 8 pages clean; 375px responsiveness: human-approved 2026-06-03)*
 
 ## Future Requirements
 
@@ -109,7 +109,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | QUAL-01 | Phase 36 | Complete |
 | QUAL-02 | Phase 36 | Complete |
 | QUAL-03 | Phase 36 | Complete |
-| QUAL-04 | Phase 36 | Partial (console PASS; 375px human UAT pending) |
+| QUAL-04 | Phase 36 | Complete (console PASS; 375px human-approved 2026-06-03) |
 
 **Coverage:**
 - v5.0 requirements: 24 total
