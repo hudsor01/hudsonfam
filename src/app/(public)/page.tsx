@@ -28,6 +28,7 @@ export default async function HomePage() {
       },
     }),
     prisma.photo.findMany({
+      where: { albumId: { not: null } },
       orderBy: { createdAt: "desc" },
       take: 6,
       select: {
