@@ -941,3 +941,71 @@ describe('Integration -- Page Rendering', () => {
 
 });
 
+// ============================================================
+// 6. v5.0 Prune Guard — Dead-Code Permanence
+// ============================================================
+//
+// Permanently enforces that identifiers pruned during v5.0 (Phase 32+)
+// never return to production source. The scan uses pure Node fs — no
+// child_process/grep — to avoid Pitfall 2 (grep exit-code-2 masquerading
+// as a pass). The src/__tests__/ directory is excluded because:
+//   - nav-footer.test.ts contains legitimate negative assertions (e.g.
+//     `expect(footerSection).not.toContain('href="/blog"')`)
+//   - this guard block itself lists the dead identifier strings
+// Scanning __tests__ would cause the guard to self-invalidate.
+
+describe('v5.0 Prune Guard', () => {
+  const DEAD_IDENTIFIERS = [
+    'BlogPost',
+    'FamilyUpdate',
+    'lib/blog',
+    '/blog',
+    '/family',
+    'PostStatus',
+  ];
+
+  it('no production source file contains any removed v5.0 identifier', async () => {
+    const srcDir = path.join(process.cwd(), 'src');
+
+    // Recursively collect all .ts and .tsx files, excluding __tests__ directories
+    async function collectSourceFiles(dir: string): Promise<string[]> {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      const files: string[] = [];
+      for (const entry of entries) {
+        // Skip __tests__ directories to avoid false positives from legitimate
+        // negative-assertion tests and from this guard's own identifier array
+        if (entry.isDirectory() && entry.name === '__tests__') continue;
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          files.push(...(await collectSourceFiles(fullPath)));
+        } else if (entry.isFile() && /\.(ts|tsx)$/.test(entry.name)) {
+          files.push(fullPath);
+        }
+      }
+      return files;
+    }
+
+    const sourceFiles = await collectSourceFiles(srcDir);
+    expect(sourceFiles.length).toBeGreaterThan(0);
+
+    const violations: Array<{ file: string; matches: string[] }> = [];
+
+    for (const filePath of sourceFiles) {
+      const content = await fs.readFile(filePath, 'utf-8');
+      const matched = DEAD_IDENTIFIERS.filter((id) => content.includes(id));
+      if (matched.length > 0) {
+        violations.push({ file: filePath.replace(process.cwd() + '/', ''), matches: matched });
+      }
+    }
+
+    const report = violations
+      .map((v) => `  ${v.file}: [${v.matches.join(', ')}]`)
+      .join('\n');
+
+    expect(violations).toHaveLength(0,
+      `v5.0 dead identifiers found in production source — re-introduction detected:\n${report}\n` +
+      `Identifiers checked: ${DEAD_IDENTIFIERS.join(', ')}`
+    );
+  });
+});
+
