@@ -335,17 +335,19 @@ This phase touches only static navigation markup and a `usePathname()` client ho
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Nav link label: "Recipes" vs "Grandma Hudson's Recipes"**
    - What we know: ROADMAP success criterion specifies "Recipes". Current code has the full "Grandma Hudson's Recipes".
    - What's unclear: Whether the longer label was an intentional identity choice or an oversight.
    - Recommendation: Default to "Recipes" per ROADMAP spec. The page itself has the full title. Planner should treat this as confirmed unless owner overrides.
+   - **RESOLVED (planning):** Use `"Recipes"` per NAV-01 spec (locked in Plan 35-02 T2). The long form "Grandma Hudson's Recipes" stays on the homepage Hero, not the nav.
 
 2. **Desktop active-route visual: underline vs background vs font-weight**
    - What we know: Mobile uses `bg-background text-foreground`. Desktop currently has no active state.
    - What's unclear: Whether the owner prefers underline (lighter touch) vs bg highlight vs font-weight only.
    - Recommendation: Use `text-foreground font-medium` with an optional bottom-border `border-b border-primary` for the desktop. This is visually distinct but not heavy. Keep mobile's existing `bg-background text-foreground` style unchanged.
+   - **RESOLVED (planning):** Locked in Plan 35-02 T1 — desktop active = `text-foreground font-medium` (token-only, with optional `border-b border-primary` accent); mobile's existing `bg-background text-foreground` is preserved.
 
 ---
 
