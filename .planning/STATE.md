@@ -77,6 +77,7 @@ Phase 36: next in roadmap.
 | seed | SEED-006/007 | obsolete — tied to the deleted n8n/job pipeline |
 | ops | Owner: clean up Vercel `R2_ENDPOINT` env var (drop `/hudsonfam-photos` suffix) | optional — code guard `normalizeR2Endpoint` already fixes prod on merge (Phase 34, owner-chosen) |
 | tech-debt | WR-04: `extractExifDate` parses EXIF datetime as server-local then stores UTC-naive — timestamps shift by server offset | deferred from Phase 34 code review — pre-existing, orthogonal to render bug; needs its own tz-semantics decision |
+| tech-debt | `src/__tests__/nav-footer.test.ts` has 6 `tsc --noEmit` TS2769 errors (React.createElement(NavLink,…) overload) | pre-existing from Phase 35; `next build` does NOT typecheck test files so no gate catches them; consider adding a `typecheck` gate + fixing in a follow-up |
 
 ## Key Decisions
 
