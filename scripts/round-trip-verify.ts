@@ -61,45 +61,50 @@ async function main() {
 
   console.log(`Using endpoint: ${endpoint}`);
 
-  // ── Step 3: GetObject thumbnail key ─────────────────────────────────────────
-  const resp = await s3.send(
-    new GetObjectCommand({ Bucket: bucket, Key: meta.thumbnailPath })
-  );
+  // Step 1 PutObjects three real objects to the live bucket. Wrap the
+  // GetObject + assertions in try/finally so the Step 5 cleanup ALWAYS runs —
+  // even when an assertion fails — and no orphaned test objects leak (WR-02).
+  try {
+    // ── Step 3: GetObject thumbnail key ───────────────────────────────────────
+    const resp = await s3.send(
+      new GetObjectCommand({ Bucket: bucket, Key: meta.thumbnailPath })
+    );
 
-  const chunks: Uint8Array[] = [];
-  for await (const chunk of resp.Body as Readable) {
-    chunks.push(chunk as Uint8Array);
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of resp.Body as Readable) {
+      chunks.push(chunk as Uint8Array);
+    }
+    const bytes = Buffer.concat(chunks);
+
+    // ── Step 4: Assertions ──────────────────────────────────────────────────────
+    if (resp.ContentType !== "image/webp") {
+      console.error(`FAIL: ContentType=${resp.ContentType} (expected image/webp)`);
+      process.exit(1);
+    }
+    if (bytes.length === 0) {
+      console.error("FAIL: Body is empty (0 bytes)");
+      process.exit(1);
+    }
+
+    console.log(`PASS: ${bytes.length} bytes, ContentType=${resp.ContentType}`);
+  } finally {
+    // ── Step 5: Cleanup R2 objects ──────────────────────────────────────────────
+    await s3.send(
+      new DeleteObjectsCommand({
+        Bucket: bucket,
+        Delete: {
+          Objects: [
+            { Key: meta.originalPath },
+            { Key: meta.thumbnailPath },
+            { Key: meta.mediumPath },
+          ],
+          Quiet: true,
+        },
+      })
+    );
+
+    console.log("CLEANUP: R2 objects deleted");
   }
-  const bytes = Buffer.concat(chunks);
-
-  // ── Step 4: Assertions ────────────────────────────────────────────────────────
-  if (resp.ContentType !== "image/webp") {
-    console.error(`FAIL: ContentType=${resp.ContentType} (expected image/webp)`);
-    process.exit(1);
-  }
-  if (bytes.length === 0) {
-    console.error("FAIL: Body is empty (0 bytes)");
-    process.exit(1);
-  }
-
-  console.log(`PASS: ${bytes.length} bytes, ContentType=${resp.ContentType}`);
-
-  // ── Step 5: Cleanup R2 objects ────────────────────────────────────────────────
-  await s3.send(
-    new DeleteObjectsCommand({
-      Bucket: bucket,
-      Delete: {
-        Objects: [
-          { Key: meta.originalPath },
-          { Key: meta.thumbnailPath },
-          { Key: meta.mediumPath },
-        ],
-        Quiet: true,
-      },
-    })
-  );
-
-  console.log("CLEANUP: R2 objects deleted");
 }
 
 main().catch((err) => {
