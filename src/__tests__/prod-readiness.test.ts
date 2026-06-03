@@ -978,7 +978,14 @@ describe('v5.0 Prune Guard', () => {
         const fullPath = path.join(dir, entry.name);
         if (entry.isDirectory()) {
           files.push(...(await collectSourceFiles(fullPath)));
-        } else if (entry.isFile() && /\.(ts|tsx)$/.test(entry.name)) {
+        } else if (
+          entry.isFile() &&
+          /\.(ts|tsx|js|jsx|mjs|cjs|css|json|mdx)$/.test(entry.name)
+        ) {
+          // Scan TS/TSX plus the other content/asset types this app ships
+          // (.js/.jsx/.mjs/.cjs scripts, .css globals, .json config, .mdx
+          // blog content) so a re-introduced dead route reference in a
+          // non-TS source file is still caught. __tests__/ stays excluded.
           files.push(fullPath);
         }
       }
