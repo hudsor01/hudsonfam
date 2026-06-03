@@ -24,30 +24,33 @@ const MOVING_TO_DALLAS_ALBUM_ID = "cmn8hinqw0005p1ttk12g9wa8";
 async function main() {
   let allPassed = true;
 
-  // ── Assertion 1: NAS-era orphan must be deleted ───────────────────────────────
-  const orphan = await prisma.photo.findUnique({ where: { id: ORPHAN_ID } });
-  if (orphan === null) {
-    console.log(`PASS: ${ORPHAN_ID} (NAS-era orphan) is deleted`);
-  } else {
-    console.error(`FAIL: ${ORPHAN_ID} (NAS-era orphan) still exists in DB`);
-    allPassed = false;
-  }
+  try {
+    // ── Assertion 1: NAS-era orphan must be deleted ─────────────────────────────
+    const orphan = await prisma.photo.findUnique({ where: { id: ORPHAN_ID } });
+    if (orphan === null) {
+      console.log(`PASS: ${ORPHAN_ID} (NAS-era orphan) is deleted`);
+    } else {
+      console.error(`FAIL: ${ORPHAN_ID} (NAS-era orphan) still exists in DB`);
+      allPassed = false;
+    }
 
-  // ── Assertion 2: R2-era photo must be assigned to Moving to Dallas album ──────
-  const realPhoto = await prisma.photo.findUnique({ where: { id: REAL_PHOTO_ID } });
-  if (realPhoto === null) {
-    console.error(`FAIL: ${REAL_PHOTO_ID} (R2-era photo) is missing from DB`);
-    allPassed = false;
-  } else if (realPhoto.albumId === MOVING_TO_DALLAS_ALBUM_ID) {
-    console.log(`PASS: ${REAL_PHOTO_ID} has albumId=${realPhoto.albumId} (Moving to Dallas)`);
-  } else {
-    console.error(
-      `FAIL: ${REAL_PHOTO_ID} albumId=${realPhoto.albumId ?? "null"} — expected ${MOVING_TO_DALLAS_ALBUM_ID}`
-    );
-    allPassed = false;
+    // ── Assertion 2: R2-era photo must be assigned to Moving to Dallas album ────
+    const realPhoto = await prisma.photo.findUnique({ where: { id: REAL_PHOTO_ID } });
+    if (realPhoto === null) {
+      console.error(`FAIL: ${REAL_PHOTO_ID} (R2-era photo) is missing from DB`);
+      allPassed = false;
+    } else if (realPhoto.albumId === MOVING_TO_DALLAS_ALBUM_ID) {
+      console.log(`PASS: ${REAL_PHOTO_ID} has albumId=${realPhoto.albumId} (Moving to Dallas)`);
+    } else {
+      console.error(
+        `FAIL: ${REAL_PHOTO_ID} albumId=${realPhoto.albumId ?? "null"} — expected ${MOVING_TO_DALLAS_ALBUM_ID}`
+      );
+      allPassed = false;
+    }
+  } finally {
+    // Disconnect on every path — success, FAIL, or thrown error.
+    await prisma.$disconnect();
   }
-
-  await prisma.$disconnect();
 
   if (!allPassed) {
     console.error("\nverify-db-state: FAIL — run Plan 02 data fix first");
