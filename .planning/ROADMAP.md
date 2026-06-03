@@ -455,7 +455,9 @@ Plans:
   4. The footer links match the real IA (Recipes, Photos, Events, In Memory) with no Blog, Family, or other removed section links
   5. The footer is responsive and visually consistent with the navbar (column stacking on mobile, no overflow)
 
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 35-01-PLAN.md — Wave 0: nav-footer.test.ts encoding NAV-01/02/03 + FOOT-01/02 (RED)
+- [ ] 35-02-PLAN.md — Active-route NavLink leaf, navLinks order/label fix, footer Recipes + In Memory, mobile aria-current (GREEN)
 **UI hint**: yes
 
 ### Phase 36: Quality Gate
