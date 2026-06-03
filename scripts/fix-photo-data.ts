@@ -75,6 +75,17 @@ async function main() {
       select: { albumId: true, originalPath: true, thumbnailPath: true },
     });
 
+    // Assert (do not just label) that originalPath is identical to its
+    // pre-update value. A silent regression that touched originalPath must
+    // fail the script, not print a hardcoded "unchanged" message.
+    if (after?.originalPath !== existing.originalPath) {
+      console.error(
+        `ERROR: originalPath mutated! before=${existing.originalPath} after=${after?.originalPath}`
+      );
+      await prisma.$disconnect();
+      process.exit(1);
+    }
+
     console.log(
       `UPDATED: ${REAL_PHOTO_ID} albumId=${after?.albumId} ` +
         `(originalPath unchanged: ${after?.originalPath})`
