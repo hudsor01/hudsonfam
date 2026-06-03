@@ -28,7 +28,7 @@ import {
   GetObjectCommand,
   DeleteObjectsCommand,
 } from "@aws-sdk/client-s3";
-import { processImage } from "../src/lib/images";
+import { processImage, normalizeR2Endpoint } from "../src/lib/images";
 import type { Readable } from "stream";
 
 const TEST_PHOTO_ID = randomUUID();
@@ -43,12 +43,12 @@ async function main() {
   const meta = await processImage(buffer, TEST_PHOTO_ID, TEST_ALBUM_ID, "test.jpg");
   console.log(`processImage keys: thumbnail=${meta.thumbnailPath}  medium=${meta.mediumPath}`);
 
-  // ── Step 2: Build normalized S3Client (same logic as getR2Client) ────────────
+  // ── Step 2: Build normalized S3Client ────────────────────────────────────────
+  // Reuse the runtime's exported normalizeR2Endpoint so the verifier exercises
+  // the exact same code path as getR2Client — the two can never drift.
   const rawEndpoint = process.env.R2_ENDPOINT!;
   const bucket = process.env.R2_BUCKET!;
-  const endpoint = rawEndpoint.endsWith("/" + bucket)
-    ? rawEndpoint.slice(0, -(bucket.length + 1))
-    : rawEndpoint;
+  const endpoint = normalizeR2Endpoint(rawEndpoint, bucket);
 
   const s3 = new S3Client({
     region: "auto",
