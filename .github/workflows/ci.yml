@@ -28,9 +28,13 @@ jobs:
     timeout-minutes: 10
     env:
       # postinstall runs `prisma generate`, which loads prisma.config.ts and
-      # eagerly resolves env("DIRECT_DATABASE_URL"). `generate` never connects
-      # and the tests mock Prisma, so these placeholders are never dialed.
-      DATABASE_URL: postgresql://user:password@localhost:5432/db
+      # eagerly resolves env("DIRECT_DATABASE_URL"). `generate` never connects,
+      # so a placeholder satisfies the config without a real database.
+      #
+      # DATABASE_URL is deliberately left UNSET: the live-DB integration test
+      # (neon-connection.test.ts) is gated on `it.skipIf(!process.env.DATABASE_URL)`
+      # and skips cleanly when absent — exactly the hermetic CI behavior we want.
+      # Setting it would make that test dial a non-existent host and fail.
       DIRECT_DATABASE_URL: postgresql://user:password@localhost:5432/db
     steps:
       - name: Checkout
