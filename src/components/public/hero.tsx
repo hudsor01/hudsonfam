@@ -10,7 +10,7 @@ export function Hero({ index }: HeroProps) {
   return (
     <section className="text-center py-16 sm:py-20 px-5 motion-safe:animate-fade-in-up">
       <p className="text-sm tracking-[4px] text-accent mb-3 font-sans uppercase">
-        Est. 2024 &bull; Dallas, Texas
+        Est. 1934 &bull; Texas
       </p>
       <h1 className="text-4xl sm:text-5xl font-serif text-foreground font-normal mb-3 text-balance">
         The Hudson Family
