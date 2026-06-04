@@ -1,0 +1,62 @@
+name: CI
+
+# Quality gate: lint + typecheck + tests on every PR and every push to main.
+# Deployment is handled by Vercel's Git integration (push to main = deploy;
+# PRs get Preview Deployments that run the full `next build` with env secrets),
+# so this workflow deliberately does NOT build — it covers what Vercel does not:
+# ESLint (Next 16 no longer lints during build), `tsc --noEmit` over the whole
+# project including tests, and the Vitest suite. These need no secrets.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same ref (e.g. rapid pushes to a PR branch).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: lint · typecheck · test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # postinstall runs `prisma generate`, which loads prisma.config.ts and
+      # eagerly resolves env("DIRECT_DATABASE_URL"). `generate` never connects,
+      # so a placeholder satisfies the config without a real database.
+      #
+      # DATABASE_URL is deliberately left UNSET: the live-DB integration test
+      # (neon-connection.test.ts) is gated on `it.skipIf(!process.env.DATABASE_URL)`
+      # and skips cleanly when absent — exactly the hermetic CI behavior we want.
+      # Setting it would make that test dial a non-existent host and fail.
+      DIRECT_DATABASE_URL: postgresql://user:password@localhost:5432/db
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+
+      # `--frozen-lockfile` fails if bun.lock is out of sync with package.json.
+      # postinstall runs `prisma generate` → ./generated/prisma, which lint,
+      # typecheck, and tests all import. No database connection is needed to
+      # generate the client.
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Test
+        run: bun run test
