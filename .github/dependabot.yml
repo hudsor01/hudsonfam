@@ -1,0 +1,18 @@
+version: 2
+# Dependency automation for this repo is handled by Renovate (see renovate.json):
+# security-only updates, OSV alerts, automerge, and a 48h minimum release age
+# mirroring the Aikido Safe Chain gate.
+#
+# Dependabot is intentionally disabled to avoid duplicate / obsolete PRs:
+#   - Repo-level "Dependabot security updates" are OFF
+#     (Settings > Code security and analysis).
+#   - npm version-update PRs are disabled below via open-pull-requests-limit: 0.
+#
+# This repo uses Bun (bun.lock) — there is no package-lock.json for the npm
+# ecosystem to track, so Dependabot lockfile PRs were stale by construction.
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
