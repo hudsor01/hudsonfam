@@ -1,5 +1,5 @@
 /**
- * nav-footer.test.ts — Wave 0 (RED)
+ * nav-footer.test.tsx — Wave 0 (RED)
  *
  * Encodes the Phase 35 VALIDATION.md contract for navbar and footer IA.
  * These tests describe the TARGET state after Plan 35-02 ships. They are
@@ -20,7 +20,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import fs from 'fs/promises';
 import path from 'path';
 import { render, screen, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { usePathname } from 'next/navigation';
 import { NavLink } from '@/components/public/nav-link';
 import { MobileNav } from '@/components/public/mobile-nav';
@@ -160,7 +159,7 @@ describe('NAV-03 desktop: NavLink aria-current', () => {
   it('renders aria-current="page" when usePathname() matches href', () => {
     // usePathname mocked to '/recipes' → NavLink with href="/recipes" is active
     const { container } = render(
-      React.createElement(NavLink, { href: '/recipes' }, 'Recipes')
+      <NavLink href="/recipes">Recipes</NavLink>
     );
     const link = container.querySelector('a');
     expect(link).not.toBeNull();
@@ -171,7 +170,7 @@ describe('NAV-03 desktop: NavLink aria-current', () => {
   it('does NOT render aria-current when usePathname() does not match href', () => {
     // /photos is inactive (pathname = '/recipes')
     const { container } = render(
-      React.createElement(NavLink, { href: '/photos' }, 'Photos')
+      <NavLink href="/photos">Photos</NavLink>
     );
     const link = container.querySelector('a');
     expect(link).not.toBeNull();
@@ -205,7 +204,7 @@ describe('NAV-02 + NAV-03 mobile: MobileNav render', () => {
   }
 
   it('renders all 5 link labels after drawer opens (NAV-02)', () => {
-    render(React.createElement(MobileNav, { links: testLinks }));
+    render(<MobileNav links={testLinks} />);
     openDrawer();
     const expectedLabels = ['Home', 'Recipes', 'Photos', 'Events', 'In Memory'];
     for (const label of expectedLabels) {
@@ -215,7 +214,7 @@ describe('NAV-02 + NAV-03 mobile: MobileNav render', () => {
 
   it('active mobile link has aria-current="page" when pathname matches (NAV-03)', () => {
     // usePathname = '/recipes' → Recipes link is active
-    render(React.createElement(MobileNav, { links: testLinks }));
+    render(<MobileNav links={testLinks} />);
     openDrawer();
     const recipesLink = screen.getByText('Recipes').closest('a');
     expect(recipesLink).not.toBeNull();
@@ -224,7 +223,7 @@ describe('NAV-02 + NAV-03 mobile: MobileNav render', () => {
   });
 
   it('inactive mobile link does NOT have aria-current (NAV-03 regression guard)', () => {
-    render(React.createElement(MobileNav, { links: testLinks }));
+    render(<MobileNav links={testLinks} />);
     openDrawer();
     const photosLink = screen.getByText('Photos').closest('a');
     expect(photosLink).not.toBeNull();
@@ -233,7 +232,7 @@ describe('NAV-02 + NAV-03 mobile: MobileNav render', () => {
   });
 
   it('Sign In link is reachable in the mobile drawer (NAV-02)', () => {
-    render(React.createElement(MobileNav, { links: testLinks }));
+    render(<MobileNav links={testLinks} />);
     openDrawer();
     expect(screen.getByText('Sign In')).toBeTruthy();
   });
@@ -285,7 +284,7 @@ describe('IN-01: NavLink aria-current reflects the fixed predicate', () => {
   it('emits aria-current="page" on a child route ("/recipes/123" → "/recipes")', () => {
     mockUsePathname.mockReturnValue('/recipes/123');
     const { container } = render(
-      React.createElement(NavLink, { href: '/recipes' }, 'Recipes')
+      <NavLink href="/recipes">Recipes</NavLink>
     );
     expect(container.querySelector('a')!.getAttribute('aria-current')).toBe('page');
   });
@@ -293,7 +292,7 @@ describe('IN-01: NavLink aria-current reflects the fixed predicate', () => {
   it('does NOT emit aria-current on prefix sibling ("/recipes-archive" → "/recipes")', () => {
     mockUsePathname.mockReturnValue('/recipes-archive');
     const { container } = render(
-      React.createElement(NavLink, { href: '/recipes' }, 'Recipes')
+      <NavLink href="/recipes">Recipes</NavLink>
     );
     expect(container.querySelector('a')!.getAttribute('aria-current')).toBeNull();
   });
@@ -301,13 +300,13 @@ describe('IN-01: NavLink aria-current reflects the fixed predicate', () => {
   it('Home is inactive on "/recipes" but active on "/"', () => {
     mockUsePathname.mockReturnValue('/recipes');
     const { container: inactive } = render(
-      React.createElement(NavLink, { href: '/' }, 'Home')
+      <NavLink href="/">Home</NavLink>
     );
     expect(inactive.querySelector('a')!.getAttribute('aria-current')).toBeNull();
 
     mockUsePathname.mockReturnValue('/');
     const { container: active } = render(
-      React.createElement(NavLink, { href: '/' }, 'Home')
+      <NavLink href="/">Home</NavLink>
     );
     expect(active.querySelector('a')!.getAttribute('aria-current')).toBe('page');
   });
