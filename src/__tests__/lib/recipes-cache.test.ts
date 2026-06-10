@@ -61,6 +61,10 @@ describe("readAllRecipes production memoization", () => {
 
     expect(Object.isFrozen(recipe)).toBe(true);
     expect(Object.isFrozen(recipe.frontmatter)).toBe(true);
+    // Deep: frontmatter arrays must be frozen too, or .push() would silently
+    // mutate shared cache state.
+    expect(Object.isFrozen(recipe.frontmatter.tags)).toBe(true);
+    expect(Object.isFrozen(recipe.frontmatter.ingredients)).toBe(true);
   });
 
   it("does not cache a degraded read — a per-file failure is retried next call", async () => {
@@ -94,6 +98,20 @@ describe("readAllRecipes production memoization", () => {
     expect(await getPublishedRecipes()).toHaveLength(0);
     expect(await getPublishedRecipes()).toHaveLength(1);
     consoleError.mockRestore();
+  });
+
+  it("does not pin a rejected promise — an unexpected throw is retried next call", async () => {
+    // readdir resolving a non-array makes readAllRecipesUncached throw outside
+    // its try/catch (files.filter is not a function) — the rejection path.
+    mocks.readdir
+      .mockResolvedValueOnce(null)
+      .mockResolvedValue(["a.mdx"]);
+    mocks.readFile.mockResolvedValue(PUBLISHED_MDX);
+    const { getPublishedRecipes } = await freshRecipesModule();
+
+    await expect(getPublishedRecipes()).rejects.toThrow();
+    // The rejected promise must not be cached: the next call retries and works.
+    await expect(getPublishedRecipes()).resolves.toHaveLength(1);
   });
 
   it("shares one in-flight read across concurrent callers", async () => {

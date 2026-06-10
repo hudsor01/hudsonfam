@@ -163,9 +163,13 @@ async function readAllRecipes(): Promise<RecipeMeta[]> {
         recipeCache = null;
       } else {
         // The cached array and its objects are shared across all requests for
-        // the life of the instance — freeze so an accidental in-place mutation
-        // fails loudly instead of silently corrupting every later render.
+        // the life of the instance — freeze (including frontmatter arrays like
+        // tags/ingredients) so an accidental in-place mutation fails loudly
+        // instead of silently corrupting every later render.
         for (const recipe of recipes) {
+          for (const value of Object.values(recipe.frontmatter)) {
+            if (Array.isArray(value)) Object.freeze(value);
+          }
           Object.freeze(recipe.frontmatter);
           Object.freeze(recipe);
         }
