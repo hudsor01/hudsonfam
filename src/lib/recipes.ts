@@ -84,12 +84,23 @@ export function filterByVisibility(
   return recipes.filter((r) => r.frontmatter.status === "published");
 }
 
-async function readAllRecipes(): Promise<RecipeMeta[]> {
+/**
+ * Reading ~1000 recipe files with unbounded Promise.allSettled fan-out opens
+ * every file at once — past the serverless fd limit (1024 on Vercel). The
+ * EMFILE then surfaces on whatever else needs an fd in the same render (e.g.
+ * Prisma's DB sockets — production error digest 897990896). Keep this bound
+ * well below the limit. Exported so the regression test pins the same bound.
+ */
+export const READ_CONCURRENCY = 32;
+
+async function readAllRecipesUncached(): Promise<{ recipes: RecipeMeta[]; failures: number }> {
   let files: string[];
   try {
     files = await fs.readdir(RECIPES_DIR);
   } catch {
-    return [];
+    // Count as a failure so production never pins an empty index from a
+    // transient readdir error.
+    return { recipes: [], failures: 1 };
   }
 
   // Ignore template/partials prefixed with "_" and non-mdx files.
@@ -97,32 +108,83 @@ async function readAllRecipes(): Promise<RecipeMeta[]> {
     (f) => f.endsWith(".mdx") && !f.startsWith("_")
   );
 
-  const results = await Promise.allSettled(
-    mdxFiles.map(async (filename) => {
-      const filePath = path.join(RECIPES_DIR, filename);
-      const raw = await fs.readFile(filePath, "utf-8");
-      const { data } = matter(raw);
-      const slug = filename.replace(/\.mdx$/, "");
+  const recipes: RecipeMeta[] = [];
+  let failures = 0;
+  let next = 0;
 
-      return {
-        slug,
-        frontmatter: normalizeFrontmatter(data, slug),
-      };
-    })
+  async function worker(): Promise<void> {
+    while (next < mdxFiles.length) {
+      const filename = mdxFiles[next++];
+      try {
+        const raw = await fs.readFile(path.join(RECIPES_DIR, filename), "utf-8");
+        const { data } = matter(raw);
+        const slug = filename.replace(/\.mdx$/, "");
+        recipes.push({ slug, frontmatter: normalizeFrontmatter(data, slug) });
+      } catch {
+        // Skip unreadable/malformed files (same behavior as the previous
+        // allSettled filter), but count them so a degraded read isn't cached.
+        failures++;
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(READ_CONCURRENCY, mdxFiles.length) }, worker)
   );
 
-  // Filter out failed reads (malformed frontmatter, IO errors, etc.)
-  const recipes = results
-    .filter((r) => r.status === "fulfilled")
-    .map((r) => (r as PromiseFulfilledResult<RecipeMeta>).value);
-
-  // Sort by book order (the `order` field); fall back to title.
+  // Sort by book order (the `order` field); fall back to title, then slug.
+  // Slug is unique, so the order is fully deterministic even though workers
+  // push results in completion order.
   recipes.sort((a, b) => {
     const d = a.frontmatter.order - b.frontmatter.order;
-    return d !== 0 ? d : a.frontmatter.title.localeCompare(b.frontmatter.title);
+    if (d !== 0) return d;
+    const t = a.frontmatter.title.localeCompare(b.frontmatter.title);
+    return t !== 0 ? t : a.slug.localeCompare(b.slug);
   });
 
-  return recipes;
+  return { recipes, failures };
+}
+
+// content/recipes is immutable within a deployment, so the parsed index can be
+// memoized for the lifetime of the server instance. Production only — dev needs
+// fresh reads to pick up recipe edits.
+let recipeCache: Promise<RecipeMeta[]> | null = null;
+
+async function readAllRecipes(): Promise<RecipeMeta[]> {
+  if (process.env.NODE_ENV !== "production") {
+    return (await readAllRecipesUncached()).recipes;
+  }
+  recipeCache ??= readAllRecipesUncached().then(
+    ({ recipes, failures }) => {
+      if (failures > 0) {
+        // Degraded read — don't pin it; retry next request. Logged so a
+        // permanently bad file (cache never engaging) is visible in prod logs.
+        console.error(`[recipes] ${failures} recipe file(s) failed to read; index not cached`);
+        recipeCache = null;
+      } else {
+        // The cached array and its objects are shared across all requests for
+        // the life of the instance — freeze (including frontmatter arrays like
+        // tags/ingredients) so an accidental in-place mutation fails loudly
+        // instead of silently corrupting every later render.
+        for (const recipe of recipes) {
+          for (const value of Object.values(recipe.frontmatter)) {
+            if (Array.isArray(value)) Object.freeze(value);
+          }
+          Object.freeze(recipe.frontmatter);
+          Object.freeze(recipe);
+        }
+        Object.freeze(recipes);
+      }
+      return recipes;
+    },
+    (err) => {
+      // Never pin a rejected promise — that would fail every request until
+      // the instance restarts.
+      recipeCache = null;
+      throw err;
+    }
+  );
+  return recipeCache;
 }
 
 /** Public listing source: published always; drafts also included in development. */
