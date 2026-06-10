@@ -84,12 +84,21 @@ export function filterByVisibility(
   return recipes.filter((r) => r.frontmatter.status === "published");
 }
 
-async function readAllRecipes(): Promise<RecipeMeta[]> {
+/**
+ * Reading ~1000 recipe files with unbounded Promise.allSettled fan-out opens
+ * every file at once — past the serverless fd limit (1024 on Vercel). The
+ * EMFILE then surfaces on whatever else needs an fd in the same render (e.g.
+ * Prisma's DB sockets — production error digest 897990896). Keep this bound
+ * well below the limit.
+ */
+const READ_CONCURRENCY = 32;
+
+async function readAllRecipesUncached(): Promise<{ recipes: RecipeMeta[]; failures: number }> {
   let files: string[];
   try {
     files = await fs.readdir(RECIPES_DIR);
   } catch {
-    return [];
+    return { recipes: [], failures: 0 };
   }
 
   // Ignore template/partials prefixed with "_" and non-mdx files.
@@ -97,24 +106,29 @@ async function readAllRecipes(): Promise<RecipeMeta[]> {
     (f) => f.endsWith(".mdx") && !f.startsWith("_")
   );
 
-  const results = await Promise.allSettled(
-    mdxFiles.map(async (filename) => {
-      const filePath = path.join(RECIPES_DIR, filename);
-      const raw = await fs.readFile(filePath, "utf-8");
-      const { data } = matter(raw);
-      const slug = filename.replace(/\.mdx$/, "");
+  const recipes: RecipeMeta[] = [];
+  let failures = 0;
+  let next = 0;
 
-      return {
-        slug,
-        frontmatter: normalizeFrontmatter(data, slug),
-      };
-    })
+  async function worker(): Promise<void> {
+    while (next < mdxFiles.length) {
+      const filename = mdxFiles[next++];
+      try {
+        const raw = await fs.readFile(path.join(RECIPES_DIR, filename), "utf-8");
+        const { data } = matter(raw);
+        const slug = filename.replace(/\.mdx$/, "");
+        recipes.push({ slug, frontmatter: normalizeFrontmatter(data, slug) });
+      } catch {
+        // Skip unreadable/malformed files (same behavior as the previous
+        // allSettled filter), but count them so a degraded read isn't cached.
+        failures++;
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(READ_CONCURRENCY, mdxFiles.length) }, worker)
   );
-
-  // Filter out failed reads (malformed frontmatter, IO errors, etc.)
-  const recipes = results
-    .filter((r) => r.status === "fulfilled")
-    .map((r) => (r as PromiseFulfilledResult<RecipeMeta>).value);
 
   // Sort by book order (the `order` field); fall back to title.
   recipes.sort((a, b) => {
@@ -122,7 +136,23 @@ async function readAllRecipes(): Promise<RecipeMeta[]> {
     return d !== 0 ? d : a.frontmatter.title.localeCompare(b.frontmatter.title);
   });
 
-  return recipes;
+  return { recipes, failures };
+}
+
+// content/recipes is immutable within a deployment, so the parsed index can be
+// memoized for the lifetime of the server instance. Production only — dev needs
+// fresh reads to pick up recipe edits.
+let recipeCache: Promise<RecipeMeta[]> | null = null;
+
+async function readAllRecipes(): Promise<RecipeMeta[]> {
+  if (process.env.NODE_ENV !== "production") {
+    return (await readAllRecipesUncached()).recipes;
+  }
+  recipeCache ??= readAllRecipesUncached().then(({ recipes, failures }) => {
+    if (failures > 0) recipeCache = null; // degraded read — retry next request
+    return recipes;
+  });
+  return recipeCache;
 }
 
 /** Public listing source: published always; drafts also included in development. */
