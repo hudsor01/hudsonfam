@@ -89,16 +89,18 @@ export function filterByVisibility(
  * every file at once — past the serverless fd limit (1024 on Vercel). The
  * EMFILE then surfaces on whatever else needs an fd in the same render (e.g.
  * Prisma's DB sockets — production error digest 897990896). Keep this bound
- * well below the limit.
+ * well below the limit. Exported so the regression test pins the same bound.
  */
-const READ_CONCURRENCY = 32;
+export const READ_CONCURRENCY = 32;
 
 async function readAllRecipesUncached(): Promise<{ recipes: RecipeMeta[]; failures: number }> {
   let files: string[];
   try {
     files = await fs.readdir(RECIPES_DIR);
   } catch {
-    return { recipes: [], failures: 0 };
+    // Count as a failure so production never pins an empty index from a
+    // transient readdir error.
+    return { recipes: [], failures: 1 };
   }
 
   // Ignore template/partials prefixed with "_" and non-mdx files.
@@ -130,10 +132,14 @@ async function readAllRecipesUncached(): Promise<{ recipes: RecipeMeta[]; failur
     Array.from({ length: Math.min(READ_CONCURRENCY, mdxFiles.length) }, worker)
   );
 
-  // Sort by book order (the `order` field); fall back to title.
+  // Sort by book order (the `order` field); fall back to title, then slug.
+  // Slug is unique, so the order is fully deterministic even though workers
+  // push results in completion order.
   recipes.sort((a, b) => {
     const d = a.frontmatter.order - b.frontmatter.order;
-    return d !== 0 ? d : a.frontmatter.title.localeCompare(b.frontmatter.title);
+    if (d !== 0) return d;
+    const t = a.frontmatter.title.localeCompare(b.frontmatter.title);
+    return t !== 0 ? t : a.slug.localeCompare(b.slug);
   });
 
   return { recipes, failures };
@@ -148,10 +154,32 @@ async function readAllRecipes(): Promise<RecipeMeta[]> {
   if (process.env.NODE_ENV !== "production") {
     return (await readAllRecipesUncached()).recipes;
   }
-  recipeCache ??= readAllRecipesUncached().then(({ recipes, failures }) => {
-    if (failures > 0) recipeCache = null; // degraded read — retry next request
-    return recipes;
-  });
+  recipeCache ??= readAllRecipesUncached().then(
+    ({ recipes, failures }) => {
+      if (failures > 0) {
+        // Degraded read — don't pin it; retry next request. Logged so a
+        // permanently bad file (cache never engaging) is visible in prod logs.
+        console.error(`[recipes] ${failures} recipe file(s) failed to read; index not cached`);
+        recipeCache = null;
+      } else {
+        // The cached array and its objects are shared across all requests for
+        // the life of the instance — freeze so an accidental in-place mutation
+        // fails loudly instead of silently corrupting every later render.
+        for (const recipe of recipes) {
+          Object.freeze(recipe.frontmatter);
+          Object.freeze(recipe);
+        }
+        Object.freeze(recipes);
+      }
+      return recipes;
+    },
+    (err) => {
+      // Never pin a rejected promise — that would fail every request until
+      // the instance restarts.
+      recipeCache = null;
+      throw err;
+    }
+  );
   return recipeCache;
 }
 

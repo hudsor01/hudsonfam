@@ -13,7 +13,6 @@ import { describe, it, expect, vi } from "vitest";
  */
 
 const FILE_COUNT = 1000;
-const MAX_ALLOWED_CONCURRENT_READS = 64;
 
 const tracker = { current: 0, max: 0 };
 
@@ -32,7 +31,7 @@ vi.mock("fs/promises", () => ({
   },
 }));
 
-import { getPublishedRecipes } from "@/lib/recipes";
+import { getPublishedRecipes, READ_CONCURRENCY } from "@/lib/recipes";
 
 describe("readAllRecipes fd safety", () => {
   it("reads all recipes without exceeding the concurrency bound", async () => {
@@ -40,6 +39,6 @@ describe("readAllRecipes fd safety", () => {
 
     expect(recipes).toHaveLength(FILE_COUNT);
     expect(tracker.max).toBeGreaterThan(0);
-    expect(tracker.max).toBeLessThanOrEqual(MAX_ALLOWED_CONCURRENT_READS);
+    expect(tracker.max).toBeLessThanOrEqual(READ_CONCURRENCY);
   });
 });
