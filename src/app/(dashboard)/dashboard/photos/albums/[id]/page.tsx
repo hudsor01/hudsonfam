@@ -1,90 +1,86 @@
-import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import { SectionHeader } from "@/components/ui/section-header";
 import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
-import { AlbumForm } from "../album-form";
-import { updateAlbum } from "@/lib/dashboard-actions";
+import { SortablePhotoGrid } from "@/components/dashboard/sortable-photo-grid";
+import { CollectionForm } from "../collection-form";
+import { DeleteCollectionButton } from "./delete-collection-button";
+import { updateCollection } from "@/lib/collection-actions";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-export default async function EditAlbumPage({ params }: Props) {
+export default async function EditCollectionPage({ params }: Props) {
   await connection();
   const { id } = await params;
 
-  const album = await prisma.album.findUnique({
+  const collection = await prisma.collection.findUnique({
     where: { id },
     include: {
-      _count: { select: { photos: true } },
       photos: {
-        take: 20,
-        orderBy: { createdAt: "desc" },
-        select: { id: true, title: true },
+        include: { photo: true },
+        orderBy: { sortOrder: "asc" },
       },
     },
   });
 
-  if (!album) {
+  if (!collection) {
     notFound();
   }
 
-  const boundUpdate = async (formData: FormData) => {
+  const photoItems = collection.photos.map((cp) => ({
+    photoId: cp.photoId,
+    caption: cp.caption ?? cp.photo.caption,
+    layout: cp.layout,
+  }));
+
+  async function handleUpdate(input: { title: string; description?: string }) {
     "use server";
-    await updateAlbum(id, formData);
-  };
+    await updateCollection(id, input);
+  }
 
   return (
     <div>
-      <DashboardBreadcrumbs items={[{ label: "Photos", href: "/dashboard/photos" }, { label: "Albums", href: "/dashboard/photos/albums" }, { label: album.title }]} />
-      <SectionHeader
-        title="Edit Album"
-        subtitle={`${album.title} (${album._count.photos} photos)`}
+      <DashboardBreadcrumbs
+        items={[
+          { label: "Photos", href: "/dashboard/photos" },
+          { label: "Collections", href: "/dashboard/photos/albums" },
+          { label: collection.title },
+        ]}
       />
+      <div className="flex items-start justify-between gap-4">
+        <SectionHeader
+          title={collection.kind === "surface" ? `${collection.title} (Surface)` : "Edit Collection"}
+          subtitle={`${collection.photos.length} photo${collection.photos.length !== 1 ? "s" : ""}`}
+        />
+        {collection.kind === "album" && (
+          <div className="mt-1 shrink-0">
+            <DeleteCollectionButton
+              collectionId={collection.id}
+              collectionTitle={collection.title}
+            />
+          </div>
+        )}
+      </div>
+
       <div className="mt-6">
-        <AlbumForm
-          action={boundUpdate}
-          showCoverPhoto
+        <CollectionForm
+          action={handleUpdate}
           initial={{
-            title: album.title,
-            slug: album.slug,
-            description: album.description,
-            date: album.date
-              ? new Date(album.date).toISOString().split("T")[0]
-              : null,
-            coverPhotoId: album.coverPhotoId,
+            title: collection.title,
+            description: collection.description,
           }}
         />
       </div>
 
-      {/* Photos in album */}
-      {album.photos.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-xs font-sans font-semibold tracking-[3px] text-primary uppercase mb-4">
-            Photos in Album
-          </h3>
-          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-            {album.photos.map((photo) => (
-              <div
-                key={photo.id}
-                className="aspect-square bg-card border border-border rounded-lg overflow-hidden"
-              >
-                <Image
-                  src={`/api/images/${photo.id}?size=thumbnail`}
-                  alt={photo.title || "Photo"}
-                  width={400}
-                  height={300}
-                  className="w-full h-full object-cover hover:brightness-110 hover:saturate-110 transition-all"
-                  loading="lazy"
-                  unoptimized
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="mt-8">
+        <h3 className="text-xs font-sans font-semibold tracking-[3px] text-primary uppercase mb-4">
+          Photos
+        </h3>
+        <SortablePhotoGrid collectionId={collection.id} items={photoItems} />
+      </div>
     </div>
   );
 }

@@ -44,6 +44,14 @@ export const albumFormSchema = z.object({
 
 export type AlbumFormValues = z.infer<typeof albumFormSchema>;
 
+// ─── Collection ───────────────────────────────────────────────────────────────
+export const collectionFormSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+});
+
+export type CollectionFormValues = z.infer<typeof collectionFormSchema>;
+
 // ─── Memory ──────────────────────────────────────────────────────────────────
 export const memoryFormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),

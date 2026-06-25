@@ -35,7 +35,7 @@ export default async function PhotosPage() {
           href="/dashboard/photos/albums"
           className="text-sm text-muted-foreground hover:text-foreground bg-card border border-border rounded-lg px-4 py-2 transition-colors"
         >
-          Manage Albums
+          Manage Collections
         </Link>
         <a
           href="/dashboard/photos/upload"
