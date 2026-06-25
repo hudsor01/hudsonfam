@@ -6,9 +6,9 @@ import { UploadForm } from "./upload-form";
 
 export default async function UploadPage() {
   await connection();
-  const albums = await prisma.album.findMany({
+  const collections = await prisma.collection.findMany({
     orderBy: { title: "asc" },
-    select: { id: true, title: true },
+    select: { id: true, title: true, kind: true },
   });
 
   return (
@@ -16,7 +16,7 @@ export default async function UploadPage() {
       <DashboardBreadcrumbs items={[{ label: "Photos", href: "/dashboard/photos" }, { label: "Upload" }]} />
       <SectionHeader title="Upload Photos" subtitle="Add photos to your collection" />
       <div className="mt-6">
-        <UploadForm albums={albums} />
+        <UploadForm collections={collections} />
       </div>
     </div>
   );

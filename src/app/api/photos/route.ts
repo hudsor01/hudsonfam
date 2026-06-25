@@ -26,7 +26,8 @@ const ALLOWED_TYPES = [
  *
  * Form fields:
  *   - file: image file (required)
- *   - albumId: album ID to assign to (optional)
+ *   - collectionId: collection ID to assign to (optional)
+ *   - published: "true"/"false" or checkbox "on" (optional, defaults to true)
  *   - title: photo title (optional)
  *   - caption: photo caption (optional)
  *
@@ -53,9 +54,14 @@ export async function POST(request: NextRequest) {
   }
 
   const file = formData.get("file") as File | null;
-  const albumId = formData.get("albumId") as string | null;
+  const collectionId = formData.get("collectionId") as string | null;
+  const publishedRaw = formData.get("published") as string | null;
   const title = formData.get("title") as string | null;
   const caption = formData.get("caption") as string | null;
+
+  // Resolve published flag: missing or "on" or "true" → true; "false" → false
+  const published =
+    publishedRaw === null || publishedRaw === "on" || publishedRaw === "true";
 
   // Validate file
   if (!file || !(file instanceof File)) {
@@ -81,14 +87,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Validate albumId if provided
-  if (albumId) {
-    const album = await prisma.album.findUnique({
-      where: { id: albumId },
+  // Validate collectionId if provided
+  if (collectionId) {
+    const collection = await prisma.collection.findUnique({
+      where: { id: collectionId },
     });
-    if (!album) {
+    if (!collection) {
       return NextResponse.json(
-        { error: "Album not found" },
+        { error: "Collection not found" },
         { status: 404 }
       );
     }
@@ -101,13 +107,13 @@ export async function POST(request: NextRequest) {
   const buffer = Buffer.from(await file.arrayBuffer());
 
   // Process image (generates thumbnail + medium, saves original to Cloudflare R2)
-  const targetAlbumId = albumId || "unassigned";
+  // Use "unassigned" as the album path segment so R2 key is originals/unassigned/<id>.webp
   let imageMetadata;
   try {
     imageMetadata = await processImage(
       buffer,
       photoId,
-      targetAlbumId,
+      "unassigned",
       file.name
     );
   } catch (err) {
@@ -118,13 +124,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Photos added to a collection are always published
+  const finalPublished = collectionId ? true : published;
+
   // Save metadata to database
   const photo = await prisma.photo.create({
     data: {
       id: photoId,
       title: title || null,
       caption: caption || null,
-      albumId: albumId || null,
+      albumId: null,
+      published: finalPublished,
       originalPath: imageMetadata.originalPath,
       thumbnailPath: imageMetadata.thumbnailPath,
       width: imageMetadata.width,
@@ -134,12 +144,26 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  // If a collection was provided, link the photo to it
+  if (collectionId) {
+    const sortOrder = await prisma.collectionPhoto.count({
+      where: { collectionId },
+    });
+    await prisma.collectionPhoto.create({
+      data: {
+        collectionId,
+        photoId: photo.id,
+        sortOrder,
+      },
+    });
+  }
+
   return NextResponse.json(
     {
       id: photo.id,
       title: photo.title,
       caption: photo.caption,
-      albumId: photo.albumId,
+      published: photo.published,
       width: photo.width,
       height: photo.height,
       takenAt: photo.takenAt,
