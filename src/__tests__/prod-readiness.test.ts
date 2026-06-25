@@ -639,10 +639,13 @@ describe('Bug Fix Verification', () => {
       'utf-8'
     );
     // The memorial of a real person must never show stock photography.
-    // Photos are pulled from the MemorialMedia table (type: "photo").
+    // Photos are pulled from the memorial Collection (slug: "memorial") via
+    // CollectionPhoto, with per-photo bento layout driven by layoutToSpan().
     expect(memorialPage).not.toContain('images.unsplash.com');
     expect(memorialPage).toContain('getMemorialPhotos');
-    expect(memorialPage).toMatch(/type:\s*"photo"/);
+    expect(memorialPage).toContain('collectionPhoto');
+    expect(memorialPage).toContain('slug: "memorial"');
+    expect(memorialPage).toContain('layoutToSpan');
   });
 });
 
