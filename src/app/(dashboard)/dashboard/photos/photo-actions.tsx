@@ -2,11 +2,16 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, ExternalLink, Trash2 } from "lucide-react";
+import { MoreHorizontal, ExternalLink, Trash2, FolderPlus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuCheckboxItem,
   DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -19,13 +24,33 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  setPhotoPublished,
+  addPhotoToCollection,
+  removePhotoFromCollection,
+} from "@/lib/collection-actions";
+
+interface Collection {
+  id: string;
+  title: string;
+  kind: string;
+}
 
 interface PhotoActionsProps {
   photoId: string;
+  published: boolean;
+  collections: Collection[];
+  memberCollectionIds: string[];
   deleteAction: () => Promise<void>;
 }
 
-export function PhotoActions({ photoId, deleteAction }: PhotoActionsProps) {
+export function PhotoActions({
+  photoId,
+  published,
+  collections,
+  memberCollectionIds,
+  deleteAction,
+}: PhotoActionsProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -41,6 +66,33 @@ export function PhotoActions({ photoId, deleteAction }: PhotoActionsProps) {
       setConfirmOpen(false);
     }
   }
+
+  async function handlePublishToggle() {
+    try {
+      await setPhotoPublished(photoId, !published);
+      toast.success(published ? "Photo unpublished" : "Photo published");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update");
+    }
+  }
+
+  async function handleCollectionToggle(collectionId: string, isMember: boolean) {
+    try {
+      if (isMember) {
+        await removePhotoFromCollection(collectionId, photoId);
+        toast.success("Removed from collection");
+      } else {
+        await addPhotoToCollection(collectionId, photoId);
+        toast.success("Added to collection");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update collection");
+    }
+  }
+
+  // Surface collections first, then alphabetical within each group
+  const surfaceCollections = collections.filter((c) => c.kind === "surface");
+  const albumCollections = collections.filter((c) => c.kind !== "surface");
 
   return (
     <>
@@ -59,6 +111,50 @@ export function PhotoActions({ photoId, deleteAction }: PhotoActionsProps) {
             <ExternalLink className="size-4" />
             View Full Size
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuCheckboxItem
+            checked={published}
+            onCheckedChange={handlePublishToggle}
+          >
+            Published
+          </DropdownMenuCheckboxItem>
+          {collections.length > 0 && (
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <FolderPlus className="size-4" />
+                Add to collection
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                {surfaceCollections.map((c) => (
+                  <DropdownMenuCheckboxItem
+                    key={c.id}
+                    checked={memberCollectionIds.includes(c.id)}
+                    onCheckedChange={() =>
+                      handleCollectionToggle(c.id, memberCollectionIds.includes(c.id))
+                    }
+                  >
+                    {c.title}{" "}
+                    <span className="text-xs text-muted-foreground">(Memorial)</span>
+                  </DropdownMenuCheckboxItem>
+                ))}
+                {surfaceCollections.length > 0 && albumCollections.length > 0 && (
+                  <DropdownMenuSeparator />
+                )}
+                {albumCollections.map((c) => (
+                  <DropdownMenuCheckboxItem
+                    key={c.id}
+                    checked={memberCollectionIds.includes(c.id)}
+                    onCheckedChange={() =>
+                      handleCollectionToggle(c.id, memberCollectionIds.includes(c.id))
+                    }
+                  >
+                    {c.title}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          )}
+          <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
             onClick={() => setConfirmOpen(true)}
