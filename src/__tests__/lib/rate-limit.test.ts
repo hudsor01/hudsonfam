@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { rateLimit, __resetRateLimit } from '@/lib/rate-limit';
+import { rateLimit, __resetRateLimit, __rateLimitSize } from '@/lib/rate-limit';
 
 describe('rateLimit (sliding window)', () => {
   beforeEach(() => {
@@ -33,5 +33,13 @@ describe('rateLimit (sliding window)', () => {
     expect(rateLimit('d', 1, 0).ok).toBe(true);
     // With a zero-length window every prior hit is already expired.
     expect(rateLimit('d', 1, 0).ok).toBe(true);
+  });
+
+  it('stays bounded under key rotation even when every key is fresh', () => {
+    // 20k distinct, never-expiring keys must not grow the Map without bound.
+    for (let i = 0; i < 20_000; i++) {
+      rateLimit(`rotate:${i}`, 5, 60_000);
+    }
+    expect(__rateLimitSize()).toBeLessThanOrEqual(5000);
   });
 });

@@ -9,16 +9,33 @@ import { rateLimit } from "@/lib/rate-limit";
 // --------------- Public: Submit Memory ---------------
 
 export async function submitMemory(formData: FormData) {
-  // This is a public, unauthenticated mutation — rate-limit by client IP to
-  // blunt spam. The action serves as a standalone entry point (reachable by
-  // direct POST), so the guard must live here, not in the calling component.
+  // This is a public, unauthenticated mutation reachable by direct POST, so the
+  // abuse guard must live here, not in the calling component.
+  //
+  // Trust only platform-set IP headers: Vercel sets x-real-ip to the true
+  // client IP. The LEFT-most x-forwarded-for entry is client-spoofable (a
+  // caller can prepend a fake IP), so we only fall back to its RIGHT-most
+  // (platform-appended) segment — never the left.
   const hdrs = await headers();
-  const ip =
-    hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    hdrs.get("x-real-ip") ||
-    "unknown";
-  const { ok } = rateLimit(`submit-memory:${ip}`, 3, 5 * 60_000);
-  if (!ok) {
+  const trustedIp =
+    hdrs.get("x-real-ip")?.trim() ||
+    hdrs.get("x-forwarded-for")?.split(",").pop()?.trim() ||
+    "";
+  const rlEmail = formData.get("email")?.toString().trim().toLowerCase() || "";
+
+  // No trusted IP source (local/dev) collapses to one shared, stricter lane so
+  // the fallback can't become a loose bypass. A per-email bucket adds
+  // defense-in-depth against a single source rotating IPs.
+  const overLimit =
+    !rateLimit(
+      trustedIp ? `submit-memory:ip:${trustedIp}` : "submit-memory:ip:unknown",
+      trustedIp ? 3 : 1,
+      5 * 60_000
+    ).ok ||
+    (rlEmail
+      ? !rateLimit(`submit-memory:email:${rlEmail}`, 3, 5 * 60_000).ok
+      : false);
+  if (overLimit) {
     throw new Error(
       "You're submitting memories too quickly. Please wait a few minutes and try again."
     );
