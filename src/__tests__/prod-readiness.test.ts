@@ -44,6 +44,12 @@ vi.mock('next/headers', () => ({
   headers: vi.fn().mockResolvedValue(new Headers()),
 }));
 
+// These tests submit many memories from the same (empty) IP; disable the
+// rate limiter here. Its own behavior is covered in lib/rate-limit.test.ts.
+vi.mock('@/lib/rate-limit', () => ({
+  rateLimit: () => ({ ok: true, remaining: 99, retryAfterMs: 0 }),
+}));
+
 vi.mock('@/lib/auth', () => ({
   auth: {
     api: {

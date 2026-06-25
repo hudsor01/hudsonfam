@@ -2,11 +2,28 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { requireRole } from "@/lib/session";
+import { rateLimit } from "@/lib/rate-limit";
 
 // --------------- Public: Submit Memory ---------------
 
 export async function submitMemory(formData: FormData) {
+  // This is a public, unauthenticated mutation — rate-limit by client IP to
+  // blunt spam. The action serves as a standalone entry point (reachable by
+  // direct POST), so the guard must live here, not in the calling component.
+  const hdrs = await headers();
+  const ip =
+    hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    hdrs.get("x-real-ip") ||
+    "unknown";
+  const { ok } = rateLimit(`submit-memory:${ip}`, 3, 5 * 60_000);
+  if (!ok) {
+    throw new Error(
+      "You're submitting memories too quickly. Please wait a few minutes and try again."
+    );
+  }
+
   const firstName = formData.get("firstName");
   const lastName = formData.get("lastName");
   const email = formData.get("email");
