@@ -20,9 +20,9 @@ export default async function DashboardPage() {
     take: 4,
     select: {
       id: true,
+      title: true,
       thumbnailPath: true,
       createdAt: true,
-      album: { select: { title: true } },
     },
   });
 
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
                   >
                     <Image
                       src={`/api/images/${photo.id}?size=thumbnail`}
-                      alt={photo.album?.title ?? "Photo"}
+                      alt={photo.title ?? "Photo"}
                       width={200}
                       height={200}
                       className="w-full h-full object-cover hover:opacity-80 transition-opacity"

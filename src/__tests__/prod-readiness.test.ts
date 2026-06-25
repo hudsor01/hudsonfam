@@ -724,7 +724,7 @@ describe('SEO -- Memorial Page', () => {
 describe('SEO -- Sitemap', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    prismaMock.album.findMany.mockResolvedValue([]);
+    prismaMock.collection.findMany.mockResolvedValue([]);
   });
 
   it('sitemap includes /richard-hudson-sr with high priority', async () => {

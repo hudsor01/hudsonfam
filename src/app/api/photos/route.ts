@@ -133,7 +133,6 @@ export async function POST(request: NextRequest) {
       id: photoId,
       title: title || null,
       caption: caption || null,
-      albumId: null,
       published: finalPublished,
       originalPath: imageMetadata.originalPath,
       thumbnailPath: imageMetadata.thumbnailPath,

@@ -13,7 +13,6 @@ export default async function PhotosPage() {
     prisma.photo.findMany({
       orderBy: { createdAt: "desc" },
       include: {
-        album: { select: { title: true } },
         collections: { select: { collectionId: true } },
       },
       take: 60,
@@ -77,11 +76,7 @@ export default async function PhotosPage() {
                 <p className="text-xs text-foreground truncate">
                   {photo.title || "Untitled"}
                 </p>
-                {photo.album && (
-                  <p className="text-xs text-text-dim truncate">
-                    {photo.album.title}
-                  </p>
-                )}
+
               </div>
               <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <PhotoActions

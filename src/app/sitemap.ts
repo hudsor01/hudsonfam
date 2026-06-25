@@ -48,15 +48,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  // Photo albums
+  // Photo collections (kind:"album")
   let albumPages: MetadataRoute.Sitemap = [];
   try {
-    const albums = await prisma.album.findMany({
+    const collections = await prisma.collection.findMany({
+      where: { kind: "album" },
       select: { slug: true, createdAt: true },
     });
-    albumPages = albums.map((album) => ({
-      url: `${SITE_URL}/photos/${album.slug}`,
-      lastModified: album.createdAt,
+    albumPages = collections.map((collection) => ({
+      url: `${SITE_URL}/photos/${collection.slug}`,
+      lastModified: collection.createdAt,
       changeFrequency: "monthly" as const,
       priority: 0.6,
     }));
