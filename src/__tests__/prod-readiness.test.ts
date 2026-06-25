@@ -476,6 +476,20 @@ describe('Memorial -- Content Management (owner-only)', () => {
 // ============================================================
 
 describe('Bug Fix Verification', () => {
+  // EXIF orientation: every sharp resize pipeline must auto-orient (.rotate())
+  // first, or phone photos (orientation in EXIF, not pixels) store sideways
+  // because WebP output drops the EXIF tag.
+  it('image processing auto-orients via .rotate() before every resize', async () => {
+    const images = await fs.readFile(
+      path.join(process.cwd(), 'src', 'lib', 'images.ts'),
+      'utf-8'
+    );
+    const resizeCount = (images.match(/\.resize\(/g) || []).length;
+    const rotateCount = (images.match(/\.rotate\(\)/g) || []).length;
+    expect(resizeCount).toBeGreaterThan(0);
+    expect(rotateCount).toBeGreaterThanOrEqual(resizeCount);
+  });
+
   // Bug 1: Photo URLs should be direct CDN URLs (not /api/images/ route)
   it('photo seed data uses direct Unsplash CDN URLs, not /api/images/ paths', async () => {
     const seedFile = await fs.readFile(

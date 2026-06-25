@@ -2,17 +2,20 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock sharp
 const mockMetadata = vi.fn();
+const mockRotate = vi.fn();
 const mockResize = vi.fn();
 const mockWebp = vi.fn();
 const mockToBuffer = vi.fn();
 const sharpInstance = {
   metadata: mockMetadata,
+  rotate: mockRotate,
   resize: mockResize,
   webp: mockWebp,
   toBuffer: mockToBuffer,
 };
 
 // Chain returns
+mockRotate.mockReturnValue(sharpInstance);
 mockResize.mockReturnValue(sharpInstance);
 mockWebp.mockReturnValue(sharpInstance);
 
@@ -118,6 +121,16 @@ describe('image utilities (R2-backed)', () => {
       expect(mockResize).toHaveBeenCalledWith(2400, null, { withoutEnlargement: true });
       expect(mockResize).toHaveBeenCalledWith(400, null, { withoutEnlargement: true });
       expect(mockResize).toHaveBeenCalledWith(1200, null, { withoutEnlargement: true });
+    });
+
+    it('auto-orients (.rotate()) once per derivative so EXIF orientation is baked in', async () => {
+      const buffer = Buffer.from('fake-image-data');
+      mockToBuffer.mockResolvedValue(Buffer.from('webp'));
+
+      await processImage(buffer, 'photo-123', 'album-1', 'photo.jpg');
+
+      // original + thumbnail + medium = 3 pipelines, each rotated before resize
+      expect(mockRotate).toHaveBeenCalledTimes(3);
     });
 
     it('returns dimensions from sharp metadata', async () => {
