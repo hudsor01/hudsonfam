@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored DiceUI Sortable registry files — upstream copied code that trips
+    // the strict react-hooks compiler rules (mount-guard setState, ref-compose
+    // memo). We don't hand-maintain these, so exempt them from lint.
+    "src/components/ui/sortable.tsx",
+    "src/lib/compose-refs.ts",
   ]),
 ]);
 
