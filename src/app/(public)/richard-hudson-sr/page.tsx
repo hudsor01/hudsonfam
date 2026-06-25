@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { cache } from "react";
 import prisma from "@/lib/prisma";
 import { connection } from "next/server";
 import { Metadata } from "next";
@@ -40,12 +41,14 @@ const GALLERY_SPANS = [
   "",
 ];
 
-async function getMemorialPhotos() {
-  return prisma.memorialMedia.findMany({
+// cache() dedupes the query across generateMetadata() and the page render
+// within a single request.
+const getMemorialPhotos = cache(async () =>
+  prisma.memorialMedia.findMany({
     where: { type: "photo" },
     orderBy: { sortOrder: "asc" },
-  });
-}
+  })
+);
 
 export async function generateMetadata(): Promise<Metadata> {
   const photos = await getMemorialPhotos();
