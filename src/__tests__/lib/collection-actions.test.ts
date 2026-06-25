@@ -294,7 +294,7 @@ describe('createCollection', () => {
     mockRequireRole.mockResolvedValue(fakeSession);
   });
 
-  it('creates with slugified title and default kind album', async () => {
+  it('creates with slugified title and kind album', async () => {
     prismaMock.collection.create.mockResolvedValue({});
 
     await createCollection({ title: 'Lake Trip 2024' });
@@ -309,13 +309,13 @@ describe('createCollection', () => {
     });
   });
 
-  it('creates with kind surface when specified', async () => {
+  it('always creates album-kind collections (surfaces are backfill-only)', async () => {
     prismaMock.collection.create.mockResolvedValue({});
 
-    await createCollection({ title: 'My Surface', kind: 'surface' });
+    await createCollection({ title: 'My Collection' });
 
     expect(prismaMock.collection.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ kind: 'surface' }),
+      data: expect.objectContaining({ kind: 'album' }),
     });
   });
 
@@ -408,6 +408,13 @@ describe('deleteCollection', () => {
     prismaMock.collection.findUnique.mockResolvedValue({ id: 'col1', kind: 'surface' });
 
     await expect(deleteCollection('col1')).rejects.toThrow(/reserved/i);
+    expect(prismaMock.collection.delete).not.toHaveBeenCalled();
+  });
+
+  it('rejects when collection not found', async () => {
+    prismaMock.collection.findUnique.mockResolvedValue(null);
+
+    await expect(deleteCollection('missing')).rejects.toThrow(/not found/i);
     expect(prismaMock.collection.delete).not.toHaveBeenCalled();
   });
 

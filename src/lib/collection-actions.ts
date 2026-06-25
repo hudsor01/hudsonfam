@@ -67,11 +67,7 @@ export async function setPhotoPublished(photoId: string, published: boolean) {
   await revalidateSurfaces();
 }
 
-export async function createCollection(input: {
-  title: string;
-  description?: string;
-  kind?: string;
-}) {
+export async function createCollection(input: { title: string; description?: string }) {
   await requireRole(EDIT_ROLES);
   const title = input.title.trim();
   if (!title) throw new Error("Title is required");
@@ -80,11 +76,10 @@ export async function createCollection(input: {
       title,
       slug: slugify(title),
       description: input.description?.trim() || null,
-      kind: input.kind === "surface" ? "surface" : "album",
+      kind: "album",
     },
   });
-  revalidatePath("/photos");
-  revalidatePath("/dashboard/photos");
+  await revalidateSurfaces();
 }
 
 export async function updateCollection(
@@ -102,15 +97,14 @@ export async function updateCollection(
       ...(input.coverPhotoId !== undefined ? { coverPhotoId: input.coverPhotoId } : {}),
     },
   });
-  revalidatePath("/photos");
-  revalidatePath("/dashboard/photos");
+  await revalidateSurfaces();
 }
 
 export async function deleteCollection(id: string) {
   await requireRole(["owner"]);
   const c = await prisma.collection.findUnique({ where: { id } });
-  if (c?.kind === "surface") throw new Error("Reserved surface collection cannot be deleted");
+  if (!c) throw new Error("Collection not found");
+  if (c.kind === "surface") throw new Error("Reserved surface collection cannot be deleted");
   await prisma.collection.delete({ where: { id } }); // CollectionPhoto rows cascade
-  revalidatePath("/photos");
-  revalidatePath("/dashboard/photos");
+  await revalidateSurfaces();
 }
