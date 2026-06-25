@@ -606,20 +606,16 @@ describe('Bug Fix Verification', () => {
     }
   });
 
-  it('all memorial page photo URLs are valid Unsplash CDN format', async () => {
+  it('memorial photo gallery is database-driven, not hardcoded stock images', async () => {
     const memorialPage = await fs.readFile(
       path.join(process.cwd(), 'src', 'app', '(public)', 'richard-hudson-sr', 'page.tsx'),
       'utf-8'
     );
-    const urlRegex = /https:\/\/images\.unsplash\.com\/photo-[a-zA-Z0-9-]+\?[^"]+/g;
-    const urls = memorialPage.match(urlRegex) || [];
-    expect(urls.length).toBeGreaterThan(0);
-
-    for (const url of urls) {
-      expect(() => new URL(url)).not.toThrow();
-      const parsed = new URL(url);
-      expect(parsed.hostname).toBe('images.unsplash.com');
-    }
+    // The memorial of a real person must never show stock photography.
+    // Photos are pulled from the MemorialMedia table (type: "photo").
+    expect(memorialPage).not.toContain('images.unsplash.com');
+    expect(memorialPage).toContain('getMemorialPhotos');
+    expect(memorialPage).toMatch(/type:\s*"photo"/);
   });
 });
 
@@ -680,7 +676,9 @@ describe('SEO -- Memorial Page', () => {
       path.join(process.cwd(), 'src', 'app', '(public)', 'richard-hudson-sr', 'page.tsx'),
       'utf-8'
     );
-    expect(page).toContain('card: "summary_large_image"');
+    expect(page).toContain('twitter:');
+    // Card is a large-image card when a real photo exists, summary otherwise.
+    expect(page).toContain('summary_large_image');
   });
 
   it('memorial page has robots directive allowing indexing', async () => {
