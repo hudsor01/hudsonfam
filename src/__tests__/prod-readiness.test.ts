@@ -512,6 +512,13 @@ describe('Bug Fix Verification', () => {
     }
   });
 
+  it('image route gates visibility on published, not album membership', async () => {
+    const route = await fs.readFile(
+      path.join(process.cwd(), 'src', 'app', 'api', 'images', '[...path]', 'route.ts'), 'utf-8');
+    expect(route).toMatch(/requiresAuth\s*=\s*!photo\.published/);
+    expect(route).not.toMatch(/requiresAuth\s*=\s*!photo\.albumId/);
+  });
+
   // Bug 4: Event relative time formatting
   describe('event card relative time formatting', () => {
     // We test the getRelativeLabel logic by rendering EventCard and checking the badge.

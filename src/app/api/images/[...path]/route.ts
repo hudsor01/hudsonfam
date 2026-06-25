@@ -21,8 +21,8 @@ const DEFAULT_CONTENT_TYPE = "image/webp";
  *   - public, max-age=31536000 for thumbnails/medium (immutable — key includes photoId)
  *   - public, max-age=86400 for originals
  *
- * Auth: photos that belong to an album are public; album-less photos
- *   (no albumId) require an authenticated session.
+ * Auth: photos with `published: true` are public; unpublished photos
+ *   require an authenticated session.
  *
  * Graceful degradation (CLOUD-03): if the R2 object is missing (NoSuchKey / 404),
  * returns a 307 redirect to /api/images/placeholder/{photoId} — which serves an
@@ -51,22 +51,22 @@ export async function GET(
   // Look up photo in database
   const photo = await prisma.photo.findUnique({
     where: { id: photoId },
-    include: { album: true },
+    select: { id: true, published: true, originalPath: true },
   });
 
   if (!photo) {
     return NextResponse.json({ error: "Photo not found" }, { status: 404 });
   }
 
-  // Auth check: photos with an album are public; album-less photos
-  // (no albumId) require an authenticated session.
+  // Auth check: photos with published=true are public; unpublished photos
+  // require an authenticated session.
   //
   // INTENTIONAL DESIGN (single-trusted-family model): this gate is
   // authentication-only, not per-user authorization. Any logged-in family
-  // member can fetch any album-less photo by id — there is no owner/ACL check.
+  // member can fetch any unpublished photo by id — there is no owner/ACL check.
   // This is by design for the single-trusted-family threat model and should not
   // be flagged as an authorization gap.
-  const requiresAuth = !photo.albumId;
+  const requiresAuth = !photo.published;
 
   if (requiresAuth) {
     const session = await auth.api.getSession({
