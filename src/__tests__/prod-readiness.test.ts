@@ -44,6 +44,12 @@ vi.mock('next/headers', () => ({
   headers: vi.fn().mockResolvedValue(new Headers()),
 }));
 
+// These tests submit many memories from the same (empty) IP; disable the
+// rate limiter here. Its own behavior is covered in lib/rate-limit.test.ts.
+vi.mock('@/lib/rate-limit', () => ({
+  rateLimit: () => ({ ok: true, remaining: 99, retryAfterMs: 0 }),
+}));
+
 vi.mock('@/lib/auth', () => ({
   auth: {
     api: {
@@ -476,6 +482,20 @@ describe('Memorial -- Content Management (owner-only)', () => {
 // ============================================================
 
 describe('Bug Fix Verification', () => {
+  // EXIF orientation: every sharp resize pipeline must auto-orient (.rotate())
+  // first, or phone photos (orientation in EXIF, not pixels) store sideways
+  // because WebP output drops the EXIF tag.
+  it('image processing auto-orients via .rotate() before every resize', async () => {
+    const images = await fs.readFile(
+      path.join(process.cwd(), 'src', 'lib', 'images.ts'),
+      'utf-8'
+    );
+    const resizeCount = (images.match(/\.resize\(/g) || []).length;
+    const rotateCount = (images.match(/\.rotate\(\)/g) || []).length;
+    expect(resizeCount).toBeGreaterThan(0);
+    expect(rotateCount).toBeGreaterThanOrEqual(resizeCount);
+  });
+
   // Bug 1: Photo URLs should be direct CDN URLs (not /api/images/ route)
   it('photo seed data uses direct Unsplash CDN URLs, not /api/images/ paths', async () => {
     const seedFile = await fs.readFile(
@@ -606,20 +626,16 @@ describe('Bug Fix Verification', () => {
     }
   });
 
-  it('all memorial page photo URLs are valid Unsplash CDN format', async () => {
+  it('memorial photo gallery is database-driven, not hardcoded stock images', async () => {
     const memorialPage = await fs.readFile(
       path.join(process.cwd(), 'src', 'app', '(public)', 'richard-hudson-sr', 'page.tsx'),
       'utf-8'
     );
-    const urlRegex = /https:\/\/images\.unsplash\.com\/photo-[a-zA-Z0-9-]+\?[^"]+/g;
-    const urls = memorialPage.match(urlRegex) || [];
-    expect(urls.length).toBeGreaterThan(0);
-
-    for (const url of urls) {
-      expect(() => new URL(url)).not.toThrow();
-      const parsed = new URL(url);
-      expect(parsed.hostname).toBe('images.unsplash.com');
-    }
+    // The memorial of a real person must never show stock photography.
+    // Photos are pulled from the MemorialMedia table (type: "photo").
+    expect(memorialPage).not.toContain('images.unsplash.com');
+    expect(memorialPage).toContain('getMemorialPhotos');
+    expect(memorialPage).toMatch(/type:\s*"photo"/);
   });
 });
 
@@ -680,7 +696,9 @@ describe('SEO -- Memorial Page', () => {
       path.join(process.cwd(), 'src', 'app', '(public)', 'richard-hudson-sr', 'page.tsx'),
       'utf-8'
     );
-    expect(page).toContain('card: "summary_large_image"');
+    expect(page).toContain('twitter:');
+    // Card is a large-image card when a real photo exists, summary otherwise.
+    expect(page).toContain('summary_large_image');
   });
 
   it('memorial page has robots directive allowing indexing', async () => {

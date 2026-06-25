@@ -129,7 +129,10 @@ export async function processImage(
   const mediumKey = `derived/${photoId}-medium.webp`;
 
   // 1. Original: capped at 2400px, WebP q85
+  // .rotate() (no args) bakes in EXIF orientation before resize — WebP output
+  // drops the EXIF tag, so without this, phone photos land sideways.
   const originalBuffer = await sharp(buffer)
+    .rotate()
     .resize(2400, null, { withoutEnlargement: true })
     .webp({ quality: 85 })
     .toBuffer();
@@ -150,6 +153,7 @@ export async function processImage(
 
   // 2. Thumbnail: 400px, WebP q80
   const thumbnailBuffer = await sharp(buffer)
+    .rotate()
     .resize(400, null, { withoutEnlargement: true })
     .webp({ quality: 80 })
     .toBuffer();
@@ -165,6 +169,7 @@ export async function processImage(
 
   // 3. Medium: 1200px, WebP q85
   const mediumBuffer = await sharp(buffer)
+    .rotate()
     .resize(1200, null, { withoutEnlargement: true })
     .webp({ quality: 85 })
     .toBuffer();
