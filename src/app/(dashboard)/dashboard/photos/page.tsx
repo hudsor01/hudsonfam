@@ -9,15 +9,17 @@ import { PhotoActions } from "./photo-actions";
 
 export default async function PhotosPage() {
   await connection();
-  const photos = await prisma.photo.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      album: { select: { title: true } },
-    },
-    take: 60,
-  });
-
-  const totalPhotos = await prisma.photo.count();
+  const [photos, totalPhotos, collections] = await Promise.all([
+    prisma.photo.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        collections: { select: { collectionId: true } },
+      },
+      take: 60,
+    }),
+    prisma.photo.count(),
+    prisma.collection.findMany({ orderBy: { title: "asc" } }),
+  ]);
 
   return (
     <div>
@@ -32,7 +34,7 @@ export default async function PhotosPage() {
           href="/dashboard/photos/albums"
           className="text-sm text-muted-foreground hover:text-foreground bg-card border border-border rounded-lg px-4 py-2 transition-colors"
         >
-          Manage Albums
+          Manage Collections
         </Link>
         <a
           href="/dashboard/photos/upload"
@@ -74,15 +76,14 @@ export default async function PhotosPage() {
                 <p className="text-xs text-foreground truncate">
                   {photo.title || "Untitled"}
                 </p>
-                {photo.album && (
-                  <p className="text-xs text-text-dim truncate">
-                    {photo.album.title}
-                  </p>
-                )}
+
               </div>
               <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <PhotoActions
                   photoId={photo.id}
+                  published={photo.published}
+                  collections={collections}
+                  memberCollectionIds={photo.collections.map((c) => c.collectionId)}
                   deleteAction={async () => {
                     "use server";
                     await deletePhoto(photo.id);

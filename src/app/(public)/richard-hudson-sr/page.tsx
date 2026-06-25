@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { LayoutGrid } from "@/components/ui/layout-grid";
+import { layoutToSpan } from "@/lib/photo-layout";
 
 const SITE_URL = "https://thehudsonfam.com";
 
@@ -28,32 +29,23 @@ function safeJsonLd(data: unknown): string {
     .replace(/\u2029/g, "\\u2029");
 }
 
-// Column-span pattern for the LayoutGrid bento (3-col on md). Each pair of
-// cards sums to 3 columns (2+1, 1+2), so the grid reads as a balanced bento
-// for any number of photos.
-const GALLERY_SPANS = [
-  "md:col-span-2",
-  "col-span-1",
-  "col-span-1",
-  "md:col-span-2",
-];
-
 // cache() dedupes the query across generateMetadata() and the page render
 // within a single request.
 const getMemorialPhotos = cache(async () =>
-  prisma.memorialMedia.findMany({
-    where: { type: "photo" },
+  prisma.collectionPhoto.findMany({
+    where: { collection: { slug: "memorial" } },
+    include: { photo: true },
     orderBy: { sortOrder: "asc" },
   })
 );
 
 export async function generateMetadata(): Promise<Metadata> {
   const photos = await getMemorialPhotos();
-  const firstPhoto = photos[0];
-  const ogImage = firstPhoto
+  const firstCp = photos[0];
+  const ogImage = firstCp
     ? {
-        url: toAbsoluteUrl(firstPhoto.url),
-        alt: firstPhoto.caption || "In loving memory of Richard Hudson Sr.",
+        url: toAbsoluteUrl(`/api/images/${firstCp.photo.id}?size=medium`),
+        alt: firstCp.caption ?? firstCp.photo.caption ?? "In loving memory of Richard Hudson Sr.",
       }
     : undefined;
 
@@ -104,10 +96,17 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-type MemorialPhoto = {
+type CollectionPhotoWithPhoto = {
   id: string;
-  url: string;
   caption: string | null;
+  layout: string;
+  sortOrder: number;
+  photo: {
+    id: string;
+    caption: string | null;
+    width: number;
+    height: number;
+  };
 };
 
 // JSON-LD structured data for search engines
@@ -116,7 +115,7 @@ function MemorialJsonLd({
   photos,
 }: {
   memoryCount: number;
-  photos: MemorialPhoto[];
+  photos: CollectionPhotoWithPhoto[];
 }) {
   const jsonLd = {
     "@context": "https://schema.org",
@@ -190,10 +189,10 @@ function MemorialJsonLd({
           description:
             "Photo gallery celebrating the life of Richard Hudson Sr.",
           url: "https://thehudsonfam.com/richard-hudson-sr",
-          image: photos.map((p) => ({
+          image: photos.map((cp) => ({
             "@type": "ImageObject",
-            url: toAbsoluteUrl(p.url),
-            description: p.caption || "Photo of Richard Hudson Sr.",
+            url: toAbsoluteUrl(`/api/images/${cp.photo.id}?size=medium`),
+            description: cp.caption ?? cp.photo.caption ?? "Photo of Richard Hudson Sr.",
           })),
         }
       : null;
@@ -394,14 +393,14 @@ export default async function RichardHudsonSrMemorialPage() {
         </p>
         {photos.length > 0 ? (
           <LayoutGrid
-            cards={photos.map((photo, i) => ({
+            cards={photos.map((cp, i) => ({
               id: i + 1,
-              thumbnail: photo.url,
-              alt: photo.caption || "Photo of Richard Hudson Sr.",
-              className: GALLERY_SPANS[i % GALLERY_SPANS.length],
+              thumbnail: `/api/images/${cp.photo.id}?size=medium`,
+              alt: cp.caption ?? cp.photo.caption ?? "Richard Hudson Sr.",
+              className: layoutToSpan(cp.layout, cp.photo.width, cp.photo.height),
               content: (
                 <p className="font-serif text-xl md:text-3xl text-white text-balance">
-                  {photo.caption || "Richard Hudson Sr."}
+                  {cp.caption ?? cp.photo.caption ?? "Richard Hudson Sr."}
                 </p>
               ),
             }))}

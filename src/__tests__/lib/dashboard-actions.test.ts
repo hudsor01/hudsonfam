@@ -25,8 +25,6 @@ import { prismaMock } from '../mocks/prisma';
 
 // Import the actions under test
 import {
-  createAlbum,
-  updateAlbum,
   createEvent,
   deleteEvent,
   updateUserRole,
@@ -54,8 +52,6 @@ describe('dashboard-actions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireRole.mockResolvedValue(fakeSession);
-    prismaMock.album.create.mockResolvedValue({ id: 'album-1' });
-    prismaMock.album.update.mockResolvedValue({ id: 'album-1' });
     prismaMock.event.create.mockResolvedValue({ id: 'event-1' });
     prismaMock.event.update.mockResolvedValue({ id: 'event-1' });
     prismaMock.event.delete.mockResolvedValue({ id: 'event-1' });
@@ -63,73 +59,6 @@ describe('dashboard-actions', () => {
     prismaMock.photo.delete.mockResolvedValue({ id: 'photo-1' });
     prismaMock.inviteToken.create.mockResolvedValue({ id: 'invite-1', token: 'abc-123' });
     prismaMock.inviteToken.delete.mockResolvedValue({ id: 'invite-1' });
-  });
-
-  // --------------- Albums ---------------
-
-  describe('createAlbum', () => {
-    it('creates an album with correct data', async () => {
-      const formData = makeFormData({
-        title: 'Vacation',
-        slug: 'vacation',
-        description: 'Our trip',
-        date: '2026-06-15',
-      });
-
-      await createAlbum(formData);
-
-      expect(prismaMock.album.create).toHaveBeenCalledWith({
-        data: expect.objectContaining({
-          title: 'Vacation',
-          slug: 'vacation',
-          description: 'Our trip',
-        }),
-      });
-      const callArgs = prismaMock.album.create.mock.calls[0][0].data;
-      expect(callArgs.date).toBeInstanceOf(Date);
-    });
-
-    it('handles null date', async () => {
-      const formData = makeFormData({
-        title: 'Album',
-        slug: 'album',
-      });
-
-      await createAlbum(formData);
-
-      const callArgs = prismaMock.album.create.mock.calls[0][0].data;
-      expect(callArgs.date).toBeNull();
-    });
-
-    it('redirects to albums page', async () => {
-      const formData = makeFormData({ title: 'Album', slug: 'album' });
-
-      await createAlbum(formData);
-
-      expect(mockRedirect).toHaveBeenCalledWith('/dashboard/photos/albums');
-    });
-  });
-
-  describe('updateAlbum', () => {
-    it('updates album fields including coverPhotoId', async () => {
-      const formData = makeFormData({
-        title: 'Updated Album',
-        slug: 'updated-album',
-        description: 'Updated description',
-        date: '2026-07-01',
-        coverPhotoId: 'photo-5',
-      });
-
-      await updateAlbum('album-1', formData);
-
-      expect(prismaMock.album.update).toHaveBeenCalledWith({
-        where: { id: 'album-1' },
-        data: expect.objectContaining({
-          title: 'Updated Album',
-          coverPhotoId: 'photo-5',
-        }),
-      });
-    });
   });
 
   // --------------- Events ---------------

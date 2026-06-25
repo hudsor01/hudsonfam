@@ -36,32 +36,35 @@ export async function generateMetadata({ params }: AlbumPageProps) {
 
 export default async function AlbumPage({ params }: AlbumPageProps) {
   // Fully dynamic (like the other auth-aware/DB-backed public pages): opt out of
-  // prerendering before the uncached album+photos read under Cache Components.
+  // prerendering before the uncached collection+photos read under Cache Components.
   await connection();
   const { album: slug } = await params;
 
-  const album = await prisma.album.findUnique({
+  const collection = await prisma.collection.findUnique({
     where: { slug },
     include: {
       photos: {
-        orderBy: { createdAt: "asc" },
-        select: {
-          id: true,
-          title: true,
-          caption: true,
-          thumbnailPath: true,
-          originalPath: true,
-          width: true,
-          height: true,
-          takenAt: true,
-        },
+        include: { photo: true },
+        orderBy: { sortOrder: "asc" },
       },
     },
   });
 
-  if (!album) {
+  if (!collection || collection.kind !== "album") {
     notFound();
   }
+
+  // Map CollectionPhoto records to the shape AlbumPhotoGrid expects
+  const photos = collection.photos.map((cp) => ({
+    id: cp.photo.id,
+    title: cp.photo.caption ?? null,
+    caption: cp.caption ?? cp.photo.caption ?? null,
+    thumbnailPath: cp.photo.thumbnailPath,
+    originalPath: cp.photo.originalPath,
+    width: cp.photo.width,
+    height: cp.photo.height,
+    takenAt: cp.photo.takenAt,
+  }));
 
   return (
     <div className="max-w-5xl mx-auto px-7 py-12">
@@ -74,23 +77,23 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
           Photos
         </Link>
         <span className="text-text-dim text-sm mx-2">/</span>
-        <span className="text-foreground text-sm">{album.title}</span>
+        <span className="text-foreground text-sm">{collection.title}</span>
       </div>
 
       <SectionHeader
-        title={album.title}
+        title={collection.title}
         subtitle={
-          album.description ||
-          `${album.photos.length} ${album.photos.length === 1 ? "photo" : "photos"}`
+          collection.description ||
+          `${photos.length} ${photos.length === 1 ? "photo" : "photos"}`
         }
       />
 
-      {album.photos.length === 0 ? (
+      {photos.length === 0 ? (
         <p className="text-muted-foreground text-sm mt-8">
           This album is empty.
         </p>
       ) : (
-        <AlbumPhotoGrid photos={album.photos} />
+        <AlbumPhotoGrid photos={photos} />
       )}
     </div>
   );

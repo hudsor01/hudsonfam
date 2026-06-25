@@ -512,6 +512,13 @@ describe('Bug Fix Verification', () => {
     }
   });
 
+  it('image route gates visibility on published, not album membership', async () => {
+    const route = await fs.readFile(
+      path.join(process.cwd(), 'src', 'app', 'api', 'images', '[...path]', 'route.ts'), 'utf-8');
+    expect(route).toMatch(/requiresAuth\s*=\s*!photo\.published/);
+    expect(route).not.toMatch(/requiresAuth\s*=\s*!photo\.albumId/);
+  });
+
   // Bug 4: Event relative time formatting
   describe('event card relative time formatting', () => {
     // We test the getRelativeLabel logic by rendering EventCard and checking the badge.
@@ -632,10 +639,13 @@ describe('Bug Fix Verification', () => {
       'utf-8'
     );
     // The memorial of a real person must never show stock photography.
-    // Photos are pulled from the MemorialMedia table (type: "photo").
+    // Photos are pulled from the memorial Collection (slug: "memorial") via
+    // CollectionPhoto, with per-photo bento layout driven by layoutToSpan().
     expect(memorialPage).not.toContain('images.unsplash.com');
     expect(memorialPage).toContain('getMemorialPhotos');
-    expect(memorialPage).toMatch(/type:\s*"photo"/);
+    expect(memorialPage).toContain('collectionPhoto');
+    expect(memorialPage).toContain('slug: "memorial"');
+    expect(memorialPage).toContain('layoutToSpan');
   });
 });
 
@@ -714,7 +724,7 @@ describe('SEO -- Memorial Page', () => {
 describe('SEO -- Sitemap', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    prismaMock.album.findMany.mockResolvedValue([]);
+    prismaMock.collection.findMany.mockResolvedValue([]);
   });
 
   it('sitemap includes /richard-hudson-sr with high priority', async () => {

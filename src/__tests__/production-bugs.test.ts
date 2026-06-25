@@ -65,7 +65,6 @@ import { prismaMock } from './mocks/prisma';
 // ============================================================
 
 import {
-  createAlbum,
   createEvent,
   deleteEvent,
   updateUserRole,
@@ -111,7 +110,6 @@ describe('FormData validation (formerly null coercion bugs)', () => {
     vi.clearAllMocks();
     mockRequireRole.mockResolvedValue(fakeOwnerSession);
     prismaMock.event.create.mockResolvedValue({ id: 'event-1' });
-    prismaMock.album.create.mockResolvedValue({ id: 'album-1' });
   });
 
   it('FIXED: createEvent throws when startDate is missing', async () => {
@@ -131,12 +129,6 @@ describe('FormData validation (formerly null coercion bugs)', () => {
     expect(prismaMock.event.create).not.toHaveBeenCalled();
   });
 
-  it('FIXED: createAlbum throws when title/slug are missing', async () => {
-    const formData = new FormData();
-
-    await expect(createAlbum(formData)).rejects.toThrow('Title and slug are required');
-    expect(prismaMock.album.create).not.toHaveBeenCalled();
-  });
 });
 
 // ============================================================

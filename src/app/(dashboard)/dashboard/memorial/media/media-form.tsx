@@ -14,15 +14,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-export function AddMediaForm() {
+export function AddVideoForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -34,11 +27,12 @@ export function AddMediaForm() {
 
     try {
       const formData = new FormData(formRef.current!);
+      formData.set("type", "video");
       await addMemorialMedia(formData);
       formRef.current?.reset();
-      toast.success("Media added");
+      toast.success("Video added");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to add media";
+      const msg = err instanceof Error ? err.message : "Failed to add video";
       setError(msg);
       toast.error(msg);
     } finally {
@@ -51,33 +45,17 @@ export function AddMediaForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="url" className="block text-sm font-medium text-muted-foreground mb-1.5">
-            URL <span className="text-accent">*</span>
+            Video URL <span className="text-accent">*</span>
           </label>
           <input
             id="url"
             name="url"
             type="url"
             required
-            placeholder="https://images.unsplash.com/..."
+            placeholder="https://youtube.com/watch?v=..."
             className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
           />
         </div>
-        <div>
-          <label htmlFor="type" className="block text-sm font-medium text-muted-foreground mb-1.5">
-            Type <span className="text-accent">*</span>
-          </label>
-          <Select name="type" defaultValue="photo">
-            <SelectTrigger>
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="photo">Photo</SelectItem>
-              <SelectItem value="video">Video</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="caption" className="block text-sm font-medium text-muted-foreground mb-1.5">
             Caption <span className="text-text-dim">(optional)</span>
@@ -86,20 +64,7 @@ export function AddMediaForm() {
             id="caption"
             name="caption"
             type="text"
-            placeholder="Describe this photo or video"
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
-          />
-        </div>
-        <div>
-          <label htmlFor="sortOrder" className="block text-sm font-medium text-muted-foreground mb-1.5">
-            Sort Order
-          </label>
-          <input
-            id="sortOrder"
-            name="sortOrder"
-            type="number"
-            defaultValue={0}
-            min={0}
+            placeholder="Describe this video"
             className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
           />
         </div>
@@ -116,7 +81,7 @@ export function AddMediaForm() {
         disabled={loading}
         className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
       >
-        {loading ? "Adding..." : "Add Media"}
+        {loading ? "Adding..." : "Add Video"}
       </button>
     </form>
   );

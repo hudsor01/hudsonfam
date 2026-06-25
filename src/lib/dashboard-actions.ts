@@ -6,57 +6,6 @@ import { deleteImageFiles } from "@/lib/images";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-// --------------- Albums ---------------
-
-export async function createAlbum(formData: FormData) {
-  await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title");
-  const slug = formData.get("slug");
-  if (!title || !slug) throw new Error("Title and slug are required");
-
-  const description = formData.get("description") as string | null;
-  const dateStr = formData.get("date") as string | null;
-
-  await prisma.album.create({
-    data: {
-      title: title as string,
-      slug: slug as string,
-      description: description || null,
-      date: dateStr ? new Date(dateStr) : null,
-    },
-  });
-
-  revalidatePath("/dashboard/photos");
-  revalidatePath("/photos");
-  redirect("/dashboard/photos/albums");
-}
-
-export async function updateAlbum(id: string, formData: FormData) {
-  await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title");
-  const slug = formData.get("slug");
-  if (!title || !slug) throw new Error("Title and slug are required");
-
-  const description = formData.get("description") as string | null;
-  const dateStr = formData.get("date") as string | null;
-  const coverPhotoId = formData.get("coverPhotoId") as string | null;
-
-  await prisma.album.update({
-    where: { id },
-    data: {
-      title: title as string,
-      slug: slug as string,
-      description: description || null,
-      date: dateStr ? new Date(dateStr) : null,
-      coverPhotoId: coverPhotoId || null,
-    },
-  });
-
-  revalidatePath("/dashboard/photos");
-  revalidatePath("/photos");
-  redirect("/dashboard/photos/albums");
-}
-
 // --------------- Events ---------------
 
 export async function createEvent(formData: FormData) {

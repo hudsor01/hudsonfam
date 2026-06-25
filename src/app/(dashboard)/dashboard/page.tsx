@@ -9,9 +9,9 @@ import { QuickEventDialog } from "./quick-actions";
 
 export default async function DashboardPage() {
   await connection();
-  const [photoCount, albumCount, eventCount] = await Promise.all([
+  const [photoCount, collectionCount, eventCount] = await Promise.all([
     prisma.photo.count(),
-    prisma.album.count(),
+    prisma.collection.count({ where: { kind: "album" } }),
     prisma.event.count(),
   ]);
 
@@ -20,9 +20,9 @@ export default async function DashboardPage() {
     take: 4,
     select: {
       id: true,
+      title: true,
       thumbnailPath: true,
       createdAt: true,
-      album: { select: { title: true } },
     },
   });
 
@@ -35,7 +35,7 @@ export default async function DashboardPage() {
 
   const stats = [
     { label: "Photos", value: photoCount, href: "/dashboard/photos" },
-    { label: "Albums", value: albumCount, href: "/dashboard/photos/albums" },
+    { label: "Collections", value: collectionCount, href: "/dashboard/photos/albums" },
     { label: "Events", value: eventCount, href: "/dashboard/events" },
   ];
 
@@ -78,7 +78,7 @@ export default async function DashboardPage() {
             href="/dashboard/photos/albums/new"
             className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
           >
-            New Album
+            New Collection
           </Link>
           <Link
             href="/dashboard/events/new"
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
                   >
                     <Image
                       src={`/api/images/${photo.id}?size=thumbnail`}
-                      alt={photo.album?.title ?? "Photo"}
+                      alt={photo.title ?? "Photo"}
                       width={200}
                       height={200}
                       className="w-full h-full object-cover hover:opacity-80 transition-opacity"

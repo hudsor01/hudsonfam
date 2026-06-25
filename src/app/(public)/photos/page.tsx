@@ -11,45 +11,50 @@ export const metadata = {
 
 export default async function PhotosPage() {
   await connection();
-  const albums = await prisma.album.findMany({
-    orderBy: { date: "desc" },
+  const collections = await prisma.collection.findMany({
+    where: { kind: "album" },
     include: {
       _count: { select: { photos: true } },
       photos: {
+        include: { photo: true },
+        orderBy: { sortOrder: "asc" },
         take: 1,
-        orderBy: { createdAt: "asc" },
-        select: { id: true, thumbnailPath: true },
       },
     },
+    orderBy: { date: "desc" },
   });
 
   return (
     <div className="max-w-5xl mx-auto px-7 py-12">
       <SectionHeader title="Photos" subtitle="Family moments captured" />
 
-      {albums.length === 0 ? (
+      {collections.length === 0 ? (
         <p className="text-muted-foreground text-sm mt-8">
           No albums yet. Check back soon.
         </p>
       ) : (
         <div className="@container grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-6 mt-8">
-          {albums.map((album) => {
-            const coverPhoto = album.photos[0] || null;
-            const photoCount = album._count.photos;
+          {collections.map((collection) => {
+            // Prefer explicit coverPhotoId; fall back to first photo in sortOrder
+            const coverPhotoId =
+              collection.coverPhotoId ??
+              collection.photos[0]?.photo.id ??
+              null;
+            const photoCount = collection._count.photos;
 
             return (
               <Link
-                key={album.id}
-                href={`/photos/${album.slug}`}
+                key={collection.id}
+                href={`/photos/${collection.slug}`}
                 className="group block"
               >
                 <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/40 transition-colors">
                   {/* Cover image */}
                   <div className="aspect-[4/3] bg-background overflow-hidden">
-                    {coverPhoto ? (
+                    {coverPhotoId ? (
                       <Image
-                        src={`/api/images/${coverPhoto.id}?size=thumbnail`}
-                        alt={album.title}
+                        src={`/api/images/${coverPhotoId}?size=thumbnail`}
+                        alt={collection.title}
                         width={800}
                         height={400}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -84,15 +89,15 @@ export default async function PhotosPage() {
                     )}
                   </div>
 
-                  {/* Album info */}
+                  {/* Collection info */}
                   <div className="p-4">
                     <h2 className="text-foreground font-serif text-lg group-hover:text-primary transition-colors text-balance">
-                      {album.title}
+                      {collection.title}
                     </h2>
                     <div className="flex items-center gap-3 mt-1.5">
-                      {album.date && (
+                      {collection.date && (
                         <span className="text-muted-foreground text-xs">
-                          {new Date(album.date).toLocaleDateString("en-US", {
+                          {new Date(collection.date).toLocaleDateString("en-US", {
                             month: "long",
                             year: "numeric",
                           })}
@@ -102,9 +107,9 @@ export default async function PhotosPage() {
                         {photoCount} {photoCount === 1 ? "photo" : "photos"}
                       </span>
                     </div>
-                    {album.description && (
+                    {collection.description && (
                       <p className="text-muted-foreground text-sm mt-2 line-clamp-2 text-pretty">
-                        {album.description}
+                        {collection.description}
                       </p>
                     )}
                   </div>

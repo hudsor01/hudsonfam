@@ -33,16 +33,13 @@ export const updateFormSchema = z.object({
 
 export type UpdateFormValues = z.infer<typeof updateFormSchema>;
 
-// ─── Album ───────────────────────────────────────────────────────────────────
-export const albumFormSchema = z.object({
+// ─── Collection ───────────────────────────────────────────────────────────────
+export const collectionFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  slug: z.string().min(1, "Slug is required"),
   description: z.string().optional(),
-  date: z.string().optional(),
-  coverPhotoId: z.string().optional(),
 });
 
-export type AlbumFormValues = z.infer<typeof albumFormSchema>;
+export type CollectionFormValues = z.infer<typeof collectionFormSchema>;
 
 // ─── Memory ──────────────────────────────────────────────────────────────────
 export const memoryFormSchema = z.object({

@@ -13,9 +13,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface Album {
+interface Collection {
   id: string;
   title: string;
+  kind: string;
 }
 
 interface UploadResult {
@@ -24,8 +25,9 @@ interface UploadResult {
   error?: string;
 }
 
-export function UploadForm({ albums }: { albums: Album[] }) {
-  const [selectedAlbum, setSelectedAlbum] = useState("");
+export function UploadForm({ collections }: { collections: Collection[] }) {
+  const [selectedCollection, setSelectedCollection] = useState("");
+  const [publishNow, setPublishNow] = useState(true);
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -54,9 +56,10 @@ export function UploadForm({ albums }: { albums: Album[] }) {
       setUploadProgress(Math.round((i / files.length) * 100));
       const formData = new FormData();
       formData.append("file", file);
-      if (selectedAlbum && selectedAlbum !== "__none__") {
-        formData.append("albumId", selectedAlbum);
+      if (selectedCollection && selectedCollection !== "__none__") {
+        formData.append("collectionId", selectedCollection);
       }
+      formData.append("published", publishNow ? "true" : "false");
       formData.append("title", file.name.replace(/\.[^/.]+$/, ""));
 
       try {
@@ -96,24 +99,39 @@ export function UploadForm({ albums }: { albums: Album[] }) {
 
   return (
     <div className="max-w-2xl space-y-5">
-      {/* Album selector */}
+      {/* Collection selector */}
       <div className="space-y-1.5">
         <label className="block text-sm font-medium text-muted-foreground">
-          Album (optional)
+          Collection (optional)
         </label>
-        <Select value={selectedAlbum} onValueChange={setSelectedAlbum}>
+        <Select value={selectedCollection} onValueChange={setSelectedCollection}>
           <SelectTrigger>
-            <SelectValue placeholder="No album" />
+            <SelectValue placeholder="— None —" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__none__">No album</SelectItem>
-            {albums.map((album) => (
-              <SelectItem key={album.id} value={album.id}>
-                {album.title}
+            <SelectItem value="__none__">— None —</SelectItem>
+            {collections.map((collection) => (
+              <SelectItem key={collection.id} value={collection.id}>
+                {collection.title}
+                {collection.kind === "memorial" ? " (Memorial)" : ""}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      {/* Publish now checkbox */}
+      <div className="flex items-center gap-2">
+        <input
+          id="publish-now"
+          type="checkbox"
+          checked={publishNow}
+          onChange={(e) => setPublishNow(e.target.checked)}
+          className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
+        />
+        <label htmlFor="publish-now" className="text-sm font-medium text-muted-foreground cursor-pointer">
+          Publish now
+        </label>
       </div>
 
       {/* File input */}

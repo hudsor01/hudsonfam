@@ -32,9 +32,39 @@ model Photo {
   takenAt       DateTime?
   uploadedById  String
   createdAt     DateTime  @default(now())
+  published     Boolean           @default(false)
+  collections   CollectionPhoto[]
 
   @@index([albumId])
   @@index([uploadedById])
+  @@index([published])
+}
+
+model Collection {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  description  String?
+  kind         String   @default("album") // "album" | "surface"
+  coverPhotoId String?
+  date         DateTime?
+  createdAt    DateTime @default(now())
+  photos       CollectionPhoto[]
+}
+
+model CollectionPhoto {
+  id           String     @id @default(cuid())
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  photoId      String
+  photo        Photo      @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  sortOrder    Int        @default(0)
+  caption      String?
+  layout       String     @default("auto") // "auto" | "wide" | "tall" | "feature"
+
+  @@unique([collectionId, photoId])
+  @@index([collectionId, sortOrder])
+  @@index([photoId])
 }
 
 model Event {
