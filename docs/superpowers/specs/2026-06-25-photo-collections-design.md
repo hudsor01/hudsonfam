@@ -168,6 +168,13 @@ Live data is tiny (1 album, 1 photo in it, 0 memorial media), so risk is low.
 - **Homepage:** read `published` photos (replaces `albumId not null`).
 - **Memorial page (`/richard-hudson-sr`):** `LayoutGrid` cards built from the
   `memorial` collection; videos from `MemorialMedia`.
+- **Reordering UI (drag-and-drop):** each collection management view (memorial,
+  album, later homepage) renders its photos in a **sortable grid** via the
+  **DiceUI Sortable** shadcn-registry component (`@diceui/sortable`, built on
+  `@dnd-kit/*`, keyboard-accessible). Installed the same way as the Aceternity
+  LayoutGrid: `bunx --bun shadcn@latest add @diceui/sortable`. On drag end the new
+  order persists via `reorderCollectionPhoto` (batch `sortOrder` update). Public
+  pages render read-only in `sortOrder` — no drag UI ships to visitors.
 - **Server actions** (all `requireRole`-gated): `createCollection`,
   `updateCollection`, `deleteCollection`, `addPhotoToCollection`,
   `removePhotoFromCollection`, `reorderCollectionPhoto`, `setPhotoLayout`,
