@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { cache } from "react";
 import prisma from "@/lib/prisma";
 import { connection } from "next/server";
@@ -7,6 +6,7 @@ import { MemoryForm } from "./memory-form";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { LayoutGrid } from "@/components/ui/layout-grid";
 
 const SITE_URL = "https://thehudsonfam.com";
 
@@ -28,17 +28,14 @@ function safeJsonLd(data: unknown): string {
     .replace(/\u2029/g, "\\u2029");
 }
 
-// Masonry span pattern applied by index so a DB-driven gallery keeps the
-// same visual rhythm the old hardcoded gallery had.
+// Column-span pattern for the LayoutGrid bento (3-col on md). Each pair of
+// cards sums to 3 columns (2+1, 1+2), so the grid reads as a balanced bento
+// for any number of photos.
 const GALLERY_SPANS = [
-  "col-span-2 row-span-2",
-  "",
-  "",
-  "",
-  "col-span-2",
-  "",
-  "",
-  "",
+  "md:col-span-2",
+  "col-span-1",
+  "col-span-1",
+  "md:col-span-2",
 ];
 
 // cache() dedupes the query across generateMetadata() and the page render
@@ -396,38 +393,19 @@ export default async function RichardHudsonSrMemorialPage() {
           Moments that capture the life and spirit of Richard Hudson Sr.
         </p>
         {photos.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
-            {photos.map((photo, i) => {
-              const alt = photo.caption || "Photo of Richard Hudson Sr.";
-              const span = GALLERY_SPANS[i % GALLERY_SPANS.length];
-              // Tiles always render square (aspect-square + object-cover); the
-              // wider/taller spanned tiles just get a larger square intrinsic
-              // size for sharpness.
-              const dim = span.includes("col-span-2") ? 600 : 400;
-              return (
-                <figure
-                  key={photo.id}
-                  className={`relative overflow-hidden rounded-lg group ${span} m-0`}
-                >
-                  <div className="aspect-square">
-                    <Image
-                      src={photo.url}
-                      alt={alt}
-                      className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 hover:brightness-110 hover:saturate-110"
-                      loading={i < 4 ? "eager" : "lazy"}
-                      width={dim}
-                      height={dim}
-                      unoptimized
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  {photo.caption && (
-                    <figcaption className="sr-only">{photo.caption}</figcaption>
-                  )}
-                </figure>
-              );
-            })}
-          </div>
+          <LayoutGrid
+            cards={photos.map((photo, i) => ({
+              id: i + 1,
+              thumbnail: photo.url,
+              alt: photo.caption || "Photo of Richard Hudson Sr.",
+              className: GALLERY_SPANS[i % GALLERY_SPANS.length],
+              content: (
+                <p className="font-serif text-xl md:text-3xl text-white text-balance">
+                  {photo.caption || "Richard Hudson Sr."}
+                </p>
+              ),
+            }))}
+          />
         ) : (
           <div className="bg-card border border-border rounded-xl overflow-hidden">
             <div className="aspect-video flex items-center justify-center bg-linear-to-br/oklch from-card to-background">

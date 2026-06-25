@@ -8,6 +8,7 @@ type Card = {
   content: React.ReactNode;
   className: string;
   thumbnail: string;
+  alt?: string;
 };
 
 export const LayoutGrid = ({ cards }: { cards: Card[] }) => {
@@ -25,7 +26,11 @@ export const LayoutGrid = ({ cards }: { cards: Card[] }) => {
   };
 
   return (
-    <div className="w-full h-full p-10 grid grid-cols-1 md:grid-cols-3  max-w-7xl mx-auto gap-4 relative">
+    // Deviation from the canonical Aceternity LayoutGrid: the original relies
+    // on a fixed-height parent (h-screen) + grid stretch, which caps it to a
+    // curated handful of cards. We use fixed-height auto-rows instead so the
+    // grid grows to any number of cards without a height calc on the caller.
+    <div className="w-full p-4 sm:p-10 grid grid-cols-1 md:grid-cols-3 auto-rows-[16rem] md:auto-rows-[20rem] max-w-7xl mx-auto gap-4 relative">
       {cards.map((card, i) => (
         <div key={i} className={cn(card.className, "")}>
           <motion.div
@@ -68,7 +73,7 @@ const ImageComponent = ({ card }: { card: Card }) => {
       className={cn(
         "object-cover object-top absolute inset-0 h-full w-full transition duration-200"
       )}
-      alt="thumbnail"
+      alt={card.alt || "thumbnail"}
     />
   );
 };
