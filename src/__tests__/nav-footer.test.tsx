@@ -52,6 +52,15 @@ async function readLayout(): Promise<string> {
   );
 }
 
+// The site-wide footer lives in its own client component (it hides itself on
+// the memorial route via usePathname).
+async function readSiteFooter(): Promise<string> {
+  return fs.readFile(
+    path.join(process.cwd(), 'src', 'components', 'public', 'site-footer.tsx'),
+    'utf-8'
+  );
+}
+
 // ---------------------------------------------------------------------------
 // NAV-01: navLinks array — label, order, count
 // ---------------------------------------------------------------------------
@@ -91,7 +100,7 @@ describe('NAV-01: navLinks array in layout.tsx', () => {
 
 describe('FOOT-01 + FOOT-02: footer links in layout.tsx', () => {
   it('footer contains href="/recipes"', async () => {
-    const layout = await readLayout();
+    const layout = await readSiteFooter();
     const footerStart = layout.indexOf('<footer');
     const footerSection = layout.slice(footerStart);
     // FAILS RED: footer currently has Photos and Events only
@@ -99,7 +108,7 @@ describe('FOOT-01 + FOOT-02: footer links in layout.tsx', () => {
   });
 
   it('footer contains href="/photos"', async () => {
-    const layout = await readLayout();
+    const layout = await readSiteFooter();
     const footerStart = layout.indexOf('<footer');
     const footerSection = layout.slice(footerStart);
     // Passes: Photos is already in the footer
@@ -107,7 +116,7 @@ describe('FOOT-01 + FOOT-02: footer links in layout.tsx', () => {
   });
 
   it('footer contains href="/events"', async () => {
-    const layout = await readLayout();
+    const layout = await readSiteFooter();
     const footerStart = layout.indexOf('<footer');
     const footerSection = layout.slice(footerStart);
     // Passes: Events is already in the footer
@@ -115,7 +124,7 @@ describe('FOOT-01 + FOOT-02: footer links in layout.tsx', () => {
   });
 
   it('footer contains href="/richard-hudson-sr" (In Memory)', async () => {
-    const layout = await readLayout();
+    const layout = await readSiteFooter();
     const footerStart = layout.indexOf('<footer');
     const footerSection = layout.slice(footerStart);
     // FAILS RED: /richard-hudson-sr is not in the footer yet
@@ -123,7 +132,7 @@ describe('FOOT-01 + FOOT-02: footer links in layout.tsx', () => {
   });
 
   it('footer does NOT contain a /blog link', async () => {
-    const layout = await readLayout();
+    const layout = await readSiteFooter();
     const footerStart = layout.indexOf('<footer');
     const footerSection = layout.slice(footerStart);
     // Passes: /blog already pruned in Phase 32
@@ -131,7 +140,7 @@ describe('FOOT-01 + FOOT-02: footer links in layout.tsx', () => {
   });
 
   it('footer does NOT contain a /family link', async () => {
-    const layout = await readLayout();
+    const layout = await readSiteFooter();
     const footerStart = layout.indexOf('<footer');
     const footerSection = layout.slice(footerStart);
     // Passes: /family already pruned in Phase 32
@@ -139,7 +148,7 @@ describe('FOOT-01 + FOOT-02: footer links in layout.tsx', () => {
   });
 
   it('footer has flex-col sm:flex-row for responsive stacking (FOOT-02)', async () => {
-    const layout = await readLayout();
+    const layout = await readSiteFooter();
     const footerStart = layout.indexOf('<footer');
     const footerSection = layout.slice(footerStart);
     // Passes: flex-col sm:flex-row already present in footer div

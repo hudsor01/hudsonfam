@@ -331,18 +331,6 @@ export default async function RichardHudsonSrMemorialPage() {
           </p>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-card border-t border-border">
-        <div className="max-w-xl mx-auto text-center px-5 py-10">
-          <Link
-            href="/"
-            className="text-xs text-text-dim hover:text-accent transition-colors"
-          >
-            The Hudson Family — Dallas, Texas
-          </Link>
-        </div>
-      </footer>
     </article>
   );
 }

@@ -960,16 +960,18 @@ describe('Integration -- Page Rendering', () => {
     expect(icalFile).toContain('\\n');
   });
 
-  it('Hudson Digital Solutions backlink present in public layout footer', async () => {
-    const layout = await fs.readFile(
-      path.join(process.cwd(), 'src', 'app', '(public)', 'layout.tsx'),
+  it('Hudson Digital Solutions backlink present in site footer', async () => {
+    // The footer moved out of layout.tsx into its own client component
+    // (it hides itself on the memorial route).
+    const footer = await fs.readFile(
+      path.join(process.cwd(), 'src', 'components', 'public', 'site-footer.tsx'),
       'utf-8'
     );
-    expect(layout).toContain('hudsondigitalsolutions.com');
-    expect(layout).toContain('Hudson Digital Solutions');
+    expect(footer).toContain('hudsondigitalsolutions.com');
+    expect(footer).toContain('Hudson Digital Solutions');
     // Should open in new tab with noopener noreferrer
-    expect(layout).toContain('target="_blank"');
-    expect(layout).toContain('rel="noopener noreferrer"');
+    expect(footer).toContain('target="_blank"');
+    expect(footer).toContain('rel="noopener noreferrer"');
   });
 
 });
