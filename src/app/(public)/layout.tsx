@@ -92,7 +92,12 @@ export default function PublicLayout({
         <MenuIndicator />
       </MenuProvider>
 
-      <SiteFooter />
+      {/* SiteFooter calls usePathname() (dynamic, to hide itself on the
+          memorial route). Suspense keeps it from blocking the layout's static
+          shell on prerendered routes (e.g. /photos/[album]). */}
+      <Suspense fallback={null}>
+        <SiteFooter />
+      </Suspense>
     </div>
   );
 }
