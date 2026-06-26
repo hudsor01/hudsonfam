@@ -65,8 +65,6 @@ import { prismaMock } from './mocks/prisma';
 // ============================================================
 
 import {
-  createEvent,
-  deleteEvent,
   updateUserRole,
   banUser,
   deletePhoto,
@@ -102,57 +100,12 @@ function createInviteRequest(params: Record<string, string> = {}): NextRequest {
 }
 
 // ============================================================
-// 1. FormData Validation — catches the `as string` on null bug
-// ============================================================
-
-describe('FormData validation (formerly null coercion bugs)', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockRequireRole.mockResolvedValue(fakeOwnerSession);
-    prismaMock.event.create.mockResolvedValue({ id: 'event-1' });
-  });
-
-  it('FIXED: createEvent throws when startDate is missing', async () => {
-    const formData = new FormData();
-    formData.set('title', 'Test Event');
-
-    await expect(createEvent(formData)).rejects.toThrow('Start date is required');
-    expect(prismaMock.event.create).not.toHaveBeenCalled();
-  });
-
-  it('FIXED: createEvent throws on invalid startDate', async () => {
-    const formData = new FormData();
-    formData.set('title', 'Test Event');
-    formData.set('startDate', 'not-a-date');
-
-    await expect(createEvent(formData)).rejects.toThrow('Invalid start date');
-    expect(prismaMock.event.create).not.toHaveBeenCalled();
-  });
-
-});
-
-// ============================================================
-// 2. Auth Guard Tests — catches bypassed auth
+// 1. Auth Guard Tests — catches bypassed auth
 // ============================================================
 
 describe('Auth guard enforcement', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  it('createEvent does not create when auth fails', async () => {
-    mockRequireRole.mockRejectedValue(new Error('Unauthorized'));
-
-    const formData = makeFormData({ title: 'Event', startDate: '2026-07-15' });
-    await expect(createEvent(formData)).rejects.toThrow();
-    expect(prismaMock.event.create).not.toHaveBeenCalled();
-  });
-
-  it('deleteEvent does not delete when auth fails', async () => {
-    mockRequireRole.mockRejectedValue(new Error('Unauthorized'));
-
-    await expect(deleteEvent('event-1')).rejects.toThrow();
-    expect(prismaMock.event.delete).not.toHaveBeenCalled();
   });
 
   it('updateUserRole does not update when auth fails (owner-only action)', async () => {
@@ -393,50 +346,7 @@ describe('Database schema field alignment', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireRole.mockResolvedValue(fakeOwnerSession);
-    prismaMock.event.create.mockResolvedValue({ id: 'event-1' });
     prismaMock.inviteToken.create.mockResolvedValue({ id: 'invite-1', token: 'abc' });
-  });
-
-  it('createEvent startDate is a Date object (not a string)', async () => {
-    const formData = makeFormData({
-      title: 'Event',
-      startDate: '2026-07-15T14:00',
-      visibility: 'PUBLIC',
-    });
-
-    await createEvent(formData);
-
-    const callArgs = prismaMock.event.create.mock.calls[0][0].data;
-    expect(callArgs.startDate).toBeInstanceOf(Date);
-    // Must not be Invalid Date
-    expect(isNaN(callArgs.startDate.getTime())).toBe(false);
-  });
-
-  it('createEvent visibility is a valid Visibility enum', async () => {
-    const formData = makeFormData({
-      title: 'Event',
-      startDate: '2026-07-15',
-      visibility: 'FAMILY',
-    });
-
-    await createEvent(formData);
-
-    const callArgs = prismaMock.event.create.mock.calls[0][0].data;
-    expect(['PUBLIC', 'FAMILY']).toContain(callArgs.visibility);
-  });
-
-  it('FIXED: createEvent normalizes invalid visibility to PUBLIC', async () => {
-    const formData = makeFormData({
-      title: 'Event',
-      startDate: '2026-07-15',
-      visibility: 'INVALID_VALUE', // not in the Visibility enum
-    });
-
-    await createEvent(formData);
-
-    const callArgs = prismaMock.event.create.mock.calls[0][0].data;
-    // Invalid visibility values are now normalized to PUBLIC
-    expect(callArgs.visibility).toBe('PUBLIC');
   });
 
   it('createInvite data includes all required InviteToken fields', async () => {
@@ -479,12 +389,9 @@ describe('Cache Components dynamic rendering correctness', () => {
   // Pages that import prisma and MUST opt into dynamic rendering via connection()
   const PAGES_USING_PRISMA = [
     '(public)/page.tsx',
-    '(public)/events/page.tsx',
     '(public)/photos/page.tsx',
     '(public)/photos/[album]/page.tsx',
     '(dashboard)/dashboard/page.tsx',
-    '(dashboard)/dashboard/events/page.tsx',
-    '(dashboard)/dashboard/events/[id]/page.tsx',
     '(dashboard)/dashboard/photos/page.tsx',
     '(dashboard)/dashboard/photos/albums/page.tsx',
     '(dashboard)/dashboard/photos/albums/[id]/page.tsx',

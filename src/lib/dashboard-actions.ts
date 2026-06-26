@@ -4,92 +4,6 @@ import { requireRole } from "@/lib/session";
 import prisma from "@/lib/prisma";
 import { deleteImageFiles } from "@/lib/images";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-
-// --------------- Events ---------------
-
-export async function createEvent(formData: FormData) {
-  const session = await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title");
-  if (!title) throw new Error("Title is required");
-
-  const description = formData.get("description") as string | null;
-  const location = formData.get("location") as string | null;
-  const startDate = formData.get("startDate");
-  if (!startDate) throw new Error("Start date is required");
-  const parsedStartDate = new Date(startDate as string);
-  if (isNaN(parsedStartDate.getTime())) throw new Error("Invalid start date");
-
-  const endDate = formData.get("endDate") as string | null;
-  const parsedEndDate = endDate ? new Date(endDate) : null;
-  if (parsedEndDate && isNaN(parsedEndDate.getTime())) throw new Error("Invalid end date");
-
-  const allDay = formData.get("allDay") === "on";
-  const rawVisibility = formData.get("visibility") as string | null;
-  const visibility = rawVisibility === "FAMILY" ? "FAMILY" : "PUBLIC";
-
-  await prisma.event.create({
-    data: {
-      title: title as string,
-      description: description || null,
-      location: location || null,
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-      allDay,
-      visibility,
-      createdById: session.user.id,
-    },
-  });
-
-  revalidatePath("/dashboard/events");
-  revalidatePath("/events");
-  redirect("/dashboard/events");
-}
-
-export async function updateEvent(id: string, formData: FormData) {
-  await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title");
-  if (!title) throw new Error("Title is required");
-
-  const description = formData.get("description") as string | null;
-  const location = formData.get("location") as string | null;
-  const startDate = formData.get("startDate");
-  if (!startDate) throw new Error("Start date is required");
-  const parsedStartDate = new Date(startDate as string);
-  if (isNaN(parsedStartDate.getTime())) throw new Error("Invalid start date");
-
-  const endDate = formData.get("endDate") as string | null;
-  const parsedEndDate = endDate ? new Date(endDate) : null;
-  if (parsedEndDate && isNaN(parsedEndDate.getTime())) throw new Error("Invalid end date");
-
-  const allDay = formData.get("allDay") === "on";
-  const rawVisibility = formData.get("visibility") as string | null;
-  const visibility = rawVisibility === "FAMILY" ? "FAMILY" : "PUBLIC";
-
-  await prisma.event.update({
-    where: { id },
-    data: {
-      title: title as string,
-      description: description || null,
-      location: location || null,
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-      allDay,
-      visibility,
-    },
-  });
-
-  revalidatePath("/dashboard/events");
-  revalidatePath("/events");
-  redirect("/dashboard/events");
-}
-
-export async function deleteEvent(id: string) {
-  await requireRole(["owner", "admin"]);
-  await prisma.event.delete({ where: { id } });
-  revalidatePath("/dashboard/events");
-  revalidatePath("/events");
-}
 
 // --------------- Members (owner-only) ---------------
 
@@ -138,33 +52,6 @@ export async function deletePhoto(id: string) {
 
   revalidatePath("/dashboard/photos");
   revalidatePath("/photos");
-}
-
-// --------------- Quick-create (no redirect) ---------------
-
-export async function quickCreateEvent(formData: FormData) {
-  const session = await requireRole(["owner", "admin", "member"]);
-  const title = formData.get("title");
-  if (!title) throw new Error("Title is required");
-
-  const startDate = formData.get("startDate");
-  if (!startDate) throw new Error("Start date is required");
-  const parsedStartDate = new Date(startDate as string);
-  if (isNaN(parsedStartDate.getTime())) throw new Error("Invalid start date");
-
-  await prisma.event.create({
-    data: {
-      title: title as string,
-      startDate: parsedStartDate,
-      allDay: true,
-      visibility: "PUBLIC",
-      createdById: session.user.id,
-    },
-  });
-
-  revalidatePath("/dashboard/events");
-  revalidatePath("/dashboard");
-  revalidatePath("/events");
 }
 
 // --------------- Invites ---------------

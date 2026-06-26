@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     default: "The Hudson Family",
     template: "%s | The Hudson Family",
   },
-  description: "Photos, events, and memories from our corner of the world",
+  description: "Photos and memories from our corner of the world",
   metadataBase: new URL("https://thehudsonfam.com"),
   openGraph: {
     type: "website",
@@ -16,12 +16,12 @@ export const metadata: Metadata = {
     url: "https://thehudsonfam.com",
     siteName: "The Hudson Family",
     title: "The Hudson Family",
-    description: "Photos, events, and memories from our corner of the world",
+    description: "Photos and memories from our corner of the world",
   },
   twitter: {
     card: "summary",
     title: "The Hudson Family",
-    description: "Photos, events, and memories from our corner of the world",
+    description: "Photos and memories from our corner of the world",
   },
 };
 

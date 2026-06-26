@@ -25,8 +25,6 @@ import { prismaMock } from '../mocks/prisma';
 
 // Import the actions under test
 import {
-  createEvent,
-  deleteEvent,
   updateUserRole,
   banUser,
   unbanUser,
@@ -52,100 +50,10 @@ describe('dashboard-actions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireRole.mockResolvedValue(fakeSession);
-    prismaMock.event.create.mockResolvedValue({ id: 'event-1' });
-    prismaMock.event.update.mockResolvedValue({ id: 'event-1' });
-    prismaMock.event.delete.mockResolvedValue({ id: 'event-1' });
     prismaMock.user.update.mockResolvedValue({ id: 'user-1' });
     prismaMock.photo.delete.mockResolvedValue({ id: 'photo-1' });
     prismaMock.inviteToken.create.mockResolvedValue({ id: 'invite-1', token: 'abc-123' });
     prismaMock.inviteToken.delete.mockResolvedValue({ id: 'invite-1' });
-  });
-
-  // --------------- Events ---------------
-
-  describe('createEvent', () => {
-    it('creates an event with all-day flag', async () => {
-      const formData = makeFormData({
-        title: 'Birthday Party',
-        description: 'A fun party',
-        location: 'Dallas, TX',
-        startDate: '2026-07-15',
-        allDay: 'on',
-        visibility: 'FAMILY',
-      });
-
-      await createEvent(formData);
-
-      expect(prismaMock.event.create).toHaveBeenCalledWith({
-        data: expect.objectContaining({
-          title: 'Birthday Party',
-          description: 'A fun party',
-          location: 'Dallas, TX',
-          allDay: true,
-          visibility: 'FAMILY',
-          createdById: 'user-1',
-        }),
-      });
-    });
-
-    it('defaults allDay to false when not checked', async () => {
-      const formData = makeFormData({
-        title: 'Meeting',
-        startDate: '2026-07-15T14:00',
-      });
-
-      await createEvent(formData);
-
-      const callArgs = prismaMock.event.create.mock.calls[0][0].data;
-      expect(callArgs.allDay).toBe(false);
-    });
-
-    it('defaults visibility to PUBLIC', async () => {
-      const formData = makeFormData({
-        title: 'Public Event',
-        startDate: '2026-07-15',
-      });
-
-      await createEvent(formData);
-
-      const callArgs = prismaMock.event.create.mock.calls[0][0].data;
-      expect(callArgs.visibility).toBe('PUBLIC');
-    });
-
-    it('handles optional end date', async () => {
-      const formData = makeFormData({
-        title: 'Event',
-        startDate: '2026-07-15',
-        endDate: '2026-07-16',
-      });
-
-      await createEvent(formData);
-
-      const callArgs = prismaMock.event.create.mock.calls[0][0].data;
-      expect(callArgs.endDate).toBeInstanceOf(Date);
-    });
-
-    it('redirects to events dashboard', async () => {
-      const formData = makeFormData({
-        title: 'Event',
-        startDate: '2026-07-15',
-      });
-
-      await createEvent(formData);
-
-      expect(mockRedirect).toHaveBeenCalledWith('/dashboard/events');
-    });
-  });
-
-  describe('deleteEvent', () => {
-    it('deletes event and revalidates', async () => {
-      await deleteEvent('event-1');
-
-      expect(mockRequireRole).toHaveBeenCalledWith(['owner', 'admin']);
-      expect(prismaMock.event.delete).toHaveBeenCalledWith({ where: { id: 'event-1' } });
-      expect(mockRevalidatePath).toHaveBeenCalledWith('/dashboard/events');
-      expect(mockRevalidatePath).toHaveBeenCalledWith('/events');
-    });
   });
 
   // --------------- Members ---------------
@@ -265,13 +173,6 @@ describe('dashboard-actions', () => {
   // --------------- Auth checks ---------------
 
   describe('auth enforcement', () => {
-    it('calls requireRole before deleting event', async () => {
-      mockRequireRole.mockRejectedValue(new Error('Unauthorized'));
-
-      await expect(deleteEvent('event-1')).rejects.toThrow('Unauthorized');
-      expect(prismaMock.event.delete).not.toHaveBeenCalled();
-    });
-
     it('owner-only actions reject non-owners', async () => {
       mockRequireRole.mockRejectedValue(new Error('Forbidden'));
 

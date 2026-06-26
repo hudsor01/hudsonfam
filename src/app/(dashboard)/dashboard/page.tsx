@@ -5,14 +5,12 @@ import { connection } from "next/server";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { CollapsibleCard } from "@/components/dashboard/collapsible-card";
-import { QuickEventDialog } from "./quick-actions";
 
 export default async function DashboardPage() {
   await connection();
-  const [photoCount, collectionCount, eventCount] = await Promise.all([
+  const [photoCount, collectionCount] = await Promise.all([
     prisma.photo.count(),
     prisma.collection.count({ where: { kind: "album" } }),
-    prisma.event.count(),
   ]);
 
   const recentPhotos = await prisma.photo.findMany({
@@ -26,17 +24,9 @@ export default async function DashboardPage() {
     },
   });
 
-  const upcomingEvents = await prisma.event.findMany({
-    where: { startDate: { gte: new Date() } },
-    orderBy: { startDate: "asc" },
-    take: 5,
-    select: { id: true, title: true, startDate: true },
-  });
-
   const stats = [
     { label: "Photos", value: photoCount, href: "/dashboard/photos" },
     { label: "Collections", value: collectionCount, href: "/dashboard/photos/albums" },
-    { label: "Events", value: eventCount, href: "/dashboard/events" },
   ];
 
   return (
@@ -47,7 +37,7 @@ export default async function DashboardPage() {
       />
 
       {/* Stats grid */}
-      <div className="@container grid grid-cols-2 @sm:grid-cols-3 gap-4 mt-6">
+      <div className="@container grid grid-cols-2 gap-4 mt-6">
         {stats.map((stat) => (
           <a key={stat.label} href={stat.href}>
             <Card hover padding="md" className="text-center">
@@ -80,19 +70,11 @@ export default async function DashboardPage() {
           >
             New Collection
           </Link>
-          <Link
-            href="/dashboard/events/new"
-            className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
-          >
-            New Event
-          </Link>
-          <QuickEventDialog />
         </div>
       </div>
 
       {/* Recent activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-        {/* Recent photos */}
+      <div className="mt-8">
         <CollapsibleCard title="Recent Photos">
           <div>
             {recentPhotos.length === 0 ? (
@@ -121,38 +103,6 @@ export default async function DashboardPage() {
                   </a>
                 ))}
               </div>
-            )}
-          </div>
-        </CollapsibleCard>
-
-        {/* Upcoming events */}
-        <CollapsibleCard title="Upcoming Events">
-          <div>
-            {upcomingEvents.length === 0 ? (
-              <div className="px-5 py-8 text-center">
-                <p className="text-sm font-medium text-foreground">No upcoming events</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Create an event to see it here.
-                </p>
-              </div>
-            ) : (
-              upcomingEvents.map((event) => (
-                <a
-                  key={event.id}
-                  href={`/dashboard/events/${event.id}`}
-                  className="flex items-center justify-between px-5 py-3 not-last:border-b not-last:border-border/50 hover:bg-background/50 transition-colors"
-                >
-                  <span className="text-sm text-foreground truncate mr-3">
-                    {event.title}
-                  </span>
-                  <span className="text-xs text-text-dim shrink-0">
-                    {new Date(event.startDate).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </span>
-                </a>
-              ))
             )}
           </div>
         </CollapsibleCard>

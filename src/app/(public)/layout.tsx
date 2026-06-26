@@ -12,7 +12,6 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/recipes", label: "Recipes" },
   { href: "/photos", label: "Photos" },
-  { href: "/events", label: "Events" },
   { href: "/richard-hudson-sr", label: "In Memory" },
 ];
 

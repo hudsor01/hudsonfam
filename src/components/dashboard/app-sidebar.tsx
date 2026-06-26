@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Image,
-  CalendarDays,
   Users,
   Heart,
   Home,
@@ -34,7 +33,6 @@ import { authClient } from "@/lib/auth-client";
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Overview: LayoutDashboard,
   Photos: Image,
-  Events: CalendarDays,
   Members: Users,
   Memorial: Heart,
 };

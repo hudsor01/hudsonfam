@@ -9,68 +9,6 @@ async function main() {
 
   console.log("Seeding sample content...");
 
-  // --- Sample Events ---
-  const existingEvents = await prisma.event.count();
-  if (existingEvents === 0) {
-    await prisma.event.createMany({
-      data: [
-        {
-          title: "Easter Brunch",
-          description: "Family brunch at the new house. Bring your appetite.",
-          location: "Our place",
-          startDate: new Date("2026-04-05T11:00:00-05:00"),
-          endDate: new Date("2026-04-05T14:00:00-05:00"),
-          allDay: false,
-          createdById: "seed",
-          visibility: "PUBLIC",
-        },
-        {
-          title: "Dallas Arboretum Visit",
-          description: "Spring flowers are in bloom. Let's go see them.",
-          location: "Dallas Arboretum",
-          startDate: new Date("2026-04-12T10:00:00-05:00"),
-          endDate: new Date("2026-04-12T16:00:00-05:00"),
-          allDay: false,
-          createdById: "seed",
-          visibility: "PUBLIC",
-        },
-        {
-          title: "Game Night",
-          description: "Board games, snacks, and questionable strategy.",
-          location: "Our place",
-          startDate: new Date("2026-04-18T19:00:00-05:00"),
-          endDate: new Date("2026-04-18T23:00:00-05:00"),
-          allDay: false,
-          createdById: "seed",
-          visibility: "FAMILY",
-        },
-        {
-          title: "Memorial Day Weekend",
-          description: "Long weekend plans TBD. Suggestions welcome.",
-          location: null,
-          startDate: new Date("2026-05-23T00:00:00-05:00"),
-          endDate: new Date("2026-05-25T23:59:00-05:00"),
-          allDay: true,
-          createdById: "seed",
-          visibility: "PUBLIC",
-        },
-        {
-          title: "Summer BBQ",
-          description: "Kicking off summer the right way. Burgers, dogs, and cold drinks.",
-          location: "Backyard",
-          startDate: new Date("2026-06-06T16:00:00-05:00"),
-          endDate: new Date("2026-06-06T21:00:00-05:00"),
-          allDay: false,
-          createdById: "seed",
-          visibility: "PUBLIC",
-        },
-      ],
-    });
-    console.log("  Created 5 sample events");
-  } else {
-    console.log(`  Events already exist (${existingEvents}), skipping`);
-  }
-
   // --- Sample Photo metadata (no actual images — just DB records for layout testing) ---
   const existingPhotos = await prisma.photo.count();
   if (existingPhotos === 0) {

@@ -3,10 +3,10 @@
  *
  * Production-readiness tests covering:
  * - Memorial system (submission, moderation, media, content management)
- * - Bug fix verification (photo URLs, event relative time)
+ * - Bug fix verification (photo URLs)
  * - SEO verification (metadata, sitemap, RSS feed)
  * - Auth & security (invite tokens, memorial admin access)
- * - Integration smoke tests (robots.txt, iCal, layout backlink)
+ * - Integration smoke tests (robots.txt, layout backlink)
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -115,100 +115,6 @@ describe('Bug Fix Verification', () => {
       path.join(process.cwd(), 'src', 'app', 'api', 'images', '[...path]', 'route.ts'), 'utf-8');
     expect(route).toMatch(/requiresAuth\s*=\s*!photo\.published/);
     expect(route).not.toMatch(/requiresAuth\s*=\s*!photo\.albumId/);
-  });
-
-  // Bug 4: Event relative time formatting
-  describe('event card relative time formatting', () => {
-    // We test the getRelativeLabel logic by rendering EventCard and checking the badge.
-    // Since getRelativeLabel is not exported, we test via the component indirectly,
-    // or duplicate the logic for unit-level testing.
-
-    // Recreate the getRelativeLabel function locally to unit test it
-    function getRelativeLabel(startDate: Date): string | null {
-      const now = new Date();
-      const start = new Date(startDate);
-      const diffMs = start.getTime() - now.getTime();
-      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-
-      if (diffDays < 0) return null;
-      if (diffDays === 0) return 'Today';
-      if (diffDays === 1) return 'Tomorrow';
-      if (diffDays <= 7) return `In ${diffDays} days`;
-      if (diffDays <= 14) return 'Next week';
-      if (diffDays <= 30) {
-        const weeks = Math.round(diffDays / 7);
-        return `In ${weeks} week${weeks === 1 ? '' : 's'}`;
-      }
-      if (diffDays <= 60) {
-        const months = Math.round(diffDays / 30);
-        return `In ${months} month${months === 1 ? '' : 's'}`;
-      }
-      return null;
-    }
-
-    it('shows "Next week" for events 8-14 days away', () => {
-      const futureDate = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000);
-      expect(getRelativeLabel(futureDate)).toBe('Next week');
-    });
-
-    it('shows "In N weeks" for events 15-30 days away', () => {
-      // 15 days away -> ~2 weeks
-      const futureDate = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000);
-      const result = getRelativeLabel(futureDate);
-      expect(result).toMatch(/^In \d+ weeks?$/);
-    });
-
-    it('shows "In 2 months" for events 50 days away', () => {
-      const futureDate = new Date(Date.now() + 50 * 24 * 60 * 60 * 1000);
-      expect(getRelativeLabel(futureDate)).toBe('In 2 months');
-    });
-
-    it('returns null for past events', () => {
-      const pastDate = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
-      expect(getRelativeLabel(pastDate)).toBeNull();
-    });
-
-    it('shows "Tomorrow" for events 1 day away', () => {
-      // Use a time far enough ahead to ensure Math.ceil gives 1
-      const tomorrow = new Date(Date.now() + 12 * 60 * 60 * 1000);
-      expect(getRelativeLabel(tomorrow)).toBe('Tomorrow');
-    });
-
-    it('shows "Today" for events happening now (diffDays === 0)', () => {
-      // Set to a few seconds from now (diffMs > 0 but Math.ceil gives 0)
-      // Actually Math.ceil(positive_small / day) = 1, not 0
-      // diffDays === 0 when diffMs is <= 0 but >= -day... no.
-      // Looking at the code: diffDays = Math.ceil(diffMs / day)
-      // For "today" to work, the event must be very close or slightly past
-      // Actually Math.ceil of a very small positive = 1, so "Today" requires diffDays === 0
-      // which means diffMs <= 0 (slightly past) but NOT diffDays < 0 (more than 0ms past)
-      // Actually Math.ceil(0) = 0 and Math.ceil(negative_small) = 0 too
-      // diffDays < 0 means Math.ceil(diffMs/day) < 0, which means diffMs < -day
-      // So "Today" fires when -day < diffMs <= 0, i.e. event was earlier today
-      const startOfToday = new Date();
-      startOfToday.setHours(0, 0, 0, 0);
-      // This might be in the past (earlier today), giving diffMs < 0 but diffDays = 0
-      // Let's just use Date.now() - 1000 (1 second ago)
-      const justPast = new Date(Date.now() - 1000);
-      expect(getRelativeLabel(justPast)).toBe('Today');
-    });
-
-    it('shows "In N days" for events 2-7 days away', () => {
-      const futureDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
-      const result = getRelativeLabel(futureDate);
-      expect(result).toMatch(/^In \d+ days$/);
-    });
-
-    it('returns null for events more than 60 days away', () => {
-      const farFuture = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
-      expect(getRelativeLabel(farFuture)).toBeNull();
-    });
-
-    it('shows "In 1 month" for events ~30 days away', () => {
-      const futureDate = new Date(Date.now() + 35 * 24 * 60 * 60 * 1000);
-      const result = getRelativeLabel(futureDate);
-      expect(result).toBe('In 1 month');
-    });
   });
 
   // Bug 6: All Unsplash URLs in seed/memorial are valid format
@@ -468,30 +374,6 @@ describe('Integration -- Page Rendering', () => {
       'utf-8'
     );
     expect(robotsFile).toContain('sitemap: "https://thehudsonfam.com/sitemap.xml"');
-  });
-
-  it('iCal feed source returns text/calendar content type', async () => {
-    const icalFile = await fs.readFile(
-      path.join(process.cwd(), 'src', 'app', 'api', 'events', 'ical', 'route.ts'),
-      'utf-8'
-    );
-    expect(icalFile).toContain('text/calendar');
-    expect(icalFile).toContain('BEGIN:VCALENDAR');
-    expect(icalFile).toContain('END:VCALENDAR');
-    expect(icalFile).toContain('VERSION:2.0');
-  });
-
-  it('iCal feed escapes special characters', async () => {
-    const icalFile = await fs.readFile(
-      path.join(process.cwd(), 'src', 'app', 'api', 'events', 'ical', 'route.ts'),
-      'utf-8'
-    );
-    // escapeICalText should handle backslash, semicolon, comma, newline
-    expect(icalFile).toContain('escapeICalText');
-    expect(icalFile).toContain('\\\\');
-    expect(icalFile).toContain('\\;');
-    expect(icalFile).toContain('\\,');
-    expect(icalFile).toContain('\\n');
   });
 
   it('Hudson Digital Solutions backlink present in public layout footer', async () => {

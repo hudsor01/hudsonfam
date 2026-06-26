@@ -12,21 +12,7 @@ export default async function HomePage() {
   await connection();
 
   // Parallel fetch — eliminates waterfall
-  const [events, photos, index] = await Promise.all([
-    prisma.event.findMany({
-      where: {
-        visibility: "PUBLIC",
-        startDate: { gte: new Date() },
-      },
-      orderBy: { startDate: "asc" },
-      take: 5,
-      select: {
-        id: true,
-        title: true,
-        startDate: true,
-        location: true,
-      },
-    }),
+  const [photos, index] = await Promise.all([
     prisma.photo.findMany({
       where: { published: true },
       orderBy: { createdAt: "desc" },
@@ -84,41 +70,6 @@ export default async function HomePage() {
             <PhotoGridPreview photos={photos} />
           ) : (
             <p className="text-sm text-text-dim italic">No photos yet</p>
-          )}
-        </div>
-      </section>
-
-      <Separator />
-
-      {/* Events section */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-        <SectionHeader label="EVENTS" action={{ text: "View all events", href: "/events" }} />
-        <div className="bg-card border border-border rounded-xl p-5">
-          {events.length > 0 ? (
-            <ul className="space-y-3">
-              {events.map((event) => (
-                <li key={event.id} className="flex gap-3">
-                  <div className="flex-shrink-0 size-10 rounded-lg bg-accent/15 flex items-center justify-center">
-                    <span className="text-accent text-sm font-bold font-sans">
-                      {event.startDate.toLocaleDateString("en-US", { timeZone: "America/Chicago", day: "numeric" })}
-                    </span>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm text-foreground font-medium truncate">{event.title}</p>
-                    <p className="text-sm text-text-dim">
-                      {event.startDate.toLocaleDateString("en-US", {
-                        timeZone: "America/Chicago",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                      {event.location && ` • ${event.location}`}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-text-dim italic">No upcoming events</p>
           )}
         </div>
       </section>
