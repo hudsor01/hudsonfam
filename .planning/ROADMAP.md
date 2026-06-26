@@ -161,7 +161,9 @@
   2. The "All Photos" query returns exactly the photos with no `collectionId` — adding a photo to a collection removes it from this set, removing it from a collection returns it here
   3. A `featured` surface collection (kind=surface, name=featured) row exists in the database and its `CollectionPhoto` join rows drive the homepage grid (same pattern as `memorial`)
   4. All existing photos have `published=true` in the database; newly uploaded photos default to `published=true`; no owner action is required to publish
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 37-01-PLAN.md — Album exclusivity (COLL-01) + max-9 featured guard (FEAT-04) in addPhotoToCollection + tests
+- [ ] 37-02-PLAN.md — getUncollectedPhotos() All-Photos helper + upload default published:true (VIS-01/VIS-02) + tests
 
 ### Phase 38: Public Surfaces
 **Goal**: Visitors see a curated 3×3 featured grid on the homepage and a reorganized /photos page — collection cards on top, uncollected photos below — with no filenames rendered anywhere
@@ -202,7 +204,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 37. Data Model & Actions Foundation | 0/TBD | Not started | - |
+| 37. Data Model & Actions Foundation | 0/2 | Not started | - |
 | 38. Public Surfaces | 0/TBD | Not started | - |
 | 39. Dashboard Management | 0/TBD | Not started | - |
 | 40. Data Setup & Quality Gate | 0/TBD | Not started | - |
