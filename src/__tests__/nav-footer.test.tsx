@@ -89,37 +89,25 @@ describe('NAV-01: navLinks array in layout.tsx', () => {
 // FOOT-02: footer responsive class
 // ---------------------------------------------------------------------------
 
-describe('FOOT-01 + FOOT-02: footer links in layout.tsx', () => {
-  it('footer contains href="/recipes"', async () => {
+describe('FOOT-01 + FOOT-02: site footer in layout.tsx', () => {
+  // The footer is intentionally just the copyright + "Built by Hudson Digital
+  // Solutions" bar (the canonical global footer). It carries no nav links.
+  it('footer contains the Hudson Digital Solutions backlink', async () => {
     const layout = await readLayout();
     const footerStart = layout.indexOf('<footer');
     const footerSection = layout.slice(footerStart);
-    // FAILS RED: footer currently has Photos and Events only
-    expect(footerSection).toContain('href="/recipes"');
+    expect(footerSection).toContain('Hudson Digital Solutions');
+    expect(footerSection).toContain('hudsondigitalsolutions.com');
   });
 
-  it('footer contains href="/photos"', async () => {
+  it('footer carries no nav links (no Recipes/Photos/Events/In Memory)', async () => {
     const layout = await readLayout();
     const footerStart = layout.indexOf('<footer');
     const footerSection = layout.slice(footerStart);
-    // Passes: Photos is already in the footer
-    expect(footerSection).toContain('href="/photos"');
-  });
-
-  it('footer contains href="/events"', async () => {
-    const layout = await readLayout();
-    const footerStart = layout.indexOf('<footer');
-    const footerSection = layout.slice(footerStart);
-    // Passes: Events is already in the footer
-    expect(footerSection).toContain('href="/events"');
-  });
-
-  it('footer contains href="/richard-hudson-sr" (In Memory)', async () => {
-    const layout = await readLayout();
-    const footerStart = layout.indexOf('<footer');
-    const footerSection = layout.slice(footerStart);
-    // FAILS RED: /richard-hudson-sr is not in the footer yet
-    expect(footerSection).toContain('href="/richard-hudson-sr"');
+    expect(footerSection).not.toContain('href="/recipes"');
+    expect(footerSection).not.toContain('href="/photos"');
+    expect(footerSection).not.toContain('href="/events"');
+    expect(footerSection).not.toContain('href="/richard-hudson-sr"');
   });
 
   it('footer does NOT contain a /blog link', async () => {
