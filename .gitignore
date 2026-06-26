@@ -46,3 +46,6 @@ generated/
 
 # Brainstorm visual companion
 .superpowers/
+
+# Stray package-manager lockfile — this project uses bun (bun.lock)
+pnpm-lock.yaml
