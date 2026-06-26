@@ -14,11 +14,9 @@ import {
 import {
   Home,
   Camera,
-  CalendarDays,
   Heart,
   LayoutDashboard,
   Image,
-  CalendarPlus,
   UserCog,
   Upload,
 } from "lucide-react";
@@ -26,21 +24,18 @@ import {
 const publicPages = [
   { label: "Home", href: "/", icon: Home },
   { label: "Photos", href: "/photos", icon: Camera },
-  { label: "Events", href: "/events", icon: CalendarDays },
   { label: "Memorial", href: "/richard-hudson-sr", icon: Heart },
 ];
 
 const dashboardPages = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { label: "Photos", href: "/dashboard/photos", icon: Image },
-  { label: "Events", href: "/dashboard/events", icon: CalendarPlus },
   { label: "Members", href: "/dashboard/members", icon: UserCog },
   { label: "Memorial", href: "/dashboard/memorial", icon: Heart },
 ];
 
 const quickActions = [
   { label: "Upload Photos", href: "/dashboard/photos/upload", icon: Upload },
-  { label: "New Event", href: "/dashboard/events/new", icon: CalendarPlus },
 ];
 
 export function CommandPalette() {

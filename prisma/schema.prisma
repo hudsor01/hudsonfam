@@ -53,28 +53,6 @@ model CollectionPhoto {
   @@index([photoId])
 }
 
-model Event {
-  id          String     @id @default(cuid())
-  title       String
-  description String?
-  location    String?
-  startDate   DateTime
-  endDate     DateTime?
-  allDay      Boolean    @default(false)
-  createdById String
-  visibility  Visibility @default(PUBLIC)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  @@index([startDate])
-  @@index([visibility])
-}
-
-enum Visibility {
-  PUBLIC
-  FAMILY
-}
-
 model InviteToken {
   id        String    @id @default(cuid())
   token     String    @unique

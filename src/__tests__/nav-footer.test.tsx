@@ -74,11 +74,10 @@ describe('NAV-01: navLinks array in layout.tsx', () => {
     expect(recipesIndex).toBeLessThan(photosIndex);
   });
 
-  it('navLinks source contains exactly the 5 required hrefs', async () => {
+  it('navLinks source contains exactly the 4 required hrefs', async () => {
     const layout = await readLayout();
-    const requiredHrefs = ['/', '/recipes', '/photos', '/events', '/richard-hudson-sr'];
+    const requiredHrefs = ['/', '/recipes', '/photos', '/richard-hudson-sr'];
     for (const href of requiredHrefs) {
-      // All 5 hrefs already exist — this should pass on current source
       expect(layout).toContain(`"${href}"`);
     }
   });
@@ -168,7 +167,7 @@ describe('NAV-03 desktop: NavLink aria-current', () => {
 });
 
 // ---------------------------------------------------------------------------
-// NAV-02: MobileNav renders all 5 nav links
+// NAV-02: MobileNav renders all 4 nav links
 // NAV-03 mobile: active mobile link has aria-current="page"
 //
 // MobileNav exists. The Sheet (Radix Dialog) renders content in a portal
@@ -181,7 +180,6 @@ describe('NAV-02 + NAV-03 mobile: MobileNav render', () => {
     { href: '/', label: 'Home' },
     { href: '/recipes', label: 'Recipes' },
     { href: '/photos', label: 'Photos' },
-    { href: '/events', label: 'Events' },
     { href: '/richard-hudson-sr', label: 'In Memory' },
   ];
 
@@ -191,10 +189,10 @@ describe('NAV-02 + NAV-03 mobile: MobileNav render', () => {
     fireEvent.click(trigger);
   }
 
-  it('renders all 5 link labels after drawer opens (NAV-02)', () => {
+  it('renders all 4 link labels after drawer opens (NAV-02)', () => {
     render(<MobileNav links={testLinks} />);
     openDrawer();
-    const expectedLabels = ['Home', 'Recipes', 'Photos', 'Events', 'In Memory'];
+    const expectedLabels = ['Home', 'Recipes', 'Photos', 'In Memory'];
     for (const label of expectedLabels) {
       expect(screen.getByText(label)).toBeTruthy();
     }
@@ -253,10 +251,6 @@ describe('IN-01: isNavActive predicate edge cases', () => {
 
   it('"/recipes" does NOT activate on prefix sibling "/recipes-archive" (WR-01)', () => {
     expect(isNavActive('/recipes-archive', '/recipes')).toBe(false);
-  });
-
-  it('"/events" does NOT activate on prefix sibling "/events-2026" (WR-01)', () => {
-    expect(isNavActive('/events-2026', '/events')).toBe(false);
   });
 });
 

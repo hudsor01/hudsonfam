@@ -12,19 +12,6 @@ export const postFormSchema = z.object({
 
 export type PostFormValues = z.infer<typeof postFormSchema>;
 
-// ─── Event ───────────────────────────────────────────────────────────────────
-export const eventFormSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  location: z.string().optional(),
-  startDate: z.string().min(1, "Start date is required"),
-  endDate: z.string().optional(),
-  allDay: z.boolean(),
-  visibility: z.enum(["PUBLIC", "FAMILY"]),
-});
-
-export type EventFormValues = z.infer<typeof eventFormSchema>;
-
 // ─── Update ──────────────────────────────────────────────────────────────────
 export const updateFormSchema = z.object({
   content: z.string().min(1, "Content is required"),
