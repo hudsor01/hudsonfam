@@ -41,6 +41,12 @@
   --color-chart-3: oklch(0.70 0.15 160);
   --color-chart-4: oklch(0.65 0.18 30);
   --color-chart-5: oklch(0.60 0.16 300);
+
+  /* Photo-overlay tokens (theme-agnostic). A scrim sits over a photograph and
+     must stay dark with light text in BOTH light and dark mode — so these are
+     fixed values, never mapped through :root/.dark. Used by the memorial hero. */
+  --color-overlay: #281e16; /* warm near-black scrim */
+  --color-overlay-foreground: #fff7ec; /* warm white text on the scrim */
 }
 
 /* ───────────────────────────────────────────────────────────────────────────

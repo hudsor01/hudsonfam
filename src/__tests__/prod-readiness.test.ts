@@ -633,19 +633,24 @@ describe('Bug Fix Verification', () => {
     }
   });
 
-  it('memorial photo gallery is database-driven, not hardcoded stock images', async () => {
+  it('memorial uses the DB hero photo and has no stock images, gallery, video, or memory form', async () => {
     const memorialPage = await fs.readFile(
       path.join(process.cwd(), 'src', 'app', '(public)', 'richard-hudson-sr', 'page.tsx'),
       'utf-8'
     );
-    // The memorial of a real person must never show stock photography.
-    // Photos are pulled from the memorial Collection (slug: "memorial") via
-    // CollectionPhoto, with per-photo bento layout driven by layoutToSpan().
+    // The hero portrait is the first photo of the memorial Collection
+    // (slug: "memorial"); the page never shows stock photography.
     expect(memorialPage).not.toContain('images.unsplash.com');
     expect(memorialPage).toContain('getMemorialPhotos');
     expect(memorialPage).toContain('collectionPhoto');
     expect(memorialPage).toContain('slug: "memorial"');
-    expect(memorialPage).toContain('layoutToSpan');
+    expect(memorialPage).toContain('heroPhoto');
+    // Redesign removed the gallery, video section, and "share a memory".
+    expect(memorialPage).not.toContain('LayoutGrid');
+    expect(memorialPage).not.toContain('MemoryForm');
+    expect(memorialPage).not.toMatch(/type:\s*"video"/);
+    // The Revelation 21:4 scripture remains.
+    expect(memorialPage).toContain('Revelation 21:4');
   });
 });
 
