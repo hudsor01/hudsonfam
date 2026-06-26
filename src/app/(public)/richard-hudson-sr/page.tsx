@@ -184,7 +184,7 @@ export default async function RichardHudsonSrMemorialPage() {
       {/* Hero — full-bleed portrait cover */}
       <header className="motion-safe:animate-fade-in-up">
         {heroPhoto ? (
-          <div className="relative w-full h-[60vh] min-h-[420px] max-h-[600px] overflow-hidden">
+          <div className="relative w-full h-[56vh] min-h-[440px] max-h-[600px] overflow-hidden">
             <Image
               src={`/api/images/${heroPhoto.photo.id}?size=medium`}
               alt="Richard Hudson Sr."
@@ -195,7 +195,7 @@ export default async function RichardHudsonSrMemorialPage() {
               className="object-cover object-top"
             />
             {/* Warm dark scrim (uses the brand foreground token) for text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/20 to-foreground/40" />
+            <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/10 to-foreground/40" />
             <div className="absolute inset-x-0 bottom-0">
               <div className="max-w-5xl mx-auto px-6 sm:px-10 pb-10 sm:pb-14">
                 <p className="text-xs tracking-[5px] uppercase text-accent font-sans mb-3">
