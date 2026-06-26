@@ -58,6 +58,7 @@ export function PhotoLibraryPicker({ collectionId, photos }: PhotoLibraryPickerP
               height={400}
               className="w-full h-full object-cover"
               loading="lazy"
+              unoptimized
             />
           </div>
           <div className="px-3 py-2">

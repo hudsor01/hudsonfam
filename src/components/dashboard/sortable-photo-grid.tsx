@@ -131,6 +131,7 @@ export function SortablePhotoGrid({
                 height={400}
                 className="h-full w-full object-cover"
                 draggable={false}
+                unoptimized
               />
             </div>
 
@@ -169,6 +170,7 @@ export function SortablePhotoGrid({
                   height={400}
                   className="h-full w-full object-cover"
                   draggable={false}
+                  unoptimized
                 />
               </div>
             </div>
