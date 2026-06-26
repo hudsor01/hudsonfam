@@ -194,20 +194,21 @@ export default async function RichardHudsonSrMemorialPage() {
               sizes="100vw"
               className="object-cover object-top"
             />
-            {/* Warm dark scrim (uses the brand foreground token) for text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/10 to-foreground/40" />
+            {/* Fixed warm dark scrim (theme-agnostic — always dark over the
+                photo, in both light and dark mode) for text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-overlay/90 via-overlay/10 to-overlay/40" />
             <div className="absolute inset-x-0 bottom-0">
               <div className="max-w-5xl mx-auto px-6 sm:px-10 pb-10 sm:pb-14">
                 <p className="text-xs tracking-[5px] uppercase text-accent font-sans mb-3">
                   In Loving Memory
                 </p>
                 <h1
-                  className="font-serif text-5xl sm:text-6xl lg:text-7xl text-card font-normal leading-[1.02] text-balance drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)]"
+                  className="font-serif text-5xl sm:text-6xl lg:text-7xl text-overlay-foreground font-normal leading-[1.02] text-balance drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)]"
                   itemProp="name"
                 >
                   Richard Hudson Sr.
                 </h1>
-                <p className="mt-3 text-sm tracking-wide text-card/80">
+                <p className="mt-3 text-sm tracking-wide text-overlay-foreground/80">
                   May 16, 1964 &ndash; December 28, 2025
                 </p>
               </div>
