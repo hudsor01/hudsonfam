@@ -184,7 +184,7 @@ export default async function RichardHudsonSrMemorialPage() {
       {/* Hero — full-bleed portrait cover */}
       <header className="motion-safe:animate-fade-in-up">
         {heroPhoto ? (
-          <div className="relative w-full h-[56vh] min-h-[440px] max-h-[600px] overflow-hidden">
+          <div className="relative w-full aspect-[4/5] sm:aspect-[3/2] lg:aspect-[2/1] xl:aspect-[5/2] 2xl:aspect-[3/1] overflow-hidden">
             <Image
               src={`/api/images/${heroPhoto.photo.id}?size=medium`}
               alt="Richard Hudson Sr."
