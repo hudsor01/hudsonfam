@@ -49,3 +49,4 @@ generated/
 
 # Stray package-manager lockfile — this project uses bun (bun.lock)
 pnpm-lock.yaml
+pnpm-workspace.yaml
