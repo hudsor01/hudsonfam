@@ -2,14 +2,6 @@ import { vi } from 'vitest';
 
 // Mock Prisma client for unit tests
 export const prismaMock = {
-  album: {
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    count: vi.fn(),
-  },
   photo: {
     findMany: vi.fn(),
     findUnique: vi.fn(),

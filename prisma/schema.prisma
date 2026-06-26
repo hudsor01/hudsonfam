@@ -8,23 +8,10 @@ datasource db {
   provider = "postgresql"
 }
 
-model Album {
-  id           String    @id @default(cuid())
-  title        String
-  slug         String    @unique
-  description  String?
-  coverPhotoId String?
-  date         DateTime?
-  createdAt    DateTime  @default(now())
-  photos       Photo[]
-}
-
 model Photo {
   id            String    @id @default(cuid())
   title         String?
   caption       String?
-  albumId       String?
-  album         Album?    @relation(fields: [albumId], references: [id])
   originalPath  String
   thumbnailPath String
   width         Int
@@ -35,7 +22,6 @@ model Photo {
   published     Boolean           @default(false)
   collections   CollectionPhoto[]
 
-  @@index([albumId])
   @@index([uploadedById])
   @@index([published])
 }

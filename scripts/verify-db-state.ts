@@ -19,7 +19,6 @@ import prisma from "../src/lib/prisma";
 
 const ORPHAN_ID = "d9c2e950-f0e6-4bf4-85f4-1793e87ab8ec";
 const REAL_PHOTO_ID = "f77dbd54-1b1d-4c8f-9d11-16eb1b6a0def";
-const MOVING_TO_DALLAS_ALBUM_ID = "cmn8hinqw0005p1ttk12g9wa8";
 
 async function main() {
   let allPassed = true;
@@ -34,18 +33,13 @@ async function main() {
       allPassed = false;
     }
 
-    // ── Assertion 2: R2-era photo must be assigned to Moving to Dallas album ────
+    // ── Assertion 2: R2-era photo must still exist (album membership retired) ────
     const realPhoto = await prisma.photo.findUnique({ where: { id: REAL_PHOTO_ID } });
     if (realPhoto === null) {
       console.error(`FAIL: ${REAL_PHOTO_ID} (R2-era photo) is missing from DB`);
       allPassed = false;
-    } else if (realPhoto.albumId === MOVING_TO_DALLAS_ALBUM_ID) {
-      console.log(`PASS: ${REAL_PHOTO_ID} has albumId=${realPhoto.albumId} (Moving to Dallas)`);
     } else {
-      console.error(
-        `FAIL: ${REAL_PHOTO_ID} albumId=${realPhoto.albumId ?? "null"} — expected ${MOVING_TO_DALLAS_ALBUM_ID}`
-      );
-      allPassed = false;
+      console.log(`PASS: ${REAL_PHOTO_ID} (R2-era photo) exists (published=${realPhoto.published})`);
     }
   } finally {
     // Disconnect on every path — success, FAIL, or thrown error.
