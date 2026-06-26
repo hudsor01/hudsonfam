@@ -181,29 +181,29 @@ export default async function RichardHudsonSrMemorialPage() {
         </ol>
       </nav>
 
-      {/* Hero — full-bleed portrait cover */}
-      <header className="motion-safe:animate-fade-in-up">
+      {/* Hero — contained portrait banner (capped width, cream margins) */}
+      <header className="motion-safe:animate-fade-in-up max-w-6xl mx-auto px-4 sm:px-8 pt-3">
         {heroPhoto ? (
-          <div className="relative w-full aspect-[4/5] sm:aspect-[3/2] lg:aspect-[2/1] xl:aspect-[5/2] 2xl:aspect-[3/1] overflow-hidden">
+          <div className="relative w-full aspect-[4/5] sm:aspect-[3/2] lg:aspect-[2/1] overflow-hidden rounded-2xl shadow-[0_28px_70px_-34px_rgba(67,52,42,0.55)]">
             <Image
               src={`/api/images/${heroPhoto.photo.id}?size=medium`}
               alt="Richard Hudson Sr."
               fill
               priority
               unoptimized
-              sizes="100vw"
-              className="object-cover object-top"
+              sizes="(min-width: 1152px) 1152px, 100vw"
+              className="object-cover object-[center_22%]"
             />
             {/* Fixed warm dark scrim (theme-agnostic — always dark over the
                 photo, in both light and dark mode) for text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-overlay/90 via-overlay/10 to-overlay/40" />
+            <div className="absolute inset-0 bg-gradient-to-t from-overlay/90 via-overlay/10 to-overlay/35" />
             <div className="absolute inset-x-0 bottom-0">
-              <div className="max-w-5xl mx-auto px-6 sm:px-10 pb-10 sm:pb-14">
+              <div className="px-6 sm:px-10 pb-8 sm:pb-10">
                 <p className="text-xs tracking-[5px] uppercase text-accent font-sans mb-3">
                   In Loving Memory
                 </p>
                 <h1
-                  className="font-serif text-5xl sm:text-6xl lg:text-7xl text-overlay-foreground font-normal leading-[1.02] text-balance drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)]"
+                  className="font-serif text-4xl sm:text-5xl lg:text-6xl text-overlay-foreground font-normal leading-[1.04] text-balance drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)]"
                   itemProp="name"
                 >
                   Richard Hudson Sr.
