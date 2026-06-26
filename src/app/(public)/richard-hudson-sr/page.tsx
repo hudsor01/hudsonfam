@@ -181,37 +181,38 @@ export default async function RichardHudsonSrMemorialPage() {
         </ol>
       </nav>
 
-      {/* Hero — contained portrait banner (capped width, cream margins) */}
-      <header className="motion-safe:animate-fade-in-up max-w-6xl mx-auto px-4 sm:px-8 pt-3">
+      {/* Hero — portrait + name, side by side (stacks on mobile). The photo is
+          a 3:4 portrait, so it's shown in full (no crop) rather than cropped
+          into a banner. */}
+      <header className="motion-safe:animate-fade-in-up max-w-5xl mx-auto px-6 sm:px-10 pt-8 sm:pt-12 pb-2">
         {heroPhoto ? (
-          <div className="relative w-full aspect-[4/5] sm:aspect-[3/2] lg:aspect-[2/1] overflow-hidden rounded-2xl shadow-[0_28px_70px_-34px_rgba(67,52,42,0.55)]">
-            <Image
-              src={`/api/images/${heroPhoto.photo.id}?size=medium`}
-              alt="Richard Hudson Sr."
-              fill
-              priority
-              unoptimized
-              sizes="(min-width: 1152px) 1152px, 100vw"
-              className="object-cover object-[center_22%]"
-            />
-            {/* Fixed warm dark scrim (theme-agnostic — always dark over the
-                photo, in both light and dark mode) for text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-overlay/90 via-overlay/10 to-overlay/35" />
-            <div className="absolute inset-x-0 bottom-0">
-              <div className="px-6 sm:px-10 pb-8 sm:pb-10">
-                <p className="text-xs tracking-[5px] uppercase text-accent font-sans mb-3">
-                  In Loving Memory
-                </p>
-                <h1
-                  className="font-serif text-4xl sm:text-5xl lg:text-6xl text-overlay-foreground font-normal leading-[1.04] text-balance drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)]"
-                  itemProp="name"
-                >
-                  Richard Hudson Sr.
-                </h1>
-                <p className="mt-3 text-sm tracking-wide text-overlay-foreground/80">
-                  May 16, 1964 &ndash; December 28, 2025
-                </p>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-[300px_1fr] lg:grid-cols-[380px_1fr] gap-8 sm:gap-10 lg:gap-14 items-center">
+            {/* Portrait — full photo, no crop */}
+            <div className="relative w-full max-w-[320px] sm:max-w-none mx-auto aspect-[3/4] rounded-2xl overflow-hidden shadow-[0_28px_70px_-34px_rgba(67,52,42,0.55)] ring-1 ring-border/60">
+              <Image
+                src={`/api/images/${heroPhoto.photo.id}?size=medium`}
+                alt="Richard Hudson Sr."
+                fill
+                priority
+                unoptimized
+                sizes="(min-width: 1024px) 380px, (min-width: 640px) 300px, 320px"
+                className="object-cover"
+              />
+            </div>
+            {/* Name */}
+            <div className="text-center sm:text-left">
+              <p className="text-xs tracking-[5px] uppercase text-accent font-sans mb-4">
+                In Loving Memory
+              </p>
+              <h1
+                className="font-serif text-4xl sm:text-5xl lg:text-6xl text-foreground font-normal leading-[1.05] text-balance"
+                itemProp="name"
+              >
+                Richard Hudson Sr.
+              </h1>
+              <p className="mt-4 text-sm tracking-wide text-muted-foreground">
+                May 16, 1964 &ndash; December 28, 2025
+              </p>
             </div>
           </div>
         ) : (
