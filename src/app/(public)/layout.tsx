@@ -4,7 +4,7 @@ import { MobileNav } from "@/components/public/mobile-nav";
 import { NavLink } from "@/components/public/nav-link";
 import { UserNav } from "@/components/public/user-nav";
 import { ThemeToggle } from "@/components/public/theme-toggle";
-import { SiteFooter } from "@/components/public/site-footer";
+import { CopyrightYear } from "@/components/public/copyright-year";
 import { MenuProvider } from "@/components/public/menu-provider";
 import { MenuIndicator } from "@/components/public/menu-indicator";
 
@@ -92,12 +92,44 @@ export default function PublicLayout({
         <MenuIndicator />
       </MenuProvider>
 
-      {/* SiteFooter calls usePathname() (dynamic, to hide itself on the
-          memorial route). Suspense keeps it from blocking the layout's static
-          shell on prerendered routes (e.g. /photos/[album]). */}
-      <Suspense fallback={null}>
-        <SiteFooter />
-      </Suspense>
+      <footer className="border-t border-border">
+        <div className="px-5 sm:px-7 py-6 flex flex-col sm:flex-row justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-muted-foreground font-medium">
+              The Hudson Family
+            </span>
+            <span className="text-xs text-text-dim">Dallas, TX</span>
+          </div>
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-text-dim">
+            <Link href="/recipes" className="hover:text-muted-foreground transition-colors">
+              Recipes
+            </Link>
+            <Link href="/photos" className="hover:text-muted-foreground transition-colors">
+              Photos
+            </Link>
+            <Link href="/events" className="hover:text-muted-foreground transition-colors">
+              Events
+            </Link>
+            <Link href="/richard-hudson-sr" className="hover:text-muted-foreground transition-colors">
+              In Memory
+            </Link>
+          </div>
+        </div>
+        <div className="border-t border-border px-5 sm:px-7 py-3 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-text-dim">
+          <span>&copy; <CopyrightYear /> The Hudson Family. All rights reserved.</span>
+          <span>
+            Built by{" "}
+            <a
+              href="https://hudsondigitalsolutions.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent/70 hover:text-accent transition-colors"
+            >
+              Hudson Digital Solutions
+            </a>
+          </span>
+        </div>
+      </footer>
     </div>
   );
 }
