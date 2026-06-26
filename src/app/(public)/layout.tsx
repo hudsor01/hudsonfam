@@ -29,7 +29,7 @@ export default function PublicLayout({
             H
           </div>
           <span className="text-foreground text-[15px] font-medium tracking-wide">
-            THE HUDSONS
+            THE HUDSON FAMILY
           </span>
         </Link>
 
