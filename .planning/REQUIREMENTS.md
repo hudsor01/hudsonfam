@@ -47,11 +47,17 @@ Deferred — tracked, not in this milestone.
 
 ## Traceability
 
-Filled by the roadmap.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FEAT-01..04 | — | Pending |
-| COLL-01..03 | — | Pending |
-| PHOTOS-01..03 | — | Pending |
-| VIS-01..02 | — | Pending |
+| COLL-01 | Phase 37 | Pending |
+| FEAT-04 | Phase 37 | Pending |
+| VIS-01 | Phase 37 | Pending |
+| VIS-02 | Phase 37 | Pending |
+| FEAT-01 | Phase 38 | Pending |
+| PHOTOS-01 | Phase 38 | Pending |
+| PHOTOS-02 | Phase 38 | Pending |
+| PHOTOS-03 | Phase 38 | Pending |
+| FEAT-02 | Phase 39 | Pending |
+| FEAT-03 | Phase 39 | Pending |
+| COLL-02 | Phase 39 | Pending |
+| COLL-03 | Phase 40 | Pending |
