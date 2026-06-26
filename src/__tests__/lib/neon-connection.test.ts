@@ -28,15 +28,15 @@ describe("Neon runtime connection (CLOUD-01)", () => {
       // Assign for afterAll cleanup
       prismaClient = prisma;
 
-      const [userCount, albumCount, photoCount, eventCount] = await Promise.all([
+      const [userCount, collectionCount, photoCount, eventCount] = await Promise.all([
         prisma.user.count(),
-        prisma.album.count(),
+        prisma.collection.count(),
         prisma.photo.count(),
         prisma.event.count(),
       ]);
 
       expect(userCount, "at least 1 user (owner) in seed").toBeGreaterThanOrEqual(1);
-      expect(albumCount, "at least 1 album in seed").toBeGreaterThanOrEqual(1);
+      expect(collectionCount, "at least 1 collection in seed").toBeGreaterThanOrEqual(1);
       expect(photoCount, "at least 1 photo in seed").toBeGreaterThanOrEqual(1);
       expect(eventCount, "at least 5 events in seed (Easter, Dallas, Game, Memorial, Summer)").toBeGreaterThanOrEqual(5);
     }
