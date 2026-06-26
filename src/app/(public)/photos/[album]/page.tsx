@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import Link from "next/link";
 import { SectionHeader } from "@/components/ui/section-header";
-import AlbumPhotoGrid from "./album-photo-grid";
+import AlbumPhotoGrid from "@/components/public/album-photo-grid";
 
 interface AlbumPageProps {
   params: Promise<{ album: string }>;
