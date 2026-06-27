@@ -2,15 +2,16 @@
 gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Photo Management Overhaul
-status: planning
-last_updated: "2026-06-26T00:00:00.000Z"
+status: ready_to_plan
+last_updated: 2026-06-27T02:27:42.283Z
 last_activity: 2026-06-26
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 0
-  completed_plans: 0
+  completed_plans: 2
   percent: 0
+stopped_at: Phase 37 complete (2/2) — ready to discuss Phase 38
 ---
 
 # State
@@ -20,14 +21,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-06-03)
 
 **Core value:** A single home for the Hudson family — content for everyone, and Grandma Hudson's recipes preserved and made readable for even the oldest relatives.
-**Current focus:** v6.0 Photo Management Overhaul — roadmap defined, ready to plan Phase 37
+**Current focus:** Phase 38 — public surfaces
 
 ## Current Position
 
-Phase: 37 of 40 (Data Model & Actions Foundation)
-Plan: — (not started)
-Status: Ready to plan Phase 37
-Last activity: 2026-06-26 — v6.0 roadmap created (phases 37-40, 12 REQs mapped)
+Phase: 38 of 40 (public surfaces)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-06-27
 
 Progress: [░░░░░░░░░░] 0%
 

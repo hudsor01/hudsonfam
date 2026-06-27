@@ -145,7 +145,7 @@
 
 ## Phases
 
-- [ ] **Phase 37: Data Model & Actions Foundation** — Single-collection enforcement, All-Photos query, `featured` surface collection model, visibility defaults applied
+- [x] **Phase 37: Data Model & Actions Foundation** — Single-collection enforcement, All-Photos query, `featured` surface collection model, visibility defaults applied (completed 2026-06-27)
 - [ ] **Phase 38: Public Surfaces** — Homepage 3×3 featured grid, /photos = collection cards + All Photos section, filenames suppressed everywhere public
 - [ ] **Phase 39: Dashboard Management** — Featured manager (live preview + add-from-library + drag, max 9), per-collection manage page (add + reorder), publish toggle removed
 - [ ] **Phase 40: Data Setup & Quality Gate** — Delete "Moving to Dallas" / keep photos, seed 3 starter collections + featured surface collection, verify live, lint/test/build green
@@ -162,8 +162,8 @@
   3. A `featured` surface collection (kind=surface, name=featured) row exists in the database and its `CollectionPhoto` join rows drive the homepage grid (same pattern as `memorial`)
   4. All existing photos have `published=true` in the database; newly uploaded photos default to `published=true`; no owner action is required to publish
 **Plans**: 2 plans
-- [ ] 37-01-PLAN.md — Album exclusivity (COLL-01) + max-9 featured guard (FEAT-04) in addPhotoToCollection + tests
-- [ ] 37-02-PLAN.md — getUncollectedPhotos() All-Photos helper + upload default published:true (VIS-01/VIS-02) + tests
+- [x] 37-01-PLAN.md — Album exclusivity (COLL-01) + max-9 featured guard (FEAT-04) in addPhotoToCollection + tests
+- [x] 37-02-PLAN.md — getUncollectedPhotos() All-Photos helper + upload default published:true (VIS-01/VIS-02) + tests
 
 ### Phase 38: Public Surfaces
 **Goal**: Visitors see a curated 3×3 featured grid on the homepage and a reorganized /photos page — collection cards on top, uncollected photos below — with no filenames rendered anywhere
@@ -204,7 +204,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 37. Data Model & Actions Foundation | 0/2 | Not started | - |
+| 37. Data Model & Actions Foundation | 2/2 | Complete    | 2026-06-27 |
 | 38. Public Surfaces | 0/TBD | Not started | - |
 | 39. Dashboard Management | 0/TBD | Not started | - |
 | 40. Data Setup & Quality Gate | 0/TBD | Not started | - |
