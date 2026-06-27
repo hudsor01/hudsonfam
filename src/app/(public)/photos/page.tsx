@@ -41,7 +41,7 @@ export default async function PhotosPage() {
           <h2 className="text-xs font-sans font-semibold tracking-[3px] text-primary uppercase mb-5">
             Albums
           </h2>
-          <div className="@container grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {collections.map((collection) => {
               // Prefer explicit coverPhotoId; fall back to first photo in sortOrder
               const coverPhotoId =
