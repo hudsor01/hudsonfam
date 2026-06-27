@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
 milestone: v6.0
-milestone_name: Photo Management Overhaul
-status: milestone_complete
-last_updated: 2026-06-27T19:02:53.591Z
-last_activity: 2026-06-26
+milestone_name: — Photo Management Overhaul
+status: Awaiting next milestone
+last_updated: "2026-06-27T19:12:17.889Z"
+last_activity: 2026-06-27 — Milestone v6.0 completed and archived
 progress:
   total_phases: 4
-  completed_phases: 0
-  total_plans: 0
+  completed_phases: 4
+  total_plans: 8
   completed_plans: 8
-  percent: 0
-stopped_at: Milestone complete (Phase 40 was final phase)
+  percent: 100
 ---
 
 # State
@@ -25,12 +24,10 @@ See: `.planning/PROJECT.md` (updated 2026-06-03)
 
 ## Current Position
 
-Phase: 40 of 40 (data setup & quality gate)
-Plan: Not started
-Status: Milestone complete
-Last activity: 2026-06-27
-
-Progress: [░░░░░░░░░░] 0%
+Phase: Milestone v6.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-06-27 — Milestone v6.0 completed and archived
 
 ## What's Done
 
@@ -41,6 +38,7 @@ Progress: [░░░░░░░░░░] 0%
 ## What's Next
 
 Plan Phase 37: Data Model & Actions Foundation
+
 - Single-collection enforcement in server actions
 - "All Photos" = no-collectionId query
 - `featured` surface collection (kind=surface, mirrors memorial pattern)
@@ -69,3 +67,7 @@ Plan Phase 37: Data Model & Actions Foundation
 ## Blockers
 
 (none)
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd:new-milestone

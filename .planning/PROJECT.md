@@ -31,12 +31,12 @@ _(Pre-v4.0 the app deployed via GitHub Actions → GHCR → Flux → K3s behind 
 
 ## Current State
 
-**Shipped:** **v5.0 Site Consolidation & Navigation Redesign — closed 2026-06-03 (tag `v5.0`).** Consolidated the site to its real surface — Blog + Family Updates removed end-to-end, recipes-first homepage, broken R2 photo pipeline fixed (two root-cause bugs), navbar/footer rebuilt to the surviving IA with active-route + a11y, clean quality gate. 24/24 REQs. Shipped to production and verified live (image proxy returns 200/image/webp on thehudsonfam.com).
+**Shipped:** **v6.0 Photo Management Overhaul — closed 2026-06-27.** Owner-curated photos: a 3×3 featured homepage grid driven by a `featured` surface collection (dashboard manager with live preview + drag + capped add-from-library), collections as the single organizing unit (a photo lives in ≤1 collection; everything else is "All Photos"), public /photos = collection cards + All Photos, no rendered filenames, and no publish step (every upload is public). 12/12 REQs across 4 phases (37–40). Shipped to production + gated live-DB setup (featured + 3 starter collections seeded, "Moving to Dallas" removed keeping its photos, all photos visible); verified live. _(Prior: v5.0 Site Consolidation — closed 2026-06-03, tag `v5.0`.)_
 
-**Current milestone:** v6.0 Photo Management Overhaul (in planning).
+**Current milestone:** none active — ready to start the next milestone (`/gsd:new-milestone`).
 **Re-platform context:** K3s homelab offline indefinitely (flood; equipment in storage). Data is safe but disconnected — recoverable later via FUTURE-01.
 
-## Current Milestone: v6.0 Photo Management Overhaul
+## Last Milestone: v6.0 Photo Management Overhaul (shipped 2026-06-27)
 
 **Goal:** Give the owner real control over the photo experience — a curated homepage grid, collection-based organization, and a friction-free dashboard — without re-uploading anything.
 
@@ -61,6 +61,7 @@ _(Pre-v4.0 the app deployed via GitHub Actions → GHCR → Flux → K3s behind 
 - Recipes digitization (superpowers track): 1,000 recipes typed from the 1924 Modern Priscilla Cook Book into `content/recipes/`, categorized in book order, text-only, public.
 - **v4.0 (2026-06-02):** Cloud re-platform (Vercel + Neon + Cloudflare R2; Redis dropped) · job-search + homelab admin deleted · recipes UX layer · global light/dark theme · 21/21 REQs, audit PASSED.
 - **v5.0 (2026-06-03):** Blog + Family Updates pruned end-to-end (routes, MDX, `BlogPost`/`FamilyUpdate` models + migration, dashboard CRUD, redirects, prune-guard test) · recipes-first homepage · R2 photo pipeline fixed (album-less auth-gate D-01 data fix + `R2_ENDPOINT` normalization) · navbar/footer rebuilt to surviving IA (Home · Recipes · Photos · Events · In Memory) with active-route + a11y · quality gate (lint 0, 233 tests, build 1036 pages). 24/24 REQs (PRUNE/HOME/PHOTO/NAV/FOOT/DASH/QUAL). Shipped + verified live.
+- **v6.0 (2026-06-27):** Photo Management Overhaul — `featured` surface collection drives a 3×3 homepage grid curated from a dashboard manager (live preview + drag + max-9 add-from-library); collections are the single organizing unit (album-exclusive membership, "All Photos" = uncollected); public /photos = collection cards + All Photos; no rendered filenames; no publish step (all uploads public). 3 starter collections seeded, "Moving to Dallas" removed (photos kept). 12/12 REQs (FEAT/COLL/PHOTOS/VIS) across phases 37–40. Shipped + verified live. _(Note: the Events feature and the light/dark theme switcher were also removed in standalone work between v5.0 and v6.0; nav is now Home · Recipes · Photos · In Memory, light-only.)_
 
 ## Next Milestone
 
