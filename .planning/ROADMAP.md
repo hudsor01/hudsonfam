@@ -188,7 +188,10 @@
   2. The owner can add any photo from the full library to the featured set and drag to reorder; the set enforces a maximum of 9 with no duplicates
   3. The owner can open a per-collection manage page, add photos from the library (which removes them from any other collection), and drag to reorder photos within the collection
   4. No publish toggle, publish button, or publish-related UI element appears anywhere in the dashboard photo or upload flows
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 39-01-PLAN.md — Featured manager (/dashboard/photos/featured): live 3×3 preview + SortablePhotoGrid reorder + add-from-library, max-9 surfaced, graceful when featured collection absent; generalize PhotoLibraryPicker [FEAT-02, FEAT-03]
+- [ ] 39-02-PLAN.md — Per-collection manage page: add-from-library (getUncollectedPhotos → addPhotoToCollection album-exclusive) alongside existing reorder grid [COLL-02]
+- [ ] 39-03-PLAN.md — Remove publish toggle (photo-actions Switch + upload checkbox → always published:true), quiet status label instead of filename + Featured link on photos page, source-level regression tests [crit-4 / VIS-02 UI]
 **UI hint**: yes
 
 ### Phase 40: Data Setup & Quality Gate
@@ -208,5 +211,5 @@
 |-------|----------------|--------|-----------|
 | 37. Data Model & Actions Foundation | 2/2 | Complete    | 2026-06-27 |
 | 38. Public Surfaces | 2/2 | Complete    | 2026-06-27 |
-| 39. Dashboard Management | 0/TBD | Not started | - |
+| 39. Dashboard Management | 0/3 | Not started | - |
 | 40. Data Setup & Quality Gate | 0/TBD | Not started | - |
