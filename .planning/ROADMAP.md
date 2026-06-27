@@ -146,7 +146,7 @@
 ## Phases
 
 - [x] **Phase 37: Data Model & Actions Foundation** — Single-collection enforcement, All-Photos query, `featured` surface collection model, visibility defaults applied (completed 2026-06-27)
-- [ ] **Phase 38: Public Surfaces** — Homepage 3×3 featured grid, /photos = collection cards + All Photos section, filenames suppressed everywhere public
+- [x] **Phase 38: Public Surfaces** — Homepage 3×3 featured grid, /photos = collection cards + All Photos section, filenames suppressed everywhere public (completed 2026-06-27)
 - [ ] **Phase 39: Dashboard Management** — Featured manager (live preview + add-from-library + drag, max 9), per-collection manage page (add + reorder), publish toggle removed
 - [ ] **Phase 40: Data Setup & Quality Gate** — Delete "Moving to Dallas" / keep photos, seed 3 starter collections + featured surface collection, verify live, lint/test/build green
 
@@ -175,8 +175,8 @@
   3. Below the collection cards, /photos shows an "All Photos" section containing every photo that is in no collection
   4. No photo filename, file path, or title text is visible anywhere on the public site — not on the homepage grid, not on /photos, not inside the lightbox
 **Plans**: 2 plans
-- [ ] 38-01-PLAN.md — getFeaturedPhotos() query + unit tests; homepage 3×3 featured grid (no placeholder tiles, graceful empty) [FEAT-01]
-- [ ] 38-02-PLAN.md — /photos All Photos via getUncollectedPhotos() + keep collection cards; strip title/caption overlays from album grid & lightbox; prod-readiness assertions [PHOTOS-01/02/03]
+- [x] 38-01-PLAN.md — getFeaturedPhotos() query + unit tests; homepage 3×3 featured grid (no placeholder tiles, graceful empty) [FEAT-01]
+- [x] 38-02-PLAN.md — /photos All Photos via getUncollectedPhotos() + keep collection cards; strip title/caption overlays from album grid & lightbox; prod-readiness assertions [PHOTOS-01/02/03]
 **UI hint**: yes
 
 ### Phase 39: Dashboard Management
@@ -207,6 +207,6 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 37. Data Model & Actions Foundation | 2/2 | Complete    | 2026-06-27 |
-| 38. Public Surfaces | 0/2 | Not started | - |
+| 38. Public Surfaces | 2/2 | Complete    | 2026-06-27 |
 | 39. Dashboard Management | 0/TBD | Not started | - |
 | 40. Data Setup & Quality Gate | 0/TBD | Not started | - |
