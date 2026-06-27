@@ -148,7 +148,7 @@
 - [x] **Phase 37: Data Model & Actions Foundation** — Single-collection enforcement, All-Photos query, `featured` surface collection model, visibility defaults applied (completed 2026-06-27)
 - [x] **Phase 38: Public Surfaces** — Homepage 3×3 featured grid, /photos = collection cards + All Photos section, filenames suppressed everywhere public (completed 2026-06-27)
 - [x] **Phase 39: Dashboard Management** — Featured manager (live preview + add-from-library + drag, max 9), per-collection manage page (add + reorder), publish toggle removed (completed 2026-06-27)
-- [ ] **Phase 40: Data Setup & Quality Gate** — Delete "Moving to Dallas" / keep photos, seed 3 starter collections + featured surface collection, verify live, lint/test/build green
+- [x] **Phase 40: Data Setup & Quality Gate** — Delete "Moving to Dallas" / keep photos, seed 3 starter collections + featured surface collection, verify live, lint/test/build green (completed 2026-06-27)
 
 ## Phase Details
 
@@ -212,4 +212,4 @@
 | 37. Data Model & Actions Foundation | 2/2 | Complete    | 2026-06-27 |
 | 38. Public Surfaces | 2/2 | Complete    | 2026-06-27 |
 | 39. Dashboard Management | 3/3 | Complete    | 2026-06-27 |
-| 40. Data Setup & Quality Gate | 0/TBD | Not started | - |
+| 40. Data Setup & Quality Gate | 1/1 | Complete    | 2026-06-27 |

@@ -7,27 +7,27 @@
 
 ### Featured (homepage grid) — FEAT
 
-- [ ] **FEAT-01**: The homepage shows a 3×3 grid of up to 9 featured photos; if fewer than 9 are featured, only those render (no empty tiles).
-- [ ] **FEAT-02**: The owner curates the featured set from a dashboard manager that shows a live preview mirroring the homepage grid.
-- [ ] **FEAT-03**: The owner can add any photo to the featured set from the full photo library and drag to reorder the set.
-- [ ] **FEAT-04**: A photo may be featured whether or not it's in a collection; no photo appears more than once in the featured set.
+- [x] **FEAT-01**: The homepage shows a 3×3 grid of up to 9 featured photos; if fewer than 9 are featured, only those render (no empty tiles).
+- [x] **FEAT-02**: The owner curates the featured set from a dashboard manager that shows a live preview mirroring the homepage grid.
+- [x] **FEAT-03**: The owner can add any photo to the featured set from the full photo library and drag to reorder the set.
+- [x] **FEAT-04**: A photo may be featured whether or not it's in a collection; no photo appears more than once in the featured set.
 
 ### Collections — COLL
 
-- [ ] **COLL-01**: A photo belongs to at most one collection; adding a photo to a collection removes it from All Photos and from any other collection.
-- [ ] **COLL-02**: The owner manages a collection's photos from a per-collection page — add photos from the library and reorder them.
-- [ ] **COLL-03**: The "Moving to Dallas" collection is removed with its photos retained (they fall back to All Photos); three empty starter collections exist: "Extending 1407 Judy Driveway", "Richard Jr's 38th Birthday Dinner", "Dad's Trips to Japan".
+- [x] **COLL-01**: A photo belongs to at most one collection; adding a photo to a collection removes it from All Photos and from any other collection.
+- [x] **COLL-02**: The owner manages a collection's photos from a per-collection page — add photos from the library and reorder them.
+- [x] **COLL-03**: The "Moving to Dallas" collection is removed with its photos retained (they fall back to All Photos); three empty starter collections exist: "Extending 1407 Judy Driveway", "Richard Jr's 38th Birthday Dinner", "Dad's Trips to Japan".
 
 ### Public photos page — PHOTOS
 
-- [ ] **PHOTOS-01**: The public /photos page lists every collection as a card at the top.
-- [ ] **PHOTOS-02**: The public /photos page shows an "All Photos" section = every photo that is in no collection.
-- [ ] **PHOTOS-03**: No photo filename or title is rendered anywhere on the public site (homepage, /photos, lightbox).
+- [x] **PHOTOS-01**: The public /photos page lists every collection as a card at the top.
+- [x] **PHOTOS-02**: The public /photos page shows an "All Photos" section = every photo that is in no collection.
+- [x] **PHOTOS-03**: No photo filename or title is rendered anywhere on the public site (homepage, /photos, lightbox).
 
 ### Visibility & upload — VIS
 
-- [ ] **VIS-01**: Every uploaded photo is publicly visible (in All Photos or its collection) — there is no separate "publish" step in the owner's workflow.
-- [ ] **VIS-02**: New uploads default to visible, all existing photos are set visible, and the dashboard publish toggle is removed.
+- [x] **VIS-01**: Every uploaded photo is publicly visible (in All Photos or its collection) — there is no separate "publish" step in the owner's workflow.
+- [x] **VIS-02**: New uploads default to visible, all existing photos are set visible, and the dashboard publish toggle is removed.
 
 ## Future Requirements
 
@@ -49,15 +49,15 @@ Deferred — tracked, not in this milestone.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| COLL-01 | Phase 37 | Pending |
-| FEAT-04 | Phase 37 | Pending |
-| VIS-01 | Phase 37 | Pending |
-| VIS-02 | Phase 37 | Pending |
-| FEAT-01 | Phase 38 | Pending |
-| PHOTOS-01 | Phase 38 | Pending |
-| PHOTOS-02 | Phase 38 | Pending |
-| PHOTOS-03 | Phase 38 | Pending |
-| FEAT-02 | Phase 39 | Pending |
-| FEAT-03 | Phase 39 | Pending |
-| COLL-02 | Phase 39 | Pending |
-| COLL-03 | Phase 40 | Pending |
+| COLL-01 | Phase 37 | Complete |
+| FEAT-04 | Phase 37 | Complete |
+| VIS-01 | Phase 37 | Complete |
+| VIS-02 | Phase 37 | Complete |
+| FEAT-01 | Phase 38 | Complete |
+| PHOTOS-01 | Phase 38 | Complete |
+| PHOTOS-02 | Phase 38 | Complete |
+| PHOTOS-03 | Phase 38 | Complete |
+| FEAT-02 | Phase 39 | Complete |
+| FEAT-03 | Phase 39 | Complete |
+| COLL-02 | Phase 39 | Complete |
+| COLL-03 | Phase 40 | Complete |
