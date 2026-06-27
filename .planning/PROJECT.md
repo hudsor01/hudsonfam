@@ -33,8 +33,21 @@ _(Pre-v4.0 the app deployed via GitHub Actions → GHCR → Flux → K3s behind 
 
 **Shipped:** **v5.0 Site Consolidation & Navigation Redesign — closed 2026-06-03 (tag `v5.0`).** Consolidated the site to its real surface — Blog + Family Updates removed end-to-end, recipes-first homepage, broken R2 photo pipeline fixed (two root-cause bugs), navbar/footer rebuilt to the surviving IA with active-route + a11y, clean quality gate. 24/24 REQs. Shipped to production and verified live (image proxy returns 200/image/webp on thehudsonfam.com).
 
-**Current milestone:** none active — ready to start the next milestone (`/gsd:new-milestone`).
+**Current milestone:** v6.0 Photo Management Overhaul (in planning).
 **Re-platform context:** K3s homelab offline indefinitely (flood; equipment in storage). Data is safe but disconnected — recoverable later via FUTURE-01.
+
+## Current Milestone: v6.0 Photo Management Overhaul
+
+**Goal:** Give the owner real control over the photo experience — a curated homepage grid, collection-based organization, and a friction-free dashboard — without re-uploading anything.
+
+**Target features:**
+- **Featured homepage grid** — a 3×3 (up to 9) curated set, managed in the dashboard with a live preview + add-from-library + drag-to-arrange (a "surface" collection drives it, mirroring how `memorial` works). Fewer than 9 → fewer tiles, no empty slots.
+- **Collections as the organizing unit** — a photo belongs to at most one collection; adding it to one removes it from All Photos / any other. Per-collection manage page (add from library, reorder). Delete the "Moving to Dallas" collection (keep its photos); seed three empty starter collections ("Extending 1407 Judy Driveway", "Richard Jr's 38th Birthday Dinner", "Dad's Trips to Japan").
+- **Public /photos = collections (cards) on top, then All Photos** (= photos in no collection). Homepage shows the featured grid only.
+- **No publish step** — every uploaded photo is public (in All Photos or its collection); the homepage is controlled solely by the featured grid. Existing photos all set visible; new uploads default visible; the publish toggle UI is removed.
+- **No filenames rendered publicly** anywhere (photos page, lightbox, homepage).
+
+**Reuse:** `Collection`/`CollectionPhoto` (surface vs album `kind`), `SortablePhotoGrid` + `PhotoLibraryPicker` (dashboard memorial/media pattern), `AlbumPhotoGrid` + `Lightbox`. Migrations are deliberate, owner-confirmed steps (not auto-applied on deploy).
 
 ### Validated (all milestones)
 - v1.0: Core site, auth, CRUD, homelab dashboard, K8s deployment, memorial

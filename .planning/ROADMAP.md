@@ -65,86 +65,6 @@
 
 </details>
 
-<details>
-<summary>(legacy) Original v2.0 ROADMAP content (preserved here for context)</summary>
-
-**Goal:** Systematically audit and fix all React/Next.js code smells across the entire codebase using `docs/react-nextjs-code-smells.md` as the reference.
-
-### Phases
-
-- [x] **Phase 16: useEffect Audit** — scan every useEffect in the codebase, eliminate unnecessary ones, fix the rest (completed 2026-04-08)
-- [x] **Phase 17: Component Structure & State Patterns** — fix nested components, direct state mutation, push "use client" to leaves (completed 2026-04-08)
-- [x] **Phase 18: Server/Client Boundaries & Hydration** — fix serialization, data fetching patterns, add loading/error boundaries, fix hydration mismatches (completed 2026-04-08)
-- [x] **Phase 19: Verification & Production Deploy** — build, test, lint, deploy, browser UAT (completed 2026-04-08)
-
-### Phase Details
-
-#### Phase 16: useEffect Audit
-
-**Goal**: Zero unnecessary useEffects remain in the codebase — every remaining useEffect is genuinely synchronizing with an external system
-**Depends on**: Nothing (first phase)
-**Requirements**: EFFECT-01, EFFECT-02, EFFECT-03, EFFECT-04, EFFECT-05, EFFECT-06, EFFECT-07, EFFECT-08
-**Success Criteria** (what must be TRUE):
-
-  1. No useEffect derives state from props or other state — useMemo or inline calculation used instead
-  2. No useEffect adjusts/resets state on prop change — key prop or render-time adjustment used instead
-  3. No chained useEffects that trigger each other — consolidated into event handlers
-  4. No useEffect for parent notification, POST requests, or shared event logic — moved to event handlers
-  5. Every remaining useEffect has proper cleanup or synchronizes with a genuine external system
-
-**Plans**: 1 plan
-
-#### Phase 17: Component Structure & State Patterns
-
-**Goal**: Clean component architecture — no nested definitions, no direct mutation, optimal "use client" placement
-**Depends on**: Phase 16
-**Requirements**: COMP-01, COMP-02, BOUNDARY-01, BOUNDARY-02, BOUNDARY-03, BOUNDARY-04, BOUNDARY-05
-**Success Criteria** (what must be TRUE):
-
-  1. No component is defined inside another component
-  2. All state updates create new object/array references
-  3. "use client" is at the lowest possible leaf component
-  4. No non-serializable props cross the server/client boundary
-  5. Data fetching happens in server components, not client useEffect/SWR
-
-**Plans**: 1 plan
-
-#### Phase 18: Server/Client Boundaries & Hydration
-
-**Goal**: Zero hydration mismatches and full error/loading boundary coverage
-**Depends on**: Phase 17
-**Requirements**: HYDRATION-01, HYDRATION-02, RESILIENCE-01, RESILIENCE-02
-**Success Criteria** (what must be TRUE):
-
-  1. No browser-dependent rendering that differs between SSR and client
-  2. All date/time formatting uses explicit timezone
-  3. Every route group has loading.tsx
-  4. Every route group has error.tsx
-
-**Plans**: 1 plan
-
-#### Phase 19: Verification & Production Deploy
-
-**Goal**: Ship the clean codebase to production and verify nothing broke
-**Depends on**: Phase 18
-**Requirements**: VERIFY-01, VERIFY-02, VERIFY-03
-**Success Criteria** (what must be TRUE):
-
-  1. `npm run build` passes with zero errors
-  2. All 268+ tests pass
-  3. Production deployment verified with no new console errors
-
-**Plans**: 1 plan
-
-### Progress
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 16. useEffect Audit | 1/0 | Complete    | 2026-04-08 |
-| 17. Component Structure & State Patterns | 1/0 | Complete    | 2026-04-08 |
-| 18. Server/Client Boundaries & Hydration | 1/0 | Complete    | 2026-04-08 |
-| 19. Verification & Production Deploy | 1/0 | Complete    | 2026-04-08 |
-
 ## v3.0 — AI Integration (✅ Shipped 2026-04-23 code-complete · production-verified 2026-04-25 via v3.5-P4 retroactive UAT)
 
 5 phases (20-24), ~14 plans, 24 REQs. Closed the rendering gap between the n8n Job Search pipeline's LLM output and `/admin/jobs`. HMAC + idempotency safety scaffolding shipped (n8n-side verify deferred to SEED-006).
@@ -161,169 +81,6 @@
 - Phase 24 (Regenerate Expansion): Generalized RegenerateButton + Resume/Salary Server Actions + silent-success warning state (4th variant) — 2026-04-23
 
 </details>
-
-<details>
-<summary>(legacy) Original v3.0 ROADMAP content (preserved here for context)</summary>
-
-**Goal:** Close the rendering gap between the n8n Job Search pipeline's LLM output and the /admin/jobs dashboard so the owner can actually use what the pipeline produces. Render tailored resumes, model + fix salary intelligence, add manual company-research trigger, and introduce regenerate + freshness + safety scaffolding.
-
-**Reference:** `.planning/research/SUMMARY.md`, `.planning/notes/ai-pipeline-integration-context.md`, `.planning/REQUIREMENTS.md`
-
-**Out of scope (explicit):** interview_prep rendering, recruiter_outreach rendering, streaming regenerate, inline PDF preview, collaboration/sharing/comments, audit log of edits, in-app chat, bulk regenerate, configurable prompts, email-from-admin, auto-scheduled company_research.
-
-**Deferred to v3.1+:** SEED-001 aggregate pipeline-health dashboard (DASH-01), inline editing (EDIT-01/02/03).
-
-### Phases
-
-- [x] **Phase 20: Foundation (Freshness + Zod + Tailored Resume)** — pure isStale util, Zod safeParse at jobs-db boundary, CSP on /admin/*, tailored resume rendered with Streamdown + generated_at/model badges, schema-drift CI guardrail — 2026-04-21
-- [ ] **Phase 21: Polish (Copy + PDF + Empty States + Link-out)** — copy-to-clipboard, tailored-resume PDF download (pipeline-extended end-to-end via n8n Application Packager + tailored_resumes.pdf_data migration), 3 empty-state blocks, company-website link-out, cover-letter quality-score badge, bundled Phase 20 FreshnessBadge date-format revision
-- [x] **Phase 22: Salary Intelligence (Defensive Render)** — SalaryIntelligence Zod + TS type, defensive LEFT JOIN LATERAL (WHERE FALSE skeleton tolerating future schema shape via 1-line predicate edit), llm_analysis + structured headline render, per-figure provenance tags (scraped / LLM / research) — CODE COMPLETE 2026-04-22, prod UAT deferred to v3.5
-- [x] **Phase 23: Owner-Triggered Workflows (Pattern Setter)** — "Research this company" manual trigger, regenerate cover letter (UPDATE-wait polling with server-returned baseline — D-06 amended), HMAC-SHA256 + X-Idempotency-Key + sentinel-error scrubbing pattern established and retrofit to existing fireWebhook call sites — CODE COMPLETE 2026-04-23, prod UAT deferred to v3.5-P4 (n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern)
-- [x] **Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)** — regenerate tailored resume, regenerate salary intelligence, silent-success warning state when workflow returns OK without updating timestamp — CODE COMPLETE 2026-04-23, prod UAT deferred to v3.5-P4
-
-### Phase Details
-
-#### Phase 20: Foundation (Freshness + Zod + Tailored Resume)
-
-**Goal**: Owner can read the 6 existing tailored resumes rendered as sanitized markdown with a trustworthy generated-at/model badge, and every LLM artifact row is runtime-validated at the DB boundary so schema drift never crashes the page.
-**Depends on**: Nothing (first phase of milestone; builds on v2.0 baseline)
-**Requirements**: AI-RENDER-01, AI-RENDER-02, AI-SAFETY-01, AI-SAFETY-05, AI-SAFETY-06, AI-DATA-03, AI-DATA-04
-**Success Criteria** (what must be TRUE):
-
-  1. Owner opens the job detail sheet for a job with a tailored resume and sees the markdown content rendered with headings, lists, and bold — not `whitespace-pre-wrap` plaintext
-  2. A `<script>alert(1)</script>` payload pasted into any artifact's content field renders as literal visible text in the browser (mitigates Pitfall 1 — LLM output XSS)
-  3. Every existing AI section (cover letter, company research, tailored resume) shows a "Generated {relative time} ago · {model_used}" badge under its heading (mitigates Pitfall 6 — stale cache mistaken for fresh)
-  4. Owner loads /admin/jobs with a database row that is missing a column `jobs-db.ts` expects; the page does not crash, the affected section shows an error-boundary fallback, and `console.error` logs the Zod parse failure with jobId (mitigates Pitfall 4 — schema drift)
-  5. Browser DevTools shows a `Content-Security-Policy` response header on `/admin/*` including `object-src 'none'` and `frame-ancestors 'none'`; `npm test` includes a passing test that calls `information_schema.columns` and fails loudly if a column `jobs-db.ts` reads has been removed upstream
-
-**Plans:** 8 plans
-Plans:
-
-- [x] 20-01-PLAN.md — Install streamdown + Tailwind v4 @source directive (foundation; unblocks Plans 02, 04, 05) — 2026-04-21
-- [x] 20-02-PLAN.md — Pure isStale util + STALE_THRESHOLDS constants + Vitest coverage (AI-DATA-03) — 2026-04-21
-- [x] 20-03-PLAN.md — Zod schemas (jobs-schemas.ts) + parseOrLog fail-open wrapper at jobs-db.ts return boundary + Vitest (AI-SAFETY-06) — 2026-04-21
-- [x] 20-04-PLAN.md — FreshnessBadge + SectionErrorBoundary client components + Vitest (AI-RENDER-02) — 2026-04-21
-- [x] 20-05-PLAN.md — TailoredResumeSection + Streamdown XSS regression fixture + Vitest (AI-RENDER-01, AI-SAFETY-01) — 2026-04-21
-- [x] 20-06-PLAN.md — Wire fetchJobDetail freshness + mount sections/boundaries in job-detail-sheet.tsx (AI-RENDER-01, AI-RENDER-02) — 2026-04-21
-- [x] 20-07-PLAN.md — Next.js 16 middleware.ts (renamed from proxy.ts — 16.2.1 compat) with per-request CSP nonce scoped to /admin/* (AI-SAFETY-05) — 2026-04-21
-- [x] 20-08-PLAN.md — scripts/check-jobs-schema.ts + pre-push hook + install-hooks.sh (AI-DATA-04) — 2026-04-21
-
-#### Phase 21: Polish (Copy + PDF + Empty States + Link-out)
-
-**Goal**: Owner can act on a tailored resume (copy, download PDF) in one click, and every missing AI artifact shows a distinct, explanatory empty state instead of a silent blank section. Scope includes an end-to-end PDF pipeline extension (n8n `Job Search: Application Packager` extended with a parallel resume-PDF branch + `ALTER TABLE tailored_resumes ADD COLUMN pdf_data TEXT` migration), a company-website link-out on the sheet header, a color-coded quality-score badge on cover letters, and a bundled Phase 20 revision replacing FreshnessBadge relative-time with a formal America/Chicago M/D/YY date.
-**Depends on**: Phase 20
-**Requirements**: AI-ACTION-01, AI-ACTION-02, AI-RENDER-04, AI-RENDER-05, AI-RENDER-06
-**Success Criteria** (what must be TRUE):
-
-  1. Owner clicks the copy-icon button next to the tailored resume heading, sees a sonner toast confirming success, and finds the resume markdown on their clipboard ready to paste into an ATS
-  2. Owner clicks "Download PDF" on the tailored resume and receives a `.pdf` file named `tailored-resume-job-<id>.pdf` (served by the new `/api/jobs/[id]/tailored-resume-pdf` route handler; the `tailored_resumes.pdf_data` column is populated by the extended n8n Application Packager workflow — PDF-only per owner override, no `.md` fallback)
-  3. Owner opens a job whose `company_research` is empty and sees "No company research yet." (distinct from a row where research was attempted but returned an empty body, which shows "Company research was generated but is empty." — AI-RENDER-04)
-  4. Owner sees a quality-score badge (color-coded destructive/warning/success via theme tokens) on any cover letter whose `quality_score` column is populated
-  5. Owner clicks the company name in the sheet header and is taken to the company's website in a new tab (with `rel="noopener noreferrer"` and an ExternalLink icon)
-
-**Plans:** 10 plans
-Plans:
-
-- [x] 21-00-PLAN.md — Phase 20 revision: FreshnessBadge relativeTime → generatedDate + attachFreshness Intl.DateTimeFormat(America/Chicago) — 2026-04-22
-- [x] 21-01-PLAN.md — Homelab: ALTER TABLE tailored_resumes ADD COLUMN pdf_data + n8n Application Packager workflow extension (AI-ACTION-02 pipeline, autonomous=false) — 2026-04-22
-- [x] 21-02-PLAN.md — Zod TailoredResumeSchema.pdf_data + schema-drift EXPECTED map (AI-ACTION-02) — 2026-04-22
-- [x] 21-03-PLAN.md — getJobDetail SELECT tr.pdf_data + getTailoredResumePdf helper + /api/jobs/[id]/tailored-resume-pdf route (AI-ACTION-02) — 2026-04-22
-- [x] 21-04-PLAN.md — Copy button + Download anchor in TailoredResumeSection (AI-ACTION-01, AI-ACTION-02) — 2026-04-22
-- [x] 21-05-PLAN.md — scoreColor/scoreLabel helpers + Quality badge in cover-letter meta row (AI-RENDER-05) — 2026-04-22
-- [x] 21-06-PLAN.md — EMPTY_STATE_COPY constant + isCompanyResearchEmpty predicate + empty-state branches on all 3 LLM sections (AI-RENDER-04) — 2026-04-22
-- [x] 21-07-PLAN.md — normalizeUrl helper + conditional company anchor in sheet header (AI-RENDER-06) — 2026-04-22
-- [⏳] 21-08-PLAN.md — **DEFERRED-to-v3.5**: End-to-end production UAT checkpoint blocked by broken Forgejo+Woodpecker CI/CD pipeline (see `.planning/notes/ci-cd-fragility-analysis.md`); will execute retroactively once GitHub Actions + GHCR migration lands (SEED-005). Code itself is complete + 395/395 tests green.
-- [x] 21-09-PLAN.md — Meta-doc finalization + v3.5 deferral capture (ROADMAP + REQUIREMENTS + STATE + notes + seed updates) — 2026-04-22
-
-#### Phase 22: Salary Intelligence (Defensive Render)
-
-**Goal**: Owner sees salary intelligence rendered in the job detail sheet with every figure source-tagged, and the data layer tolerates both the `job_id`-keyed and `company_name`-keyed shapes the upstream workflow may produce — the section ships before homelab task #11 lands.
-**Depends on**: Phase 20
-**Requirements**: AI-RENDER-03, AI-RENDER-07, AI-DATA-01, AI-DATA-02
-**Success Criteria** (what must be TRUE):
-
-  1. Once a `salary_intelligence` row exists for a job, owner opens the detail sheet and sees a Salary Intelligence section with the LLM analysis prose (rendered via Streamdown) plus structured headline figures (min/median/max or p25/p50/p75 — whichever the row provides)
-  2. Every dollar figure rendered anywhere in the detail sheet (base salary, salary range, salary-intel headline, company_research salary range) carries a source tag — "scraped (jobicy)", "LLM estimate", "company research" — and no figure appears without a label (mitigates Pitfall 5 — scraped numbers displayed as authoritative)
-  3. When zero `salary_intelligence` rows exist for a job, the detail sheet shows the AI-RENDER-04 empty-state messaging for that section and does NOT crash — the defensive `LEFT JOIN LATERAL` skeleton (WHERE FALSE) returns null cleanly today, and tolerates any future schema shape the n8n workflow produces via a 1-line predicate edit (the live `salary_intelligence` table is keyed on `search_date` with no `job_id` / `company_name` columns; the original SC wording was based on a pre-CONTEXT.md assumption about upstream — corrected 2026-04-22 during Phase 22 planning per `.planning/phases/22-salary-intelligence-defensive-render/22-CONTEXT.md` §Phase Boundary)
-  4. `src/lib/jobs-db.ts` exports both a `SalaryIntelligence` TypeScript type and a matching Zod schema; a Vitest test constructs a malformed row and asserts the Zod parse returns a fail-open result with a logged warning rather than throwing
-  5. The `?? "USD"` currency default at `jobs-db.ts:349` is removed; when `salary_currency` is null the salary block hides entirely rather than mislabeling a GBP/EUR figure with `$`
-
-**Plans:** 8 plans
-Plans:
-
-- [x] 22-01-PLAN.md — SalaryIntelligenceSchema + CompanyResearchSchema nullable cascade (AI-DATA-02; D-01 + D-12 prep) — 2026-04-22
-- [x] 22-02-PLAN.md — LEFT JOIN LATERAL + SalaryIntelligence type + tri-field attachFreshness (AI-DATA-01 + AI-DATA-02) — 2026-04-22
-- [x] 22-03-PLAN.md — Remove `?? "USD"` + flip CompanyResearch.salary_currency nullable (D-12 cascade; grep gate G-6) — 2026-04-22
-- [x] 22-04-PLAN.md — Schema-drift EXPECTED map gains salary_intelligence (D-04) — 2026-04-22
-- [x] 22-05-PLAN.md — ProvenanceTag primitives (provenanceColor/Label + component) (AI-RENDER-07 foundation) — 2026-04-22
-- [x] 22-06-PLAN.md — SalaryIntelligenceSection + EMPTY_STATE_COPY + parseSalaryHeadline + formatSingleSalary (AI-RENDER-03) — 2026-04-22
-- [x] 22-07-PLAN.md — Mount in job-detail-sheet + provenance retrofits + D-12 currency guards (AI-RENDER-03 + AI-RENDER-07) — 2026-04-22
-- [x] 22-08-PLAN.md — Meta-doc finalization (ROADMAP SC #3 wording + SC #5 line 328→349 + REQUIREMENTS traceability + STATE + SUMMARY) — 2026-04-22
-
-#### Phase 23: Owner-Triggered Workflows (Pattern Setter)
-
-**Goal**: Owner can manually trigger the company-research workflow and regenerate a cover letter for any job; every webhook leaving the app is HMAC-signed, idempotency-keyed, and returns only sanitized error sentinels — establishing the pattern Phase 24 will copy.
-**Depends on**: Phase 20
-**Requirements**: AI-ACTION-03, AI-ACTION-04, AI-SAFETY-02, AI-SAFETY-03, AI-SAFETY-04
-**Success Criteria** (what must be TRUE):
-
-  1. Owner opens a job with no company research, clicks "Research this company", sees an in-progress spinner + disabled button, and after the n8n workflow completes (poll every 3s, cap 60) the Company Intel section populates with the new row — closing the company_research TRIGGER gap without auto-scheduling across 467 jobs
-  2. Owner clicks "Regenerate cover letter" on a job; button shows pessimistic spinner, polling waits for `cover_letters.generated_at` to advance past the click timestamp, then sheet re-renders with the new content and a fresh timestamp badge (mitigates Pitfall 6 — stale cache)
-  3. An inspector capturing the POST from `hudsonfam` to `n8n.cloud.svc.cluster.local` sees an `X-Hudsonfam-Signature` HMAC-SHA256 header and an `X-Hudsonfam-Timestamp`; replaying the same body with the same `X-Idempotency-Key` does not produce a second LLM run in n8n execution history (mitigates Pitfall 3 — webhook unsigned + replayable)
-  4. When an n8n call fails (network error, 500, connect-refused), the owner sees one of four fixed strings — "timeout", "auth", "rate limit", or "unavailable" — and the server-side log captures the full error with stack (no raw `e.message`, no internal cluster IPs, leak to the browser)
-  5. Existing `fireWebhook` call sites (`job-feedback-sync` × 2 for reject/dismiss, `job-company-intel` for interested-status auto-trigger) are retrofit to the new signed + idempotency-keyed helper in the same PR; `job-outreach` mention was stale — grep confirmed zero active call sites in `src/`; a CI grep rule in `src/__tests__/lib/job-actions.requireRole.test.ts` asserts every exported function in `src/lib/job-actions.ts` contains `requireRole(["owner"])` within 10 lines and that `fireWebhook` is fully deleted (Pitfall 9 + G-7)
-
-**Plans**: 8 plans — Code complete 2026-04-23; prod UAT deferred to v3.5-P4 (n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern)
-
-Plans:
-
-- [x] 23-01-PLAN.md — sendSignedWebhook primitive + HMAC-SHA256 + sentinel cascade (AI-SAFETY-02/-03/-04) — 2026-04-22
-- [x] 23-02-PLAN.md — triggerCompanyResearch + regenerateCoverLetter Server Actions (AI-ACTION-03/-04) — 2026-04-23
-- [x] 23-03-PLAN.md — retrofit 3 fireWebhook call sites; delete helper (G-7) — 2026-04-23
-- [x] 23-04-PLAN.md — CI grep gate: requireRole adjacency + fireWebhook absence (D-12/G-7) — 2026-04-22
-- [x] 23-05-PLAN.md — TriggerCompanyResearchButton client component + fake-timer tests (AI-ACTION-03) — 2026-04-23
-- [x] 23-06-PLAN.md — RegenerateCoverLetterButton + server-baseline predicate + fake-timer tests (AI-ACTION-04) — 2026-04-23
-- [x] 23-07-PLAN.md — mount buttons in job-detail-sheet + G-4 assertions + env docs (AI-ACTION-03/-04) — 2026-04-23
-- [x] 23-08-PLAN.md — meta-doc finalization (ROADMAP + REQUIREMENTS + STATE + SUMMARY) — 2026-04-23
-
-#### Phase 24: Regenerate Expansion (Resume + Salary + Silent-Success State)
-
-**Goal**: Owner can regenerate every AI artifact the app renders, and any regenerate that completes "successfully" without actually updating the artifact produces a visible warning instead of silent failure.
-**Depends on**: Phase 22, Phase 23
-**Requirements**: AI-ACTION-05, AI-ACTION-06, AI-ACTION-07
-**Success Criteria** (what must be TRUE):
-
-  1. Owner clicks "Regenerate" on the tailored resume section; follows the Phase 23 pattern (pessimistic spinner → poll for `tailored_resumes.generated_at` advance → re-render with new timestamp badge)
-  2. Owner clicks "Regenerate" on the salary intelligence section; same pattern — polls `salary_intelligence.search_date` until it advances or the 60-poll cap expires (NOTE: search_date is date-granular YYYY-MM-DD; same-day regenerate triggers the silent-success warning — see 24-CONTEXT.md D-04)
-  3. When a regenerate webhook returns 200 but the artifact's `generated_at` timestamp does not advance within the polling window, owner sees a distinct warning banner — "Regeneration reported success but no new content was written — check n8n logs" — not a silent revert to pre-click state (AI-ACTION-07)
-  4. All three regenerate actions (cover letter from Phase 23, tailored resume, salary intelligence) share the same `regenerate-button.tsx` component and the same signed-webhook helper; adding a fourth regenerate action in the future requires one Server Action + one button prop, not a new pattern
-
-**Plans**: 4 plans — Code complete 2026-04-23; prod UAT deferred to v3.5-P4 (n8n webhook endpoints regenerate-tailored-resume + regenerate-salary-intelligence are homelab-repo PR concern per Phase 22/23 pattern)
-
-Plans:
-
-- [x] 24-01-PLAN.md — Generalize regenerate-button.tsx (4-state machine + silent-success) + predicates + 32+ tests — 2026-04-23
-- [x] 24-02-PLAN.md — regenerateTailoredResume + regenerateSalaryIntelligence Server Actions + 10 contract tests — 2026-04-23
-- [x] 24-03-PLAN.md — Mount RegenerateButton in tailored-resume + salary-intelligence sections; rewire CL mount — 2026-04-23
-- [x] 24-04-PLAN.md — Meta-doc finalization (ROADMAP SC #2 correction + REQUIREMENTS + STATE + SUMMARY) — 2026-04-23
-
-### Progress
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 20. Foundation (Freshness + Zod + Tailored Resume) | 8/8 | Complete | 2026-04-21 |
-| 21. Polish (Copy + PDF + Empty States + Link-out) | 9/10 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
-| 22. Salary Intelligence (Defensive Render) | 8/8 | Code complete (prod UAT deferred to v3.5) | 2026-04-22 |
-| 23. Owner-Triggered Workflows (Pattern Setter) | 8/8 | Code complete (prod UAT deferred to v3.5-P4 — n8n-side HMAC verification is a homelab-repo PR concern per Phase 22 pattern) | 2026-04-23 |
-| 24. Regenerate Expansion (Resume + Salary + Silent-Success State) | 4/4 | Code complete (prod UAT deferred to v3.5-P4) | 2026-04-23 |
-| 25. Pipeline Build (v3.5-P1) | 1/1 | Code complete (first GHCR build observational verification pending owner browser check) | 2026-04-23 |
-| 26. Flux Reconfiguration (v3.5-P2) | 2/2 | Code complete 2026-04-24 (Plan 26-01 + 26-02; cluster cutover live — pod running on ghcr.io/hudsor01/hudsonfam:20260424023904 with ghcr-pull-credentials; CICD-04/05/06 satisfied; CICD-06 SC #5 IUA-on-GHCR-path observational-pending until next Phase 25 build) | 2026-04-24 |
-| 27. Decommission Old Pipeline (v3.5-P3) | 1/1 | Code complete 2026-04-25 (Plan 27-01; 6 destructive ops verified; 7/7 verification suite PASS; CICD-07/08/09 satisfied; SUMMARY ec0ba52; 2 Rule 3 deviations captured — Woodpecker host correction + sandbox PAT-extract pivot) | 2026-04-25 |
-| 28. Smoke + Retroactive UAT (v3.5-P4) | 1/1 | Code complete 2026-04-25 (Plan 28-01; CICD-10 smoke 11m13s vs 15-min budget; CICD-11 CLAUDE.md §Deployment rewrite; CICD-12 Plan 21-08 5/5 retroactive UAT signed off + 2 trivial inline fixes per D-09; CICD-13 Phase 22/23/24 8-check retroactive smoke = 2 PASS + 4 OBSERVATIONAL-PENDING-N8N + 2 N/A → 100% hudsonfam-side green; SEED-006 + SEED-007 planted dormant; v3.5-complete tag pushed; v3.5 milestone CLOSED) | 2026-04-25 |
-
-### Deferred production UAT
-
-- **Plan 21-08** — end-to-end UAT on `https://thehudsonfam.com/admin/jobs` is gated on v3.5 rebuilding the deploy pipeline (Forgejo+Woodpecker is broken; `forgejo-admin/hudsonfam` repo no longer exists on Forgejo). After v3.5 lands, execute 21-08 retroactively against the freshly-deployed code. See `.planning/phases/21-polish-copy-pdf-empty-states-link-out/21-08-SUMMARY.md` for the retroactive execution path.
 
 ## v3.5 — CI/CD Hardening (✅ Shipped 2026-04-25)
 
@@ -375,3 +132,84 @@ Plans:
 - Phase 36 (Quality Gate): build/test/lint clean (lint 0, 233 tests, build 1036 pages), permanent v5.0 prune-guard regression test, 8-page console sweep (0 errors) + 375px human-UAT — 2 plans, 4 REQs (QUAL-01..04), 2026-06-03
 
 </details>
+
+---
+
+## v6.0 — Photo Management Overhaul (🚧 In Progress)
+
+**Milestone Goal:** Give the owner real control over the photo experience — a curated homepage grid, collection-based organization, and a friction-free dashboard — without re-uploading anything.
+
+**Phases:** 37-40 (4 phases)
+**Requirements:** 12 (FEAT-01..04, COLL-01..03, PHOTOS-01..03, VIS-01..02)
+**Branch:** `milestone/v6.0-photos`
+
+## Phases
+
+- [x] **Phase 37: Data Model & Actions Foundation** — Single-collection enforcement, All-Photos query, `featured` surface collection model, visibility defaults applied (completed 2026-06-27)
+- [x] **Phase 38: Public Surfaces** — Homepage 3×3 featured grid, /photos = collection cards + All Photos section, filenames suppressed everywhere public (completed 2026-06-27)
+- [x] **Phase 39: Dashboard Management** — Featured manager (live preview + add-from-library + drag, max 9), per-collection manage page (add + reorder), publish toggle removed (completed 2026-06-27)
+- [ ] **Phase 40: Data Setup & Quality Gate** — Delete "Moving to Dallas" / keep photos, seed 3 starter collections + featured surface collection, verify live, lint/test/build green
+
+## Phase Details
+
+### Phase 37: Data Model & Actions Foundation
+**Goal**: The data layer enforces collection exclusivity and exposes the queries public and dashboard surfaces need — a photo can belong to at most one collection, "All Photos" returns uncollected photos, and a `featured` surface collection exists to drive the homepage grid
+**Depends on**: Nothing (first phase of v6.0; builds on v5.0 baseline)
+**Requirements**: COLL-01, FEAT-04, VIS-01, VIS-02
+**Success Criteria** (what must be TRUE):
+  1. Assigning a photo to a collection via any server action removes it from any previous collection in the same operation (no photo appears in two collections)
+  2. The "All Photos" query returns exactly the photos with no `collectionId` — adding a photo to a collection removes it from this set, removing it from a collection returns it here
+  3. A `featured` surface collection (kind=surface, name=featured) row exists in the database and its `CollectionPhoto` join rows drive the homepage grid (same pattern as `memorial`)
+  4. All existing photos have `published=true` in the database; newly uploaded photos default to `published=true`; no owner action is required to publish
+**Plans**: 2 plans
+- [x] 37-01-PLAN.md — Album exclusivity (COLL-01) + max-9 featured guard (FEAT-04) in addPhotoToCollection + tests
+- [x] 37-02-PLAN.md — getUncollectedPhotos() All-Photos helper + upload default published:true (VIS-01/VIS-02) + tests
+
+### Phase 38: Public Surfaces
+**Goal**: Visitors see a curated 3×3 featured grid on the homepage and a reorganized /photos page — collection cards on top, uncollected photos below — with no filenames rendered anywhere
+**Depends on**: Phase 37
+**Requirements**: FEAT-01, PHOTOS-01, PHOTOS-02, PHOTOS-03
+**Success Criteria** (what must be TRUE):
+  1. The homepage shows up to 9 featured photos in a grid; if fewer than 9 are in the featured set, only those tiles render (no empty placeholders)
+  2. Visiting /photos shows every collection as a card at the top of the page
+  3. Below the collection cards, /photos shows an "All Photos" section containing every photo that is in no collection
+  4. No photo filename, file path, or title text is visible anywhere on the public site — not on the homepage grid, not on /photos, not inside the lightbox
+**Plans**: 2 plans
+- [x] 38-01-PLAN.md — getFeaturedPhotos() query + unit tests; homepage 3×3 featured grid (no placeholder tiles, graceful empty) [FEAT-01]
+- [x] 38-02-PLAN.md — /photos All Photos via getUncollectedPhotos() + keep collection cards; strip title/caption overlays from album grid & lightbox; prod-readiness assertions [PHOTOS-01/02/03]
+**UI hint**: yes
+
+### Phase 39: Dashboard Management
+**Goal**: The owner can curate the featured homepage grid (live preview, add from library, drag to reorder, max 9) and manage each collection's photos (add from library, reorder) — all from the dashboard — with the publish toggle gone
+**Depends on**: Phase 37
+**Requirements**: FEAT-02, FEAT-03, COLL-02
+**Success Criteria** (what must be TRUE):
+  1. The owner opens the featured manager and sees a live preview that mirrors how the homepage grid will appear, including the current order of featured photos
+  2. The owner can add any photo from the full library to the featured set and drag to reorder; the set enforces a maximum of 9 with no duplicates
+  3. The owner can open a per-collection manage page, add photos from the library (which removes them from any other collection), and drag to reorder photos within the collection
+  4. No publish toggle, publish button, or publish-related UI element appears anywhere in the dashboard photo or upload flows
+**Plans**: 3 plans
+- [x] 39-01-PLAN.md — Featured manager (/dashboard/photos/featured): live 3×3 preview + SortablePhotoGrid reorder + add-from-library, max-9 surfaced, graceful when featured collection absent; generalize PhotoLibraryPicker [FEAT-02, FEAT-03]
+- [x] 39-02-PLAN.md — Per-collection manage page: add-from-library (getUncollectedPhotos → addPhotoToCollection album-exclusive) alongside existing reorder grid [COLL-02]
+- [x] 39-03-PLAN.md — Remove publish toggle (photo-actions Switch + upload checkbox → always published:true), quiet status label instead of filename + Featured link on photos page, source-level regression tests [crit-4 / VIS-02 UI]
+**UI hint**: yes
+
+### Phase 40: Data Setup & Quality Gate
+**Goal**: Live data matches the intended state — "Moving to Dallas" collection removed (photos preserved), three starter collections exist, the featured surface collection is seeded — and the build is clean
+**Depends on**: Phase 38, Phase 39
+**Requirements**: COLL-03
+**Success Criteria** (what must be TRUE):
+  1. The "Moving to Dallas" collection no longer exists; photos that were in it appear in the "All Photos" section on /photos (no photos deleted)
+  2. Three collections exist in the live database: "Extending 1407 Judy Driveway", "Richard Jr's 38th Birthday Dinner", "Dad's Trips to Japan"
+  3. The featured surface collection exists and the homepage featured grid renders correctly on thehudsonfam.com
+  4. `npm run lint`, `npm test`, and `npm run build` all exit 0 with no new errors or warnings
+**Plans**: TBD
+
+## Progress
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 37. Data Model & Actions Foundation | 2/2 | Complete    | 2026-06-27 |
+| 38. Public Surfaces | 2/2 | Complete    | 2026-06-27 |
+| 39. Dashboard Management | 3/3 | Complete    | 2026-06-27 |
+| 40. Data Setup & Quality Gate | 0/TBD | Not started | - |

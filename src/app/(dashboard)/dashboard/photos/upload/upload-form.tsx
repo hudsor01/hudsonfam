@@ -27,7 +27,6 @@ interface UploadResult {
 
 export function UploadForm({ collections }: { collections: Collection[] }) {
   const [selectedCollection, setSelectedCollection] = useState("");
-  const [publishNow, setPublishNow] = useState(true);
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -59,7 +58,7 @@ export function UploadForm({ collections }: { collections: Collection[] }) {
       if (selectedCollection && selectedCollection !== "__none__") {
         formData.append("collectionId", selectedCollection);
       }
-      formData.append("published", publishNow ? "true" : "false");
+      formData.append("published", "true");
       formData.append("title", file.name.replace(/\.[^/.]+$/, ""));
 
       try {
@@ -118,20 +117,6 @@ export function UploadForm({ collections }: { collections: Collection[] }) {
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      {/* Publish now checkbox */}
-      <div className="flex items-center gap-2">
-        <input
-          id="publish-now"
-          type="checkbox"
-          checked={publishNow}
-          onChange={(e) => setPublishNow(e.target.checked)}
-          className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
-        />
-        <label htmlFor="publish-now" className="text-sm font-medium text-muted-foreground cursor-pointer">
-          Publish now
-        </label>
       </div>
 
       {/* File input */}

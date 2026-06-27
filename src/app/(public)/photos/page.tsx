@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { SectionHeader } from "@/components/ui/section-header";
 import AlbumPhotoGrid from "@/components/public/album-photo-grid";
+import { getUncollectedPhotos } from "@/lib/photo-queries";
 
 export const metadata: Metadata = {
   title: "Photos",
@@ -26,22 +27,8 @@ export default async function PhotosPage() {
       },
       orderBy: { date: "desc" },
     }),
-    // Every published photo — so /photos is a real "all photos" view, not just
-    // albums (most photos aren't in an album).
-    prisma.photo.findMany({
-      where: { published: true },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        title: true,
-        caption: true,
-        thumbnailPath: true,
-        originalPath: true,
-        width: true,
-        height: true,
-        takenAt: true,
-      },
-    }),
+    // All Photos = photos in NO album-kind collection (PHOTOS-02 / getUncollectedPhotos).
+    getUncollectedPhotos(),
   ]);
 
   return (

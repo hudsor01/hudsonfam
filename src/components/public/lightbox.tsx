@@ -181,7 +181,7 @@ export default function Lightbox({
       >
         <Image
           src={`/api/images/${photo.id}?size=medium`}
-          alt={photo.title || photo.caption || "Photo"}
+          alt="The Hudson Family photo"
           width={1200}
           height={800}
           sizes="100vw"
@@ -189,18 +189,6 @@ export default function Lightbox({
           draggable={false}
           unoptimized
         />
-
-        {/* Caption */}
-        {(photo.title || photo.caption) && (
-          <div className="mt-4 text-center max-w-lg">
-            {photo.title && (
-              <p className="text-white text-sm font-medium">{photo.title}</p>
-            )}
-            {photo.caption && (
-              <p className="text-white/60 text-sm mt-1">{photo.caption}</p>
-            )}
-          </div>
-        )}
 
         {/* Counter */}
         <p className="text-white/40 text-xs mt-3">

@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/session";
+import { FEATURED_SLUG, FEATURED_MAX } from "@/lib/featured";
 
 const EDIT_ROLES = ["owner", "admin", "member"];
 
@@ -23,8 +24,44 @@ async function revalidateSurfaces() {
 
 export async function addPhotoToCollection(collectionId: string, photoId: string) {
   await requireRole(EDIT_ROLES);
+
+  const target = await prisma.collection.findUnique({
+    where: { id: collectionId },
+    select: { kind: true, slug: true },
+  });
+  if (!target) throw new Error("Collection not found");
+
   const sortOrder = await prisma.collectionPhoto.count({ where: { collectionId } });
-  await prisma.collectionPhoto.create({ data: { collectionId, photoId, sortOrder } });
+
+  // FEAT-04: the featured surface collection cannot exceed FEATURED_MAX photos.
+  // Reject before any row is created; duplicates remain blocked by the existing
+  // @@unique([collectionId, photoId]) index (no new constraint needed).
+  if (target.kind === "surface" && target.slug === FEATURED_SLUG && sortOrder >= FEATURED_MAX) {
+    throw new Error(
+      `Featured is limited to ${FEATURED_MAX} photos. Remove one before adding another.`
+    );
+  }
+
+  if (target.kind === "album") {
+    // COLL-01 album exclusivity: a photo's "home" is at most ONE album-kind
+    // collection. Atomically remove the photo from every OTHER album-kind
+    // collection, then create the new membership. Surface memberships
+    // (memorial/featured) are references, never touched by exclusivity.
+    await prisma.$transaction(async (tx) => {
+      await tx.collectionPhoto.deleteMany({
+        where: {
+          photoId,
+          collectionId: { not: collectionId },
+          collection: { is: { kind: "album" } },
+        },
+      });
+      await tx.collectionPhoto.create({ data: { collectionId, photoId, sortOrder } });
+    });
+  } else {
+    // Surface target (memorial/featured): add as a reference only — no removal.
+    await prisma.collectionPhoto.create({ data: { collectionId, photoId, sortOrder } });
+  }
+
   await prisma.photo.update({ where: { id: photoId }, data: { published: true } });
   await revalidateSurfaces();
 }
