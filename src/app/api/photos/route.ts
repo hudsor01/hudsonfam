@@ -19,6 +19,27 @@ const ALLOWED_TYPES = [
 ];
 
 /**
+ * resolvePublished — v6.0 default-public behavior (VIS-01 / VIS-02)
+ *
+ * Canonical rules for the `published` flag on a new upload:
+ *   1. collectionId present → always true (collection-forced publish)
+ *   2. publishedRaw missing / "on" / "true" → true (default-public)
+ *   3. publishedRaw === "false" → false (explicit owner override; toggle
+ *      UI removed in Phase 39, backfill of existing rows in Phase 40)
+ *
+ * Exported for unit testing; not a public API surface.
+ */
+export function resolvePublished(
+  publishedRaw: string | null,
+  collectionId: string | null
+): boolean {
+  // Rule 1: collection-forced publish
+  if (collectionId) return true;
+  // Rule 2 & 3: default-public — only "false" overrides
+  return publishedRaw !== "false";
+}
+
+/**
  * POST /api/photos
  *
  * Upload a photo via multipart form data.
@@ -58,10 +79,6 @@ export async function POST(request: NextRequest) {
   const publishedRaw = formData.get("published") as string | null;
   const title = formData.get("title") as string | null;
   const caption = formData.get("caption") as string | null;
-
-  // Resolve published flag: missing or "on" or "true" → true; "false" → false
-  const published =
-    publishedRaw === null || publishedRaw === "on" || publishedRaw === "true";
 
   // Validate file
   if (!file || !(file instanceof File)) {
@@ -124,8 +141,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Photos added to a collection are always published
-  const finalPublished = collectionId ? true : published;
+  // Resolve published flag (VIS-01 / VIS-02 default-public behavior)
+  const finalPublished = resolvePublished(publishedRaw, collectionId);
 
   // Save metadata to database
   const photo = await prisma.photo.create({

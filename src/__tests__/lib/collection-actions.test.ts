@@ -66,10 +66,24 @@ describe('addPhotoToCollection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireRole.mockResolvedValue(fakeSession);
+    // Default: $transaction runs its callback against the same prismaMock so that
+    // assertions on prismaMock.collectionPhoto.* inside the transaction stay valid.
+    prismaMock.$transaction.mockImplementation((fn: unknown) =>
+      typeof fn === 'function'
+        ? (fn as (tx: typeof prismaMock) => unknown)(prismaMock)
+        : Promise.all(fn as Promise<unknown>[])
+    );
+    // Default target collection is an album (exclusivity path).
+    prismaMock.collection.findUnique.mockResolvedValue({
+      id: 'col1',
+      kind: 'album',
+      slug: 'lake-trip',
+    });
   });
 
   it('counts existing photos and uses count as sortOrder', async () => {
     prismaMock.collectionPhoto.count.mockResolvedValue(2);
+    prismaMock.collectionPhoto.deleteMany.mockResolvedValue({ count: 0 });
     prismaMock.collectionPhoto.create.mockResolvedValue({});
     prismaMock.photo.update.mockResolvedValue({});
 
@@ -85,6 +99,7 @@ describe('addPhotoToCollection', () => {
 
   it('sets photo published: true', async () => {
     prismaMock.collectionPhoto.count.mockResolvedValue(0);
+    prismaMock.collectionPhoto.deleteMany.mockResolvedValue({ count: 0 });
     prismaMock.collectionPhoto.create.mockResolvedValue({});
     prismaMock.photo.update.mockResolvedValue({});
 
@@ -98,6 +113,7 @@ describe('addPhotoToCollection', () => {
 
   it('revalidates surfaces', async () => {
     prismaMock.collectionPhoto.count.mockResolvedValue(0);
+    prismaMock.collectionPhoto.deleteMany.mockResolvedValue({ count: 0 });
     prismaMock.collectionPhoto.create.mockResolvedValue({});
     prismaMock.photo.update.mockResolvedValue({});
 
@@ -114,6 +130,145 @@ describe('addPhotoToCollection', () => {
 
     await expect(addPhotoToCollection('col1', 'p1')).rejects.toThrow('Forbidden');
     expect(prismaMock.collectionPhoto.create).not.toHaveBeenCalled();
+  });
+
+  // ── COLL-01: album exclusivity ──────────────────────────────────────────
+
+  it('removes the photo from other album collections in a single $transaction (album target)', async () => {
+    prismaMock.collectionPhoto.count.mockResolvedValue(0);
+    prismaMock.collectionPhoto.deleteMany.mockResolvedValue({ count: 1 });
+    prismaMock.collectionPhoto.create.mockResolvedValue({});
+    prismaMock.photo.update.mockResolvedValue({});
+
+    await addPhotoToCollection('col1', 'p1');
+
+    // Exclusivity removal + create run inside exactly one transaction.
+    expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
+    expect(prismaMock.collectionPhoto.deleteMany).toHaveBeenCalledTimes(1);
+    expect(prismaMock.collectionPhoto.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('restricts the exclusivity deleteMany to OTHER album-kind collections only', async () => {
+    prismaMock.collectionPhoto.count.mockResolvedValue(0);
+    prismaMock.collectionPhoto.deleteMany.mockResolvedValue({ count: 1 });
+    prismaMock.collectionPhoto.create.mockResolvedValue({});
+    prismaMock.photo.update.mockResolvedValue({});
+
+    await addPhotoToCollection('col1', 'p1');
+
+    expect(prismaMock.collectionPhoto.deleteMany).toHaveBeenCalledWith({
+      where: {
+        photoId: 'p1',
+        collectionId: { not: 'col1' },
+        collection: { is: { kind: 'album' } },
+      },
+    });
+  });
+
+  it('does NOT remove anything when the target is a surface collection', async () => {
+    prismaMock.collection.findUnique.mockResolvedValue({
+      id: 'mem1',
+      kind: 'surface',
+      slug: 'memorial',
+    });
+    prismaMock.collectionPhoto.count.mockResolvedValue(3);
+    prismaMock.collectionPhoto.create.mockResolvedValue({});
+    prismaMock.photo.update.mockResolvedValue({});
+
+    await addPhotoToCollection('mem1', 'p1');
+
+    // Surface add: no exclusivity removal, no transaction needed.
+    expect(prismaMock.collectionPhoto.deleteMany).not.toHaveBeenCalled();
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+    // The membership is still created with sortOrder = current count.
+    expect(prismaMock.collectionPhoto.create).toHaveBeenCalledWith({
+      data: { collectionId: 'mem1', photoId: 'p1', sortOrder: 3 },
+    });
+    // Surface add still publishes + revalidates.
+    expect(prismaMock.photo.update).toHaveBeenCalledWith({
+      where: { id: 'p1' },
+      data: { published: true },
+    });
+    expect(mockRevalidatePath).toHaveBeenCalledWith('/photos');
+  });
+});
+
+describe('addPhotoToCollection — featured max-9 guard (FEAT-04)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockRequireRole.mockResolvedValue(fakeSession);
+    prismaMock.$transaction.mockImplementation((fn: unknown) =>
+      typeof fn === 'function'
+        ? (fn as (tx: typeof prismaMock) => unknown)(prismaMock)
+        : Promise.all(fn as Promise<unknown>[])
+    );
+  });
+
+  it('rejects a 10th featured add with a 9-photo-limit message and creates no row', async () => {
+    prismaMock.collection.findUnique.mockResolvedValue({
+      id: 'feat1',
+      kind: 'surface',
+      slug: 'featured',
+    });
+    prismaMock.collectionPhoto.count.mockResolvedValue(9);
+
+    await expect(addPhotoToCollection('feat1', 'p10')).rejects.toThrow(/9/);
+
+    expect(prismaMock.collectionPhoto.create).not.toHaveBeenCalled();
+    expect(prismaMock.photo.update).not.toHaveBeenCalled();
+    expect(mockRevalidatePath).not.toHaveBeenCalled();
+  });
+
+  it('allows the add when featured holds 8 photos', async () => {
+    prismaMock.collection.findUnique.mockResolvedValue({
+      id: 'feat1',
+      kind: 'surface',
+      slug: 'featured',
+    });
+    prismaMock.collectionPhoto.count.mockResolvedValue(8);
+    prismaMock.collectionPhoto.create.mockResolvedValue({});
+    prismaMock.photo.update.mockResolvedValue({});
+
+    await addPhotoToCollection('feat1', 'p9');
+
+    expect(prismaMock.collectionPhoto.create).toHaveBeenCalledWith({
+      data: { collectionId: 'feat1', photoId: 'p9', sortOrder: 8 },
+    });
+  });
+
+  it('does NOT fire the guard for album collections at >= 9 photos', async () => {
+    prismaMock.collection.findUnique.mockResolvedValue({
+      id: 'album1',
+      kind: 'album',
+      slug: 'big-album',
+    });
+    prismaMock.collectionPhoto.count.mockResolvedValue(20);
+    prismaMock.collectionPhoto.deleteMany.mockResolvedValue({ count: 0 });
+    prismaMock.collectionPhoto.create.mockResolvedValue({});
+    prismaMock.photo.update.mockResolvedValue({});
+
+    await expect(addPhotoToCollection('album1', 'p21')).resolves.toBeUndefined();
+
+    expect(prismaMock.collectionPhoto.create).toHaveBeenCalledWith({
+      data: { collectionId: 'album1', photoId: 'p21', sortOrder: 20 },
+    });
+  });
+
+  it('does NOT fire the guard for a non-featured surface collection at >= 9 photos', async () => {
+    prismaMock.collection.findUnique.mockResolvedValue({
+      id: 'mem1',
+      kind: 'surface',
+      slug: 'memorial',
+    });
+    prismaMock.collectionPhoto.count.mockResolvedValue(15);
+    prismaMock.collectionPhoto.create.mockResolvedValue({});
+    prismaMock.photo.update.mockResolvedValue({});
+
+    await expect(addPhotoToCollection('mem1', 'p16')).resolves.toBeUndefined();
+
+    expect(prismaMock.collectionPhoto.create).toHaveBeenCalledWith({
+      data: { collectionId: 'mem1', photoId: 'p16', sortOrder: 15 },
+    });
   });
 });
 
