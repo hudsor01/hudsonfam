@@ -174,7 +174,9 @@
   2. Visiting /photos shows every collection as a card at the top of the page
   3. Below the collection cards, /photos shows an "All Photos" section containing every photo that is in no collection
   4. No photo filename, file path, or title text is visible anywhere on the public site — not on the homepage grid, not on /photos, not inside the lightbox
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 38-01-PLAN.md — getFeaturedPhotos() query + unit tests; homepage 3×3 featured grid (no placeholder tiles, graceful empty) [FEAT-01]
+- [ ] 38-02-PLAN.md — /photos All Photos via getUncollectedPhotos() + keep collection cards; strip title/caption overlays from album grid & lightbox; prod-readiness assertions [PHOTOS-01/02/03]
 **UI hint**: yes
 
 ### Phase 39: Dashboard Management
@@ -205,6 +207,6 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 37. Data Model & Actions Foundation | 2/2 | Complete    | 2026-06-27 |
-| 38. Public Surfaces | 0/TBD | Not started | - |
+| 38. Public Surfaces | 0/2 | Not started | - |
 | 39. Dashboard Management | 0/TBD | Not started | - |
 | 40. Data Setup & Quality Gate | 0/TBD | Not started | - |
