@@ -33,19 +33,13 @@ export default function AlbumPhotoGrid({ photos }: AlbumPhotoGridProps) {
           >
             <Image
               src={`/api/images/${photo.id}?size=thumbnail`}
-              alt={photo.title || photo.caption || "Photo"}
+              alt="The Hudson Family photo"
               width={400}
               height={300}
               className="w-full h-full object-cover group-hover:scale-105 group-hover:rotate-y-1 hover:brightness-110 hover:saturate-110 transition-all duration-500"
               loading="lazy"
               unoptimized
             />
-            {/* Hover overlay with title */}
-            {photo.title && (
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                <p className="text-white text-xs truncate">{photo.title}</p>
-              </div>
-            )}
           </button>
         ))}
       </div>

@@ -391,6 +391,72 @@ describe('Integration -- Page Rendering', () => {
 });
 
 // ============================================================
+// 7. v6.0 Public Surfaces — Phase 38
+// ============================================================
+//
+// Source assertions for the Phase 38 photo surface changes:
+//   - Homepage: featured grid via getFeaturedPhotos() (no take:6 / published:true)
+//   - /photos All Photos: uncollected photos via getUncollectedPhotos() (PHOTOS-02)
+//   - /photos collection cards: album-kind query retained (PHOTOS-01)
+//   - No filenames rendered in album grid or lightbox (PHOTOS-03)
+
+describe('v6.0 Public Surfaces — Phase 38', () => {
+  it('homepage drives the featured grid from getFeaturedPhotos, not take:6 / published:true', async () => {
+    const page = await fs.readFile(
+      path.join(process.cwd(), 'src', 'app', '(public)', 'page.tsx'),
+      'utf-8'
+    );
+    expect(page).toContain('getFeaturedPhotos');
+    expect(page).not.toContain('take: 6');
+    expect(page).not.toContain("published: true");
+  });
+
+  it('/photos All Photos section uses getUncollectedPhotos, not the old all-published query', async () => {
+    const page = await fs.readFile(
+      path.join(process.cwd(), 'src', 'app', '(public)', 'photos', 'page.tsx'),
+      'utf-8'
+    );
+    expect(page).toContain('getUncollectedPhotos');
+    expect(page).not.toContain("where: { published: true }");
+  });
+
+  it('/photos keeps album collection cards (PHOTOS-01)', async () => {
+    const page = await fs.readFile(
+      path.join(process.cwd(), 'src', 'app', '(public)', 'photos', 'page.tsx'),
+      'utf-8'
+    );
+    expect(page).toContain('kind: "album"');
+  });
+
+  it('album-photo-grid does not render photo.title and uses generic alt text (PHOTOS-03)', async () => {
+    const grid = await fs.readFile(
+      path.join(process.cwd(), 'src', 'components', 'public', 'album-photo-grid.tsx'),
+      'utf-8'
+    );
+    expect(grid).not.toContain('{photo.title}');
+    expect(grid).toContain('The Hudson Family photo');
+  });
+
+  it('lightbox does not render photo.title or photo.caption and uses generic alt text (PHOTOS-03)', async () => {
+    const lightbox = await fs.readFile(
+      path.join(process.cwd(), 'src', 'components', 'public', 'lightbox.tsx'),
+      'utf-8'
+    );
+    expect(lightbox).not.toContain('{photo.title}');
+    expect(lightbox).not.toContain('{photo.caption}');
+    expect(lightbox).toContain('The Hudson Family photo');
+  });
+
+  it('lightbox counter is preserved (not a filename)', async () => {
+    const lightbox = await fs.readFile(
+      path.join(process.cwd(), 'src', 'components', 'public', 'lightbox.tsx'),
+      'utf-8'
+    );
+    expect(lightbox).toMatch(/currentIndex \+ 1/);
+  });
+});
+
+// ============================================================
 // 6. v5.0 Prune Guard — Dead-Code Permanence
 // ============================================================
 //
