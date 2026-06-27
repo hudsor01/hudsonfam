@@ -1,5 +1,21 @@
 # Milestones (Shipped)
 
+## v6.0 v6.0 (Shipped: 2026-06-27)
+
+**Phases completed:** 4 phases, 8 plans, 12 tasks
+
+**Key accomplishments:**
+
+- Album-exclusive `addPhotoToCollection` (one-album home via a single `$transaction`) plus a server-side max-9 cap on the `featured` surface collection — both enforced at the single action entry point.
+- `getUncollectedPhotos()` Prisma helper with album-kind `none` filter; upload route refactored to `resolvePublished()` pure function making new uploads default-public (VIS-01)
+- `src/app/(public)/photos/page.tsx` — replaced the second arm of the `Promise.all` from an inline `prisma.photo.findMany({ where: { published: true }, select: {...} })` with `getUncollectedPhotos()` imported from `@/lib/photo-queries`. The album-kind collection cards section above it (PHOTOS-01) was untouched. The `allPhotos` binding and `<AlbumPhotoGrid photos={allPhotos} />` render remain identical.
+- Featured dashboard manager with live 3×3 homepage preview, drag-reorder, and capped add-from-library via a generalized PhotoLibraryPicker (label + disabled props).
+- 1. [Rule 3 - Blocking] Fixed relative import path depth
+- Removed publish toggle and checkbox from photo actions/upload form; dashboard Photos grid now shows collection/All-Photos status and links to the Featured manager; 5 Phase-39 regression assertions added.
+- Complete (2026-06-27) — v6.0 shipped to production.
+
+---
+
 ## v5.0 — Site Consolidation & Navigation Redesign
 
 **Shipped:** 2026-06-03
