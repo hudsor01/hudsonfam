@@ -147,7 +147,7 @@
 
 - [x] **Phase 37: Data Model & Actions Foundation** — Single-collection enforcement, All-Photos query, `featured` surface collection model, visibility defaults applied (completed 2026-06-27)
 - [x] **Phase 38: Public Surfaces** — Homepage 3×3 featured grid, /photos = collection cards + All Photos section, filenames suppressed everywhere public (completed 2026-06-27)
-- [ ] **Phase 39: Dashboard Management** — Featured manager (live preview + add-from-library + drag, max 9), per-collection manage page (add + reorder), publish toggle removed
+- [x] **Phase 39: Dashboard Management** — Featured manager (live preview + add-from-library + drag, max 9), per-collection manage page (add + reorder), publish toggle removed (completed 2026-06-27)
 - [ ] **Phase 40: Data Setup & Quality Gate** — Delete "Moving to Dallas" / keep photos, seed 3 starter collections + featured surface collection, verify live, lint/test/build green
 
 ## Phase Details
@@ -189,9 +189,9 @@
   3. The owner can open a per-collection manage page, add photos from the library (which removes them from any other collection), and drag to reorder photos within the collection
   4. No publish toggle, publish button, or publish-related UI element appears anywhere in the dashboard photo or upload flows
 **Plans**: 3 plans
-- [ ] 39-01-PLAN.md — Featured manager (/dashboard/photos/featured): live 3×3 preview + SortablePhotoGrid reorder + add-from-library, max-9 surfaced, graceful when featured collection absent; generalize PhotoLibraryPicker [FEAT-02, FEAT-03]
-- [ ] 39-02-PLAN.md — Per-collection manage page: add-from-library (getUncollectedPhotos → addPhotoToCollection album-exclusive) alongside existing reorder grid [COLL-02]
-- [ ] 39-03-PLAN.md — Remove publish toggle (photo-actions Switch + upload checkbox → always published:true), quiet status label instead of filename + Featured link on photos page, source-level regression tests [crit-4 / VIS-02 UI]
+- [x] 39-01-PLAN.md — Featured manager (/dashboard/photos/featured): live 3×3 preview + SortablePhotoGrid reorder + add-from-library, max-9 surfaced, graceful when featured collection absent; generalize PhotoLibraryPicker [FEAT-02, FEAT-03]
+- [x] 39-02-PLAN.md — Per-collection manage page: add-from-library (getUncollectedPhotos → addPhotoToCollection album-exclusive) alongside existing reorder grid [COLL-02]
+- [x] 39-03-PLAN.md — Remove publish toggle (photo-actions Switch + upload checkbox → always published:true), quiet status label instead of filename + Featured link on photos page, source-level regression tests [crit-4 / VIS-02 UI]
 **UI hint**: yes
 
 ### Phase 40: Data Setup & Quality Gate
@@ -211,5 +211,5 @@
 |-------|----------------|--------|-----------|
 | 37. Data Model & Actions Foundation | 2/2 | Complete    | 2026-06-27 |
 | 38. Public Surfaces | 2/2 | Complete    | 2026-06-27 |
-| 39. Dashboard Management | 0/3 | Not started | - |
+| 39. Dashboard Management | 3/3 | Complete    | 2026-06-27 |
 | 40. Data Setup & Quality Gate | 0/TBD | Not started | - |
