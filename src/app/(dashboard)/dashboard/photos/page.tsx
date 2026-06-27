@@ -21,6 +21,13 @@ export default async function PhotosPage() {
     prisma.collection.findMany({ orderBy: { title: "asc" } }),
   ]);
 
+  // Build a collectionId → title lookup for album-kind collections only
+  const albumMap = new Map(
+    collections
+      .filter((c) => c.kind === "album")
+      .map((c) => [c.id, c.title])
+  );
+
   return (
     <div>
       <SectionHeader
@@ -35,6 +42,12 @@ export default async function PhotosPage() {
           className="text-sm text-muted-foreground hover:text-foreground bg-card border border-border rounded-lg px-4 py-2 transition-colors"
         >
           Manage Collections
+        </Link>
+        <Link
+          href="/dashboard/photos/featured"
+          className="text-sm text-muted-foreground hover:text-foreground bg-card border border-border rounded-lg px-4 py-2 transition-colors"
+        >
+          Manage Featured
         </Link>
         <a
           href="/dashboard/photos/upload"
@@ -73,15 +86,15 @@ export default async function PhotosPage() {
                 />
               </div>
               <div className="p-2">
-                <p className="text-xs text-foreground truncate">
-                  {photo.title || "Untitled"}
+                <p className="text-xs text-muted-foreground truncate">
+                  {photo.collections
+                    .map((c) => albumMap.get(c.collectionId))
+                    .find(Boolean) ?? "All Photos"}
                 </p>
-
               </div>
               <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <PhotoActions
                   photoId={photo.id}
-                  published={photo.published}
                   collections={collections}
                   memberCollectionIds={photo.collections.map((c) => c.collectionId)}
                   deleteAction={async () => {

@@ -25,7 +25,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  setPhotoPublished,
   addPhotoToCollection,
   removePhotoFromCollection,
 } from "@/lib/collection-actions";
@@ -38,7 +37,6 @@ interface Collection {
 
 interface PhotoActionsProps {
   photoId: string;
-  published: boolean;
   collections: Collection[];
   memberCollectionIds: string[];
   deleteAction: () => Promise<void>;
@@ -46,7 +44,6 @@ interface PhotoActionsProps {
 
 export function PhotoActions({
   photoId,
-  published,
   collections,
   memberCollectionIds,
   deleteAction,
@@ -64,15 +61,6 @@ export function PhotoActions({
     } finally {
       setLoading(false);
       setConfirmOpen(false);
-    }
-  }
-
-  async function handlePublishToggle() {
-    try {
-      await setPhotoPublished(photoId, !published);
-      toast.success(published ? "Photo unpublished" : "Photo published");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to update");
     }
   }
 
@@ -111,13 +99,6 @@ export function PhotoActions({
             <ExternalLink className="size-4" />
             View Full Size
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuCheckboxItem
-            checked={published}
-            onCheckedChange={handlePublishToggle}
-          >
-            Published
-          </DropdownMenuCheckboxItem>
           {collections.length > 0 && (
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>

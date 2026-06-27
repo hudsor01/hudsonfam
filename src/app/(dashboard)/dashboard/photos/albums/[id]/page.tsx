@@ -4,9 +4,11 @@ import { notFound } from "next/navigation";
 import { SectionHeader } from "@/components/ui/section-header";
 import { DashboardBreadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { SortablePhotoGrid } from "@/components/dashboard/sortable-photo-grid";
+import { PhotoLibraryPicker } from "../../../memorial/media/photo-library-picker";
 import { CollectionForm } from "../collection-form";
 import { DeleteCollectionButton } from "./delete-collection-button";
 import { updateCollection } from "@/lib/collection-actions";
+import { getUncollectedPhotos } from "@/lib/photo-queries";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -34,6 +36,17 @@ export default async function EditCollectionPage({ params }: Props) {
     photoId: cp.photoId,
     caption: cp.caption ?? cp.photo.caption,
     layout: cp.layout,
+  }));
+
+  // For album-kind collections: fetch uncollected photos as the picker library.
+  // Surface collections (memorial, featured) do not use this picker.
+  const uncollectedPhotos =
+    collection.kind === "album" ? await getUncollectedPhotos() : [];
+
+  const libraryPhotos = uncollectedPhotos.map((p) => ({
+    id: p.id,
+    title: p.title,
+    caption: p.caption,
   }));
 
   async function handleUpdate(input: { title: string; description?: string }) {
@@ -81,6 +94,19 @@ export default async function EditCollectionPage({ params }: Props) {
         </h3>
         <SortablePhotoGrid collectionId={collection.id} items={photoItems} />
       </div>
+
+      {collection.kind === "album" && (
+        <div className="mt-6 bg-card border border-border rounded-xl p-5">
+          <h3 className="text-xs font-sans font-semibold tracking-[3px] text-accent uppercase mb-4">
+            Add from Library
+          </h3>
+          <PhotoLibraryPicker
+            collectionId={collection.id}
+            photos={libraryPhotos}
+            label={collection.title}
+          />
+        </div>
+      )}
     </div>
   );
 }

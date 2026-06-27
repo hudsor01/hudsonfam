@@ -457,6 +457,66 @@ describe('v6.0 Public Surfaces — Phase 38', () => {
 });
 
 // ============================================================
+// 8. v6.0 Dashboard Management — Phase 39
+// ============================================================
+//
+// Source assertions for the Phase 39 dashboard management changes:
+//   - photo-actions.tsx: publish toggle removed (no setPhotoPublished, no publish DropdownMenuCheckboxItem)
+//   - upload-form.tsx: Publish-now checkbox removed; always sends published=true
+//   - photos/page.tsx: links to /dashboard/photos/featured; no raw filename label
+//   - featured/page.tsx: exists, references FEATURED_SLUG, SortablePhotoGrid, PhotoLibraryPicker
+//   - albums/[id]/page.tsx: add-from-library UI present (getUncollectedPhotos + PhotoLibraryPicker)
+
+describe('v6.0 Phase 39 — Dashboard Management', () => {
+  it('photo-actions.tsx has no publish toggle (no setPhotoPublished or publish DropdownMenuCheckboxItem)', async () => {
+    const src = await fs.readFile(
+      path.join(process.cwd(), 'src', 'app', '(dashboard)', 'dashboard', 'photos', 'photo-actions.tsx'),
+      'utf-8'
+    );
+    expect(src).not.toContain('setPhotoPublished');
+    expect(src).not.toContain('handlePublishToggle');
+  });
+
+  it('upload-form.tsx has no Publish-now checkbox and always sends published=true', async () => {
+    const src = await fs.readFile(
+      path.join(process.cwd(), 'src', 'app', '(dashboard)', 'dashboard', 'photos', 'upload', 'upload-form.tsx'),
+      'utf-8'
+    );
+    expect(src).not.toContain('publish-now');
+    expect(src).not.toContain('publishNow');
+    expect(src).toContain('published", "true"');
+  });
+
+  it('photos/page.tsx links to /dashboard/photos/featured and has no raw filename label', async () => {
+    const src = await fs.readFile(
+      path.join(process.cwd(), 'src', 'app', '(dashboard)', 'dashboard', 'photos', 'page.tsx'),
+      'utf-8'
+    );
+    expect(src).toContain('/dashboard/photos/featured');
+    expect(src).not.toContain('photo.title || "Untitled"');
+  });
+
+  it('featured/page.tsx references FEATURED_SLUG, SortablePhotoGrid, and PhotoLibraryPicker', async () => {
+    const src = await fs.readFile(
+      path.join(process.cwd(), 'src', 'app', '(dashboard)', 'dashboard', 'photos', 'featured', 'page.tsx'),
+      'utf-8'
+    );
+    expect(src).toContain('FEATURED_SLUG');
+    expect(src).toContain('SortablePhotoGrid');
+    expect(src).toContain('PhotoLibraryPicker');
+  });
+
+  it('albums/[id]/page.tsx has add-from-library UI (getUncollectedPhotos + PhotoLibraryPicker)', async () => {
+    const src = await fs.readFile(
+      path.join(process.cwd(), 'src', 'app', '(dashboard)', 'dashboard', 'photos', 'albums', '[id]', 'page.tsx'),
+      'utf-8'
+    );
+    expect(src).toContain('getUncollectedPhotos');
+    expect(src).toContain('PhotoLibraryPicker');
+  });
+});
+
+// ============================================================
 // 6. v5.0 Prune Guard — Dead-Code Permanence
 // ============================================================
 //
